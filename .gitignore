@@ -1,0 +1,23 @@
+# gradle / java
+.gradle/
+build/
+out/
+run/
+runs/
+*.class
+
+# ide
+.idea/
+.vscode/
+*.iml
+.settings/
+.classpath
+.project
+
+# python
+__pycache__/
+*.pyc
+
+# texture review renders -- regenerate with tools/texview.py, never commit
+# (except the worked example in docs/img, which is deliberately tracked)
+*_view.png
