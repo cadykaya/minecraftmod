@@ -38,6 +38,24 @@ public final class ModItems {
     public static final DeferredItem<Item> GOD_HEART =
             ITEMS.registerSimpleItem("god_heart", p -> p.stacksTo(1).fireResistant());
 
+    /**
+     * A letter you are carrying for somebody who is dead, to somebody you have not met.
+     *
+     * ONE item for all four, and its name says nothing. `Sealed Letter` -- not "Letter
+     * to Rill", not four items with four names. You are the only one left carrying this
+     * mail and you do not know who any of them are; the item telling you would spend
+     * the mid-game's best reveal in a tooltip, before the letter is even opened.
+     *
+     * Which letter it is rides in {@link ModComponents#LETTER} as a god id, never as an
+     * addressee, for the same reason.
+     *
+     * Stacks to one. Four letters that stacked into a pile of four would be four copies
+     * of one object, and these are four different objects that happen to look alike --
+     * which is also true of them as writing.
+     */
+    public static final DeferredItem<Item> SEALED_LETTER =
+            ITEMS.registerSimpleItem("sealed_letter", p -> p.stacksTo(1).fireResistant());
+
     /** A shard of the shattered god. Finite; attuning one makes a Theoclast. */
     public static final DeferredItem<Item> CLAST =
             ITEMS.registerSimpleItem("clast", p -> p.stacksTo(16));

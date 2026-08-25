@@ -601,7 +601,34 @@ public final class InterregnumCommand {
                                                 () -> Component.translatable(key), false);
                                     }
                                     return 1;
-                                }))));
+                                })))
+                .then(Commands.literal("seal")
+                        .then(Commands.argument("god", StringArgumentType.word())
+                                .then(Commands.argument("at", BlockPosArgument.blockPos())
+                                        .executes(ctx -> {
+                                            String god = StringArgumentType.getString(ctx, "god");
+                                            BlockPos at = BlockPosArgument.getLoadedBlockPos(ctx, "at");
+                                            if (com.cadykaya.interregnum.system.letters
+                                                    .Letters.forGod(god) == null) {
+                                                ctx.getSource().sendSuccess(() -> Component.literal(
+                                                        "letter=none for " + god), false);
+                                                return 0;
+                                            }
+                                            var stack = new net.minecraft.world.item.ItemStack(
+                                                    com.cadykaya.interregnum.registry.ModItems
+                                                            .SEALED_LETTER.get());
+                                            stack.set(com.cadykaya.interregnum.registry.ModComponents
+                                                    .LETTER.get(), god);
+                                            var level = ctx.getSource().getLevel();
+                                            var drop = new net.minecraft.world.entity.item.ItemEntity(
+                                                    level, at.getX() + 0.5, at.getY() + 0.5,
+                                                    at.getZ() + 0.5, stack);
+                                            drop.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+                                            level.addFreshEntity(drop);
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "letter=sealed " + god), true);
+                                            return 1;
+                                        })))));
 
         // The Turning, from the console. Ageing is slow on purpose and its most
         // important property is a CHAIN, so waiting for two rolls to land on one block

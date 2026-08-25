@@ -138,9 +138,35 @@ Two check bugs worth recording, both false positives that named the wrong culpri
   complete"* there is true and useless; the failure path now looks for the loader's own
   message first and quotes it.
 
-**Not built:** the letters are not *items* yet, so nothing carries or delivers one, and
-`LETTER_DELIVERED` is unreachable. Delivery is a scene per god — their reaction to the
-news is their characterization — and scenes are the next content gate.
+**You can carry one.** `interregnum:sealed_letter` — **one** item for all four, named
+`Sealed Letter`, and its name says nothing. Not "Letter to Rill", not four items with
+four names: you are the only one left carrying this mail and you do not know who any of
+them are. The item telling you would spend the reveal in a tooltip before the letter was
+even opened. Which letter it is rides in a data component as a **god id**, never as an
+addressee, for the same reason — and `mail_check.sh` asserts that, because
+`letters_check.py` guards the lang file and cannot see a component.
+
+Stacks to one. Four letters that stacked into a pile of four would be four copies of one
+object, and these are four different objects that happen to look alike — which is also
+true of them as writing.
+
+**That check was a silent no-op on its first version**, and it is worth reading
+[`LESSONS.md`](LESSONS.md) #26 for: it split the server output on `"Item has the
+following entity data:"` to isolate the item, and `data get entity` names the entity by
+its *item*, so the real line is `Sealed Letter has the following entity data:`. The split
+never happened, the check reported clean for any input, and the mutation it was written
+for was caught by the assertion on the next line — which is the most comfortable way for
+a dead check to hide.
+
+**Not built, and it is the owner's call:** *where a player finds the mail.*
+`WORLD.md` says you are the only one left carrying it and never says how you came to be.
+Shrine chests, the crater where the god died, the shrine-keeper handing them over — each
+implies something different about whether the dead god sent them and they came back, or
+never sent them at all. `interregnum letter seal <god> <pos>` is the seam CI uses; there
+is no in-world source yet. **See "Waiting on owner".**
+
+**Also not built:** delivery. `LETTER_DELIVERED` needs a scene per god — their reaction to
+the news is their characterization — and scenes are the next content gate.
 
 ### The crossing crosses
 
@@ -1144,7 +1170,25 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
    retrieval scene would be one of the few places a player *wants* to talk to
    bureaucracy. Costs a room, an inventory, and a conversation. Not built.
 
-3. **What should a Warden be able to cite you for, before magic exists?** Patrol and
+3. **Where does a player find the dead god's mail?** The letters exist, and one item
+   carries them, and nothing in the world produces one. `WORLD.md` says *you are the only
+   one left carrying their mail* and never says how you came to be carrying it — and the
+   options are not interchangeable, because each says something different about the dead
+   god:
+
+   * **In the shrine chests**, beside the heart. Implies it never sent them: four letters
+     written and filed and never posted, which makes the Quiet One's *"the one who never
+     wrote back"* retroactively crueller — nobody ever had the chance.
+   * **At the crater**, in what is left of its desk. Same implication, but the player has
+     to have killed it first, so the mail is something you find while standing in the
+     hole you made.
+   * **Returned undelivered**, handed over by the shrine-keeper. Implies it *did* send
+     them and they came back, which is a different and sadder story, and gives the
+     keeper a reason to have been waiting for somebody.
+
+   I have not picked one because the choice is the story, not the plumbing. *No action
+   needed until then; the letters and the item ship without it.*
+4. **What should a Warden be able to cite you for, before magic exists?** Patrol and
    inspect are built; `cite` has nothing to accuse anybody of. WORLD.md's locked
    countermeasures are all about *casting*, which does not exist yet. Two locked offences
    need no magic:
@@ -1160,7 +1204,7 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
    Either is a small build once chosen. Choosing is the owner's, because it decides what
    the Wardenate is *for* in the stretch before magic. *No action needed until then;
    patrol and inspect ship without it.*
-4. **Playtesting, and looking at the Warden.** This container has no game client, so two
+5. **Playtesting, and looking at the Warden.** This container has no game client, so two
    things about the model are unverifiable here and are not claimed: how it looks
    **animated**, and how it looks **lit**. `tools/entity_view.py` covers shape and paint;
    it cannot cover those. The render has been sent for review.

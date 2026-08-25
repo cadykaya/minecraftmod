@@ -1928,3 +1928,62 @@ first and quotes it.
 
 Both are the same shape as the backtick bug from the Turning: a failure path that fires
 for the right reason and says the wrong thing costs as much as one that does not fire.
+
+## One sealed letter, and it does not say who it is for
+
+The letters existed as text nobody could hold. Now there is an item.
+
+**One item for all four, and its name says nothing.** `Sealed Letter` — not "Letter to
+Rill", not four items with four names. You are the only one left carrying a dead
+stranger's mail and you do not know who any of them are; an item that told you would
+spend the mid-game's best reveal in a tooltip, before the letter had even been opened.
+Which letter it is rides in a data component as a **god id**, never as an addressee, for
+exactly the same reason: a stack in a hotbar is a string a player can see.
+
+That last rule needed its own guard. `letters_check.py` scans the whole shipped string
+table for the names, which is the assertion that protects the reveal — and it cannot see
+a data component. So the live check had to cover the other half.
+
+Stacks to one. Four letters that stacked into a pile of four would be four copies of one
+object, and these are four different objects that happen to look alike, which is also
+true of them as writing.
+
+### The guard was a silent no-op, and a caught mutation hid it
+
+The first version of that assertion carved the server output on
+`"Item has the following entity data:"` so it could scan only the item. It reported
+**clean** against a build deliberately broken to put `Rill` in the component, with the
+name sitting in the output.
+
+`data get entity` names an entity by its *item*, so the line is
+`Sealed Letter has the following entity data:`. The split string never appeared, the list
+had one element, and the expression short-circuited to "clean" for any input, forever.
+Not a wrong answer — no answer, in the shape of a right one.
+
+What makes this worth an entry (LESSONS #26) is how it nearly got past: **the mutation was
+caught.** The assertion on the next line noticed the component no longer held `verdant`,
+the check went red, the build was broken, and by every visible signal the system worked.
+Only reading *which* assertion fired showed the important one had not. A dead check hiding
+behind a live neighbour is the most comfortable place for it to hide.
+
+The fix is to stop guessing: the claim is about a component, so ask about the component.
+
+### The icon, and a thing 16 pixels will not let you do
+
+Bone for the paper — the only family in the palette that reads as a written thing rather
+than a material, and the god's script elsewhere is void on bone, so a sheet the player has
+never seen written on still belongs to that world. A plain wax seal with no crest, because
+any mark at all invites reading it as an identity and the item must not have one.
+
+The seal came out a **square**. A radius test over five pixels has nothing to round off,
+which is why vanilla's item icons are drawn rather than generated; the mask is now six
+rows set by hand.
+
+### What is deliberately still missing
+
+Nothing in the world produces a letter. `WORLD.md` says you are the only one left carrying
+the mail and never says how you came to be carrying it, and the options are not
+interchangeable — shrine chests implies it never sent them, the crater implies you find
+them standing in the hole you made, and *returned undelivered* implies it did send them
+and they came back, which is a different and sadder story. That choice is the story rather
+than the plumbing, so it went to the owner instead of being decided here.

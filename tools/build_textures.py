@@ -552,6 +552,69 @@ def ferry_keel_top(seed=41):
     return img
 
 
+def sealed_letter(seed=53):
+    """Item icon: a folded sheet, closed, with a seal that is not a crest.
+
+    It must say NOTHING about who it is for. That is the whole design of the item --
+    one `Sealed Letter` rather than four named ones, because the player is carrying a
+    dead stranger's mail and does not know who any of them are. A wax seal bearing any
+    mark at all invites reading it as an identity, so the seal here is a plain disc:
+    the office's stamp, which every letter it ever sent would carry.
+
+    Bone for the paper. It is the only family in the palette that reads as a written
+    thing rather than as a material, and the god's script elsewhere is void on bone --
+    so a sheet the player has never seen written on still belongs to that world.
+    """
+    img = Image(SIZE, SIZE, fill=(0, 0, 0, 0))
+    # The sheet: 10x12, off-centre by one, because a perfectly centred rectangle at
+    # 16px reads as an icon of a document rather than as a piece of paper.
+    x0, y0, w, h = 3, 2, 10, 12
+    for y in range(y0, y0 + h):
+        for x in range(x0, x0 + w):
+            edge = x in (x0, x0 + w - 1) or y in (y0, y0 + h - 1)
+            img.set(x, y, pal("bone", 0 if edge else 2) + (255,))
+    # The fold: a horizontal crease across the lower third, one step down. A letter
+    # that has been folded has been carried, and this one has been carried a long way.
+    for x in range(x0 + 1, x0 + w - 1):
+        img.set(x, y0 + 8, pal("bone", 1) + (255,))
+    # Two shorter creases above it -- the sheet was folded in three, as a letter is.
+    for x in range(x0 + 1, x0 + w - 1):
+        if h2(x, 4, seed) < 0.7:
+            img.set(x, y0 + 4, pal("bone", 1) + (255,))
+    # The seal: a plain brass blob, no crest. See the docstring -- a mark would read as
+    # an identity, and the item must not have one.
+    #
+    # An explicit mask, not a distance test. At this size a radius check produces a 5x5
+    # SQUARE -- there are not enough pixels for a circle formula to round anything off,
+    # and the first version read as a stamp rather than as wax. Six rows hand-set is the
+    # only way to get a round blob at 16px, which is why vanilla's item icons are drawn
+    # rather than generated.
+    cx, cy = x0 + w // 2, y0 + 8
+    seal = [
+        (0, "..XX.."),
+        (1, ".XXXX."),
+        (2, "XXXXXX"),
+        (3, "XXXXXX"),
+        (4, ".XXXX."),
+        (5, "..XX.."),
+    ]
+    for row, pattern in seal:
+        for col, ch in enumerate(pattern):
+            if ch != "X":
+                continue
+            x, y = cx - 3 + col, cy - 3 + row
+            # Lit from up-left like everything else in the mod: the top-left half of
+            # the blob catches, the bottom-right is where the wax pooled.
+            lit = (col + row) < 5
+            img.set(x, y, pal("brass", 2 if lit else 1) + (255,))
+    # A rim of tarnish on the underside only, so the blob sits ON the paper rather
+    # than being a hole in it.
+    for col, ch in enumerate(".XXXX."):
+        if ch == "X":
+            img.set(cx - 3 + col, cy + 3, pal("brass", 0) + (255,))
+    return img
+
+
 ASSETS = {
     (ENTITY, "warden"): warden_entity,
     (ENTITY, "shrine_keeper"): shrine_keeper_entity,
@@ -567,6 +630,7 @@ ASSETS = {
     (BLOCK, "ferry_keel_top"): ferry_keel_top,
     (ITEM, "god_heart"): god_heart,
     (ITEM, "clast"): clast,
+    (ITEM, "sealed_letter"): sealed_letter,
 }
 
 if __name__ == "__main__":

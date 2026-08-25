@@ -208,5 +208,6 @@
   "interregnum.letter.quiet_one.subject": "SUBJECT: UNRESPONSIVE — further to previous",
   "interregnum.letter.quiet_one.1": "To —",
   "interregnum.letter.quiet_one.2": "Further to previous. There is no previous on file that has been answered, so the office is unable to state which previous this is further to.",
-  "interregnum.letter.quiet_one.3": "The sun is turned daily. Attendance is recorded. The undersigned continues to write and has stopped stating why."
+  "interregnum.letter.quiet_one.3": "The sun is turned daily. Attendance is recorded. The undersigned continues to write and has stopped stating why.",
+  "item.interregnum.sealed_letter": "Sealed Letter"
 }

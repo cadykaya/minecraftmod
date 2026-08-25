@@ -15,9 +15,20 @@ cd "$(dirname "$0")/.."
 
 fail() { echo "FAIL: $1"; exit 1; }
 
+# The `wait 5` and marker probe before sealing anything: `letter seal` adds an ENTITY,
+# and an entity added before the chunk's entity storage has arrived is accepted and then
+# invisible to every selector for the rest of the run (docs/LESSONS.md #22).
 COMMANDS="interregnum letter read verdant
 interregnum letter read quiet_one
-interregnum letter read nobody" \
+interregnum letter read nobody
+forceload add -16 -16 15 15
+wait 5
+summon minecraft:marker 4 -60 4
+execute if entity @e[type=minecraft:marker,limit=1] run say E_CHUNK_TAKES_ENTITIES
+kill @e[type=minecraft:marker]
+interregnum letter seal verdant 4 -60 4
+interregnum letter seal nobody 6 -60 4
+data get entity @e[type=minecraft:item,limit=1]" \
     LOG=/tmp/mail.log timeout 2000 ./tools/server_smoke.sh > /tmp/ml.txt 2>&1 \
     || {
         # Look for OUR failure before reporting a generic one. A broken post makes the
@@ -67,5 +78,41 @@ grep -q 'SUBJECT: GREEN AUTHORITY' /tmp/ml.txt || \
 grep -q 'letter=none for nobody' /tmp/ml.txt || \
     fail "asking for a letter to a god that does not exist did not refuse cleanly"
 
+# --- the letter is a thing you can carry ------------------------------------
+grep -q E_CHUNK_TAKES_ENTITIES /tmp/mail.log || {
+    echo "  A marker was invisible to @e, so a sealed letter would be too."
+    fail "the chunk was still loading when the letter was sealed"; }
+grep -q 'letter=sealed verdant' /tmp/ml.txt || \
+    fail "'interregnum letter seal' did not produce a letter"
+grep -q 'letter=none for nobody' /tmp/ml.txt || \
+    fail "sealing a letter to a god that does not exist did not refuse"
+
+# The item carries the GOD ID, never the addressee. A stack in a hotbar is a string a
+# player can see, and the whole reveal is that the names are unheard until the letter is
+# opened -- so `Rill` must not be anywhere on the item. letters_check.py guards the lang
+# file and cannot see a component; this is the other half of that rule.
+grep -q 'interregnum:sealed_letter' /tmp/ml.txt || {
+    grep -oE 'id: "[a-z:_]+"' /tmp/ml.txt | head -3 || true
+    fail "the sealed letter item is not in the world"; }
+# The component must hold a GOD ID, never an addressee. A stack in a hotbar is a string
+# a player can see, and the whole reveal is that the names are unheard until the letter
+# is opened. letters_check.py guards the lang file and cannot see a component; this is
+# the other half of that rule.
+#
+# Asked directly of the component rather than by carving up the output. The first
+# version split the dump on "Item has the following entity data:" -- which never
+# appears, because `data get entity` names the entity by its ITEM, so the string is
+# "Sealed Letter has the following entity data:". The split found nothing, the check
+# reported clean every time, and it was a silent no-op that would have passed against
+# the exact bug it was written for. Guessing a prefix is not a test.
+if grep -qE '"interregnum:letter": "(Rill|Ballast|Ash)"' /tmp/ml.txt; then
+    grep -oE '"interregnum:letter": "[^"]*"' /tmp/ml.txt | head -3 || true
+    fail "the sealed letter carries an ADDRESSEE in its component instead of a god id -- a stack in a hotbar is a string a player can see, and the names are supposed to be unheard until the letter is opened"
+fi
+
+grep -q '"interregnum:letter": "verdant"' /tmp/ml.txt || {
+    grep -oE 'interregnum:letter[^,]*' /tmp/ml.txt | head -3 || true
+    fail "the item does not carry which letter it is, so it would be four identical blank sheets"; }
+
 echo
-echo "OK: four letters load, three open with a name, and the fourth opens To --"
+echo "OK: four letters load, three open with a name, the fourth opens To --, and a sealed one carries its god without naming them"

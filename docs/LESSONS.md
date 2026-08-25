@@ -1082,3 +1082,53 @@ the path was accepted, retry shortly if it was not, and abandon the leg after a 
 number of refusals — which also, for free, handles the case this repo will actually meet
 in play, where somebody walls off one corner of a Warden's beat because they have worked
 out where it goes.
+
+---
+
+## 26. A check that splits on a guessed string is a check that never ran
+
+The sealed letter carries a **god id** — `verdant` — and never an addressee, because a
+stack in a hotbar is a string a player can see and the whole mid-game reveal is that
+`Rill` is unheard until the letter is opened. `letters_check.py` guards the lang file
+and cannot see a data component, so the live check had to guard the other half.
+
+The first version carved the server output into "before the item dump" and "after", so
+it could scan only the item:
+
+```bash
+dump = text.split("Item has the following entity data:")
+sys.stdout.write("leak" if len(dump) > 1 and re.search(r"\bRill\b", dump[1]) else "clean")
+```
+
+It reported **clean** against a build that had been deliberately broken to put `Rill` in
+the component. The name was right there in the output.
+
+`data get entity` names the entity by its **item**, so the line is
+`Sealed Letter has the following entity data:`. The split string never appeared, `dump`
+had one element, `len(dump) > 1` was false, and the expression short-circuited to
+`"clean"` — every time, for any input, forever. Not a wrong answer: **no answer**, wearing
+the shape of a right one.
+
+The tell was there and I nearly missed it. The mutation *was* caught — by the assertion
+on the next line, which noticed the component no longer held `verdant`. A caught mutation
+is exactly what makes this easy to skip past: the check failed, the build was broken, the
+system worked. It was only reading *which* assertion fired that showed the important one
+had not.
+
+The fix is to stop guessing at all. The claim is about a component, so ask about the
+component:
+
+```bash
+grep -qE '"interregnum:letter": "(Rill|Ballast|Ash)"' /tmp/ml.txt
+```
+
+> **The rule: never locate the thing under test by splitting on a string you have not
+> looked at.** A prefix you assumed is an unchecked assumption on the *test's* side, and
+> when it is wrong the test does not fail — it stops testing, silently, while continuing
+> to print OK.
+
+This is [#15](#15-a-check-that-cannot-fail-is-a-comment) reached by a new route, and it
+shares a moral with [#24](#24-if-the-expected-string-already-appears-earlier-in-the-log-the-assertion-is-a-no-op):
+both are assertions that could not fail, and in both cases the surrounding check was
+green and looked thorough. The difference here is that a *neighbouring* assertion was
+doing the work, which is the most comfortable way for a dead check to hide.

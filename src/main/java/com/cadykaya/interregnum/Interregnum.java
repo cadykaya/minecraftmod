@@ -5,6 +5,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.ModContainer;
 
 import com.cadykaya.interregnum.registry.ModAttachments;
+import com.cadykaya.interregnum.registry.ModComponents;
 import com.cadykaya.interregnum.registry.ModBlocks;
 import com.cadykaya.interregnum.registry.ModCreativeTabs;
 import com.cadykaya.interregnum.registry.ModEntities;
@@ -23,6 +24,7 @@ public class Interregnum {
 
     public Interregnum(IEventBus modBus, ModContainer container) {
         ModAttachments.register(modBus);
+        ModComponents.register(modBus);
         ModBlocks.register(modBus);
         ModEntities.register(modBus);
         ModItems.register(modBus);
