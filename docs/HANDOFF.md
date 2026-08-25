@@ -68,6 +68,8 @@ overturn them on grounds rather than taste.
 
 ### Answered this session
 
+- **The class name**: **Theoclast** — owner's coinage, locked. Breaker and fragment in
+  one word; the pieces themselves are **clasts**. Four-voices naming table in `WORLD.md`.
 - **The subject**: INTERREGNUM. You accidentally kill the overworld's god by looting a
   shrine chest; vanilla's rules were its policy; the world unravels chapter by chapter
   while you carry the dead god's unanswered letters to its estranged family, looking for a
@@ -79,14 +81,12 @@ overturn them on grounds rather than taste.
 
 ### Still open — [WORKSHOP] with the owner
 
-1. **First class name.** Shortlist: **Hollow Saint** (recommended), Usurper, Executor,
-   Deicide. Owner picks; details in `WORLD.md`.
-2. **God roster** — working set is four named gods + the dead one; final count and names.
-3. **The dead god's last letter** (the ending document) — co-write with owner, later.
+1. **God roster** — working set is four named gods + the dead one; final count and names.
+2. **The dead god's last letter** (the ending document) — co-write with owner, later.
 
 ### [NEEDS PLAYTEST] (cannot be settled by argument)
 
-Deicide trigger reliability · splinter scarcity · unraveling band pacing.
+Deicide trigger reliability · clast scarcity · unraveling band pacing.
 
 ## Working agreement
 

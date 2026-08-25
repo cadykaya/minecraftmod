@@ -155,15 +155,28 @@ manifestation exposure. Knowledge-as-hazard; the codex desk is the safe path.
 **[LOCKED]** The god's power enters its killer. An ordinary Minecraft body cannot hold it.
 The overflow detonates outward, scattering **splinters** at shrines and the crater.
 
-- **The Executor** *(role title — [WORKSHOP])*: the killer. Unique, involuntary, permanent.
-  Carries the full weight and the Haunt. The server's pseudo-main-character, by design —
-  owner has explicitly blessed asymmetric multiplayer here.
-- **The first class** *(name [WORKSHOP] — shortlist: **Hollow Saint** (recommended),
-  Usurper, Executor, Deicide)*: anyone may attune a splinter. **Splinters are finite** —
-  the class is a server negotiation. **[NEEDS PLAYTEST]** count.
+- **The first class: the THEOCLAST.** **[LOCKED — owner's coinage.]** Greek `-clast`
+  compounds split two ways: *iconoclast* is the breaker (agent), *pyroclast* is the broken
+  piece (patient). "Theoclast" therefore means **god-breaker AND fragment of god at once**
+  — and both are true of every member: complicit in the breaking, carrying the pieces.
+  (Third echo, free: an *osteoclast* breaks down old bone so new bone can form — breaking
+  as the first act of renewal, which is the mod's whole question.) Web-checked: no game or
+  mod owns the word.
+- The shattered god-pieces are **clasts** (item). Anyone may attune one; **clasts are
+  finite** — the class is a server negotiation. **[NEEDS PLAYTEST]** count.
+- **The killer**: the First Theoclast. Unique, involuntary, permanent. Carries the full
+  weight and the Haunt. The server's pseudo-main-character, by design — owner has
+  explicitly blessed asymmetric multiplayer here.
 - The advancement at the moment of death: **"Deicide."**
-- In-world naming split **[PROPOSED]**: Wardens indict all practitioners as *Usurper*;
-  villagers whisper *saint*. Institutions disagreeing about a name is free worldbuilding.
+- **The four voices** **[LOCKED]** — one UI name, four in-world names, because
+  institutions disagreeing about a word is free worldbuilding:
+
+  | Voice | Calls them | Because |
+  |---|---|---|
+  | the game's UI, the truth | **Theoclast** | breaker and fragment, both |
+  | the Wardens' citations | **Usurper** | the legal theory: seized power belonging to a throne |
+  | the villagers' whisper | **saint** | channeling a dead god through relics was always the job description |
+  | the ghost, to its killer only | **Executor** | you killed me; now you administer my estate. Deliver my mail. |
 
 **[LOCKED] The class's identity is the collision:** residue rites are the only thing that
 can locally slow the unraveling (*anchor-rites*, fed with gathered residue) — and every
@@ -259,7 +272,7 @@ a relationship.
 ### Tags — your record speaks
 
 DOS-style tagged options, unlocked by what you *are* and what you *did*: **[Executor]**,
-**[Hollow Saint]**, **[Hush-touched]**, and — the fun one — **[Cited: 3 offenses]**. The
+**[Theoclast]**, **[Hush-touched]**, and — the fun one — **[Cited: 3 offenses]**. The
 Wardens' paperwork becomes dialogue ammunition; an NPC can read your rap sheet, and you can
 lean on it.
 
@@ -336,7 +349,6 @@ differently — and every beat must pass the bible's Bad Comedy Detector.
 
 | Item | Status |
 |---|---|
-| First class name — Hollow Saint (rec) / Usurper / Executor / Deicide | **[WORKSHOP]** |
 | God roster size and final names | **[WORKSHOP]** |
 | Deicide trigger reliability | **[NEEDS PLAYTEST]** |
 | Splinter count / class scarcity | **[NEEDS PLAYTEST]** |

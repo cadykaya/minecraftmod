@@ -99,3 +99,8 @@ written: **cool means held, warm means spent.** `mod_id=interregnum` locked in P
 Open: class name ([WORKSHOP], shortlist in WORLD.md), god roster, playtest items.
 
 No code yet. Phase 1 is defined in HANDOFF: "Chapter 0 and the Death," overworld only.
+
+**Addendum:** the first class is named — **Theoclast**, the owner's own coinage, and it
+beat every candidate on the shortlist by meaning both *god-breaker* and *god-fragment*
+simultaneously (iconoclast vs pyroclast). Splinters renamed to **clasts**. The four-voices
+naming (Theoclast / Usurper / saint / Executor) is locked in WORLD.md.
