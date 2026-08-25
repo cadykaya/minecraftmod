@@ -319,6 +319,50 @@ they never destroy player builds. Citations read like parking tickets ([EXAMPLE 
 dispensations** (craftable from researched paperwork), captured-and-reconsecrated Wardens.
 Enforcement targets *sites*, never a single player — no player is the system's butt.
 
+### "Warden" is not its name — it is its rank
+
+**[LOCKED — owner delegated; decided here.] The name stays.** Minecraft already ships a
+mob called the Warden, and in a modpack the word now means two unrelated things. That is
+only a problem if *Warden* is what our thing **is**. It is not, and the mod has never
+once said it was.
+
+**Check the shipped lines. A Warden never calls itself a Warden.** Across every scene
+written so far — the census, the statements, the refusals — it says **"this unit"**,
+every time, without exception:
+
+> *This unit is conducting a census of the living.*
+> *This unit has amended the record.*
+> *This unit is required to say that your cooperation has been noted. This unit would
+> like to say something else and is not authorised to.*
+
+The word `Warden` appears in exactly three places in the whole mod: the entity's display
+name, the statue block's name, and a docket header. All three are **the Wardenate's own
+paperwork**. So *Warden* is a rank an office grants to its units — like *Sergeant*, not
+like *wolf* — and the vanilla mob's claim on the word is a collision between two
+institutions' vocabularies, which is the exact thing this mod is about.
+
+Which means the unit was the one thing in the world that had not been given the
+four-voices treatment, and it should have been first.
+
+| | What it is called | Why that is the true name from there |
+|---|---|---|
+| **It calls itself** | **this unit** | It will not claim the rank in its own mouth. Already true in every line shipped. |
+| **The Wardenate** | **Warden** | A rank on a docket, granted by an office that still meets. |
+| **Villagers say** | **a docket** | They name the person after the paperwork, because the paperwork is the part that happens to them. *"There is a docket standing in the road."* |
+| **Theoclasts say** | **a posting** | They know what actually ends one. *"That is not a Warden in your garden. That is a posting."* |
+
+Two of those names teach mechanics for free. A player who only ever hears Theoclasts say
+**posting** has been handed the answer to *"how do I get rid of it"* without a tooltip —
+and it is the same answer as ["Can a Warden be killed?"](#can-a-warden-be-killed) below,
+arrived at through vocabulary instead of through combat.
+
+**[PROPOSED]** If the rank is granted by an office, then a creature calling itself a
+Warden without having been granted it is an irregularity, and there is exactly one
+institution in the world that would respond to that by filing about it and changing
+nothing. A notice somewhere in the deep dark — `SUBJECT: UNLICENSED WARDEN. The office
+notes that this is not a matter it can resolve, and has filed accordingly.` Not built,
+and it should never be findable by anyone hunting for a joke.
+
 ### Can a Warden be killed?
 
 **[LOCKED — owner delegated; decided here.] No. Not ever, by anyone, by any means.**

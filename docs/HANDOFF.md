@@ -769,19 +769,16 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
 
 ## Waiting on owner
 
-1. **"Warden" collides with vanilla's Warden.** Minecraft already ships a mob called the
-   Warden — the deep-dark one. Ours is a bureaucratic enforcement officer and shares
-   nothing with it but the word, and in a modpack "a warden" now means two unrelated
-   things. Every design doc here says Warden, so that is what is built; the id is
-   `interregnum:warden` and the display name is "Warden".
+1. ~~**"Warden" collides with vanilla's Warden."**~~ **Decided — the name stays.** The
+   owner delegated this one. See [`WORLD.md`](WORLD.md) *"Warden is not its name — it is
+   its rank"*: the collision only bites if *Warden* is what the thing **is**, and it
+   never was. A Warden never calls itself a Warden in any line shipped — it says *"this
+   unit"*, every time — and the word appears in exactly three places, all of them the
+   Wardenate's own paperwork. So it is a rank an office grants, not a species, and the
+   unit now has its own four-voices row like the Theoclast and the four gods: *this
+   unit* / **Warden** / *a docket* (villagers) / *a posting* (Theoclasts). No code
+   change, no id change; the lore was already correct and had not been read.
 
-   This is a lore call, not an engineering one, so it is the owner's. If it should
-   change, changing it is cheap now and expensive once players learn it. Candidates
-   that keep the institutional register: **Assessor** (they assess and file),
-   **Invigilator** (one who watches an examination — and the census scene already reads
-   as one), **Proctor**, **Registrar**. "Wardenate" as the institution's name could
-   survive any of them, or become e.g. the Assessorate. *No action needed unless the
-   owner wants a change.*
 2. **Playtesting, and looking at the Warden.** This container has no game client, so two
    things about the model are unverifiable here and are not claimed: how it looks
    **animated**, and how it looks **lit**. `tools/entity_view.py` covers shape and paint;
@@ -850,40 +847,44 @@ was the same in spirit — *"You know this stuff better than i do"* — so:
 
 ## What to do next
 
-Done this pass: core dialogue engine (+15 verified checks), first scene + validator,
-client-leak guard, `tools/check_all.sh` gate, Phase-1 draft textures (shrine stone,
-carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
+Done this pass: the ferry (capture, four destination laws, the `ferry_keel` block, and
+`tools/ferry_check.sh` in CI), and the four decisions the owner delegated back — bands
+3 and 4, the god roster, whether a Warden can be killed, and the last letter. All four
+are locked in [`WORLD.md`](WORLD.md) with `[LOCKED — owner delegated; decided here.]`
+next to each, so the provenance travels with the decision.
 
-In order, all unblocked unless marked:
+**Nothing on this list is waiting on the owner.** In order, all unblocked:
 
-1. **Bands 3 and 4 — designed, now buildable.** The owner delegated the decision and
-   [`WORLD.md`](WORLD.md) now carries it. Neither is a conversion table. **Band 3
-   (EXODUS)** is the overworld leaking other gods' *law* in patches — reconnaissance for
-   the ferry. **Band 4 (ATTRITION)** is the world losing its *distinction*: biome detail
-   generalising where nobody tends, never touching player-placed blocks. Band 3 wants the
-   26.2 `attributes` map; band 4 wants a "when was this last tended" signal, for which
-   the chunk attachment used by placement tracking is the obvious home.
-2. **Wardens are in the world.** Done — a woken statue posts one, so `WARDEN_CONTACT`
-   and band 2 are reachable by playing for the first time. What is left is behaviour:
-   a posted Warden currently stands where it was put and can be talked to. It does not
-   yet **patrol**, **inspect a site**, or **cite** anything, which is what WORLD.md's
-   Wardens actually do. That is the natural next block of work and none of it is new
-   scope — inspect/cite/confiscate/escalate is all locked design.
-3. **More scenes.** Five exist now (`warden_intake`, `warden_interrogation`,
-   `shrine_keeper`, `shrine_keeper_intact`, `dream_audience`) and the machinery has
-   the range it was missing, so the shortage from here is content rather than
-   plumbing. The four gods have regard lines but no scenes; `dream_audience` is the
-   only place any of them speaks, and reaching one properly needs **the ferry**, which
-   is locked design with no code behind it yet. **Bands 3 and 4 and the
-   statue-summons-Warden proposal remain the owner's call.**
-4. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
+1. **The four destinations.** The ferry sails; there is nowhere to sail to. This is now
+   the single hard gate on the whole mid-game — `FIRST_CROSSING` and `LETTER_DELIVERED`
+   are unreachable without it, and so are chapters 3–5. 26.2 moved dimension rules into
+   a namespaced `attributes` map (see [`WORLDGEN.md`](WORLDGEN.md)), so *"this world
+   obeys the Quiet One"* is a set of declared attributes rather than a pile of special
+   cases — which is most of a god's world for very little code. Start with the Quiet
+   One: its law is the one the ferry already refuses cargo for, so the crossing and the
+   destination check each other.
+2. **Band 3 — EXODUS.** The same attribute work pointed at the overworld. A patch of
+   ground obeying somebody else's law is the same declaration as a dimension obeying it,
+   so building the Quiet One's silent hollow gets both the leak and the crossing for
+   one price. Band 4 (ATTRITION) wants a *"when was this last tended"* signal, for which
+   the chunk attachment used by placement tracking is the obvious home; it can follow.
+3. **Warden behaviour.** Still the cheapest real win. A posted Warden stands where it
+   was put and can be talked to; it does not yet **patrol**, **inspect a site**, or
+   **cite** anything. All four verbs are locked design on a mob that already exists,
+   already talks, and — as of the delegated decision — cannot be killed, which makes the
+   statue the only lever a player has and the behaviour worth more than it was.
+4. **More scenes.** Five exist (`warden_intake`, `warden_interrogation`, `shrine_keeper`,
+   `shrine_keeper_intact`, `dream_audience`) and the machinery now has the range it was
+   missing, so the shortage from here is content rather than plumbing. The four gods have
+   regard lines but no scenes; the roster decision gives each of them four names to be
+   called by, which is the material those scenes were short of.
+5. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
    everything it would render is already proven server-side. Chat works meanwhile.
-5. **Clear remaining `VERIFY:` markers.** The specific ones in WORLDGEN.md, DATAGEN.md
-   and MODELS.md are now **cleared and marked VERIFIED against 26.2.0.67** (see below).
-   What is left is the standing header caveat on each doc, which should stay: it is the
-   policy, not a debt. ARCHITECTURE.md's remaining markers (capabilities → data
-   attachments, payload/handler registration) are the next real batch.
+6. **Clear remaining `VERIFY:` markers.** WORLDGEN.md, DATAGEN.md and MODELS.md are
+   cleared and marked VERIFIED against 26.2.0.67. What is left is ARCHITECTURE.md
+   (capabilities → data attachments, payload/handler registration) plus the standing
+   header caveat on each doc, which should stay: that is policy, not debt.
 
 ## Standing warning
 
