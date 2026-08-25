@@ -30,6 +30,7 @@ WARDEN='@e[limit=1,type=interregnum:warden]'
 # `wait` after the forceload: the chunk's entity storage loads asynchronously, and
 # a Warden summoned before it arrives is invisible to every selector afterwards --
 # the conversation would then be held in front of nobody. See docs/LESSONS.md #22.
+G=44444444-4444-4444-8444-444444444444
 COMMANDS="forceload add -32 -32 31 31
 wait 5
 summon interregnum:warden 8 -60 8
@@ -93,7 +94,13 @@ interregnum talk say s1 press
 interregnum talk say s2 press
 interregnum talk start interregnum:dream_audience d1
 interregnum talk say d1 refuse
-interregnum talk say d1 no" \
+interregnum talk say d1 no
+interregnum talk start $SCENE $G
+interregnum talk show $G
+interregnum regard $G adjust WARDENATE 50
+interregnum talk show $G
+interregnum regard $G adjust WARDENATE -90
+interregnum talk show $G" \
     LOG=/tmp/talk_check.log timeout 2000 ./tools/server_smoke.sh > /tmp/tc.txt 2>&1 \
     || { tail -25 /tmp/tc.txt; fail "the run did not complete"; }
 
@@ -141,6 +148,28 @@ want /tmp/tc.txt 'talk=REPROMPT chose=none stances={kaya=attest_yes, p2=attest_n
 want /tmp/tc.txt 'talk=ADVANCED chose=attest_yes stances={kaya=attest_yes, p2=attest_yes, p3=attest_yes} ended=true' \
     "the scene never reached its end"
 want /tmp/tc.txt 'talk=none active=0' "the table outlived the conversation"
+
+# --- standing decides what you are even offered -----------------------------
+#
+# The first thing in the mod that READS regard. Until this existed, standing was
+# recorded, persisted, announced -- and consulted by nothing.
+#
+# One player, one node, three standings. `show` renders through the same
+# ConversationView a real player gets, so this is literally what would be on their
+# screen. The sequence-parsing lives in tools/standing_gate_check.py: the property is
+# that the offered set CHANGES, which no single grep can express, and counting
+# occurrences alone would pass an implementation that showed both gated options in
+# one render and neither in the others.
+python3 tools/standing_gate_check.py /tmp/tc.txt \
+    || { grep -n "show| " /tmp/tc.txt | tail -24; fail "an institution's opinion does not change what it offers you"; }
+
+# And the adjustments that moved the standing actually landed. Without this the three
+# renders above could be three identical renders agreeing with each other, which is
+# the trap in docs/LESSONS.md #15.
+want /tmp/tc.txt 'adjust= WARDENATE moved=50 now=TRUSTED' \
+    "the standing never reached TRUSTED, so the gate above was never exercised"
+want /tmp/tc.txt 'adjust= WARDENATE moved=-90 now=RESENTED' \
+    "the standing never reached RESENTED, so the ceiling above was never exercised"
 
 # --- refusals are answers, not crashes --------------------------------------
 want /tmp/tc.txt 'talk=refused reason=no option nonsense on node open' \

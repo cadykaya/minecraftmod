@@ -109,6 +109,26 @@ MUTATIONS = [
     ("crossing: an event that crossed nothing is allowed through",
      f"{MAIN}/regard/BandChange.java",
      "if (from == to) {", "if (false) {"),
+    # The standing gate. This is the first thing in the mod that READS regard, so its
+    # failure mode is content appearing to players who have not earned it -- which
+    # looks exactly like the game working and is the one bug a playtester cannot file.
+    ("gate: the standing requirement is never consulted",
+     f"{MAIN}/dialogue/DialogueOption.java",
+     "return playerTags.containsAll(requiredTags) && standing.admits(regard);",
+     "return playerTags.containsAll(requiredTags);"),
+    ("gate: the floor is off by a band",
+     f"{MAIN}/dialogue/StandingGate.java",
+     "|| state.standing(e.getKey()).ordinal() < e.getValue().ordinal()) {",
+     "|| state.standing(e.getKey()).ordinal() < e.getValue().ordinal() - 1) {"),
+    ("gate: the ceiling is not enforced",
+     f"{MAIN}/dialogue/StandingGate.java",
+     "        for (var e : atMost.entrySet()) {",
+     "        for (var e : atMost.entrySet()) { if (true) continue;"),
+    ("gate: having no ghost counts as being on terms with it",
+     f"{MAIN}/dialogue/StandingGate.java",
+     "return institution != Institution.THE_GHOST || state.isKiller();",
+     "return true;"),
+
     ("crossing: institutions are reported in whatever order a map iterates",
      f"{MAIN}/regard/Standings.java",
      "for (Institution i : Institution.values()) {\n            Standing was = before.get(i);",

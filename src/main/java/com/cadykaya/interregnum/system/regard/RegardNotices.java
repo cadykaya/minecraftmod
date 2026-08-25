@@ -97,10 +97,17 @@ public final class RegardNotices {
         ServerPlayer player = server.getPlayerList().getPlayer(who);
         for (BandChange change : crossed) {
             String key = key(change);
-            // Logged as well as sent, and not only for debugging: a dedicated server
-            // never loads `assets/`, so a translatable component is an unresolved key
-            // here and there is no other way for a headless check to see what a
-            // player would have been told. The check reads these lines.
+            // Logged as well as sent, and the key is logged rather than the rendered
+            // sentence on purpose: the key is the stable identity of the event and
+            // the sentence is the writer's business, free to be reworded at any time.
+            // A check that asserted the prose would break every time somebody
+            // improved a line, which is the fastest way to teach people to stop
+            // improving lines. `regard_keys_check.py` reads exactly these keys.
+            //
+            // (An earlier version of this comment claimed a dedicated server cannot
+            // resolve translations and that this was the only way to observe them.
+            // That is false in this setup -- the mod's `assets/` are on the
+            // classpath and `talk show` prints fully rendered English.)
             LOG.info("Regard crossing for {}: {} {} -> {} [{}]",
                     who, change.institution(), change.from(), change.to(), key);
             if (player != null) {

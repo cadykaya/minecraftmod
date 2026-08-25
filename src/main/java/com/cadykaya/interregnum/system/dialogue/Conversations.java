@@ -19,6 +19,7 @@ import com.cadykaya.interregnum.core.dialogue.Resolution;
 import com.cadykaya.interregnum.system.ChapterSavedData;
 import com.cadykaya.interregnum.system.RegardSavedData;
 import com.cadykaya.interregnum.core.regard.RegardEffects;
+import com.cadykaya.interregnum.core.regard.RegardState;
 import com.cadykaya.interregnum.system.regard.RegardNotices;
 
 import java.util.ArrayList;
@@ -170,7 +171,12 @@ public final class Conversations {
             if (player == null) {
                 continue;
             }
-            for (Component line : ConversationView.render(table, p, PlayerTags.of(player))) {
+            // `peek`, not `of`: rendering a conversation must not bring a regard
+            // record into existence for somebody who has never had one. A null here
+            // reads as default standing, which is what a fresh record would say.
+            RegardState regard = RegardSavedData.get(server).peek(player.getUUID());
+            for (Component line
+                    : ConversationView.render(table, p, PlayerTags.of(player), regard)) {
                 player.sendSystemMessage(line);
             }
         }

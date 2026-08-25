@@ -20,6 +20,24 @@
           "target": "census"
         },
         {
+          "_comment": "Only for a party the Wardenate trusts. Attesting for the absent is a procedural privilege, not a friendship: the unit is not being warm, it is accepting your word as evidence, which is the only kind of regard a Warden has to give.",
+          "id": "attest_for_absent",
+          "text_key": "interregnum.dlg.warden_intake.open.attest_for_absent",
+          "target": "attest",
+          "standing_at_least": {
+            "WARDENATE": "TRUSTED"
+          }
+        },
+        {
+          "_comment": "The opposite gate, and the reason ceilings exist. Only a party the Wardenate already resents can say this, and saying it sends the unit to `fixate`. You are not being punished for a low standing; you are being given the scene that comes with it, and you lose it the moment they think better of you.",
+          "id": "already_filed",
+          "text_key": "interregnum.dlg.warden_intake.open.already_filed",
+          "target": "fixate",
+          "standing_at_most": {
+            "WARDENATE": "RESENTED"
+          }
+        },
+        {
           "id": "mark",
           "text_key": "interregnum.dlg.warden_intake.open.mark",
           "target": "noted",

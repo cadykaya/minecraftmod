@@ -5,6 +5,7 @@ import com.cadykaya.interregnum.core.dialogue.*;
 import com.cadykaya.interregnum.core.regard.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -156,6 +157,7 @@ public final class SelfTest {
         chapterChecks();
         regardChecks();
         crossingChecks();
+        standingGateChecks();
         effectChecks();
         System.out.println("SelfTest: " + passed + " checks passed");
     }
@@ -334,6 +336,86 @@ public final class SelfTest {
         q.recordDeicide(Institution.ANCHORITE);
         check(q.value(Institution.WARDENATE) == -60,
               "a second deicide is more evidence, not a different crime");
+    }
+
+    /**
+     * Options that appear and disappear according to what somebody thinks of you.
+     *
+     * The first thing in the mod that READS regard rather than writing it. Until this
+     * existed, standing was recorded, persisted, announced -- and consulted by
+     * nothing, which is a feature finished everywhere except where it matters.
+     */
+    static void standingGateChecks() {
+        var open = new DialogueOption("a", "d.a", "ok", List.of());
+        check(open.standing().isOpen(), "an option with no gate is open");
+        check(open.visibleTo(java.util.Set.of(), null),
+              "an ungated option is visible to somebody with no record at all");
+
+        // A FLOOR. Earned content.
+        var trusted = new DialogueOption("t", "d.t", "ok", List.of(), Map.of(),
+                new StandingGate(Map.of(Institution.WARDENATE, Standing.TRUSTED), Map.of()));
+        var p = new RegardState(false);
+        check(!trusted.visibleTo(java.util.Set.of(), p),
+              "a floor hides the option from somebody who has not earned it");
+        p.adjust(Institution.WARDENATE, 45);
+        check(trusted.visibleTo(java.util.Set.of(), p),
+              "and shows it once they have");
+        p.adjust(Institution.WARDENATE, 40);          // TRUSTED -> BELOVED
+        check(trusted.visibleTo(java.util.Set.of(), p),
+              "a floor is at-least, not exactly -- rising past it does not lose the option");
+
+        // A CEILING. Content you lose by being liked, which is what makes standing
+        // read as a relationship that moved rather than a score that went up.
+        var suspicious = new DialogueOption("s", "d.s", "ok", List.of(), Map.of(),
+                new StandingGate(Map.of(), Map.of(Institution.VILLAGES, Standing.WARY)));
+        var q = new RegardState(false);
+        check(suspicious.visibleTo(java.util.Set.of(), q),
+              "a ceiling admits somebody at the band");
+        q.adjust(Institution.VILLAGES, 30);           // WARY -> KNOWN
+        check(!suspicious.visibleTo(java.util.Set.of(), q),
+              "and closes once they are thought better of");
+
+        // Both ends at once: a window rather than a threshold.
+        var window = new DialogueOption("w", "d.w", "ok", List.of(), Map.of(),
+                new StandingGate(Map.of(Institution.VILLAGES, Standing.KNOWN),
+                                 Map.of(Institution.VILLAGES, Standing.KNOWN)));
+        var r = new RegardState(false);
+        check(!window.visibleTo(java.util.Set.of(), r), "below the window: hidden");
+        r.adjust(Institution.VILLAGES, 30);
+        check(window.visibleTo(java.util.Set.of(), r), "inside the window: shown");
+        r.adjust(Institution.VILLAGES, 45);
+        check(!window.visibleTo(java.util.Set.of(), r), "above the window: hidden again");
+
+        // THE_GHOST is an absence, not a nought. A non-killer's ghost regard reads as
+        // WARY because its value is pinned at zero -- and a gate that accepted that
+        // would show the dead god's private options to people who never met it.
+        var ghostly = new DialogueOption("g", "d.g", "ok", List.of(), Map.of(),
+                new StandingGate(Map.of(Institution.THE_GHOST, Standing.WARY), Map.of()));
+        check(!ghostly.visibleTo(java.util.Set.of(), new RegardState(false)),
+              "a ghost-gated option is hidden from somebody who never killed a god");
+        check(ghostly.visibleTo(java.util.Set.of(), new RegardState(true)),
+              "and shown to the one who did");
+        // Including a CEILING gate, which would otherwise be satisfied by an absence
+        // even more easily than a floor.
+        var ghostCeiling = new DialogueOption("gc", "d.gc", "ok", List.of(), Map.of(),
+                new StandingGate(Map.of(), Map.of(Institution.THE_GHOST, Standing.BELOVED)));
+        check(!ghostCeiling.visibleTo(java.util.Set.of(), new RegardState(false)),
+              "a ghost ceiling is not satisfied by having no ghost");
+
+        // The two gates are ANDed. Passing one is not passing.
+        var both = new DialogueOption("b", "d.b", "ok", List.of("class/theoclast"), Map.of(),
+                new StandingGate(Map.of(Institution.WARDENATE, Standing.TRUSTED), Map.of()));
+        var high = new RegardState(false);
+        high.adjust(Institution.WARDENATE, 45);
+        check(!both.visibleTo(java.util.Set.of(), high), "standing alone is not enough");
+        check(!both.visibleTo(java.util.Set.of("class/theoclast"), new RegardState(false)),
+              "the tag alone is not enough");
+        check(both.visibleTo(java.util.Set.of("class/theoclast"), high), "both together are");
+
+        // The short call must not quietly hide ungated options: a great deal of the
+        // engine has no regard to hand and every ordinary option has to survive that.
+        check(open.visibleTo(java.util.Set.of()),
+              "the tags-only call still shows an option with no standing gate");
     }
 
     /**

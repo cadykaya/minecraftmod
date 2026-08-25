@@ -215,7 +215,19 @@ public final class InterregnumCommand {
             ctx.getSource().sendSuccess(() -> Component.literal("show=none"), false);
             return 0;
         }
-        for (String line : ConversationView.plain(ConversationView.render(t, who, tags))) {
+        // The viewer's standing, looked up by the id they are seated under. Without
+        // this a headless check cannot exercise `standing_at_least` at all -- there
+        // is no client here, and `show` is the only way to see what a player sees.
+        // `peek` so that merely LOOKING at a conversation never creates a record.
+        com.cadykaya.interregnum.core.regard.RegardState regard = null;
+        try {
+            regard = RegardSavedData.get(ctx.getSource().getServer())
+                    .peek(java.util.UUID.fromString(who));
+        } catch (IllegalArgumentException e) {
+            // not a player id; no record to consult, and no gate to satisfy
+        }
+        for (String line
+                : ConversationView.plain(ConversationView.render(t, who, tags, regard))) {
             ctx.getSource().sendSuccess(() -> Component.literal("show| " + line), false);
         }
         return 1;
@@ -402,7 +414,50 @@ public final class InterregnumCommand {
                                     state == null ? "regard=none"
                                             : "regard= " + RegardSavedData.describe(state)), false);
                             return state == null ? 0 : 1;
-                        })));
+                        })
+                        // Moving the record by hand. A gamemaster affordance in the
+                        // same shape as `record deicide` and `unravel at`, and the
+                        // only way a headless check can put a player at a standing
+                        // and then look at what the world offers them -- reaching
+                        // TRUSTED through actual conversation would take a dozen
+                        // scenes that do not exist yet.
+                        //
+                        // Routed through RegardNotices like every other mover, so it
+                        // cannot become a back door that changes standing without the
+                        // player being told. If an admin nudges you into a new band,
+                        // you hear about it exactly as you would have otherwise.
+                        .then(Commands.literal("adjust")
+                                .then(Commands.argument("institution", StringArgumentType.word())
+                                        .then(Commands.argument("delta", com.mojang.brigadier.arguments.IntegerArgumentType.integer(-200, 200))
+                                                .executes(ctx -> {
+                                                    String who = StringArgumentType.getString(ctx, "who");
+                                                    String inst = StringArgumentType.getString(ctx, "institution");
+                                                    int delta = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "delta");
+                                                    java.util.UUID uuid;
+                                                    com.cadykaya.interregnum.core.regard.Institution institution;
+                                                    try {
+                                                        uuid = java.util.UUID.fromString(who);
+                                                        institution = com.cadykaya.interregnum.core.regard.Institution.valueOf(
+                                                                inst.toUpperCase(java.util.Locale.ROOT));
+                                                    } catch (IllegalArgumentException e) {
+                                                        ctx.getSource().sendSuccess(() -> Component.literal(
+                                                                "adjust=none reason=" + e.getMessage()), false);
+                                                        return 0;
+                                                    }
+                                                    var server = ctx.getSource().getServer();
+                                                    var data = RegardSavedData.get(server);
+                                                    int[] moved = new int[1];
+                                                    com.cadykaya.interregnum.system.regard.RegardNotices.around(server, uuid, () -> {
+                                                        moved[0] = data.of(server, uuid)
+                                                                .adjust(institution, delta);
+                                                        data.touch();
+                                                    });
+                                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                                            "adjust= " + institution + " moved=" + moved[0]
+                                                                    + " now=" + data.of(server, uuid)
+                                                                            .standing(institution)), true);
+                                                    return 1;
+                                                }))))));
 
         // Re-issuing the dream. A player who slept through a crash has lost the
         // only scripted delivery this scene has and there is no other way back to

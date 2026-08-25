@@ -8,6 +8,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 
 import com.cadykaya.interregnum.core.dialogue.DialogueOption;
+import com.cadykaya.interregnum.core.regard.RegardState;
 import com.cadykaya.interregnum.core.dialogue.Resolution;
 
 import java.util.ArrayList;
@@ -53,6 +54,20 @@ public final class ConversationView {
      *             not do that: finding out what you could have said is the point.
      */
     public static List<Component> render(Conversations.Table table, String viewer, Set<String> tags) {
+        return render(table, viewer, tags, null);
+    }
+
+    /**
+     * The same view, with the viewer's standing consulted.
+     *
+     * Passing the regard is what makes `standing_at_least` mean anything: without it
+     * a gate is data that loads, validates, and is never read, which is the shape of
+     * a feature that is finished everywhere except where it matters. A null record --
+     * a player with no history, or a caller that genuinely has none -- reads as
+     * default standing rather than as "hide everything".
+     */
+    public static List<Component> render(Conversations.Table table, String viewer,
+                                         Set<String> tags, RegardState regard) {
         List<Component> out = new ArrayList<>();
         var node = table.node();
         out.add(Component.literal("- - - - - - - - - - - - - - - -").withStyle(RULE));
@@ -62,10 +77,10 @@ public final class ConversationView {
                 .append(Component.translatable(node.textKey()).withStyle(LINE)));
 
         for (DialogueOption option : node.options()) {
-            if (!option.visibleTo(tags)) {
+            if (!option.visibleTo(tags, regard)) {
                 continue;
             }
-            boolean gated = !option.requiredTags().isEmpty();
+            boolean gated = !option.requiredTags().isEmpty() || !option.standing().isOpen();
             MutableComponent line = Component.empty()
                     .append(Component.literal("  > ").withStyle(RULE))
                     .append(Component.translatable(option.textKey())

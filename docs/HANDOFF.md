@@ -28,8 +28,39 @@ asserted against a running world rather than against its own source.
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
 | Live-world checks | **15**, every one mutation-verified, all in CI |
-| Regard | recorded, persisted, and now **audible** — bands, never numbers |
+| Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
+
+### What they will and will not say to you
+
+The first thing in the mod that **reads** regard rather than writing it. Until this,
+standing was recorded, persisted, announced -- and consulted by nothing, which is a
+feature finished everywhere except where it matters.
+
+`StandingGate` gives an option a floor, a ceiling, or both:
+
+```json
+{ "id": "attest_for_absent", "standing_at_least": { "WARDENATE": "TRUSTED" } }
+{ "id": "already_filed",     "standing_at_most":  { "WARDENATE": "RESENTED" } }
+```
+
+**The ceiling is not decoration.** Content you *lose* by being liked is what makes
+standing read as a relationship that moved rather than a score that went up. Both are
+live in `warden_intake`: a party the Wardenate trusts may answer for the absent, and
+a party it resents -- and only while it resents them -- may say "Before you ask. Yes.
+It's us.", which sends the unit to `fixate`.
+
+**THE_GHOST is an absence, not a nought.** A non-killer's ghost regard is pinned at
+zero, which reads as WARY, which would satisfy any floor at WARY or below. A gate
+naming THE_GHOST admits only its killer -- otherwise the dead god's private options
+leak to everyone who never met it.
+
+Proved on a live server, not just in core: one player, one node, three standings,
+three different sets of replies (`tools/standing_gate_check.py`). Counting alone would
+not do it -- an implementation that showed both gated options in one render and
+neither in the others has the same totals. `interregnum regard <who> adjust <inst>
+<delta>` is the gamemaster affordance that makes it reachable, and it is routed
+through `RegardNotices` so it cannot become a back door that moves standing silently.
 
 ### Somebody changed their mind about you
 
@@ -644,12 +675,13 @@ In order, all unblocked unless marked:
    Unambiguously in scope meanwhile: **first Warden contact records
    `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
    currently reachable only by command.
-3. **Institutions should ACT on standing.** Half of "let a player feel the regard" is
-   done -- a band crossing now says so, in text with no number (see below). The other
-   half is the world behaving differently once it has an opinion: dialogue options
-   gated on standing, and a Warden's opening line depending on your file. That needs
-   **a dialogue condition type beyond `required_tags`** -- a standing threshold per
-   institution -- which is the concrete next piece of work here.
+3. **A speaker's OPENING LINE by standing.** Options are gated on standing now
+   (`standing_at_least` / `standing_at_most`, see below), which was the piece needing
+   a condition type beyond `required_tags`. What is still missing is the other half
+   of the same idea: a Warden that *opens differently* depending on your file. The
+   shrine-keeper already picks between two scenes (`openingScene()`), so the pattern
+   exists -- it wants generalising into scene selection by standing rather than being
+   re-implemented per entity.
 4. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
    everything it would render is already proven server-side. Chat works meanwhile.

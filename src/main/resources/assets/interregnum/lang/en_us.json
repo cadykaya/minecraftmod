@@ -162,5 +162,7 @@
   "interregnum.regard.the_ghost.known.fall": "The dreams have changed their subject.",
   "interregnum.regard.the_ghost.wary.fall": "You wake with the sense of having been looked at and set aside.",
   "interregnum.regard.the_ghost.resented.fall": "The dreams have begun to repeat one moment, and it is not one you chose.",
-  "interregnum.regard.the_ghost.hated.fall": "There is nothing left to hear from that direction, and the silence has weight."
+  "interregnum.regard.the_ghost.hated.fall": "There is nothing left to hear from that direction, and the silence has weight.",
+  "interregnum.dlg.warden_intake.open.attest_for_absent": "We're present. And we'll answer for the ones who aren't.",
+  "interregnum.dlg.warden_intake.open.already_filed": "Before you ask. Yes. It's us."
 }

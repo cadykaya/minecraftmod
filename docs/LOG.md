@@ -1026,3 +1026,47 @@ And two checks that look like one are not. regard_lines_check proves the lang fi
 covers every crossing -- against a key rule it writes out itself, in Python, a second
 copy of what the Java does. regard_keys_check reads the keys a RUNNING server emitted
 and requires each to resolve. Only the pair of them can catch the two copies drifting.
+
+---
+
+## What they will and will not say to you
+
+Regard has been written for several passes and read by nothing. This is the first
+thing that consults it.
+
+An option can carry a floor, a ceiling, or both. The floor is the obvious half --
+content you earn. The ceiling is the half worth arguing for: content you LOSE by being
+liked is what makes standing read as a relationship that moved rather than a score
+that went up. Both are live in warden_intake now. A party the Wardenate trusts may
+answer for the absent; a party it resents, and only while it resents them, may say
+"Before you ask. Yes. It's us." and be fixated on for it.
+
+THE_GHOST needed its own rule. A non-killer's ghost regard is pinned immovably at
+zero, which reads as WARY, which satisfies any floor at WARY or below -- so a naive
+gate would leak the dead god's private options to everybody who never met it. A gate
+naming THE_GHOST admits only its killer, and that is asserted for ceilings too, where
+an absence satisfies the condition even more easily than it does a floor.
+
+The live check is the part that took thought. The property is not "the option exists",
+it is that THE SAME NODE OFFERS A DIFFERENT SET OF REPLIES to the same player at three
+different standings -- which no single render can show. Counting occurrences would
+pass an implementation that showed both gated options in one render and neither in the
+others; the totals are identical. So tools/standing_gate_check.py parses the sequence
+into three groups and checks each one, and every group must also contain an UNGATED
+reply, or three empty renders would agree with each other perfectly.
+
+Two things the running server corrected.
+
+My first version of the assertion grepped for translation KEYS, on the belief that a
+dedicated server cannot resolve them. It resolves them fine -- the mod's assets are on
+the classpath -- and `talk show` prints finished English. The comment in RegardNotices
+asserting otherwise has been corrected rather than quietly deleted; it was a factual
+claim about the platform and it was wrong.
+
+And the gate needed a way to be reached at all, so `interregnum regard <who> adjust
+<inst> <delta>` exists, in the same shape as `record deicide` and `unravel at`.
+Reaching TRUSTED through actual conversation would take a dozen scenes that do not
+exist yet. It is routed through RegardNotices like every other mover, so it cannot
+become a back door that changes somebody's standing without telling them.
+
+Four new mutations, 28 now, all caught. Self-test 82 -> 99.
