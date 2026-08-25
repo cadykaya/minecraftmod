@@ -162,3 +162,37 @@ first thing enforcing `check_all.sh` anywhere but a local shell. PR #1 had zero 
 before this. Verified the way everything else here is: three real regressions introduced
 in a clean checkout (stale texture, missing lang key, broken doc link), each caught, tree
 restored and green.
+
+---
+
+## Phase 1c — the toolchain, and the first thing that actually runs
+
+Owner set network access to **Full**, and it applied to the running container
+immediately -- the earlier belief that it needed a fresh session was wrong.
+
+**The mod exists.** Builds against NeoForge 26.2.0.67, and a dedicated server boots with
+it loaded (`Done (0.283s)`). Blocks, items, a creative tab, and a datapack-driven dialogue
+loader that turns `data/interregnum/dialogue/*.json` into validated core `DialogueGraph`s
+-- with the Codecs deliberately in the game module so `core/` keeps its zero dependencies.
+
+**Four platform facts were wrong and are now verified rather than remembered:** Java 25
+(not 21), ModDevGradle 2.0.144 (not 2.0.141), no Parchment for 26.2 at all, and pack
+formats 88/107 (a guessed 90 was rejected by the running game). The registration API was
+wrong too and the compiler corrected it. PLATFORM.md now carries a table of every value
+with how it was checked.
+
+**Two more lessons about blind checks (LESSONS #6, #7).** Stopping the server with `pkill`
+left a stale `session.lock`, so the next boot died before loading anything -- and the check
+meant to prove a fix reported "0 = fixed" while measuring nothing. Then the smoke test's
+first log filter ignored an exception's header while flagging its own `Caused by:` lines,
+where the obvious fix would have blinded it permanently. Both became real tools:
+`server_smoke.sh` (clean stdin shutdown, fails if the server never loads) and
+`server_log_check.py` (record-based attribution, a written reason per ignore entry).
+
+**The smoke test asserts content, not just boot.** Verified by removing the only dialogue
+file: the server starts perfectly, logs no errors, and the check now fails with "loaded 0
+dialogue graph(s), expected at least 1". That is `VERIFICATION.md`'s "green tests are not a
+working feature", caught by a test instead of by a player.
+
+CI gained a `game` job that does all of this on every push, with the Minecraft artifacts
+cached.

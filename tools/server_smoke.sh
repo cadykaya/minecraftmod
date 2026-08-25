@@ -69,5 +69,26 @@ echo
 # Attribution is block-based, not line-based -- see tools/server_log_check.py for
 # why a grep gets this wrong and why widening its ignore list is the wrong fix.
 python3 tools/server_log_check.py "$LOG"
+
+# Booting is not loading. A datapack path off by one directory, or content that
+# fails to parse, leaves a server that starts perfectly and contains nothing --
+# the "green tests are not a working feature" failure from docs/VERIFICATION.md.
+# So assert the content is actually there.
 echo
-echo "OK: server booted with the mod loaded, clean shutdown"
+DLG=$(grep -oE 'Loaded [0-9]+ dialogue graph\(s\)' "$LOG" | grep -oE '[0-9]+' | head -1)
+if [ -z "$DLG" ]; then
+    echo "FAIL: the dialogue loader never reported. Was it registered?"
+    exit 1
+fi
+if [ "$DLG" -lt "${EXPECT_DIALOGUE:-1}" ]; then
+    echo "FAIL: loaded $DLG dialogue graph(s), expected at least ${EXPECT_DIALOGUE:-1}"
+    exit 1
+fi
+if grep -q 'rejected)' "$LOG"; then
+    echo "FAIL: some dialogue was rejected at load:"
+    grep -iE 'is invalid and was not loaded' "$LOG" | head -5
+    exit 1
+fi
+echo "content: $DLG dialogue graph(s) loaded, none rejected"
+echo
+echo "OK: server booted, mod loaded, content present, clean shutdown"

@@ -28,6 +28,21 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 13 documents, see [`INDEX.md`](INDEX.md) |
 
+### The toolchain works
+
+`gradle build` produces `build/libs/interregnum-0.1.0.jar` against real NeoForge 26.2.0.67,
+and `tools/server_smoke.sh` boots a dedicated server, waits for load, shuts it down
+cleanly through stdin, and fails if the mod logged anything or if content did not load.
+
+Registered so far: `shrine_stone`, `shrine_stone_carved`, `god_heart`, `clast`, a creative
+tab, and the datapack-driven dialogue loader. The loader is the seam between `core/` and
+the game: Codecs live in the game module so `core` stays dependency-free.
+
+**Every `VERIFY:` marker in PLATFORM.md is now cleared** — see the verified-values table
+there. Markers elsewhere (MODELS.md's item-model system, DATAGEN.md's provider names,
+WORLDGEN.md's schemas) are still open and should be cleared the same way: read the sources
+in `~/.gradle/caches/.../neoforge-26.2.0.67-sources.jar`, never remember.
+
 ### CI
 
 `.github/workflows/checks.yml` runs `tools/check_all.sh` on every push and PR. The
