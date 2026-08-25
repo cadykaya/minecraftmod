@@ -1,9 +1,11 @@
-// 26.2	2026-08-25T15:59:18.534175338	Registries
+// 26.2	2026-08-25T16:58:40.459582729	Registries
 d49e3d876bf025b3b64647f4726ccf79170d102c data/interregnum/dimension/green_authority.json
 fb92f7d31fc33fea9930efff82753e4a3f84e650 data/interregnum/dimension/mass_authority.json
+5861ff596c0d3dc56846ba529ab0df3ff296e0f9 data/interregnum/dimension/temporal_authority.json
 1516b8d4415b2c72417e3c8596b5b10c453c551c data/interregnum/dimension/unresponsive.json
 72d91f20c89eec29361394f23b23d921361e88a0 data/interregnum/dimension_type/green_authority.json
 490b659f61e8cbc8b0dd1ebf38cab7d9c9511c7d data/interregnum/dimension_type/mass_authority.json
+a1b2873ffeb7eb9a0d0d2f8a9dfb4cd4b96f7183 data/interregnum/dimension_type/temporal_authority.json
 b8c0e9cfe38f3825f40b97c6031eb3e780122e5b data/interregnum/dimension_type/unresponsive.json
 363d77ae85c23176e6d16a71764da187f86a767f data/interregnum/neoforge/biome_modifier/add_shrines.json
 6631a20dd8cad8145e769d9a559999ef11fc11d5 data/interregnum/worldgen/configured_feature/shrine.json

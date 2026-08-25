@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **19**, every one mutation-verified, all in CI |
+| Live-world checks | **20**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
@@ -92,6 +92,65 @@ no magic, one is the sleep code and the other is **permitted airspace** (`WORLD.
 unraveling has loosened the limit enough for anybody to break it. Picking a lower ceiling
 to make it findable today would be inventing a rule the world does not have. **Owner's
 call — see "Waiting on owner".**
+
+### The Hearth-Turner's world: nothing is allowed to be over
+
+`interregnum:temporal_authority` — the **fourth and last** god-world surface. All four
+destinations now exist.
+
+**The reuse note is locked and this is it.** `WORLD.md`: *"the block-aging registry
+powering the Turning **is the same system that runs the unraveling.** One mechanism; a
+school and an apocalypse."* So the ageing table uses the unraveling's own
+`ConversionDef` — the same record, the same codec, the same JSON shape, imported rather
+than copied.
+
+**What is *not* shared is the character.** The unraveling's rules carry a band and a
+scope because it escalates and has a frontier. Ageing has neither: it is what time does,
+everywhere, always, at the rate it did yesterday. The overworld is coming apart because
+nobody is holding it. This world is not coming apart at all — it is *accumulating*, and
+will not let any of it go. Same god who *"has never let a grievance become past tense"*,
+expressed in masonry.
+
+**Chains, not jumps.** Stone does not arrive mossy: it is stone, then cobble, then mossy
+cobble, because each rule's `to` is another rule's `from`. Walk back through somewhere
+you built and you can read how long ago you were there off the walls.
+
+**Not the Verdant with different blocks**, and that mattered more than anything else
+here. The Verdant asks vanilla for *more of what it already does* — nothing new happens,
+it happens sooner. Vanilla has **no notion** of stone acquiring moss with age and never
+will. Different mechanism, different feel, and it makes this check *categorical* where
+the Verdant's is statistical: any ageing at all in the overworld is a leak, asserted
+directly rather than as a ratio.
+
+**The bed is the fourth answer and the only permissive one — which is the joke.** Sleep
+works, spawn-setting works, the anchor works, and `has_fixed_time` is on, so the night
+does not pass and none of it achieves anything. The Hearth-Turner refuses you nothing; it
+just will not let go of the time you were trying to skip. This is the one world allowed a
+fixed sky, and the other three were denied one precisely so it would mean something here.
+
+**The claim promise is categorical here**, unlike the Verdant's: ageing applies to the
+block being aged, not to a source reaching a neighbour, so there is no indirect path to a
+claimed block.
+
+`tools/turning_check.sh` has two halves that prove different things. **Deterministic**,
+through a new `interregnum turning age <pos>` seam (same shape as `unravel at` and
+`warden post`): the chain, the claim refusal and the dimension gate — because waiting for
+two independent rolls to land on one block would turn a categorical fact into a
+statistical one for nothing. **Passive**, by waiting: that it happens at all unasked.
+
+Three things it taught:
+
+* The first draft waited 40 seconds for one block at 1 sample/section/tick and got
+  nothing, while the law worked perfectly. The rate is now vanilla's own budget spent on
+  memory instead of growth.
+* **The setup probes must run before the commands that could alter them.** They didn't,
+  so a mutation letting the command age the overworld reported *"no stone was placed in
+  the overworld"* — false, and pointing at the wrong file. A diagnostic that misattributes
+  is not much better than one that doesn't fire.
+* A failure message used **backticks inside a double-quoted string**, so bash ran
+  `interregnum turning age` as a shell command and delivered the failure with its own
+  subject missing — on the failure path only, so exactly when somebody most needed to read
+  it. [`LESSONS.md`](LESSONS.md) #23 with a new way to break the same rule.
 
 ### The Verdant's world: everything grows, and that is the hazard
 
@@ -1094,14 +1153,16 @@ next to each, so the provenance travels with the decision.
 
 **Nothing on this list is waiting on the owner.** In order, all unblocked:
 
-1. **The four destinations.** The ferry sails; there is nowhere to sail to. This is now
-   the single hard gate on the whole mid-game — `FIRST_CROSSING` and `LETTER_DELIVERED`
-   are unreachable without it, and so are chapters 3–5. 26.2 moved dimension rules into
-   a namespaced `attributes` map (see [`WORLDGEN.md`](WORLDGEN.md)), so *"this world
-   obeys the Quiet One"* is a set of declared attributes rather than a pile of special
-   cases — which is most of a god's world for very little code. Start with the Quiet
-   One: its law is the one the ferry already refuses cargo for, so the crossing and the
-   destination check each other.
+1. **The systems, not just the surfaces.** All four destination *surfaces* now exist and
+   each has a law that earns it. What does not exist is what `WORLD.md` actually locks:
+   each god holds a **system** of connected dimensions — *surface · under-layer ·
+   far-layer, joined by that world's own portal logic*. Right now there are four lonely
+   surfaces reachable only by command, so `FIRST_CROSSING` and `LETTER_DELIVERED` are
+   still unreachable and chapters 3–5 are still gated. **The portal logic is the next
+   real gate**, and it is bigger than any single world was.
+
+   Also missing from every one of them: **terrain that is designed**. All four use
+   vanilla noise with one fixed biome, and each file says so in its own javadoc.
 2. **Band 3 — EXODUS.** The same attribute work pointed at the overworld. A patch of
    ground obeying somebody else's law is the same declaration as a dimension obeying it,
    so building the Quiet One's silent hollow gets both the leak and the crossing for

@@ -132,3 +132,6 @@ jobs:
 
       - name: The Verdant's world grows faster than the overworld
         run: ./tools/verdant_check.sh
+
+      - name: The Hearth-Turner's world keeps every past
+        run: ./tools/turning_check.sh

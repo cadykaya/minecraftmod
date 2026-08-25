@@ -557,6 +557,26 @@ public final class InterregnumCommand {
                                     return n;
                                 }))));
 
+        // The Turning, from the console. Ageing is slow on purpose and its most
+        // important property is a CHAIN, so waiting for two rolls to land on one block
+        // would make a categorical fact statistical for nothing. Same seam as
+        // `unravel at` and `warden post`.
+        root = root.then(Commands.literal("turning")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("age")
+                        .then(Commands.argument("at", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos at = BlockPosArgument.getLoadedBlockPos(ctx, "at");
+                                    var became = com.cadykaya.interregnum.system.hearth.Hearth
+                                            .ageOnce(ctx.getSource().getLevel(), at);
+                                    String what = became == null ? "nothing"
+                                            : net.minecraft.core.registries.BuiltInRegistries.BLOCK
+                                                    .getKey(became.getBlock()).toString();
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "turning=" + what), true);
+                                    return became == null ? 0 : 1;
+                                }))));
+
         // The crossing, from the console. A keel is a block a player right-clicks and
         // a headless server has nobody to click it, so this is the seam that makes the
         // whole mechanism reachable from CI -- the same shape as `unravel at` and

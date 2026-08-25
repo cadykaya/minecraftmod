@@ -1,11 +1,11 @@
 """The god-worlds' laws are still the laws.
 
-Three worlds so far, and the most valuable thing this file does is hold them APART.
-All three have an opinion about a bed and all three opinions are different: the Quiet
-One declines to react at all, the Anchorite detonates, the Verdant lets you sleep and
-refuses to hold your spawn. Two booleans and an enum carry most of the difference
-between three gods, they cost nothing to lose in a refactor, and no test looking at one
-dimension alone would notice them converging.
+All four worlds now, and the most valuable thing this file does is hold them APART.
+Every one has an opinion about a bed and no two are the same: the Quiet One declines to
+react at all, the Anchorite detonates, the Verdant lets you sleep and will not hold your
+spawn, the Hearth-Turner allows everything and the night does not pass anyway. Four
+characters carried by two booleans and an enum -- which cost nothing to lose in a
+refactor, and which no test looking at one dimension alone would notice converging.
 
 `tools/crossing_check.sh` proves the Quiet One's world is a separate place with its
 own floor. It cannot prove the thing that makes the place worth crossing to, because
@@ -137,7 +137,37 @@ def green_authority(dt, a):
 
 
 law("mass_authority", mass_authority)
+def temporal_authority(dt, a):
+    """The fourth bed, and the only permissive one -- which is the joke.
+
+    Sleeping passes the night, and the night here does not pass: `has_fixed_time` is
+    on. So the bed works perfectly, does exactly what a bed does, and achieves
+    nothing. The Hearth-Turner refuses you nothing; it simply does not let go of the
+    time you were trying to skip.
+
+    That makes `has_fixed_time` the load-bearing field on this dimension rather than a
+    mood setting, and it is the ONE world allowed to have it -- the other three were
+    denied a fixed sky precisely so it would mean something here."""
+    bed = a.get("minecraft:gameplay/bed_rule")
+    yield ("`bed_rule` is absent, so this world inherits the overworld's",
+           bed is not None)
+    if bed is not None:
+        yield ("you cannot sleep here -- this god refuses nothing",
+               bed.get("can_sleep") == "always")
+        yield ("a bed does not set spawn here -- this god refuses nothing",
+               bed.get("can_set_spawn") == "always")
+        yield ("the bed explodes, which belongs to another god entirely",
+               bed.get("explodes", False) is False)
+    yield ("a respawn anchor does not work here -- this god refuses nothing",
+           a.get("minecraft:gameplay/respawn_anchor_works") is True)
+    yield ("`has_fixed_time` is off. The permissive bed is only a joke because the "
+           "night does not pass; without this the bed simply works and the world has "
+           "lost its point",
+           dt.get("has_fixed_time") is True)
+
+
 law("green_authority", green_authority)
+law("temporal_authority", temporal_authority)
 
 if fails:
     print()
@@ -146,4 +176,4 @@ if fails:
     print(f"\nFAIL: {len(fails)} law violation(s)")
     sys.exit(1)
 
-print("\nOK: nobody answers, nothing holds still, and nothing takes responsibility for you")
+print("\nOK: nobody answers, nothing holds still, nothing takes responsibility for you,\n    and nothing is allowed to be over")

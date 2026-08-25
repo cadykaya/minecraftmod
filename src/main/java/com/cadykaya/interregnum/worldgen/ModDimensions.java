@@ -129,6 +129,18 @@ public final class ModDimensions {
     public static final ResourceKey<net.minecraft.world.level.Level> GREEN_AUTHORITY =
             ResourceKey.create(Registries.DIMENSION, GREEN_AUTHORITY_STEM.identifier());
 
+    /** The Hearth-Turner's surface. */
+    public static final ResourceKey<DimensionType> TEMPORAL_AUTHORITY_TYPE =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "temporal_authority"));
+
+    public static final ResourceKey<LevelStem> TEMPORAL_AUTHORITY_STEM =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "temporal_authority"));
+
+    public static final ResourceKey<net.minecraft.world.level.Level> TEMPORAL_AUTHORITY =
+            ResourceKey.create(Registries.DIMENSION, TEMPORAL_AUTHORITY_STEM.identifier());
+
     /**
      * Deliberately unlike the overworld's -64..320.
      *
@@ -202,6 +214,44 @@ public final class ModDimensions {
                 covered(),
                 HolderSet.empty(),
                 Optional.empty()));
+
+        // The Hearth-Turner's world. Its law is the ageing table -- see
+        // com.cadykaya.interregnum.system.hearth.Hearth.
+        //
+        // The ONE dimension here with a fixed sky, and it is the one god entitled to it.
+        // Stopping the day is a signature the other three had to be denied precisely so
+        // it would mean something when this one used it: a world whose law is keeping
+        // every past does not get to have an afternoon that becomes evening.
+        ctx.register(TEMPORAL_AUTHORITY_TYPE, new DimensionType(
+                true,                               // hasFixedTime
+                true, false, false, 1.0,
+                MIN_Y, HEIGHT, HEIGHT,
+                blocks.getOrThrow(BlockTags.INFINIBURN_OVERWORLD),
+                0.0F,
+                new DimensionType.MonsterSettings(ConstantInt.of(0), 0),
+                DimensionType.Skybox.OVERWORLD,
+                CardinalLighting.Type.DEFAULT,
+                kept(),
+                HolderSet.empty(),
+                Optional.empty()));
+    }
+
+    /**
+     * A bed you can sleep in, that will hold your spawn, and it changes nothing.
+     *
+     * The fourth answer, and the only permissive one — which is the joke. Sleeping
+     * passes the night, and the night here does not pass: `hasFixedTime` is on. So the
+     * bed works perfectly, does exactly what a bed does, and achieves nothing, and the
+     * player has to work out why. The Hearth-Turner does not refuse you anything. It
+     * simply does not let go of the time you were trying to skip.
+     */
+    private static EnvironmentAttributeMap kept() {
+        return EnvironmentAttributeMap.builder()
+                .set(EnvironmentAttributes.BED_RULE,
+                        new BedRule(BedRule.Rule.ALWAYS, BedRule.Rule.ALWAYS, false,
+                                Optional.empty()))
+                .set(EnvironmentAttributes.RESPAWN_ANCHOR_WORKS, true)
+                .build();
     }
 
     /**
@@ -283,6 +333,12 @@ public final class ModDimensions {
                 types.getOrThrow(GREEN_AUTHORITY_TYPE),
                 new NoiseBasedChunkGenerator(
                         new FixedBiomeSource(biomes.getOrThrow(net.minecraft.world.level.biome.Biomes.PLAINS)),
+                        noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
+
+        ctx.register(TEMPORAL_AUTHORITY_STEM, new LevelStem(
+                types.getOrThrow(TEMPORAL_AUTHORITY_TYPE),
+                new NoiseBasedChunkGenerator(
+                        new FixedBiomeSource(biomes.getOrThrow(quietBiome())),
                         noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
     }
 

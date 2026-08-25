@@ -1736,3 +1736,75 @@ asserted directly, with a ceiling set at double the worst measured run.
 
 That is the second time this session a mutation surviving has been worth more than a
 mutation dying. The failure would have been deleting it and claiming the coverage.
+
+## Nothing is allowed to be over
+
+The fourth and last god-world, and the one with the largest risk attached: a fourth
+dimension is where a pantheon becomes wallpaper. `AESTHETIC.md`'s executioner —
+*could I replace it with a different random weird thing without changing anything?* — is
+hardest to survive on the last one, because by then you have three mechanisms and the
+cheapest move is to reuse one with a different table.
+
+Which would have been especially tempting because `WORLD.md` **tells** you to reuse
+something: *"the block-aging registry powering the Turning is the same system that runs
+the unraveling. One mechanism; a school and an apocalypse."*
+
+So this reuses the registry and not the mechanism. The ageing table is the unraveling's
+own `ConversionDef` — same record, same codec, same JSON shape, imported rather than
+copied. What is deliberately *not* shared is the band and the scope, and their absence is
+the character: the unraveling escalates and has a frontier because it is an apocalypse on
+a clock. Ageing has neither. It is what time does, everywhere, always, at the rate it did
+yesterday. The overworld is coming apart because nobody is holding it. This world is not
+coming apart at all — it is accumulating, and it will not let any of it go.
+
+That is the same god that *"has never let a grievance become past tense"*, expressed in
+masonry.
+
+### It also had to not be the Verdant
+
+The Verdant asks vanilla for **more of what it already does**: extra random ticks, so its
+world grows the way any world grows, faster. Nothing new happens there; it happens sooner.
+
+Vanilla has no notion of stone acquiring moss with age and never will. So the Turning
+applies an explicit table, and the chains run through every state rather than jumping:
+stone, then cobble, then mossy cobble, because each rule's `to` is another rule's `from`.
+Walk back through somewhere you built and you can read how long ago you were there off
+the walls. That is what *keeping every past* means when it is a block rather than a
+grievance.
+
+The difference shows up in the checks, which is how you know it is real: the Verdant's
+can only compare **rates**, because grass spreads at home too. The Turning's is
+**categorical** — any ageing in the overworld at all is a leak.
+
+### The bed is the fourth answer and the only permissive one
+
+Four worlds, four opinions about a bed, no two alike. The Quiet One declines to react.
+The Anchorite detonates. The Verdant lets you sleep and will not hold your spawn. The
+Hearth-Turner allows **everything** — sleep, spawn, anchor — and `has_fixed_time` is on,
+so the night does not pass and none of it achieves anything.
+
+It refuses you nothing. It simply will not let go of the time you were trying to skip.
+This is the one world allowed a fixed sky, and the other three were denied one precisely
+so that it would mean something when this one had it.
+
+### Three things the check taught, and two are about failure paths
+
+**The first draft waited forty seconds and got nothing**, while the law worked perfectly.
+One sample per section per tick against 4096 positions is not observable inside any
+window CI will tolerate. The rate is now vanilla's own budget, spent on memory instead of
+growth — and the chain, which needs two separate landings on one block, got a
+deterministic seam (`interregnum turning age`) rather than a longer wait. Waiting for two
+independent rolls would have turned a categorical fact into a statistical one for nothing.
+
+**The setup probes ran after the commands that could alter them.** So a mutation that let
+the command age the overworld made the check report *"no stone was placed in the
+overworld"* — which is false, and points at the wrong file entirely. The probes now run
+first, and the leak is asked as its own direct question. A diagnostic that misattributes
+is not much better than one that does not fire.
+
+**And a failure message used backticks inside a double-quoted string.** Bash ran
+`interregnum turning age` as a shell command, printed "command not found", and delivered
+the failure message with its own subject missing — on the failure path only, so precisely
+when somebody most needed to read it. That is LESSONS #23 (*a failure path must not
+contain anything that can fail*) arriving by a route the original entry did not imagine,
+so it is recorded where it happened rather than as a new lesson.
