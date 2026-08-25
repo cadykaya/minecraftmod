@@ -10,7 +10,7 @@ import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from paintkit import pal, h2, Image, contour, SIZE
 from pngio import write
-from entity_specs import WARDEN
+from entity_specs import WARDEN, KEEPER
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLOCK = os.path.join(REPO, "src/main/resources/assets/interregnum/textures/block")
@@ -299,8 +299,8 @@ def warden_statue_top(seed=31):
 ENTITY = os.path.join(REPO, "src/main/resources/assets/interregnum/textures/entity")
 
 
-def _plate(img, rect, base=2, rim=1):
-    """A panel of worked metal: flat interior, one pixel of darker rim.
+def _plate(img, rect, base=2, rim=1, family="metal"):
+    """A panel: flat interior, one pixel of darker rim.
 
     The rim is what stops a box reading as a flat sticker at distance -- every
     vanilla mob does some version of this, and without it the silhouette is the
@@ -310,7 +310,7 @@ def _plate(img, rect, base=2, rim=1):
     for y in range(y0, y0 + h):
         for x in range(x0, x0 + w):
             edge = x in (x0, x0 + w - 1) or y in (y0, y0 + h - 1)
-            img.set(x, y, pal("metal", rim if edge else base) + (255,))
+            img.set(x, y, pal(family, rim if edge else base) + (255,))
 
 
 def _row(img, rect, ry, colour, margin=1):
@@ -380,8 +380,73 @@ def warden_entity(seed=31):
     return img
 
 
+def shrine_keeper_entity(seed=17):
+    """A person, warm, next to a Warden that is not.
+
+    The palette law does the characterisation on its own. The Warden is HELD -- cool
+    metal, maintained, and the maintenance is what stopped. The keeper is the other
+    side of the same law: earth and bone and wood, WARM, which the palette reserves
+    for what is being spent. That is exactly what they are doing. Somebody is still
+    reconciling a ledger for a reader who is dead, quarterly, and it is costing them.
+    Nobody says so and the colours do not have to.
+
+    No ember anywhere. The ember step is the dead god's, and a living person who
+    happens to be sad is not running on the corpse.
+    """
+    spec = KEEPER
+    img = Image(*spec.sheet)
+    box = {}
+    for part in spec.parts:
+        for i, b in enumerate(part.boxes):
+            key = part.name if i == 0 else f"{part.name}:{i}"
+            box[key] = b.faces()
+
+    # Cloth, not plate: a softer rim than the Warden's, one step rather than two.
+    for name in ("robe_lower", "torso", "right_arm"):
+        for rect in box[name].values():
+            _plate(img, rect, base=1, rim=0, family="earth")
+    for rect in box["head"].values():
+        _plate(img, rect, base=1, rim=0, family="bone")   # skin, lighter than cloth
+
+    # The hood, in the darkest earth: it is what the face sits inside.
+    for rect in box["head:1"].values():
+        _plate(img, rect, base=0, rim=0, family="earth")
+
+    # The face. Two dark eyes and nothing else -- no mouth, because at 16 pixels a
+    # mouth is one ambiguous smudge that reads as an expression the scene has not
+    # earned. The keeper is not sad AT you.
+    #
+    # Row 5, not row 3. The hood is a box over the head's top half, so eyes painted
+    # in the upper rows are geometrically INSIDE it and simply never render -- the
+    # first version produced a hooded figure with a blank pale bandage for a face and
+    # nothing at all to look back with. Paint has to be told where the geometry is.
+    front = box["head"]["north"]
+    fx, fy = front[0], front[1]
+    for ex in (2, 5):
+        img.set(fx + ex, fy + 5, pal("earth", 0) + (255,))
+
+    # The ledger: bone pages, dark board. The one bright thing in the silhouette,
+    # which is the point -- it is why they are here.
+    for rect in box["ledger"].values():
+        _plate(img, rect, base=0, rim=0, family="wood")
+    # Page edges along the bottom of every face a player can actually see. On the
+    # top face alone they were invisible from every angle in the contact sheet --
+    # nobody looks down on a shrine-keeper.
+    for face in ("north", "south", "east", "west"):
+        rect = box["ledger"][face]
+        for x in range(rect[0], rect[0] + rect[2]):
+            for dy in (rect[3] - 2, rect[3] - 1):
+                img.set(x, rect[1] + dy, pal("bone", 2 if x % 2 else 1) + (255,))
+
+    # A belt, so the robe does not read as one poured shape.
+    _row(img, box["torso"]["north"], 8, pal("wood", 0), margin=0)
+    _row(img, box["torso"]["south"], 8, pal("wood", 0), margin=0)
+    return img
+
+
 ASSETS = {
     (ENTITY, "warden"): warden_entity,
+    (ENTITY, "shrine_keeper"): shrine_keeper_entity,
     (BLOCK, "shrine_stone"): shrine_stone,
     (BLOCK, "shrine_stone_carved"): shrine_stone_carved,
     (BLOCK, "stele_side"): stele_side,

@@ -6,6 +6,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import org.slf4j.Logger;
 
 import com.cadykaya.interregnum.content.dialogue.DialogueLoader;
@@ -233,6 +234,45 @@ public final class Conversations {
             }
         }
         return table;
+    }
+
+    /** How far a bystander can stand and still be pulled into a conversation. */
+    public static final double TABLE_RADIUS = 8.0;
+
+    /**
+     * Somebody addresses an entity, and everyone nearby is in it.
+     *
+     * **Everyone within {@link #TABLE_RADIUS} with line of sight is pulled in**, not
+     * just whoever clicked. That is the Star Wars: The Old Republic beat the owner
+     * asked for by name, and it is the only version where the resolution rules mean
+     * anything -- a VOTE node with one player at the table is an INITIATOR node with
+     * extra steps. Standing back, or being behind a wall, is a real way to decline.
+     *
+     * Lives here rather than in either mob because both of them need it and the rule
+     * is about conversations, not about who is speaking.
+     *
+     * **[NEEDS PLAYTEST]** the radius, and the AFK case: somebody pulled in who then
+     * does nothing makes the rest wait out the timeout.
+     */
+    public static void address(ServerPlayer initiator, LivingEntity speaker, Identifier scene) {
+        MinecraftServer server = initiator.level().getServer();
+        if (server == null || of(initiator.getUUID().toString()) != null) {
+            return;
+        }
+        List<String> table = new ArrayList<>();
+        table.add(initiator.getUUID().toString());
+        for (ServerPlayer other : speaker.level().getEntitiesOfClass(ServerPlayer.class,
+                speaker.getBoundingBox().inflate(TABLE_RADIUS))) {
+            String id = other.getUUID().toString();
+            if (other != initiator && speaker.hasLineOfSight(other) && of(id) == null) {
+                table.add(id);
+            }
+        }
+        try {
+            open(server, scene, table, speaker);
+        } catch (IllegalArgumentException e) {
+            initiator.sendSystemMessage(Component.literal(e.getMessage()));
+        }
     }
 
     /**

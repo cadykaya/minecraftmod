@@ -170,4 +170,47 @@ WARDEN = Spec(
     ],
 )
 
-SPECS = {"warden": WARDEN}
+# --- the shrine-keeper -------------------------------------------------------
+#
+# A PERSON, and it has to read as one instantly next to a Warden. Everything about
+# the Warden is cold worked metal on a tall narrow frame under a wide flat mantle;
+# the keeper is short, round-shouldered, hooded in cloth, and warm.
+#
+# The silhouette signature is the LEDGER under one arm -- the same job the Warden's
+# brim does, and the same asymmetry rule. It is the only thing they are carrying and
+# the only reason they are in the mod, so it goes in the outline where a player can
+# read it at distance rather than into paint nobody will ever be close enough to see.
+#
+# Shorter than a player on purpose. The Warden is 2.4 blocks and looks down at you;
+# the keeper is under 2 and does not.
+
+KEEPER = Spec(
+    texture="shrine_keeper",
+    sheet=(64, 64),
+    parts=[
+        Part("robe_lower", (0, 14, 0), [
+            Box(uv=(0, 30), origin=(-4.5, 0, -3.5), size=(9, 10, 7)),
+        ]),
+        Part("torso", (0, 14, 0), [
+            Box(uv=(32, 14), origin=(-4, -11, -3), size=(8, 11, 6)),
+        ]),
+        # Hood and head move together. A hood that stayed put while the head turned
+        # would read as a hat on a swivel, which is the wrong kind of funny.
+        Part("head", (0, 3, 0), [
+            Box(uv=(0, 14), origin=(-4, -8, -4), size=(8, 8, 8)),
+            Box(uv=(0, 0), origin=(-4.5, -9, -4.5), size=(9, 5, 9)),
+        ]),
+        Part("right_arm", (-5.5, 4, 0), [
+            Box(uv=(32, 31), origin=(-1.5, 0, -1.5), size=(3, 9, 3)),
+        ]),
+        Part("left_arm", (5.5, 4, 0), [
+            Box(uv=(32, 31), origin=(-1.5, 0, -1.5), size=(3, 9, 3), mirror=True),
+        ]),
+        # Carried, so it swings with the arm rather than floating beside the body.
+        Part("ledger", (0, 0, 0), [
+            Box(uv=(0, 47), origin=(-3.5, 4, -4.5), size=(7, 5, 7)),
+        ], parent="left_arm"),
+    ],
+)
+
+SPECS = {"warden": WARDEN, "shrine_keeper": KEEPER}

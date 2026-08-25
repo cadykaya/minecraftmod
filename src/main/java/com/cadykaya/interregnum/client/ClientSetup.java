@@ -25,10 +25,14 @@ public final class ClientSetup {
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(WardenRenderer.LAYER, WardenGeometry::createBodyLayer);
+        event.registerLayerDefinition(ShrineKeeperRenderer.LAYER,
+                ShrineKeeperGeometry::createBodyLayer);
     }
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.WARDEN.get(), WardenRenderer::new);
+        event.registerEntityRenderer(ModEntities.SHRINE_KEEPER.get(),
+                ShrineKeeperRenderer::new);
     }
 }

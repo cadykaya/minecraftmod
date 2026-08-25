@@ -73,5 +73,6 @@
   "interregnum.dlg.dream_audience.cost.anyway": "Fine. Give them to me.",
   "interregnum.dlg.dream_audience.cost.no": "Then no.",
   "interregnum.dlg.dream_audience.charged": "Then it is yours.\n\nI will be here. I am afraid I will be here rather a lot.",
-  "interregnum.dlg.dream_audience.decline": "As you like.\n\nDeclining is not a door. I will ask again. I have nothing but time and no way to spend it."
+  "interregnum.dlg.dream_audience.decline": "As you like.\n\nDeclining is not a door. I will ask again. I have nothing but time and no way to spend it.",
+  "entity.interregnum.shrine_keeper": "Shrine-Keeper"
 }

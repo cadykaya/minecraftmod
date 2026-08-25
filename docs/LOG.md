@@ -784,3 +784,37 @@ refused ends with NO RECORD AT ALL, not an empty one. Reading regard cannot crea
 file. An institution's opinion of somebody it has never dealt with is an absence
 rather than a nought, and the check now says so -- my first assertion there expected
 the weaker thing and was wrong.
+
+## The shrine-keeper, in person
+
+The scene written two hours ago has somebody to speak it.
+
+The keeper is the Warden's opposite in every way that shows, and the palette law does
+the characterisation without a word. HELD is cool, SPENT is warm. The Warden is cold
+worked metal on a tall frame under a wide mantle; the keeper is short, hooded in
+cloth, warm brown -- a person still reconciling a ledger for a reader who is dead,
+which is precisely what spending yourself looks like. No ember on them anywhere: that
+step is the dead god's, and a living person who happens to be sad is not running on
+the corpse.
+
+The second entity cost a fraction of the first, which is the point of having built the
+pipeline. Spec, paint, generate, look, fix, look. And LOOKING is what earned it --
+three faults that no amount of reasoning about the numbers had surfaced:
+
+* the hood is a box over the head's top half, so eyes painted in the upper rows were
+  geometrically INSIDE it and never rendered at all. What came out was a hooded figure
+  with a blank pale bandage for a face and nothing to look back with.
+* the ledger -- the entire silhouette signature -- disappeared in profile, sitting at
+  exactly the torso's depth.
+* its page edges were painted on the top face only, which nobody ever sees on a mob
+  under two blocks tall.
+
+All three are the same mistake in different clothes: paint placed without asking where
+the geometry actually is.
+
+Killing a keeper costs VILLAGES -25, and only when a player did it. WORLD.md says
+regard moves on choices AND deeds, and until now only choices moved it -- which
+quietly taught the opposite lesson, that the only thing anybody is ever judged on is
+dialogue. A death by no player's hand costs nobody, and the check proves that half
+rather than the half it cannot reach: with no players on a headless server, the murder
+charge itself is unverifiable here, and the fairness guarantee is the part that is.

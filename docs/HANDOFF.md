@@ -28,6 +28,39 @@ asserted against a running world rather than against its own source.
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
 | Live-world checks | **15**, every one mutation-verified, all in CI |
+| Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
+
+### The shrine-keeper, in person
+
+The written scene has somebody to speak it. `shrine_keeper` is reachable in game.
+
+The keeper is the Warden's opposite in every way that shows, and the palette does the
+characterisation with no words at all: HELD is cool, SPENT is warm. The Warden is cold
+worked metal on a tall frame under a wide mantle. The keeper is short, hooded in
+cloth, warm brown — a person still reconciling a ledger for a reader who is dead,
+which is exactly what "spent" means. **No ember anywhere on them**; that step belongs
+to the dead god, and a living person who happens to be sad is not running on the
+corpse.
+
+The silhouette signature is the **ledger** under one arm, doing the job the Warden's
+brim does. It is the only thing they carry and the only reason they are in the mod,
+so it goes in the outline rather than into paint nobody will be close enough to read.
+
+**The second entity cost a fraction of the first.** `entity_specs.py` +
+`gen_resources.py` + `entity_view.py` meant spec, paint, generate, look, fix, look —
+and looking caught three things reasoning had not: the hood was geometrically covering
+the eyes (a hooded figure with a blank pale bandage for a face), the ledger vanished
+in profile, and its page edges were painted only on the top face, which nobody ever
+sees on a mob under two blocks tall.
+
+Killing one costs **VILLAGES −25**, and only when a *player* did it. `WORLD.md` says
+regard moves on choices **and deeds**, and until now only choices moved it — which
+quietly taught the opposite. Charging somebody for a creeper's work is the kind of
+unfairness that teaches people never to walk near an NPC again, so the check proves
+a death by no player's hand costs nobody.
+
+**Still missing: anything that places one.** Both mobs exist and can be summoned;
+worldgen does not put a keeper at a shrine yet.
 
 ### The Haunt begins
 
@@ -539,11 +572,11 @@ In order, all unblocked unless marked:
    Unambiguously in scope meanwhile: **first Warden contact records
    `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
    currently reachable only by command.
-3. **Reach the shrine-keeper.** `dream_audience` is delivered (see "The Haunt
-   begins"); `shrine_keeper` still has nothing in the game that opens it. It wants
-   an NPC at a shrine, and that is the one genuinely open question here: a new entity
-   costs a whole art pass (spec, texture, geometry, renderer -- the Warden's path),
-   while a vanilla villager would hijack trading. **Worth deciding before building.**
+3. **Place a keeper at each shrine.** Both scenes are now reachable *if you can find
+   somebody to talk to*, and nothing puts a keeper anywhere. `ShrineFeature` already
+   builds the shrine and knows where its offering box is; spawning one keeper beside
+   it at worldgen is the obvious move, and `tools/shrine_rate_probe.sh` already
+   measures how often that happens.
 4. **Let a player feel the regard.** It is recorded, persisted and invisible.
    Deliberately no meter -- but a *band change* is a relationship event and is worth
    surfacing as text with no number ("The Wardenate has noticed you."). That needs a
