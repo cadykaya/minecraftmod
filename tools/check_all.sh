@@ -39,7 +39,7 @@ echo "== generated assets current =="
 # that regeneration itself changes are stale committed output. Reporting "stale"
 # when the real cause is "you have not committed yet" is how a check earns a
 # reputation for crying wolf, and a check people ignore is worse than none.
-WATCH="src/main/resources assets/palette.json"
+WATCH="src/main/resources src/generated/resources assets/palette.json"
 TMPB=$(mktemp); TMPA=$(mktemp)
 trap 'rm -f "$TMPB" "$TMPA"' EXIT
 git status --porcelain -- $WATCH | awk '{print $2}' | sort > "$TMPB"

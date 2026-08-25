@@ -28,6 +28,19 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 13 documents, see [`INDEX.md`](INDEX.md) |
 
+### Datagen works
+
+`gradle runServerData` regenerates every JSON this mod ships into `src/generated/resources`
+(committed, and separate from hand-authored resources so a diff shows at a glance which is
+which). The run type is **`serverData`**, not `data`, and `--mod <id>` is **required** —
+without it the gatherer logs `Initializing Data Gatherer for mods []` and dies with an
+unrelated-looking `RejectedExecutionException`.
+
+**Owner's creative call, delegated and taken:** carved shrine stone drops *plain* shrine
+stone. You may take the stone; you may never take the word. It is unannounced, it teaches
+that the god-script is not a material before any lore exists, and it makes carved stone
+found-only — which turns "learning to inscribe" into a real Theoclast reward later.
+
 ### The toolchain works
 
 `gradle build` produces `build/libs/interregnum-0.1.0.jar` against real NeoForge 26.2.0.67,
@@ -176,11 +189,7 @@ carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
 
 In order, all unblocked unless marked:
 
-1. **Loot tables.** `registry_check.py` warns that all three blocks drop nothing when
-   mined. This needs datagen, which needs `DATAGEN.md`'s `VERIFY:` markers cleared against
-   the real provider API first. Highest-value next task: it is a real player-facing bug
-   today, and it unblocks every future block.
-2. **The shrine structure**, so steles and shrine stone actually appear in a world — a
+1. **The shrine structure**, so steles and shrine stone actually appear in a world — a
    jigsaw or NBT structure plus a placement. Until this exists, Chapter 0 has no presence.
 3. **The heart in loot**, and the deicide event: sky change, crater, statues wake. The
    core `ChapterState` exists and is tested; it needs a `SavedData` wrapper (codec-based

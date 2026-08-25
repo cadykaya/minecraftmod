@@ -119,6 +119,13 @@ Putting a handler on the wrong bus means it silently never fires. **This is the 
 common "my code doesn't run" cause after the client/server split**, and it produces no
 error at all — the game just behaves as though the handler is not there.
 
+> **Corrected against 26.2.0.67.** `@EventBusSubscriber` no longer takes a `bus` parameter
+> — its only members are `value()` (a `Dist[]`) and `modid()`. **Which bus a handler lands
+> on is inferred from the event type**, so `GatherDataEvent.Server` routes to the mod bus
+> on its own and nothing needs to say so. Every pre-2026 tutorial writes
+> `bus = Bus.MOD`, and that no longer compiles. The distinction between the buses is still
+> real and still matters; only the way you *declare* it changed.
+
 **Handler discipline:**
 
 - Game-bus handlers run **very often**. A hot handler doing allocation or a lookup per tick

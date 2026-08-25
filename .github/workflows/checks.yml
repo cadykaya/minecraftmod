@@ -70,5 +70,11 @@ jobs:
       - name: Build the mod
         run: gradle --no-daemon --console=plain build
 
+      - name: Regenerate data and fail if the committed output is stale
+        run: |
+          gradle --no-daemon --console=plain runServerData
+          git diff --exit-code -- src/generated/resources \
+            || { echo "::error::Generated data is stale. Run 'gradle runServerData' and commit."; exit 1; }
+
       - name: Boot a dedicated server and check its log
         run: ./tools/server_smoke.sh

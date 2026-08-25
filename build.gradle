@@ -18,6 +18,11 @@ java {
 // srcDir rather than a project dependency.
 sourceSets.main.java.srcDirs += ['core/src/main/java']
 
+// Generated resources live in their own tree so that "written by a person" and
+// "written by runServerData" are visible at a glance in any diff. Both are
+// committed and both ship (docs/DATAGEN.md).
+sourceSets.main.resources.srcDirs += ['src/generated/resources']
+
 neoForge {
     version = project.neo_version
 
@@ -28,6 +33,23 @@ neoForge {
     runs {
         client { client() }
         server { server() }
+        // `gradle runServerData` regenerates every JSON this mod ships. Output goes
+        // to src/main/resources and is committed; check_all.sh fails if it is stale.
+        //
+        // The run type is serverData, not data: MDG's types are
+        // [client, clientData, serverData, gameTestServer, server, junit], and our
+        // providers subscribe to GatherDataEvent.Server. A clientData run would be
+        // needed for models/lang if those were generated, which they are not yet
+        // (docs/MODELS.md: the item-model system's 26.x shape is still unverified).
+        serverData {
+            serverData()
+            // --mod is REQUIRED: without it the gatherer logs
+            // "Initializing Data Gatherer for mods []" and generates nothing while
+            // failing with an unrelated-looking RejectedExecutionException.
+            programArguments.addAll '--mod', project.mod_id, '--all',
+                    '--output', file('src/generated/resources').absolutePath,
+                    '--existing', file('src/main/resources').absolutePath
+        }
     }
 
     mods {

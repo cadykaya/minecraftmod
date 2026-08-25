@@ -22,6 +22,7 @@ import sys
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = os.path.join(REPO, "src/main/resources/assets/interregnum")
 D = os.path.join(REPO, "src/main/resources/data/interregnum")
+GEN = os.path.join(REPO, "src/generated/resources/data/interregnum")
 REG = os.path.join(REPO, "src/main/java/com/cadykaya/interregnum/registry")
 
 fails, warns = [], []
@@ -88,8 +89,11 @@ def check_blocks(lang):
                     fails.append(f"block {n}: model {mid} references missing texture {tex}")
         if f"block.interregnum.{n}" not in lang:
             fails.append(f"block {n}: no translation key (renders as the raw key in game)")
-        if not os.path.exists(os.path.join(D, "loot_table/blocks", n + ".json")):
-            warns.append(f"block {n}: no loot table -- it will drop nothing when mined")
+        loot = [os.path.join(GEN, "loot_table/blocks", n + ".json"),
+                os.path.join(D, "loot_table/blocks", n + ".json")]
+        if not any(os.path.exists(p) for p in loot):
+            fails.append(f"block {n}: no loot table -- it will drop nothing when mined. "
+                         f"Run `gradle runServerData`.")
     return names
 
 

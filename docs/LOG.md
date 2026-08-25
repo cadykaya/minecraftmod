@@ -219,3 +219,33 @@ already churned under this project in one session.
 
 Loot tables are now the top of the queue -- three blocks currently drop nothing when mined,
 which is a real player-facing bug the new check surfaced immediately.
+
+---
+
+## Phase 1e — datagen, and the first design decision made in code
+
+Owner approved the art ("super minecrafty" -- which is exactly what ARTSTYLE's
+vanilla-adjacency rules exist to produce) and delegated the loot question outright.
+
+**The answer taken:** plain shrine stone drops itself, because the world not stopping you
+from taking the god's things *is* the opening -- a shrine you were forbidden to touch could
+never have been looted. But **carved shrine stone drops plain stone.** You may take the
+stone; you may never take the word. Nothing announces it. A player mines an inscribed block,
+gets an uninscribed one, and learns before any lore exists that the script is not a
+decoration and not a material. It also makes carved stone found-only, which turns the
+ability to inscribe into a genuine Theoclast reward much later. Steles drop themselves,
+because a warning you can carry is a warning you can misplace, and on a server that is an
+interesting thing for someone to do.
+
+**Datagen works.** Two API corrections, both from the running tool rather than memory:
+the MDG run type is `serverData` (the error helpfully lists the valid set), and `--mod <id>`
+is required -- without it the gatherer reports `for mods []` and dies with a
+`RejectedExecutionException` that names nothing relevant. Output goes to
+`src/generated/resources`, committed and visibly separate from hand-authored resources.
+
+**A third API correction:** `@EventBusSubscriber` in 26.2 has only `value()` and `modid()`
+-- there is no `bus` parameter; the bus is inferred from the event type. Every pre-2026
+tutorial writes `bus = Bus.MOD` and it no longer compiles. `ARCHITECTURE.md` corrected.
+
+`registry_check.py`'s loot warning is now a hard failure, since something generates them.
+CI's game job regenerates data and fails on a dirty tree.
