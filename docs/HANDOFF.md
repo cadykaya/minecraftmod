@@ -27,7 +27,30 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **14**, every one mutation-verified, all in CI |
+| Live-world checks | **15**, every one mutation-verified, all in CI |
+
+### The Haunt begins
+
+The dead god now reaches its killer. Sleep, and it is there.
+
+`TheHaunt.offer` is the whole feature and every clause is a way the beat goes wrong:
+nothing haunts anybody while the god is alive; **only the killer**, because this is
+the ghost's private conversation and an admin with good intentions must not be able
+to hand it to somebody else; once, because that is what "first dream-audience" means;
+and a player already at a table is deferred rather than evicted -- **without spending
+the one dream**, so a coincidence of timing cannot cost them the scene.
+
+Delivered by `PlayerWakeUpEvent`, on waking rather than on lying down: the
+conversation needs somebody conscious enough to answer, and Minecraft's sleep is a
+skip rather than a duration. What the player gets is the dream they just had.
+
+The handler is three lines because a headless server has no sleeping players.
+`/interregnum haunt dream <uuid> [force]` is the second legitimate caller -- and a
+real tool: a player who slept through a crash has lost the only scripted delivery
+this scene has. `tools/haunt_check.sh`, four mutations, four caught.
+
+`Milestone.HAUNT_OPENED` is deliberately **not** a chapter prerequisite: the Haunt is
+a thread, not a gate, and a killer who never sleeps must not stall the whole world.
 
 ### Conversations have consequences
 
@@ -516,12 +539,11 @@ In order, all unblocked unless marked:
    Unambiguously in scope meanwhile: **first Warden contact records
    `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
    currently reachable only by command.
-3. **Reach the two new scenes.** `shrine_keeper` and `dream_audience` are written
-   and play correctly, and **nothing in the game opens either one**. Neither needs
-   new scope: a shrine-keeper wants a villager profession or a placed NPC at a
-   shrine, and the dream-audience wants a sleep trigger on the killer (a
-   `PlayerWakeUpEvent`-shaped hook checking `ChapterSavedData#killer`) that fires
-   once. Both are thin adapters over `Conversations.open`, which is tested.
+3. **Reach the shrine-keeper.** `dream_audience` is delivered (see "The Haunt
+   begins"); `shrine_keeper` still has nothing in the game that opens it. It wants
+   an NPC at a shrine, and that is the one genuinely open question here: a new entity
+   costs a whole art pass (spec, texture, geometry, renderer -- the Warden's path),
+   while a vanilla villager would hijack trading. **Worth deciding before building.**
 4. **Let a player feel the regard.** It is recorded, persisted and invisible.
    Deliberately no meter -- but a *band change* is a relationship event and is worth
    surfacing as text with no number ("The Wardenate has noticed you."). That needs a

@@ -13,6 +13,15 @@ public enum Milestone {
     WARDEN_CONTACT,
     /** A clast was attuned: the first Theoclast exists. */
     FIRST_ATTUNEMENT,
+    /**
+     * The dead god has spoken to its killer for the first time.
+     *
+     * Not a chapter prerequisite, and deliberately so: the Haunt is a thread rather
+     * than a gate, and a killer who never sleeps must not be able to stall the whole
+     * world's progression. It is recorded here because "once, forever, server-wide"
+     * is exactly what a milestone is, and there is only ever one killer to haunt.
+     */
+    HAUNT_OPENED,
     /** The ferry was recommissioned and made one crossing. */
     FIRST_CROSSING,
     /** A god's letter was delivered. Repeatable across gods; see LettersDelivered. */

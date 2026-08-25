@@ -4,6 +4,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -31,6 +32,26 @@ public final class ConversationEvents {
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
         Conversations.tick(event.getServer());
+    }
+
+    /**
+     * Sleep is when the dead god can reach its killer.
+     *
+     * On WAKING rather than on lying down: the conversation needs somebody conscious
+     * enough to answer it, and Minecraft's sleep is a skip rather than a duration.
+     * What the player gets is the dream they just had, which is how dream scenes
+     * work everywhere else too.
+     *
+     * Three lines, because every decision is in {@link TheHaunt#offer} where a
+     * command can reach it -- a headless server has no sleeping players and this
+     * handler would otherwise be the only path to a [LOCKED] headline beat.
+     */
+    @SubscribeEvent
+    public static void onWakeUp(PlayerWakeUpEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player
+                && player.level().getServer() != null) {
+            TheHaunt.offer(player.level().getServer(), player.getUUID(), false);
+        }
     }
 
     @SubscribeEvent

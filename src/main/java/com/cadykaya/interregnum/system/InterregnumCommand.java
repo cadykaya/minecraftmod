@@ -20,6 +20,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import com.cadykaya.interregnum.core.dialogue.Resolution;
 import com.cadykaya.interregnum.system.dialogue.Conversations;
 import com.cadykaya.interregnum.system.dialogue.ConversationView;
+import com.cadykaya.interregnum.system.dialogue.TheHaunt;
 
 /**
  * `/interregnum` -- read and drive the world's progress.
@@ -206,6 +207,22 @@ public final class InterregnumCommand {
         return 1;
     }
 
+    private static int haunt(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
+                            boolean force) {
+        String who = StringArgumentType.getString(ctx, "who");
+        java.util.UUID uuid;
+        try {
+            uuid = java.util.UUID.fromString(who);
+        } catch (IllegalArgumentException e) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "haunt=refused reason=not a player id"), false);
+            return 0;
+        }
+        var outcome = TheHaunt.offer(ctx.getSource().getServer(), uuid, force);
+        ctx.getSource().sendSuccess(() -> Component.literal("haunt=" + outcome), true);
+        return outcome == TheHaunt.Outcome.OPENED ? 1 : 0;
+    }
+
     private static int start(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
                              net.minecraft.world.entity.Entity speaker) {
         var id = net.minecraft.commands.arguments.IdentifierArgument.getId(ctx, "scene");
@@ -358,6 +375,19 @@ public final class InterregnumCommand {
                                             : "regard= " + RegardSavedData.describe(state)), false);
                             return state == null ? 0 : 1;
                         })));
+
+        // Re-issuing the dream. A player who slept through a crash has lost the
+        // only scripted delivery this scene has and there is no other way back to
+        // it. `force` skips the once-only check and nothing else -- an admin with
+        // good intentions still cannot hand the ghost's private conversation to
+        // somebody who did not kill it.
+        root = root.then(Commands.literal("haunt")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("dream")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .executes(ctx -> haunt(ctx, false))
+                                .then(Commands.literal("force")
+                                        .executes(ctx -> haunt(ctx, true))))));
 
         root = root.then(talk());
 

@@ -111,3 +111,6 @@ jobs:
 
       - name: People carry what they said, and a deicide leaves a mark
         run: ./tools/regard_check.sh
+
+      - name: The dead god reaches its killer, once
+        run: ./tools/haunt_check.sh

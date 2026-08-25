@@ -751,3 +751,36 @@ every number stayed legal. LESSONS #20, and the second half of that lesson is th
 that matters: a single reload showed -55, which reads like an off-by-something. It takes
 the SECOND reload, showing -65, to prove the record is walking rather than merely wrong.
 The check boots three times now.
+
+## The Haunt begins
+
+The dead god reaches its killer now. Sleep, and it is there.
+
+The gate is the feature, and every clause in it is a way the beat goes wrong. Nothing
+haunts anybody while the god is alive. Only the killer -- this is the ghost's private
+conversation, and an admin with good intentions must not be able to hand it to
+somebody else. Once, because that is what "first dream-audience" means. And a player
+already at a table is deferred rather than evicted, *without spending the dream*, so a
+coincidence of timing cannot cost them the only scripted delivery the scene has.
+
+That last clause is the one worth having written a check for. A deferral that quietly
+recorded the milestone would be invisible: the player sleeps, nothing happens, and
+nothing ever happens again. The check proves it by counting openings -- one after a
+deferral, one forced -- so a BUSY that spent the milestone leaves only one and fails
+by name.
+
+It fires on WAKING rather than on lying down. The conversation needs somebody
+conscious enough to answer it, and Minecraft's sleep is a skip rather than a duration,
+so what the player gets is the dream they just had.
+
+The handler is three lines. Everything else lives where a command can reach it,
+because a headless server has no sleeping players and this would otherwise be a
+[LOCKED] headline beat with no way to test it at all -- the same arrangement as the
+deicide, for the same reason, and `haunt dream ... force` is a real tool besides: a
+player who slept through a crash has no other route back to the scene.
+
+One small thing found by asserting it: a bystander who is offered the dream and
+refused ends with NO RECORD AT ALL, not an empty one. Reading regard cannot create a
+file. An institution's opinion of somebody it has never dealt with is an absence
+rather than a nought, and the check now says so -- my first assertion there expected
+the weaker thing and was wrong.
