@@ -68,21 +68,24 @@ overturn them on grounds rather than taste.
 
 ## Waiting on owner
 
-1. **Network allowlist — BLOCKS THE ACTUAL MOD BUILD.** This environment's egress proxy
-   blocks the NeoForge/Mojang toolchain. In the Claude Code environment settings, allow:
+1. **Network allowlist — BLOCKS THE ACTUAL MOD BUILD.** The egress proxy denies the
+   NeoForge/Mojang toolchain: `curl` reports `CONNECT tunnel failed, response 403` and the
+   proxy logs `connect_rejected ... policy denial` per host. Needed:
    `maven.neoforged.net`, `libraries.minecraft.net`, `piston-meta.mojang.com`,
-   `piston-data.mojang.com`, `resources.download.minecraft.net`, `maven.parchmentmc.org`,
-   and (already open) `services.gradle.org` + Maven Central. Until then, work continues on
-   everything loader-independent.
-2. **License** (`mod_license` in `gradle.properties`). Owner's call. Common picks: MIT
-   (permissive, packs and forks welcome) or ARR (all rights reserved). Not blocking dev;
-   blocking any public release.
-3. **A `main` branch.** The repo's only branch is the dev branch, so no PR can exist.
-   If review-by-PR is wanted: create `main` on GitHub (or say the word and it will be
-   created from the current dev head) and PRs start flowing. If not, work continues on
-   the dev branch alone.
-4. **Playtesting.** This container has no game client. When Phase 1 compiles, the owner
+   `piston-data.mojang.com`, `resources.download.minecraft.net`, `maven.parchmentmc.org`.
+   (`services.gradle.org` and Maven Central already pass.)
+
+   **The owner reports having allowed these; this container still denies them.** Network
+   policy is applied at container start, so an already-running session keeps the old
+   policy. **Re-probe at the start of each new session** with:
+   `curl -sS -m 20 -o /dev/null -w "%{http_code}" https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml`
+   — `200` means unblocked; go straight to task "NeoForge game module". Do not ask the
+   owner to change the setting again unless a fresh session still fails.
+2. **Playtesting.** This container has no game client. When Phase 1 compiles, the owner
    is the playtester; the handoff will say exactly what to look at.
+
+**Answered:** license is **MIT** (`LICENSE`, `gradle.properties`). `main` branch exists;
+work flows to `claude/minecraft-mod-dev-rp0x8j` and PRs into `main`.
 
 ## Open questions
 
