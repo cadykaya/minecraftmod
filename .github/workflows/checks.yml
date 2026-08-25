@@ -90,3 +90,6 @@ jobs:
 
       - name: The heart is findable once and only once
         run: ./tools/heart_check.sh
+
+      - name: The ground gives way without eating anyone's house
+        run: ./tools/crater_check.sh

@@ -51,8 +51,13 @@ public final class InterregnumCommand {
                         // DEICIDE is not just a milestone -- it has consequences, and
                         // they live in exactly one place so this path and the pickup
                         // path can never drift apart.
+                        // The command runs somewhere, so it has a site -- which is
+                        // what makes the crater reachable on a headless server.
                         boolean isNew = (m == Milestone.DEICIDE)
-                                ? Deicide.commit(ctx.getSource().getServer(), null)
+                                ? Deicide.commit(ctx.getSource().getServer(), null,
+                                        ctx.getSource().getLevel(),
+                                        net.minecraft.core.BlockPos.containing(
+                                                ctx.getSource().getPosition()))
                                 : data.record(m);
                         ctx.getSource().sendSuccess(() -> Component.literal(
                                 (isNew ? "recorded " : "already recorded ") + m.name()

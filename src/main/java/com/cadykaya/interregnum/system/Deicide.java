@@ -2,6 +2,9 @@ package com.cadykaya.interregnum.system;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.gamerules.GameRules;
@@ -35,6 +38,15 @@ public final class Deicide {
      * @return true if this call is what did it.
      */
     public static boolean commit(MinecraftServer server, UUID killer) {
+        return commit(server, killer, null, null);
+    }
+
+    /**
+     * @param level where it happened, or null if nowhere in particular.
+     * @param site  the block it happened at, or null.
+     */
+    public static boolean commit(MinecraftServer server, UUID killer,
+                                 ServerLevel level, BlockPos site) {
         ChapterSavedData data = ChapterSavedData.get(server);
         if (!data.record(Milestone.DEICIDE)) {
             return false;
@@ -51,8 +63,12 @@ public final class Deicide {
         //
         // NB: the rule is ADVANCE_TIME in 26.x. `doDaylightCycle` was renamed along
         // with most of the gamerule set, so every pre-2026 reference to it is wrong.
-        for (ServerLevel level : server.getAllLevels()) {
-            level.getGameRules().set(GameRules.ADVANCE_TIME, false, server);
+        for (ServerLevel each : server.getAllLevels()) {
+            each.getGameRules().set(GameRules.ADVANCE_TIME, false, server);
+        }
+
+        if (level != null && site != null) {
+            formCrater(level, site);
         }
 
         LOG.info("Deicide committed{}; the daylight cycle has stopped.",
@@ -60,8 +76,73 @@ public final class Deicide {
         return true;
     }
 
-    /** Where the heart was taken from, for the crater. Unused until the crater exists. */
-    public static void markSite(ServerLevel level, BlockPos pos) {
-        LOG.info("Deicide site recorded at {} in {}", pos, level.dimension().identifier());
+    /** How wide and deep the ground gives up. */
+    private static final int CRATER_RADIUS = 6;
+
+    /**
+     * The ground gives up where the heart was taken.
+     *
+     * NOT an explosion -- nothing detonated. A god died and the world stopped being
+     * held up in that spot, so it **subsides**: a quiet bowl, no fire, no scorching,
+     * no sound. Subsidence is also far cheaper than an explosion and does not throw
+     * blocks or hurt anything standing nearby, which matters because the person
+     * standing nearby is the one who just did it and the mod is not punishing them.
+     *
+     * **Only natural ground moves.** Anything a player put there stays exactly where
+     * it is -- see {@link #isNaturalGround}. That is `WORLD.md`'s standing guarantee
+     * that the world may warp but a player's work may not, and it produces the image
+     * this beat wants anyway: a house at the shrine is left hanging over a pit,
+     * untouched and no longer resting on anything.
+     */
+    public static void formCrater(ServerLevel level, BlockPos centre) {
+        int removed = 0, spared = 0;
+        BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
+        for (int dx = -CRATER_RADIUS; dx <= CRATER_RADIUS; dx++) {
+            for (int dz = -CRATER_RADIUS; dz <= CRATER_RADIUS; dz++) {
+                for (int dy = -CRATER_RADIUS; dy <= 1; dy++) {
+                    // A bowl: the lower half of a sphere, plus one course above so
+                    // the lip is clean rather than a ring of half-buried blocks.
+                    if (dx * dx + dy * dy + dz * dz > CRATER_RADIUS * CRATER_RADIUS) {
+                        continue;
+                    }
+                    p.set(centre.getX() + dx, centre.getY() + dy, centre.getZ() + dz);
+                    if (level.isOutsideBuildHeight(p)) {
+                        continue;
+                    }
+                    BlockState state = level.getBlockState(p);
+                    if (state.isAir()) {
+                        continue;
+                    }
+                    if (!isNaturalGround(state)) {
+                        spared++;
+                        continue;
+                    }
+                    level.setBlock(p, Blocks.AIR.defaultBlockState(), 3);
+                    removed++;
+                }
+            }
+        }
+        LOG.info("The ground gave way at {}: {} blocks subsided, {} left standing.",
+                centre, removed, spared);
+    }
+
+    /**
+     * Is this block part of the world, rather than part of somebody's work?
+     *
+     * Tag-based and deliberately narrow. Minecraft does not record who placed a
+     * block, so this errs toward sparing: an unlisted block is left alone. Sparing
+     * a natural block leaves a slightly lumpy crater; removing a placed one deletes
+     * something a person made, and only one of those is recoverable.
+     */
+    private static boolean isNaturalGround(BlockState state) {
+        return state.is(BlockTags.DIRT)
+                || state.is(BlockTags.BASE_STONE_OVERWORLD)
+                || state.is(BlockTags.SAND)
+                || state.is(BlockTags.TERRACOTTA)
+                || state.is(Blocks.GRAVEL)
+                || state.is(Blocks.CLAY)
+                || state.is(BlockTags.LEAVES)
+                || state.is(BlockTags.LOGS)
+                || state.is(BlockTags.REPLACEABLE);
     }
 }

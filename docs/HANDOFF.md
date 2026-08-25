@@ -28,6 +28,23 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 13 documents, see [`INDEX.md`](INDEX.md) |
 
+### The ground gives way
+
+The crater is **subsidence, not an explosion** -- nothing detonated; a god died and the
+world stopped being held up there. No fire, no scorching, no thrown blocks, and nobody is
+hurt, which matters because the person standing next to it is the one who just did it and
+the mod is not punishing them.
+
+**Only natural ground moves.** Minecraft does not record who placed a block, so a narrow tag
+whitelist decides, and it errs toward sparing: an unlisted block is left alone. A slightly
+lumpy crater is cosmetic; a deleted house is somebody quitting. The image this produces is
+the one the beat wanted anyway -- a house at the shrine left hanging over a pit, untouched
+and no longer resting on anything.
+
+`tools/crater_check.sh` proves both halves and is mutation-verified: removing the whitelist
+fails with the list of destroyed player blocks; removing the crater fails with "the ground
+did not subside".
+
 ### Chapter 0 is playable end to end
 
 Shrines generate with an **offering box** standing on the carved centre stone --
@@ -264,13 +281,15 @@ carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
 
 In order, all unblocked unless marked:
 
-1. **More consequences.** The sun stopping is the first band. Still to come: the crater at
-   the site (`Deicide.markSite` is a stub), Warden statues waking, and the unraveling bands
-   already defined in data being applied.
-3. **The heart in loot**, and the deicide event: sky change, crater, statues wake. The
-   core `ChapterState` exists and is tested; it needs a `SavedData` wrapper (codec-based
-   in 26.2 — see `SavedDataType`) and the event that records `Milestone.DEICIDE`.
-4. **Warden statue → entity.** The biggest single art+code item in Phase 1.
+1. **Apply the unraveling bands.** `data/interregnum/unraveling/bands.json` defines what
+   band 1 and 2 do and nothing reads it yet. Needs a random-tick handler gated on chapter
+   band, and — the hard part — the player-placed-block guarantee. The crater gets away with
+   a tag whitelist because it fires once at one spot; the unraveling runs forever over a
+   whole world, so it likely needs real placement tracking (a chunk attachment fed by
+   `BlockEvent.EntityPlaceEvent`). **Design that before writing it.**
+2. **Warden statue → entity.** The biggest single art+code item in Phase 1: a statue block
+   that becomes a patrolling, citation-issuing Warden when the god dies. Every statue on
+   the server opening its eyes at once is the beat this whole chapter is built toward.
 5. **More dialogue scenes** (shrine-keeper, first dream-audience) and the client screen.
    The engine, the loader and the first scene are done and verified end to end.
 6. **Clear remaining `VERIFY:` markers** in MODELS.md, DATAGEN.md, WORLDGEN.md against the

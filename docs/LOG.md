@@ -399,3 +399,30 @@ that already holds that block is a no-op, so the same chest survived every itera
 assertions were sound and only the number was nonsense, one sentence away from being quoted
 as a measured drop rate. LESSONS #14, and the sixth bench in this session to be wrong on
 first run.
+
+---
+
+## Heartbeat tick 7 -- the ground gives way
+
+The crater exists, and it is **subsidence rather than an explosion**. Nothing detonated: a
+god died and the world stopped being held up in that spot, so it sinks. No fire, no
+scorching, no thrown blocks, nobody hurt -- which is deliberate, because the person standing
+next to it is the one who just did it and the mod is not in the business of punishing them
+for the thing it tricked them into.
+
+**Only natural ground moves.** Minecraft does not record who placed a block, so the
+guarantee is enforced by a narrow tag whitelist that errs toward sparing -- an unlisted
+block is left alone. A lumpy crater is a cosmetic complaint; a deleted house is somebody
+quitting the server. And the image it produces is the one the beat wanted: a house at the
+shrine left hanging over a pit, untouched and resting on nothing.
+
+Verified in a live world: diamond block, chest, planks and glass all survive; the dirt under
+and around them does not; bedrock holds. Mutation-verified both ways -- removing the
+whitelist fails with the list of destroyed player blocks, removing the crater fails with
+"the ground did not subside".
+
+Also cleaned a stale HANDOFF entry that still listed already-finished work.
+
+Next is the unraveling, and it needs design before code: the crater gets away with a tag
+whitelist because it fires once at one spot, but the unraveling runs forever over a whole
+world and will need real placement tracking.

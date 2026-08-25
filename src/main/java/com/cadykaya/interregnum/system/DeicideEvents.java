@@ -33,6 +33,8 @@ public final class DeicideEvents {
         if (server == null) {
             return;
         }
-        Deicide.commit(server, player.getUUID());
+        Deicide.commit(server, player.getUUID(),
+                player.level() instanceof net.minecraft.server.level.ServerLevel sl ? sl : null,
+                player.blockPosition());
     }
 }
