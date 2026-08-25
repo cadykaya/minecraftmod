@@ -1265,3 +1265,63 @@ next one goes.
 > **The rule: never restore a tracked file from git to undo an edit you have not
 > committed.** The blast radius of `git checkout --` is the whole file's uncommitted
 > history, not your last change, and the two are indistinguishable from the command line.
+
+## 30. The world stopped, and the check reported that the mod was broken
+
+`tools/exodus_check.sh` is the first check here to wait longer than a minute. Sand placed
+after that wait never fell. Sand placed five chunks from anything never fell either. The
+check said, confidently and in detail, that the Anchorite's law had escaped its patch.
+
+The mod was fine. **The server had paused itself.**
+
+A dedicated server ships with `pause-when-empty-seconds=60`. Every check in this
+repository runs with no players connected, so from sixty seconds after boot the world
+simply stops: no warning, no "Can't keep up", no error in the log, no exception. Blocks
+stay where they are, entities do not move, and every probe answers accurately about a
+world that is no longer running.
+
+### How it finally gave itself up
+
+Not by reasoning. Every hypothesis I formed was wrong, in order: the gamerule (disproved
+in isolation), band 3 (disproved), the leak (disproved), server load (no lag warnings),
+scale (a full-size world with eight shrines worked fine).
+
+What settled it was asking the world what time it was, on both sides of the wait:
+
+```
+time is 94     -> time is 174     # 4 seconds, 80 ticks. Sand landed.
+time is 1199   -> time is 1199    # 4 seconds, 0 ticks.  Sand stuck.
+```
+
+1199 ticks is sixty seconds. The world had run normally and then stopped dead, and the
+difference between the two runs was only that one of them waited long enough to cross it.
+
+### Two things came out of it, and the second matters more
+
+`server_smoke.sh` now writes `pause-when-empty-seconds=0`, so no future check has to know
+this exists. `turning_check.sh` waits forty-three seconds and had been living just under
+the edge without anyone noticing.
+
+The second is the control I should have written first. This check had no answer to *does
+sand fall in this world at all* — `anchorite_check.sh` has carried exactly that control
+since the day it was written, and says why in its own header. Adding it here took one
+column of sand in an empty chunk, and on its very first run it turned
+
+> the leak is applying one god's law at every patch
+
+into
+
+> gravity is not working anywhere in this world, so the fault is in the harness rather
+> than the mod
+
+which is the difference between an hour of reading mod source and a one-line fix.
+
+> **The rule: when a check reports that the system under test is broken, the first
+> question is whether the world it measured was running.** A frozen world answers every
+> probe correctly and every answer is about the past. Assert that time passed — literally,
+> in ticks — before concluding anything from what did not happen.
+
+This is [#2](#2-a-confounded-test-is-a-false-instrument) with the confound being the
+absence of the thing that makes a game a game, and
+[#15](#15-assert-the-setup-or-the-test-proves-whatever-absence-implies) with the unasserted
+setup being the passage of time.

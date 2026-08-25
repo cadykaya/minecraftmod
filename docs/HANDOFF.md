@@ -62,27 +62,58 @@ not a table tuned to feel similar. A curriculum that taught a slightly different
 than the exam would be worse than no curriculum, and this way there is only one method to
 change.
 
-**Two of four leak, and the file says which.** Growth and ageing are per-chunk operations
-on blocks and so mean something applied to a patch of ground. The Anchorite's law is
-per-*entity* and the Quiet One's is per-*dimension* — bed rules, respawn anchors, ambient
-silence — and neither has a region-shaped form yet.
+**Three of four leak, and they do not all arrive by the same door.** Growth and ageing
+are per-chunk operations on blocks, so they come through `Leaks.apply`, which the level
+tick calls once per leaking chunk. **The Anchorite's is per-entity** — a falling block
+rises — and there is no honest way to write that as a chunk operation, so it comes
+through `Leaks.leaks`, which `AnchoriteEvents` asks about the block's own position on the
+same `EntityTickEvent.Pre` it already uses for the Mass Authority. Sand in an overworld
+patch rises for *literally the same reason* it rises in the Anchorite's world.
 
-Named rather than quietly omitted, because both are real gaps and the second is the one
-`WORLD.md` actually promises. **The Anchorite's** needs the handler to ask whether a
-falling entity is standing in a leak instead of which dimension it is in — a different
-shape, a self-contained increment, buildable. **The Quiet One's** *"hollow where nothing
-makes a sound"* needs client-side audio suppression over a region, which this container
-cannot verify at all, so it would ship on the strength of a comment. Neither is blocked
-on the owner; both are simply not built.
+**The Quiet One's is the one still missing**, and it is the one `WORLD.md` actually
+promises by name. Its law is per-*dimension* — bed rules, respawn anchors, ambient sound
+— and none of that has a region-shaped form. *"A hollow where nothing makes a sound"*
+needs client-side audio suppression over a region, which this container has no way to
+verify, so it would ship on the strength of a comment. Not blocked on the owner; simply
+not built, and named here rather than quietly omitted.
 
 `tools/exodus_check.sh` builds eight shrines two chunks apart, asks the **server** which
 god each one leaks (never recomputing the hash — that would be a restatement of the
 implementation, and it would agree with a broken one), and then measures what actually
-grows at each. The load-bearing assertion is the boundary: the worst Verdant shrine must
-out-green the best non-Verdant one by a margin. It also proves nothing leaks at band 0,
+happens at each. Both laws are asserted **categorically**, and getting the Verdant's
+there took three attempts. Grass spreads in the overworld on its own, so the first version
+(demand zero) failed on a clean run and the second (compare with a margin) came within one
+unlucky draw of a red build for nothing. The third stops tolerating the confound and
+removes it: `Verdant.grow` does its own explicit random ticks and never consults
+`random_tick_speed`, so setting that gamerule to zero switches vanilla's growth off and
+leaves the mod's untouched. Measured: **16 and 14 of 16** at the Verdant shrines, **0 of
+16 at all six controls**. The Anchorite's needed no such help — nothing in vanilla makes
+sand rise — and sand lands at all seven non-Anchorite shrines and rises only at the one.
+
+The check also asserts, before concluding anything, that **the world was running**: it
+reads gametime on both sides of the sand window. That is there because the world once was
+not — see the entry below. It also proves nothing leaks at band 0,
 that one position reports one god twice running, and that a loaded position five chunks
 from any shrine leaks nothing at all — which is what makes it a *patch* rather than a
 switch.
+
+### The world had been quietly stopping after sixty seconds
+
+A dedicated server ships with `pause-when-empty-seconds=60`. Every check here runs with
+no players connected, so from a minute after boot the world **stops**: no warning, no lag
+message, no exception. Probes keep answering, accurately, about a world that is no longer
+running.
+
+`exodus_check.sh` is the first check that ever waited longer than a minute, and it spent
+several runs reporting in confident detail that the Anchorite's law had escaped its patch.
+It had not. `tools/server_smoke.sh` now writes `pause-when-empty-seconds=0`, so no future
+check has to know this exists. `turning_check.sh` waits forty-three seconds and had been
+living just under the edge.
+
+Nothing that shipped was wrong because of it — every other check waits well under a
+minute, and their results stand. Recorded in `LESSONS.md` #30, with the control that
+caught it: a check must be able to answer *did anything happen in this world at all*
+before it concludes anything from what did not happen.
 
 ### A Warden walks a beat
 

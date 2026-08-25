@@ -185,6 +185,34 @@ that only succeeds with security off is not a build.
 
 ---
 
+## Things 26.x renamed, and where each one bit
+
+This table exists because the facts in it were already known to this repository and got
+re-broken anyway. Each row was learned once, written into a commit message or a comment in
+one file, and then not found again by the next person who needed it — which for a solo
+autonomous build means me, an hour later.
+
+A rename is the worst kind of churn to carry in your head, because the old name is not an
+error you can see. In Java it is a compile failure and you find out immediately. In a
+**command string handed to a server** it is a runtime rejection: one line in a log, the
+command silently does nothing, and every assertion downstream keeps running against a
+world that is not the one you asked for.
+
+| Was | Is, in 26.x | Where it bit |
+|---|---|---|
+| `doDaylightCycle` | `advance_time` | `deicide_check.sh` — the sun would not stop |
+| `randomTickSpeed` | `random_tick_speed` | `exodus_check.sh` — vanilla's growth never switched off, and the failure message described a world state that had been rejected two minutes earlier |
+| *(whole gamerule set)* | snake_case, behind a registry | assume every rule you remember is renamed |
+| `ChunkPos#asLong` | `ChunkPos.pack(x, z)` | `LeakEvents`, and it is a record now — `x()`/`z()` |
+| `ServerPlayer#getServer()` | gone — take it off the level | the deicide handler |
+| `ItemStack.is(Item)` | takes a `Predicate<Holder<Item>>` | the heart pickup |
+
+`tools/renames_check.py` enforces the shell half of this table on every push, because a
+dead gamerule name in a `COMMANDS` string is invisible until a check goes red for the
+wrong reason. It cannot enforce the Java half and does not try: `javac` already does.
+
+---
+
 ## Standing version-churn policy
 
 Because this is the thing that will break, repeatedly:

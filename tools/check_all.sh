@@ -25,6 +25,9 @@ python3 tools/ci_claims_check.py
 echo "== failure paths =="
 python3 tools/failpath_check.py
 
+echo "== renamed APIs =="
+python3 tools/renames_check.py
+
 echo "== dimension laws =="
 python3 tools/dimension_check.py
 

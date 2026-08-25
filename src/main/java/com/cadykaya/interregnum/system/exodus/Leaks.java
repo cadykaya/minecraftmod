@@ -36,18 +36,24 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
  * no curriculum. So if the two ever diverge it will be because somebody changed one
  * method, and there is only one method to change.
  *
- * <h2>Two of four, and the file says which</h2>
+ * <h2>Three of four, and they do not all arrive by the same door</h2>
  *
- * Only the Verdant's growth and the Hearth-Turner's ageing leak today, because those are
- * the two laws that are per-chunk operations on blocks and therefore mean something
- * applied to a patch of ground.
+ * The Verdant's growth and the Hearth-Turner's ageing are per-CHUNK operations on blocks,
+ * so they leak through {@link #apply}, which the level tick calls once per leaking chunk.
  *
- * The Anchorite's is per-ENTITY (falling blocks rise) and would need the handler to ask
- * whether an entity is standing in a leak, which is a different shape and a separate
- * increment. The Quiet One's is per-DIMENSION — bed rules, respawn anchors, ambient
- * sound — and none of those can apply to a region at all; *"a hollow where nothing makes
- * a sound"* needs client-side audio suppression this container cannot verify. Both are
- * recorded in HANDOFF rather than half-built.
+ * The Anchorite's is per-ENTITY — a falling block rises — and there is no honest way to
+ * express that as a chunk operation. It leaks through {@link #leaks}, which
+ * `AnchoriteEvents` asks about the entity's own position on the same
+ * `EntityTickEvent.Pre` it already uses for the Anchorite's dimension. That matters more
+ * than it looks: **the leak and the god's world go through one code path**, so a block
+ * rising in an overworld patch is rising for literally the same reason it rises in the
+ * Mass Authority. A second handler that merely behaved similarly is the thing this class
+ * exists to prevent.
+ *
+ * The Quiet One's is per-DIMENSION — bed rules, respawn anchors, ambient sound — and none
+ * of those can apply to a region at all. *"A hollow where nothing makes a sound"* needs
+ * client-side audio suppression, which this container has no way to verify, so it would
+ * ship on the strength of a comment. Recorded in HANDOFF rather than half-built.
  */
 public final class Leaks {
     private Leaks() {}
@@ -92,9 +98,14 @@ public final class Leaks {
             // The same method the god's own world calls. See the class javadoc.
             case VERDANT -> Verdant.grow(level, chunk);
             case HEARTH_TURNER -> Hearth.age(level, chunk);
-            // Not leakable as a region yet -- see the class javadoc and HANDOFF. Silence
-            // is deliberate: a log line per chunk per tick for a law that is merely not
-            // built would be noise on every server that ever reaches band 3.
+            // ANCHORITE is not absent, it is elsewhere: it acts on entities, and
+            // `AnchoriteEvents` asks `leaks` about each falling block's own position.
+            // Doing it here would mean scanning a chunk's entities every tick to
+            // reproduce a test the entity tick is already making.
+            //
+            // QUIET_ONE has no region-shaped form at all -- see the class javadoc.
+            // Silence rather than a log line: a message per chunk per tick for a law
+            // that is merely not built would be noise on every server at band 3.
             case ANCHORITE, QUIET_ONE -> { }
         }
     }
@@ -121,6 +132,21 @@ public final class Leaks {
             }
         }
         return false;
+    }
+
+    /**
+     * Does this exact position sit in a leak of one particular god's law?
+     *
+     * For laws that act on an ENTITY rather than on a chunk. Costs a saved-data lookup
+     * and, at most, nine `getChunk(..., false)` calls with a palette-gated predicate on
+     * each -- so callers must reject on the cheap, selective test FIRST. `AnchoriteEvents`
+     * asks whether the entity is a falling block before it asks this, which means the
+     * question is only ever put for the handful of entities in the game that could
+     * possibly care.
+     */
+    public static boolean leaks(ServerLevel level, BlockPos pos, Exodus.Law law) {
+        return lawFor(level, ChunkPos.containing(pos),
+                ChapterSavedData.get(level.getServer())) == law;
     }
 
     /** For the command seam: name the law leaking at a position, or "none". */

@@ -2122,3 +2122,93 @@ two deliberately-dead links I had appended — discarding eighty uncommitted lin
 lessons written minutes earlier. `git checkout --` is not an undo; it is a restore from
 the index, and its blast radius is the file's entire uncommitted history. Recoverable only
 because the text was still on screen. [`LESSONS.md`](LESSONS.md) #29, written twice.
+
+## Weight leaks too, and the world had been stopping without telling anyone
+
+The Anchorite's law now leaks into the overworld, closing the gap named in `HANDOFF.md`
+an hour earlier. Three of the four gods' laws show up in band-3 patches; only the Quiet
+One's is still missing, and it is missing for a reason this container cannot fix.
+
+**It arrives by a different door on purpose.** The Verdant's growth and the Hearth-Turner's
+ageing are per-chunk operations, so they come through `Leaks.apply`, which the level tick
+calls once per leaking chunk. Weight is not a chunk operation — a falling block rises —
+and there is no honest way to write it as one. So it comes through `Leaks.leaks`, which
+`AnchoriteEvents` asks about the block's own position on the same `EntityTickEvent.Pre` it
+already used for the Mass Authority.
+
+That matters for the reason the whole band exists: **the patch has to run the same law,
+and it can only be the same law if it is the same method.** Sand in an overworld patch
+calls `Anchorite.lift` — the same call the Anchorite's own world makes. A second handler
+that merely behaved similarly is what `Leaks` exists to prevent, and it was the easier
+thing to write.
+
+One ordering changed with it. `AnchoriteEvents` tested the dimension first, on the
+reasoning that a reference comparison is the cheapest instruction available. True, and
+beside the point: what matters is how many entity ticks a test throws away. `unanchored`
+is an instanceof against a class almost nothing in a running world is, so it rejects
+nearly every tick in the game, and the leak lookup behind it is paid for only by the
+occasional falling block.
+
+### The feature took twenty minutes. The check took the rest of the night.
+
+**The Verdant's control was wrong twice more.** The absolute ceiling I had set two hours
+earlier at 4 of 16 was hit by a clean run at exactly 4, on the nose — a ceiling a passing
+run touches is flaky by construction, the same mistake as the zero it replaced. Then the
+margin itself failed: a run produced a Verdant shrine at 5 and a control at 4, which would
+have been a red build with nothing wrong. Grass spread here is roughly Poisson with a mean
+near nine; no margin over sixteen samples was ever going to be safe.
+
+So stop tolerating the confound and remove it. `Verdant.grow` performs its own explicit
+random ticks and never consults `random_tick_speed`; vanilla's spread does nothing else.
+One gamerule at zero switches vanilla off and leaves the mod untouched, and the control
+stops being statistical: **the only thing left that can turn dirt into grass is the leak.**
+Measured green at 16 and 14 of 16 against 0 at all six controls. `LESSONS.md` #27 was the
+right rule and got me to an honest check; `LESSONS.md` #2 is the better one, and I reached
+for the second-best tool because I had just finished writing it down.
+
+**Then the gamerule name was wrong.** 26.x renamed the whole set to snake_case behind a
+registry — `random_tick_speed`, not `randomTickSpeed`. The server answered "Incorrect
+argument for command", nothing switched off, and the check went red with a message reading
+"in a world with randomTickSpeed at zero", describing a world that did not exist.
+`deicide_check.sh` has carried a comment about this exact rename since the day it was
+written. The rule is now read *back* from the server rather than assumed to have taken,
+`docs/PLATFORM.md` has a rename table with what each one broke, and
+`tools/renames_check.py` enforces the shell half on every push.
+
+### And underneath all of it, the world had stopped
+
+Sand still would not fall. Every hypothesis was wrong in turn — the gamerule (disproved in
+isolation), band 3, the leak, server load, scale. What settled it was asking the world what
+time it was, on both sides of the wait:
+
+```
+time is 94     -> time is 174     # 4 seconds, 80 ticks. Sand landed.
+time is 1199   -> time is 1199    # 4 seconds, 0 ticks.  Sand stuck.
+```
+
+A dedicated server ships with `pause-when-empty-seconds=60`. Every check here runs with no
+players, so from a minute after boot the world simply stops — no warning, no lag message,
+no exception — and every probe keeps answering accurately about a world that is no longer
+running. `exodus_check.sh` is the first check that ever waited longer than a minute.
+
+`server_smoke.sh` now writes `pause-when-empty-seconds=0` so no future check has to know.
+Nothing that shipped was wrong because of it: every other check waits well under a minute
+and their results stand. `turning_check.sh`, at forty-three seconds, had been living just
+under the edge.
+
+**The control I should have written first** is what made the difference. This check had no
+answer to *does sand fall in this world at all*; `anchorite_check.sh` has carried exactly
+that control since the day it was written and says why in its own header. Adding it took
+one column of sand in an empty chunk, and on its first run it turned "the leak is applying
+one god's law at every patch" into "gravity is not working anywhere in this world, so the
+fault is in the harness rather than the mod". `LESSONS.md` #30.
+
+### A mutation caught by the wrong assertion proved nothing
+
+Worth its own note, because it is the failure mode that hides best. The mutation written to
+verify the new Anchorite assertions made `Leaks.leaks` answer true for every law rather
+than the one asked about. The check went red — on the *Verdant* comparison, which that
+mutation cannot affect, purely because the same run drew an unlucky 5. The run ended before
+the sand table printed, so the assertions under test never executed. Reading only the exit
+code would have recorded them as verified. With the Verdant half now deterministic, the
+mutation reaches what it was aimed at.

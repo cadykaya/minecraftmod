@@ -1,5 +1,7 @@
 package com.cadykaya.interregnum.system.anchorite;
 
+import com.cadykaya.interregnum.core.exodus.Exodus;
+import com.cadykaya.interregnum.system.exodus.Leaks;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -8,7 +10,9 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import com.cadykaya.interregnum.Interregnum;
 
 /**
- * Game-bus wiring for the Anchorite's law. See {@link Anchorite} for what it is.
+ * Game-bus wiring for the Anchorite's law. See {@link Anchorite} for what it is, and
+ * {@link Leaks} for why band 3 routes an overworld patch through this same handler
+ * rather than through a second one that would only look the same.
  *
  * `EntityTickEvent.Pre` rather than `Post`: the delta has to be set BEFORE the entity
  * moves, or the block spends every tick falling one step and being pushed back, which
@@ -25,11 +29,23 @@ public final class AnchoriteEvents {
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Pre event) {
         var entity = event.getEntity();
-        // Cheapest test first: almost every entity tick in the game is in some other
-        // level, and this runs for every entity in every level on every tick.
-        if (entity.level() instanceof ServerLevel
-                && Anchorite.holds(entity)
-                && Anchorite.unanchored(entity)) {
+        // MOST SELECTIVE TEST FIRST, and the order changed when the leak arrived.
+        //
+        // It used to ask about the dimension first, on the reasoning that a reference
+        // comparison is the cheapest instruction here. True, and beside the point: what
+        // matters is how many entity ticks each test throws away. `unanchored` is an
+        // instanceof against a class that essentially nothing in a running world is, so
+        // it rejects almost every tick in the game -- and everything after it, including
+        // the leak lookup's saved-data read and chunk scan, is then paid for only by the
+        // occasional falling block.
+        if (!(entity.level() instanceof ServerLevel level) || !Anchorite.unanchored(entity)) {
+            return;
+        }
+        // The god's own world, or a patch of the overworld obeying it. `Anchorite.lift`
+        // either way: the whole claim of band 3 is that the patch runs the same law, and
+        // it can only be the same law if it is the same method.
+        if (Anchorite.holds(entity)
+                || Leaks.leaks(level, entity.blockPosition(), Exodus.Law.ANCHORITE)) {
             Anchorite.lift(entity);
         }
     }

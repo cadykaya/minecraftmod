@@ -45,6 +45,19 @@ view-distance=4
 simulation-distance=4
 sync-chunk-writes=false
 enable-status=false
+# THE WORLD MUST KEEP TICKING. A dedicated server's default is
+# `pause-when-empty-seconds=60`: with nobody connected it ticks for a minute and then
+# STOPS -- no warning, no lag message, no error. Every check here runs with no players,
+# so any check that waits longer than a minute of server time was quietly measuring a
+# frozen world from that point on.
+#
+# It was found by `exodus_check.sh`, the first check to wait more than sixty seconds:
+# sand placed after the wait never fell, gametime read 1199 before a four-second pause
+# and 1199 after, and the check reported that the mod's law was broken. `turning_check.sh`
+# waits forty-three seconds and has been living just under the edge.
+#
+# Zero disables the pause. Set here rather than per-check so no future check has to know.
+pause-when-empty-seconds=0
 # RCON is how commands reach the server. Piping to stdin does NOT work under
 # Gradle's runServer -- see tools/rcon.py and docs/LESSONS.md #10.
 enable-rcon=true
