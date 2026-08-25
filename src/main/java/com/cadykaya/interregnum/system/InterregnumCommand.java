@@ -492,6 +492,23 @@ public final class InterregnumCommand {
         // it. `force` skips the once-only check and nothing else -- an admin with
         // good intentions still cannot hand the ghost's private conversation to
         // somebody who did not kill it.
+        // Driving one posting sweep by hand. The tick handler runs this around every
+        // player, and a headless server has no players at all -- so without a command
+        // seam the entire mechanism would be unreachable from CI. `interregnum
+        // unravel at` exists for exactly the same reason and takes the same shape.
+        root = root.then(Commands.literal("warden")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("post")
+                        .then(Commands.argument("at", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos at = BlockPosArgument.getLoadedBlockPos(ctx, "at");
+                                    int n = com.cadykaya.interregnum.system.warden.StatuePosting
+                                            .postAround(ctx.getSource().getLevel(), at);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "posted=" + n), true);
+                                    return n;
+                                }))));
+
         root = root.then(Commands.literal("haunt")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("dream")

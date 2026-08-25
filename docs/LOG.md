@@ -1251,3 +1251,61 @@ block model renamed out from under a block item.
 The transferable part is not "write your item models". It is that **the one area this
 container cannot look at directly is the one where a check's summary line has to be read
 twice.** The line said "all resolve models". It had never been true.
+
+---
+
+## Where enforcement reaches
+
+The owner said yes to the statue proposal, so it is built.
+
+A woken statue posts a Warden. This was the last thing standing between the mod and
+being playable end to end: the entity had two scenes, a tether, a renderer, a regard
+cost for killing one -- and nothing whatsoever created one, so WARDEN_CONTACT and
+therefore band 2 could only be reached by typing a command.
+
+The statues were handed out as scenery for a hundred hours and all opened their eyes at
+once when the god died. Making the woken one the thing that CALLS turns that scenery
+into a map: where the statues are is where enforcement reaches. It also retroactively
+explains why the mod gave everybody free decorative statues for so long, which is the
+part that makes it feel designed rather than bolted on.
+
+Three decisions worth recording.
+
+THE STATUE IS PERMANENT, THE WARDEN IS NOT. A posted Warden is not
+persistence-required; it stands down when nobody is there and the statue posts another
+when somebody returns. One immortal Warden per statue forever is not an institution, it
+is a leak, and on a server where people have built with these blocks for a hundred hours
+it is a very large one.
+
+TEARING ONE DOWN COSTS WARDENATE -8, and only when a PLAYER did it. An unwoken statue
+costs nothing -- before the death these are garden ornaments and the Wardenate has no
+opinion about anybody's landscaping. The lever the design wanted (pull the statues out
+of your valley, go dark) now has a price, so it is a decision rather than just the
+correct move.
+
+THE CAP IS LOGGED. MAX_POSTED_PER_SWEEP bounds one pass and names what it deferred,
+because a silent truncation reads as "everything was handled".
+
+The bug the check caught is the good part, and I would not have found it by reading.
+
+I overrode `requiresCustomPersistence()` to return `!posted`, wrote the comment
+explaining why, and believed it. `Mob.checkDespawn` gates on
+`isPersistenceRequired() || requiresCustomPersistence()` -- BOTH -- and `Mob` offers no
+way to clear the first: the field is private, the constructor sets it, and
+`setPersistenceRequired()` only ever sets it true. So a posted Warden still reported
+`PersistenceRequired: 1b` and would never have stood down. Exactly the leak the design
+exists to avoid, sitting underneath a comment saying it could not happen.
+
+The check found it because it asserted the NBT rather than the intent. Fixed by
+overriding `isPersistenceRequired()` too, and by re-stating the corrected value in
+`addAdditionalSaveData` -- an NBT flag that disagrees with the behaviour is worse than
+no flag, because it is what somebody debugging this at two in the morning will read and
+believe.
+
+Second, smaller: the first version of the check asserted
+`data get entity <sel> interregnum:posted`. The key is namespaced, so that path does not
+parse -- the command fails, which reads exactly like a missing flag. It reads off the
+whole-entity dump now.
+
+Both assertions watched failing: statues breeding (two Wardens across two sweeps), and
+an unwoken statue posting before the god was dead.

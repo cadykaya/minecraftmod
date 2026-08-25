@@ -66,13 +66,67 @@ public class WardenEntity extends PathfinderMob {
      */
     @Override
     public boolean requiresCustomPersistence() {
-        return true;
+        // A POSTED Warden is the exception, and it is the whole reason the flag
+        // exists. A statue posts one while somebody is there to be inspected and it
+        // stands down when they leave; the STATUE is the permanent thing and the
+        // Warden is the response to it. Without this every statue on a long-running
+        // server would accrete its own immortal Warden and never let one go, which
+        // is not an institution either -- it is a leak.
+        return !posted;
+    }
+
+    /**
+     * Was this Warden posted by a statue, or placed?
+     *
+     * Saved in NBT because it decides whether the mob may ever despawn, and a flag
+     * that vanishes on reload would silently promote every posted Warden to a
+     * permanent one after a single restart (docs/LESSONS.md #17 is this exact shape).
+     */
+    private boolean posted;
+
+    public boolean posted() {
+        return posted;
+    }
+
+    public void setPosted(boolean value) {
+        this.posted = value;
+        if (!value) {
+            setPersistenceRequired();
+        }
+    }
+
+    /**
+     * Both halves of the promise, because `checkDespawn` reads both.
+     *
+     * `Mob` gates despawning on `isPersistenceRequired() || requiresCustomPersistence()`,
+     * and `Mob` offers no way to CLEAR the first: the field is private, the constructor
+     * sets it, and `setPersistenceRequired()` only ever sets it true. So overriding
+     * `requiresCustomPersistence` alone was not enough -- a posted Warden still reported
+     * `PersistenceRequired: 1b` and would never have stood down. The check caught it;
+     * reading the override and believing it did not.
+     */
+    @Override
+    public boolean isPersistenceRequired() {
+        return !posted && super.isPersistenceRequired();
     }
 
     @Override
     protected void readAdditionalSaveData(net.minecraft.world.level.storage.ValueInput input) {
         super.readAdditionalSaveData(input);
-        setPersistenceRequired();
+        posted = input.getBooleanOr("interregnum:posted", false);
+        if (!posted) {
+            setPersistenceRequired();
+        }
+    }
+
+    @Override
+    protected void addAdditionalSaveData(net.minecraft.world.level.storage.ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("interregnum:posted", posted);
+        // Re-stated after super, which writes the raw private field. An NBT flag that
+        // disagrees with the behaviour is worse than no flag: it is what somebody
+        // debugging this at two in the morning will read and believe.
+        output.putBoolean("PersistenceRequired", isPersistenceRequired());
     }
 
     public static AttributeSupplier.Builder createAttributes() {

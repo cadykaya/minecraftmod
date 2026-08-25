@@ -27,9 +27,38 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **15**, every one mutation-verified, all in CI |
+| Live-world checks | **16**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
+
+### Where enforcement reaches
+
+**A woken statue posts a Warden.** This was the last thing standing between the mod and
+being playable end to end: the entity had two scenes, a tether and a renderer, and
+*nothing created one*, so `WARDEN_CONTACT` — and therefore band 2 — could only be reached
+by command.
+
+The statues were handed out as scenery for a hundred hours and all opened their eyes at
+once when the god died. Making the woken one the thing that *calls* turns that scenery
+into a **map**: where the statues are is where enforcement reaches, players can read it
+off the landscape, and it retroactively explains why the mod gave everybody free
+decorative statues for so long.
+
+**The statue is permanent; the Warden is not.** A posted Warden is explicitly not
+persistence-required — it stands down when nobody is there and the statue posts another
+when somebody returns. One immortal Warden per statue, forever, is not an institution;
+on a server where people have built with these blocks for a hundred hours it is a very
+large leak.
+
+**Tearing one down costs WARDENATE −8**, and only when a player did it (a creeper is not
+defiance — the same rule the shrine-keeper's death follows). An *unwoken* statue costs
+nothing: before the death these are garden ornaments and the Wardenate has no opinion
+about your landscaping. That is the lever the design wanted — pull the statues out of
+your valley and enforcement stops reaching it — with a price on it, so it is a decision
+rather than just the correct move.
+
+`MAX_POSTED_PER_SWEEP` bounds the work per pass and **says so in the log when it bites**,
+because a silent cap reads as "everything was handled".
 
 ### Six items that would have been purple cubes
 
@@ -704,21 +733,14 @@ work flows to `claude/minecraft-mod-dev-rp0x8j` and PRs into `main`.
 
 ### Proposed, needs the owner's yes
 
-- **[PROPOSED] The statue summons the Warden.** Woken statues are already scattered
-  across every server by Chapter 0, they already went into people's gardens, and they
-  already all opened their eyes at once. Making a woken statue the thing that *calls*
-  a Warden turns that scenery into a map of where enforcement reaches — and turns
-  breaking one into a real decision with a real cost. It also explains why the mod
-  handed everybody free decorative statues for a hundred hours.
-
-  Why this is the owner's call and not mine: it makes statue placement into a
-  strategic layer nobody has agreed to, and it gives players a lever on the Wardens
-  (tear down the statues, go dark) that reaches into the endgame. It is exactly the
-  "absurd system you find out how it ticks and use to your advantage" the brief asked
-  for, which is why it should be chosen deliberately rather than arrived at.
+*(Nothing currently waiting. The statue proposal was answered — see below.)*
 
 ### Answered this session
 
+- **The statue summons the Warden**: **yes, owner-approved and built.** A woken statue
+  posts a Warden while somebody is there; the statue is permanent, the Warden stands
+  down. Statue density is now a readable map of where enforcement reaches, and tearing
+  one down costs the breaker with the Wardenate. See "Where enforcement reaches" above.
 - **The class name**: **Theoclast** — owner's coinage, locked. Breaker and fragment in
   one word; the pieces themselves are **clasts**. Four-voices naming table in `WORLD.md`.
 - **The subject**: INTERREGNUM. You accidentally kill the overworld's god by looting a
@@ -768,14 +790,12 @@ In order, all unblocked unless marked:
    the ones that need design rather than typing: block-for-block conversion is the wrong
    grammar for "the ways are open" and "geography frays at the edges". Band 3 probably
    is not a conversion table at all. **Do not fill them in just because the format fits.**
-2. **Put Wardens in the world.** The entity exists, has two scenes, records
-   `WARDEN_CONTACT` on being addressed, and **nothing creates one** — so band 2 is
-   still unreachable by playing, and that is now the single biggest functional gap in
-   the mod. The obvious move — and the reason the statues were never consumed — is
-   that a **woken statue is what summons them**: the statue is the sensor, the Warden
-   is the response, and statue density becomes something players can read and act on.
-   That is new scope, so it is a proposal under "Open questions" and **needs the
-   owner's answer before anything else here can be finished by playing.**
+2. **Wardens are in the world.** Done — a woken statue posts one, so `WARDEN_CONTACT`
+   and band 2 are reachable by playing for the first time. What is left is behaviour:
+   a posted Warden currently stands where it was put and can be talked to. It does not
+   yet **patrol**, **inspect a site**, or **cite** anything, which is what WORLD.md's
+   Wardens actually do. That is the natural next block of work and none of it is new
+   scope — inspect/cite/confiscate/escalate is all locked design.
 3. **More scenes.** Five exist now (`warden_intake`, `warden_interrogation`,
    `shrine_keeper`, `shrine_keeper_intact`, `dream_audience`) and the machinery has
    the range it was missing, so the shortage from here is content rather than
