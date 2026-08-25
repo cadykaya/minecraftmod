@@ -6,18 +6,18 @@ says what is *currently true*; everything else says what is *always true*.
 Updated at every phase boundary, so that if a session ends — for any reason — the next one
 picks up cold without archaeology.
 
-**Last updated:** autonomous build-out has begun; owner has delegated build authority
-and an hourly heartbeat is being set up. **First code exists and is verified**: the
-dialogue engine (core), the first written scene, the Phase-1 texture set, and the check
-gate. The NeoForge toolchain itself is **blocked on the environment's network policy** —
-see "Waiting on owner", item 1.
+**Last updated:** autonomous build-out, hourly heartbeat running. The toolchain is
+**unblocked and building** (NeoForge 26.2.0.67, Java 25) — the old network-policy
+blocker is resolved and the probe returns 200. Chapter 0's content, the deicide and
+its consequences, placement tracking, the unraveling, and the first Warden entity all
+exist and are verified against a live server.
 
 ---
 
 ## Where things stand
 
-**There is no Minecraft mod yet.** There is a **toolchain, a palette system, and a doc set**,
-all of which are deliberately subject-agnostic and survive whatever the mod turns out to be.
+There is a mod. It builds, it boots a dedicated server, and every system below is
+asserted against a running world rather than against its own source.
 
 | | State |
 |---|---|
@@ -27,7 +27,36 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **11**, every one mutation-verified, all in CI |
+| Live-world checks | **12**, every one mutation-verified, all in CI |
+
+### The Warden takes the field
+
+The statues wake and watch; **these arrive**. Two objects, two jobs — waking a statue
+does not consume it, so the one your neighbour built into their garden wall stays
+there watching forever. The eye and the officer are not the same thing.
+
+**A Warden never attacks.** No target selector, no melee goal, and — the part that is
+actually enforced — *no `ATTACK_DAMAGE` attribute at all*, so there is nothing for a
+future careless goal to reach for. 100 health, full knockback resistance, unpushable:
+a player's first instinct is to hit one, and that has to fail in the most
+uninformative way available. Nothing happens, and it is still looking at you.
+**[NEEDS PLAYTEST]** whether they should be killable at all.
+
+The model is a squat robed figure under a wide flat mantle, ember visor slots as the
+only warm pixels on the whole sheet — the statue's rule, kept. Geometry lives once in
+`tools/entity_specs.py` and feeds three consumers: the texture painter, the generated
+`WardenGeometry.java`, and **`tools/entity_view.py`**, a new ray-cast bench that draws
+the assembled figure front / three-quarter / side / rear. See [`MODELS.md`](MODELS.md);
+it caught the robe reading as a bollard in profile on its first use.
+
+`tools/warden_check.sh` proves summoning, attributes, the missing attack damage, and
+survival across a restart. Three mutations, three caught. `registry_check.py` now also
+refuses an entity missing a renderer, a layer definition, a texture, or a name — five
+more, all verified.
+
+**Not done yet, and deliberately:** nothing spawns a Warden. They exist and can be
+summoned; who places them, where, and when is the next decision, and it is bound up
+with the proposal under "Open questions".
 
 ### The overworld spends itself
 
@@ -287,26 +316,43 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
 
 ## Waiting on owner
 
-1. **Network allowlist — BLOCKS THE ACTUAL MOD BUILD.** The egress proxy denies the
-   NeoForge/Mojang toolchain: `curl` reports `CONNECT tunnel failed, response 403` and the
-   proxy logs `connect_rejected ... policy denial` per host. Needed:
-   `maven.neoforged.net`, `libraries.minecraft.net`, `piston-meta.mojang.com`,
-   `piston-data.mojang.com`, `resources.download.minecraft.net`, `maven.parchmentmc.org`.
-   (`services.gradle.org` and Maven Central already pass.)
+1. **"Warden" collides with vanilla's Warden.** Minecraft already ships a mob called the
+   Warden — the deep-dark one. Ours is a bureaucratic enforcement officer and shares
+   nothing with it but the word, and in a modpack "a warden" now means two unrelated
+   things. Every design doc here says Warden, so that is what is built; the id is
+   `interregnum:warden` and the display name is "Warden".
 
-   **The owner reports having allowed these; this container still denies them.** Network
-   policy is applied at container start, so an already-running session keeps the old
-   policy. **Re-probe at the start of each new session** with:
-   `curl -sS -m 20 -o /dev/null -w "%{http_code}" https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml`
-   — `200` means unblocked; go straight to task "NeoForge game module". Do not ask the
-   owner to change the setting again unless a fresh session still fails.
-2. **Playtesting.** This container has no game client. When Phase 1 compiles, the owner
-   is the playtester; the handoff will say exactly what to look at.
+   This is a lore call, not an engineering one, so it is the owner's. If it should
+   change, changing it is cheap now and expensive once players learn it. Candidates
+   that keep the institutional register: **Assessor** (they assess and file),
+   **Invigilator** (one who watches an examination — and the census scene already reads
+   as one), **Proctor**, **Registrar**. "Wardenate" as the institution's name could
+   survive any of them, or become e.g. the Assessorate. *No action needed unless the
+   owner wants a change.*
+2. **Playtesting, and looking at the Warden.** This container has no game client, so two
+   things about the model are unverifiable here and are not claimed: how it looks
+   **animated**, and how it looks **lit**. `tools/entity_view.py` covers shape and paint;
+   it cannot cover those. The render has been sent for review.
 
 **Answered:** license is **MIT** (`LICENSE`, `gradle.properties`). `main` branch exists;
 work flows to `claude/minecraft-mod-dev-rp0x8j` and PRs into `main`.
 
 ## Open questions
+
+### Proposed, needs the owner's yes
+
+- **[PROPOSED] The statue summons the Warden.** Woken statues are already scattered
+  across every server by Chapter 0, they already went into people's gardens, and they
+  already all opened their eyes at once. Making a woken statue the thing that *calls*
+  a Warden turns that scenery into a map of where enforcement reaches — and turns
+  breaking one into a real decision with a real cost. It also explains why the mod
+  handed everybody free decorative statues for a hundred hours.
+
+  Why this is the owner's call and not mine: it makes statue placement into a
+  strategic layer nobody has agreed to, and it gives players a lever on the Wardens
+  (tear down the statues, go dark) that reaches into the endgame. It is exactly the
+  "absurd system you find out how it ticks and use to your advantage" the brief asked
+  for, which is why it should be chosen deliberately rather than arrived at.
 
 ### Answered this session
 
@@ -359,10 +405,18 @@ In order, all unblocked unless marked:
    the ones that need design rather than typing: block-for-block conversion is the wrong
    grammar for "the ways are open" and "geography frays at the edges". Band 3 probably
    is not a conversion table at all. **Do not fill them in just because the format fits.**
-2. **Warden statue → living Warden.** The statues now wake, but they only *look* awake.
-   Next is the entity: a patrolling figure that inspects, cites, and speaks in procedure --
-   with `warden_intake`, the first written dialogue scene, already waiting for it. This is
-   the largest remaining item in Phase 1.
+2. **Put Wardens in the world.** The entity exists and nothing creates one. The obvious
+   move — and the reason the statues were never consumed — is that a **woken statue is
+   what summons them**: the statue is the sensor, the Warden is the response, and
+   statue density becomes a thing players can read and act on. That is new scope, so
+   it is a proposal under "Open questions" rather than something to build.
+   Unambiguously in scope meanwhile: **first Warden contact records
+   `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
+   currently reachable only by command.
+3. **The Warden speaks.** `warden_intake` has been written and validated since the
+   first week and nothing can reach it. This needs the interaction path (right-click a
+   Warden → conversation) and a client screen, and it is the largest remaining item in
+   Phase 1.
 5. **More dialogue scenes** (shrine-keeper, first dream-audience) and the client screen.
    The engine, the loader and the first scene are done and verified end to end.
 6. **Clear remaining `VERIFY:` markers** in MODELS.md, DATAGEN.md, WORLDGEN.md against the

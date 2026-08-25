@@ -569,3 +569,44 @@ check by name.
 > it sounds. This is #3 (green tests are not a working feature) arriving from the data side
 > rather than the code side, and it is why `VERIFICATION.md` rule 2 says to assert on the
 > effect: the effect is the only thing that cannot be faked by a well-formed input.
+
+---
+
+## 17. A field set in a constructor is not a property the object has
+
+*Found while giving the first Warden a body.*
+
+`WardenEntity`'s constructor called `setPersistenceRequired()`, with a comment above
+it explaining why Wardens must never despawn. It compiled, it read correctly, and it
+did nothing. A probe printed:
+
+```
+$ data get entity @e[type=interregnum:warden,limit=1] PersistenceRequired
+  Warden has the following entity data: 0b
+```
+
+`Mob#readAdditionalSaveData` assigns `this.persistenceRequired` straight from NBT,
+defaulting to false — so every load overwrites whatever the constructor decided,
+and `/summon` constructs and *then* loads. The guarantee moved to
+`requiresCustomPersistence()`, which no tag can undo.
+
+The general shape is worth more than the specific bug: **for any object the engine
+serialises, the constructor runs before the state does.** Anything set there that
+also has a saved form is a default, not a decision, and the two are
+indistinguishable in the source. The tell is that the field appears in
+`readAdditionalSaveData` — if the engine reads it back, the engine owns it.
+
+But the reason this was caught at all is the part to keep. The check that found it
+did not exist yet: the run was an **exploratory probe with no assertions**, printing
+raw command replies so they could be read before anything was written to match them.
+Had the assertions been written first, they would have been written from the design
+intent — "it is persistent, so assert `1b`" — and the check would have failed, and
+the obvious next move on a failing new check is to suspect the check. Instead the
+wrong value arrived with nothing invested in expecting the right one.
+
+> **The rule: look at the instrument's raw output before you write the assertion.**
+> Writing the expected value first means the first disagreement is a fight between
+> two things you wrote, and the code usually wins that fight. It is the same
+> mistake as #14 in the other direction: there a probe reported a number nobody
+> sanity-checked; here nobody had yet decided what the number should be, which is
+> exactly why the real one was believed.

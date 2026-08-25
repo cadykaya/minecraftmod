@@ -540,3 +540,58 @@ either handler unsubscribed.
 
 Bands 3 and 4 stay empty. "The ways are open" and "geography frays at the edges" are not
 block substitutions, and the table would happily accept a pile of them.
+
+## The Warden takes the field
+
+The statues have been watching since the god died and nothing ever arrived. Now
+something does.
+
+The decision that shaped the rest: **a woken statue is not consumed.** It would have
+been easy to have the statue animate and walk off, and it would have deleted the best
+image the mod has — every statue on the server opening its eyes at once, including the
+one in your garden. So there are two objects. The eye and the officer are not the same
+thing, and the statue stays exactly where its owner built it, forever.
+
+**A Warden never attacks**, and that is enforced rather than intended: no target
+selector, no melee goal, and no `ATTACK_DAMAGE` attribute at all, so a careless goal
+added later has nothing to reach for. A thing that walks up, stops at conversational
+distance and files a report is worse than a thing that swings, because there is no move
+that resolves it. `warden_check.sh` asserts the attribute's *absence*, and the check
+passes on an error reply — the command is supposed to fail.
+
+### A bench for looking at mobs
+
+MODELS.md has said since the first week that silhouette is the whole design, that the
+front view lies, and that you judge in rotation. None of that was possible: a texture
+sheet shows unwrapped nets, and the game was the only other renderer available.
+
+So geometry now lives once, in `tools/entity_specs.py`, and three things read it -- the
+texture painter, the generated `WardenGeometry.java`, and `tools/entity_view.py`, which
+ray-casts the boxes orthographically and samples the real texture through Minecraft's
+own unwrap. It refuses to exist if two nets overlap, which is a failure that renders
+rather than crashing.
+
+It earned its keep immediately. The robe was one box; as a net and from the front it
+looked fine, and assembled in profile it was a bollard — the "judge it with the head
+hidden" failure arriving exactly as advertised. Two stepped boxes fixed it, and that
+was only visible because the figure could be seen. The remaining weakness (pure profile,
+where the arms hide inside the torso) is written down in MODELS.md rather than left to
+be rediscovered.
+
+### The constructor that decided nothing
+
+`setPersistenceRequired()` sat in the constructor with a comment explaining why Wardens
+must never despawn. A probe printed `PersistenceRequired: 0b`. `Mob` reads that field
+straight back out of NBT on every load, `/summon` loads, and the constructor's decision
+was overwritten before anything could observe it. It moved to
+`requiresCustomPersistence()`, which no tag can undo.
+
+What actually caught it was running an **exploratory probe with no assertions** and
+reading the raw replies before writing anything to match them. Assertions written first
+would have said `1b`, the new check would have failed, and the obvious suspect on a
+failing new check is the check. LESSONS #17.
+
+Wardens exist and nothing spawns one; that is the next decision and it is the owner's,
+because the good answer -- the woken statue calls them -- turns statue placement into a
+strategy layer and hands players a lever on enforcement that reaches the endgame. It is
+in HANDOFF as a proposal, not in the code.

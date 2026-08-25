@@ -10,6 +10,7 @@ import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from paintkit import pal, h2, Image, contour, SIZE
 from pngio import write
+from entity_specs import WARDEN
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLOCK = os.path.join(REPO, "src/main/resources/assets/interregnum/textures/block")
@@ -284,7 +285,103 @@ def warden_statue_top(seed=31):
     return img
 
 
+# --- the walking Warden ------------------------------------------------------
+#
+# An ENTITY sheet, not a block texture: one 128x128 atlas holding the unwrapped net
+# of every box in the model. Nothing here tiles, so none of the wrap-aware machinery
+# above applies -- but the palette law still does, and so does the rule that made
+# the statue work: the eyes are the only warm pixels on an entirely cool figure.
+#
+# The box sizes below are duplicated in WardenModel.java, and that is a real seam.
+# tools/entity_sheet_check.py exists to make it a checked one: if a box moves in the
+# model and not here, its net lands on somebody else's pixels and the check says so.
+
+ENTITY = os.path.join(REPO, "src/main/resources/assets/interregnum/textures/entity")
+
+
+def _plate(img, rect, base=2, rim=1):
+    """A panel of worked metal: flat interior, one pixel of darker rim.
+
+    The rim is what stops a box reading as a flat sticker at distance -- every
+    vanilla mob does some version of this, and without it the silhouette is the
+    only thing carrying the model.
+    """
+    x0, y0, w, h = rect
+    for y in range(y0, y0 + h):
+        for x in range(x0, x0 + w):
+            edge = x in (x0, x0 + w - 1) or y in (y0, y0 + h - 1)
+            img.set(x, y, pal("metal", rim if edge else base) + (255,))
+
+
+def _row(img, rect, ry, colour, margin=1):
+    """A horizontal seam across a face, inset from its edges."""
+    x0, y0, w, _ = rect
+    for x in range(x0 + margin, x0 + w - margin):
+        img.set(x, y0 + ry, colour + (255,))
+
+
+def warden_entity(seed=31):
+    """The Warden on its feet.
+
+    Same species as the statue and it has to read that way instantly, so it
+    inherits the statue's two decisions wholesale: cold worked metal everywhere
+    (HELD -- this was maintained, and that is what stopped), and a recessed dark
+    visor whose two ember slots are the ONLY warm pixels on the entire sheet.
+
+    docs/MODELS.md: one dominant facing cue, and everything that competes with it
+    gets cut. The rank plate on the left shoulder is therefore metal and not brass,
+    even though brass is what an insignia wants to be -- a second warm mark on the
+    body would split the read at exactly the distance the cue has to survive.
+    """
+    spec = WARDEN
+    img = Image(*spec.sheet)           # transparent; only the nets are painted
+    box = {}                           # part name -> face rects, for the detail pass
+    for part in spec.parts:
+        for i, b in enumerate(part.boxes):
+            key = part.name if i == 0 else f"{part.name}:{i}"
+            box[key] = b.faces()
+            for rect in box[key].values():
+                _plate(img, rect)
+
+    # The mantle (the head's second box): darker underside, so the brim reads as an
+    # overhang shading the face rather than as a hat sitting on top of it.
+    _plate(img, box["head:1"]["down"], base=0, rim=0)
+
+    # The face. Three rows of visor recess across the head's north face, two ember
+    # slots in the middle. Clipped inside the plate rim on purpose -- the statue's
+    # first version overflowed its face band and read as "a box with ears".
+    front = box["head"]["north"]
+    for ry in (2, 3, 4):
+        _row(img, front, ry, pal("metal", 0), margin=1)
+    fx, fy = front[0], front[1]
+    for ex in (2, 4):
+        img.set(fx + ex, fy + 3, pal("ember", 2) + (255,))
+    # A dimmer pixel under each slot: at 16 blocks the eyes are the whole mob, and
+    # a single lit pixel disappears into the dark band around it.
+    for ex in (2, 4):
+        img.set(fx + ex, fy + 4, pal("ember", 0) + (255,))
+
+    # Chest seam and belt, matching the statue's front face.
+    _row(img, box["torso"]["north"], 4, pal("metal", 0), margin=2)
+    _row(img, box["torso"]["north"], 10, pal("metal", 0), margin=1)
+    _row(img, box["torso"]["south"], 4, pal("metal", 0), margin=2)
+
+    # The hem, on every side of the robe's lower step, so the flare reads from any
+    # angle -- including from directly behind, which is the view a player following
+    # a Warden gets for minutes at a time.
+    for face in ("north", "south", "east", "west"):
+        _row(img, box["robe_lower"][face], 8, pal("metal", 0), margin=0)
+
+    # The rank plate: brighter than the body it sits on, which is the only way a
+    # 5x4 box says "raised" instead of "painted on".
+    for rect in box["pauldron"].values():
+        _plate(img, rect, base=3, rim=1)
+
+    return img
+
+
 ASSETS = {
+    (ENTITY, "warden"): warden_entity,
     (BLOCK, "shrine_stone"): shrine_stone,
     (BLOCK, "shrine_stone_carved"): shrine_stone_carved,
     (BLOCK, "stele_side"): stele_side,

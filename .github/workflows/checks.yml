@@ -102,3 +102,6 @@ jobs:
 
       - name: The overworld spends itself, and stops where it must
         run: ./tools/unravel_check.sh
+
+      - name: A Warden exists, and cannot attack anyone
+        run: ./tools/warden_check.sh

@@ -21,5 +21,6 @@
   "item.interregnum.clast": "Clast",
   "itemGroup.interregnum.main": "INTERREGNUM",
   "block.interregnum.warning_stele": "Warning Stele",
-  "block.interregnum.warden_statue": "Warden Statue"
+  "block.interregnum.warden_statue": "Warden Statue",
+  "entity.interregnum.warden": "Warden"
 }

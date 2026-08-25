@@ -111,6 +111,44 @@ def check_items(lang, block_names):
     return sorted(set(simple)), sorted(set(block_items))
 
 
+def check_entities(lang):
+    """An entity needs four things, and missing any of them is invisible at boot.
+
+    A block with no model is a purple cube the moment you look at a wall. An entity
+    with no renderer, or a renderer whose layer definition was never registered,
+    starts a server and a client perfectly happily and then throws the first time
+    one walks into view -- so the pairing gets asserted here instead, statically,
+    with nothing on the classpath.
+    """
+    names = registered("ModEntities.java", r'registerEntityType\(\s*\n?\s*"([a-z_0-9]+)"')
+    if not names:
+        fails.append("ModEntities.java: no registered entities found -- has the "
+                     "registration API changed? This check would then be blind.")
+    client = os.path.join(REPO, "src/main/java/com/cadykaya/interregnum/client")
+    setup = ""
+    setup_path = os.path.join(client, "ClientSetup.java")
+    if os.path.exists(setup_path):
+        setup = open(setup_path).read()
+    for n in names:
+        const = n.upper()
+        if f"entity.interregnum.{n}" not in lang:
+            fails.append(f"entity {n}: no translation key")
+        tex = os.path.join(A, "textures/entity", n + ".png")
+        if not os.path.exists(tex):
+            fails.append(f"entity {n}: no texture at textures/entity/{n}.png")
+        if f"ModEntities.{const}" not in setup:
+            fails.append(f"entity {n}: no renderer registered in ClientSetup "
+                         f"-- it will throw the first time one is seen")
+        geometry = os.path.join(client, "".join(
+            p.capitalize() for p in n.split("_")) + "Geometry.java")
+        if not os.path.exists(geometry):
+            fails.append(f"entity {n}: no generated geometry -- run gen_resources.py")
+        elif "registerLayerDefinition" not in setup:
+            fails.append(f"entity {n}: geometry exists but no layer definition is "
+                         f"registered; baking its model will throw")
+    return names
+
+
 def main():
     lang_path = os.path.join(A, "lang/en_us.json")
     lang = json.load(open(lang_path)) if os.path.exists(lang_path) else {}
@@ -119,6 +157,7 @@ def main():
 
     blocks = check_blocks(lang)
     items, block_items = check_items(lang, blocks)
+    entities = check_entities(lang)
 
     for w in warns:
         print(f"warn: {w}")
@@ -128,7 +167,8 @@ def main():
             print("  -", f)
         return 1
     print(f"\nOK: {len(blocks)} block(s), {len(items)} item(s), "
-          f"{len(block_items)} block item(s); all resolve models, textures and names")
+          f"{len(block_items)} block item(s), {len(entities)} entity(s); "
+          f"all resolve models, textures and names")
     return 0
 
 

@@ -22,6 +22,13 @@ python3 tools/registry_check.py
 echo "== unraveling =="
 python3 tools/unraveling_check.py
 
+echo "== entity specs =="
+# Validates on import: no two box nets may overlap and none may run off the sheet.
+# Overlapping nets do not crash -- they render, wrongly, with one box wearing a
+# slice of another's paint.
+python3 -c "import sys; sys.path.insert(0,'tools'); import entity_specs as e; \
+print(f'OK: {len(e.SPECS)} entity spec(s), nets do not collide')"
+
 echo "== client leak =="
 python3 tools/client_leak_check.py
 
@@ -39,7 +46,11 @@ echo "== generated assets current =="
 # that regeneration itself changes are stale committed output. Reporting "stale"
 # when the real cause is "you have not committed yet" is how a check earns a
 # reputation for crying wolf, and a check people ignore is worse than none.
-WATCH="src/main/resources src/generated/resources assets/palette.json"
+# The client package is watched because entity GEOMETRY is generated Java: a box
+# resized in the spec without regenerating leaves the model and its texture net
+# disagreeing, which garbles the skin and raises nothing anywhere.
+WATCH="src/main/resources src/generated/resources assets/palette.json
+       src/main/java/com/cadykaya/interregnum/client"
 TMPB=$(mktemp); TMPA=$(mktemp)
 trap 'rm -f "$TMPB" "$TMPA"' EXIT
 git status --porcelain -- $WATCH | awk '{print $2}' | sort > "$TMPB"

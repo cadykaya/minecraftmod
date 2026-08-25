@@ -177,6 +177,37 @@ black shape at icon size, painting will not save it.
 `VERIFY:` — entity models are **Java**, not JSON, and the class names and builder APIs move
 between versions. Read the sources.
 
+### The bench: `tools/entity_view.py`
+
+Everything below says *look at it*, and until this existed there was no way to. A texture
+sheet shows unwrapped nets, which is exactly the view that tells you nothing about the
+assembled figure, and the game is the only other renderer available.
+
+So the geometry lives in `tools/entity_specs.py` and three things read it: the texture
+painter (to place each box's net), `gen_resources.py` (which writes the `*Geometry.java`
+the game bakes), and the viewer, which ray-casts the boxes orthographically and samples the
+real texture through Minecraft's own unwrap. What it draws is what the model will be,
+because it is built from the numbers the model is built from.
+
+```sh
+python3 tools/entity_view.py warden                 # front / three-quarter / side / rear
+python3 tools/entity_view.py warden --silhouette    # the test that actually decides
+```
+
+**It earned its keep on the first mob.** The Warden's robe was one box, and it looked
+plausible as a net and plausible from the front. Assembled, in profile, it was a bollard —
+the "judge it with the head hidden" failure below, arriving exactly as advertised. Splitting
+the robe into two stepped boxes fixed it, and that decision was only available because the
+figure could be seen.
+
+**Known limit, stated rather than discovered later:** the Warden is weakest in pure profile,
+where the arms sit inside the torso's depth and contribute nothing to the outline. Vanilla
+humanoids have the same property, so this is accepted rather than solved — but it is the
+first thing to fix if a Warden ever needs to read side-on.
+
+Two things the viewer will not tell you: how the model looks **animated**, and how it looks
+**lit**. Both still need a client.
+
 The shape of it is stable even when the API is not: a hierarchy of boxes, defined once as a
 layer definition with a fixed texture size, then posed per-frame. Boxes are placed in model
 space, each carrying a UV origin into a single atlas texture — commonly 64×64 or 64×32.
