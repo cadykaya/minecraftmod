@@ -1,0 +1,5 @@
+// Loader-independent game logic: no Minecraft, no NeoForge, no dependencies at
+// all. Compiles and self-tests offline (tools/check_all.sh uses javac directly;
+// this file exists so the future game module can `implementation project(':core')`).
+plugins { id 'java-library' }
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }

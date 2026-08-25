@@ -1,0 +1,106 @@
+{
+  "_comment": "First written scene: Warden intake interrogation, fires on first Warden contact after the death. Deliberately small and exercises every resolution rule once. Schema mirrored by tools/dialogue_check.py and core DialogueGraph. Wardens speak in procedure (dread covenant: they never quip).",
+  "id": "warden_intake",
+  "start": "open",
+  "nodes": [
+    {
+      "id": "open",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_intake.open",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "comply",
+          "text_key": "interregnum.dlg.warden_intake.open.comply",
+          "target": "census"
+        },
+        {
+          "id": "refuse",
+          "text_key": "interregnum.dlg.warden_intake.open.refuse",
+          "target": "census"
+        },
+        {
+          "id": "mark",
+          "text_key": "interregnum.dlg.warden_intake.open.mark",
+          "target": "noted",
+          "required_tags": [
+            "class/theoclast"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "census",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_intake.census",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "mining",
+          "text_key": "interregnum.dlg.warden_intake.census.mining",
+          "target": "fixate"
+        },
+        {
+          "id": "home",
+          "text_key": "interregnum.dlg.warden_intake.census.home",
+          "target": "fixate"
+        },
+        {
+          "id": "together",
+          "text_key": "interregnum.dlg.warden_intake.census.together",
+          "target": "attest"
+        }
+      ]
+    },
+    {
+      "id": "fixate",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_intake.fixate",
+      "rule": "ROLL",
+      "options": [
+        {
+          "id": "hold",
+          "text_key": "interregnum.dlg.warden_intake.fixate.hold",
+          "target": "attest"
+        },
+        {
+          "id": "look_away",
+          "text_key": "interregnum.dlg.warden_intake.fixate.look_away",
+          "target": "attest"
+        }
+      ]
+    },
+    {
+      "id": "attest",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_intake.attest",
+      "rule": "UNANIMOUS",
+      "options": [
+        {
+          "id": "attest_yes",
+          "text_key": "interregnum.dlg.warden_intake.attest.yes",
+          "target": "close"
+        },
+        {
+          "id": "attest_no",
+          "text_key": "interregnum.dlg.warden_intake.attest.no",
+          "target": "noted"
+        }
+      ]
+    },
+    {
+      "id": "close",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_intake.close",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "noted",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_intake.noted",
+      "rule": "INITIATOR",
+      "options": []
+    }
+  ]
+}

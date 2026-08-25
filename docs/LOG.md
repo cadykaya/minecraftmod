@@ -104,3 +104,31 @@ No code yet. Phase 1 is defined in HANDOFF: "Chapter 0 and the Death," overworld
 beat every candidate on the shortlist by meaning both *god-breaker* and *god-fragment*
 simultaneously (iconoclast vs pyroclast). Splinters renamed to **clasts**. The four-voices
 naming (Theoclast / Usurper / saint / Executor) is locked in WORLD.md.
+
+---
+
+## Phase 1a — first verified artifacts (autonomous build-out begins)
+
+Owner delegated full build authority; hourly heartbeat to be armed with agreed wording.
+
+**Environment finding that shapes everything:** the egress proxy blocks
+`maven.neoforged.net`, `libraries.minecraft.net`, and `piston-meta.mojang.com` — the
+whole NeoForge dependency chain. Java 21, Gradle, and Maven Central are open. So the
+build order flips: everything loader-independent first, the game module the moment the
+owner opens the allowlist. NeoForge 26.2.0.67 recorded from search, marked VERIFY.
+
+**Built and verified this pass:**
+- `core/` dialogue engine — pure Java, zero deps: graphs validated at construction,
+  four resolution rules (INITIATOR/VOTE/ROLL/UNANIMOUS), stances preserved for the
+  table, UNANIMOUS dissent → REPROMPT. 15 self-test checks, verified by three engine
+  mutations (each caught) — after first catching the test harness itself reporting
+  grep's exit code instead of the JVM's (LESSONS #4).
+- First written scene: `warden_intake` — exercises every rule; procedure-voice per the
+  dread covenant. `tools/dialogue_check.py` mirrors the Java validation + lang coverage,
+  verified by breaking the scene.
+- Phase-1 draft textures: shrine_stone (calm uniform ashlar — two failed iterations
+  recorded in the builder comments), shrine_stone_carved (ornament band, first pass read
+  as ASCII), god_heart, clast. All palette-legal; block models + blockstates generated.
+- `tools/client_leak_check.py` (verified by planting a leak) and `tools/check_all.sh` —
+  the single gate: palette, dialogue, leak, core selftest, generated-asset staleness,
+  doc links.

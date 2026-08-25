@@ -1,0 +1,7 @@
+// Root project. The NeoForge game module is NOT included yet: this environment's
+// network policy blocks maven.neoforged.net and Mojang's servers, so including a
+// module whose plugin cannot resolve would break every gradle invocation.
+// When the allowlist opens (docs/HANDOFF.md "Waiting on owner"), add the game
+// module here and wire ModDevGradle per docs/PLATFORM.md.
+rootProject.name = 'interregnum'
+include 'core'

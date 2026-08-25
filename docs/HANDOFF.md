@@ -6,9 +6,11 @@ says what is *currently true*; everything else says what is *always true*.
 Updated at every phase boundary, so that if a session ends — for any reason — the next one
 picks up cold without archaeology.
 
-**Last updated:** the subject is decided. The mod is **INTERREGNUM** — see
-[`WORLD.md`](WORLD.md), the product of a long workshop session with the owner. Still no
-mod code; that is now the next real work.
+**Last updated:** autonomous build-out has begun; owner has delegated build authority
+and an hourly heartbeat is being set up. **First code exists and is verified**: the
+dialogue engine (core), the first written scene, the Phase-1 texture set, and the check
+gate. The NeoForge toolchain itself is **blocked on the environment's network policy** —
+see "Waiting on owner", item 1.
 
 ---
 
@@ -64,6 +66,24 @@ overturn them on grounds rather than taste.
 
 ---
 
+## Waiting on owner
+
+1. **Network allowlist — BLOCKS THE ACTUAL MOD BUILD.** This environment's egress proxy
+   blocks the NeoForge/Mojang toolchain. In the Claude Code environment settings, allow:
+   `maven.neoforged.net`, `libraries.minecraft.net`, `piston-meta.mojang.com`,
+   `piston-data.mojang.com`, `resources.download.minecraft.net`, `maven.parchmentmc.org`,
+   and (already open) `services.gradle.org` + Maven Central. Until then, work continues on
+   everything loader-independent.
+2. **License** (`mod_license` in `gradle.properties`). Owner's call. Common picks: MIT
+   (permissive, packs and forks welcome) or ARR (all rights reserved). Not blocking dev;
+   blocking any public release.
+3. **A `main` branch.** The repo's only branch is the dev branch, so no PR can exist.
+   If review-by-PR is wanted: create `main` on GitHub (or say the word and it will be
+   created from the current dev head) and PRs start flowing. If not, work continues on
+   the dev branch alone.
+4. **Playtesting.** This container has no game client. When Phase 1 compiles, the owner
+   is the playtester; the handoff will say exactly what to look at.
+
 ## Open questions
 
 ### Answered this session
@@ -106,22 +126,27 @@ was the same in spirit — *"You know this stuff better than i do"* — so:
 
 ## What to do next
 
-In order:
+Done this pass: core dialogue engine (+15 verified checks), first scene + validator,
+client-leak guard, `tools/check_all.sh` gate, Phase-1 draft textures (shrine stone,
+carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
 
-1. **Create the Gradle project** — MDG, Java 21, NeoForge 26.2.x. Look up the real build
-   number; `PLATFORM.md` deliberately does not contain one.
-2. **Clear the `VERIFY:` debt** against the NeoForge sources once the Gradle cache exists.
-3. **Tier 1 tests before content** — registry completeness, client-leak grep, datagen
-   staleness (`VERIFICATION.md`).
-4. **Phase 1 vertical slice — "Chapter 0 and the Death"**, overworld only, no dimensions,
-   no ferry: shrine + steles + Warden statues (inert) → heart loot → server-wide death
-   event (sky, crater, statues wake) → first unraveling band → splinters + first-class
-   skeleton → Warden patrols + citations. This is a complete, shippable horror-comedy mod
-   on its own.
-5. **Dialogue v1** — state machine + one screen + the Warden interrogation as the first
-   written scene (small, tests every resolution rule).
-6. **First block end-to-end** through the art pipeline (shrine-stone family is the obvious
-   candidate), beside its vanilla neighbour, at play distance.
+In order, all unblocked unless marked:
+
+1. **More Chapter-0/1 content that needs no toolchain:** stele texture + god-script
+   variants, Warden statue/entity texture concepts, more dialogue scenes (shrine-keeper;
+   the first dream-audience), unraveling band 1 block-conversion table (data), shrine
+   structure layout sketch (as a plan for the structure NBT).
+2. **Core-side logic that is loader-independent:** chapter state machine, regard
+   (per-institution reputation) model, citation record model — each with a verified
+   self-test, wired into `check_all.sh`.
+3. **[BLOCKED on network allowlist]** Real Gradle game module, MDG, first compile; then
+   clear every `VERIFY:` marker against the NeoForge sources and write the registry
+   completeness test.
+4. **[BLOCKED on same]** Phase 1 vertical slice in Java: shrine structure + heart loot →
+   death event → statue wake → first unraveling band → clasts + Theoclast skeleton →
+   Warden patrols/citations. The art and data above all feed this.
+5. **Dialogue screen** (client) once the toolchain exists — the engine and first scene
+   are already done and tested.
 
 ## Standing warning
 

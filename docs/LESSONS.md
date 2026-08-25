@@ -99,3 +99,23 @@ doc set. Modding churns harder than almost anything else in software.
 every API specific in these docs carries a `VERIFY:` marker instead of a confident
 signature — and why the NeoForge sources in the Gradle cache are named as the real
 authority.*
+
+---
+
+## 4. Measure the process you mean, not the pipeline's tail
+
+*Learned while verifying the dialogue engine's self-test by mutation.*
+
+Three deliberate bugs were introduced; the test printed `FAIL:` for each — and the
+harness reported `exit=0` every time. The mutations were fine and the checks were fine:
+the shell line was `java ... | grep -v noise; echo $?`, and **`$?` was grep's exit code,
+not the JVM's.** Piping a program through a filter replaces its exit status with the
+filter's.
+
+This is DOWNTIME's *"a filter that cannot express failure will only ever report success"*
+in shell form, committed within the hour of porting that exact sentence into
+`VERIFICATION.md`. Knowing the rule does not exempt you from it — that is now two for two.
+
+**Fixes:** redirect instead of piping when the exit code matters (`java ... >out.txt 2>&1;
+echo $?`), or use `PIPESTATUS`. `tools/check_all.sh` runs every stage bare under `set -e`
+for this reason.

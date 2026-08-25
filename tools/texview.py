@@ -77,7 +77,15 @@ def stats(img, label):
 
 
 def main(argv):
-    args = [a for a in argv if not a.startswith("--")]
+    # positional args = everything that is not a flag and not a flag's VALUE.
+    # (--sheet out.png: 'out.png' is a value, not an input -- treating it as an
+    # input made sheet mode try to read its own output file.)
+    VALUED = {"--tile", "--scale", "--out", "--sheet"}
+    consumed = set()
+    for i, a in enumerate(argv):
+        if a in VALUED and i + 1 < len(argv):
+            consumed.add(i + 1)
+    args = [a for i, a in enumerate(argv) if not a.startswith("--") and i not in consumed]
     def opt(name, default=None, cast=str):
         if name in argv:
             return cast(argv[argv.index(name) + 1])

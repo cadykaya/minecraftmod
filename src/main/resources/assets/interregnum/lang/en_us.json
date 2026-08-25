@@ -1,0 +1,22 @@
+{
+  "interregnum.dlg.warden_intake.open": "This unit is conducting a census of the living. Attendance was nine hundred and forty-one. Attendance is now nine hundred and forty. State your presence.",
+  "interregnum.dlg.warden_intake.open.comply": "We're here. We're present.",
+  "interregnum.dlg.warden_intake.open.refuse": "You don't have the authority to count us.",
+  "interregnum.dlg.warden_intake.open.mark": "Say nothing. The warmth in your chest says it for you.",
+  "interregnum.dlg.warden_intake.census": "At the hour the tolling stopped, where were you? Answers will be recorded in aggregate.",
+  "interregnum.dlg.warden_intake.census.mining": "Mining. Like always.",
+  "interregnum.dlg.warden_intake.census.home": "Home. Ask the door.",
+  "interregnum.dlg.warden_intake.census.together": "Together. All of us. The whole time.",
+  "interregnum.dlg.warden_intake.fixate": "One of you is standing closer to the silence than the others. This unit has not yet determined which.",
+  "interregnum.dlg.warden_intake.fixate.hold": "Hold its gaze.",
+  "interregnum.dlg.warden_intake.fixate.look_away": "Look at your shoes. Your very interesting shoes.",
+  "interregnum.dlg.warden_intake.attest": "The Wardenate requires a statement of collective innocence. All present must attest. The statement is not valid if any voice abstains.",
+  "interregnum.dlg.warden_intake.attest.yes": "We attest.",
+  "interregnum.dlg.warden_intake.attest.no": "I won't sign that.",
+  "interregnum.dlg.warden_intake.close": "Attested. Filed. This unit thanks you for your continued existence, which will be re-verified at the next census.",
+  "interregnum.dlg.warden_intake.noted": "Noted. This unit has amended the record. The record now contains your name, and room for further entries.",
+  "block.interregnum.shrine_stone": "Shrine Stone",
+  "block.interregnum.shrine_stone_carved": "Carved Shrine Stone",
+  "item.interregnum.god_heart": "A Warm Gold Thing",
+  "item.interregnum.clast": "Clast"
+}
