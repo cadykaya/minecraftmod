@@ -132,3 +132,27 @@ owner opens the allowlist. NeoForge 26.2.0.67 recorded from search, marked VERIF
 - `tools/client_leak_check.py` (verified by planting a leak) and `tools/check_all.sh` —
   the single gate: palette, dialogue, leak, core selftest, generated-asset staleness,
   doc links.
+
+---
+
+## Phase 1b — core state, mutation testing, and the heartbeat
+
+**Owner decisions:** MIT license; `main` branch created (pinned at the Foundations commit
+so PR #1 carries the whole INTERREGNUM body of work as a reviewable diff); owner is the
+playtester; hourly heartbeat approved and armed.
+
+**Network:** still denied. Diagnosed precisely rather than assumed — the gateway answers
+403 to CONNECT and the proxy logs a per-host policy denial. The owner allowed the domains,
+but network policy is applied at container start, so this long-running session keeps the
+old set. HANDOFF carries a one-line re-probe for future sessions; the heartbeat runs it
+every tick.
+
+**Built:** chapter state machine (milestone-driven, derived-not-stored, monotonic in both
+directions) and the regard model (per-institution standing, bands not numbers, permanent
+ceilings that make a deicide a scar rather than a debt).
+
+**The pass's real finding:** `tools/mutate_check.py`. Run against a self-test that had
+already passed 44 checks and been hand-verified against three mutations, it found **two
+surviving mutations** — both assertions correct, both blind. Hand-checking a few mutations
+is not checking them all. Now a tool, wired into the gate, 11 mutations all caught.
+Recorded as LESSONS #5.

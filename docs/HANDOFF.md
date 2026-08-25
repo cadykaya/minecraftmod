@@ -66,6 +66,23 @@ overturn them on grounds rather than taste.
 
 ---
 
+## The heartbeat
+
+An hourly Routine (`INTERREGNUM heartbeat`, `trig_01KE2aMo3eAqVz72AtPoJZNW`) fires into
+this same session, so it keeps full context. Its prompt is the agreed working contract:
+one focused increment per tick, single repo, single branch, never force-push, new scope is
+the owner's call, `tools/check_all.sh` green before every commit, and a two-tick circuit
+breaker — if all work is blocked or the same failure repeats twice, it stops and says so
+rather than improvising.
+
+**Known limitation:** the Routine carries no MCP connectors, so heartbeat ticks have **no
+GitHub API tools**. Git over HTTPS still works, so commit and push are fine and PR #1
+updates automatically with each push. A tick **cannot** open a new PR, post a comment, or
+read PR reviews — if a tick needs any of those, it should record the need in this file and
+the owner (or an interactive session) does it.
+
+To pause it: ask, or disable the Routine from the claude.ai Routines UI.
+
 ## Waiting on owner
 
 1. **Network allowlist — BLOCKS THE ACTUAL MOD BUILD.** The egress proxy denies the
