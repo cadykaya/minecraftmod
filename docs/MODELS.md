@@ -144,10 +144,41 @@ one appears; do not quietly widen it.
 
 ## Item models
 
-`VERIFY: this is the highest-churn area in the whole client stack.` The item model system
-was reworked during the 1.21 line (a separate `items/` definition layer, model *types*,
-and condition/select/range dispatch replacing the old override system) and the details may
-well have moved again by 26.2. **Read a real project before writing these.**
+**VERIFIED against 26.2.0.67**, read out of the vanilla jar. The remembered shape turned
+out to be right, and it is now evidence instead of memory.
+
+There are **two layers**, and conflating them is the mistake:
+
+| file | what it is |
+|---|---|
+| `assets/<ns>/items/<name>.json` | the **definition**. Names a model, and is where dispatch lives. |
+| `assets/<ns>/models/item/<name>.json` | the **model**, for flat items. Parent + `layer0`. |
+
+A flat item needs both:
+
+```json
+// items/clast.json                    // models/item/clast.json
+{ "model": {                           { "parent": "minecraft:item/generated",
+    "type": "minecraft:model",           "textures": {
+    "model": "interregnum:item/clast"      "layer0": "interregnum:item/clast" } }
+} }
+```
+
+A **block item needs only the definition**, pointing straight at the block model, with no
+`models/item/` file at all — which is exactly how vanilla ships `stone`.
+
+The `type` field is the dispatch system that replaced overrides. Counted across all 1538
+vanilla item definitions in 26.2: `minecraft:model` (2131 uses), `special` (91), `select`
+(71), `dye` (50), `composite` (33), `condition` (26), `constant` (12), plus item-specific
+ones like `shulker_box` and `banner`. `range_dispatch` carries `entries` with `threshold`
+and a `fallback` — a drawn bow is the canonical example.
+
+> **This mod shipped six registered items and zero definitions**, and every check was
+> green: a dedicated server never loads `assets/`, so nothing in CI could see it, and
+> `registry_check.py` was asserting translation keys while its summary line claimed items
+> "resolve models". All six would have been the missing-model cube in front of a player.
+> That check now verifies the definition exists and the model it names resolves.
+> [`LESSONS.md`](LESSONS.md) #5, in the one area this container cannot look at directly.
 
 What is stable regardless of format:
 
@@ -174,8 +205,10 @@ black shape at icon size, painting will not save it.
 
 ## Entity models
 
-`VERIFY:` — entity models are **Java**, not JSON, and the class names and builder APIs move
-between versions. Read the sources.
+**VERIFIED by this repo's own compiling code** on 26.2.0.67: entity models are **Java**,
+not JSON — `WardenModel` and `ShrineKeeperModel` are built from `LayerDefinition` /
+`MeshDefinition` and registered against `EntityRenderersEvent.RegisterLayerDefinitions`.
+The builder APIs still move between versions; read the sources rather than a tutorial.
 
 ### The bench: `tools/entity_view.py`
 

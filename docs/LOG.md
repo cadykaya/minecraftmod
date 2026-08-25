@@ -1206,3 +1206,48 @@ for any mob that has one -- a headless server can never reach mobInteract, so wi
 it an NPC's choice of opening is observable only by playing.
 
 Watched failing: with the unit never noticing the god died, the check says exactly that.
+
+---
+
+## Six items that would have been purple cubes
+
+The tick's task was clearing the `VERIFY:` markers in WORLDGEN.md, DATAGEN.md and
+MODELS.md -- documentation debt, written before this container could reach the NeoForge
+docs, and flagged since as things not to trust. The mod builds and runs now, so most of
+them can be settled against artifacts on disk rather than against a website.
+
+Most were confirmations. The biome modifier shape, the placement modifier names and the
+`neoforge/biome_modifier/` path all check out against the JSON this repo's own datagen
+writes. `/perf start` and `/perf stop` are the profiler. The item model system had been
+guessed at from memory -- "a separate items/ layer, model types, condition/select/range
+dispatch" -- and the guess was right, which is worth recording precisely because it now
+rests on 1538 counted vanilla files instead of on recall.
+
+Two were real corrections. The datagen task is `runServerData`; `runData` does not
+exist. And `dimension_type` is where 26.2 moved the furniture: `ultra_warm`, `natural`,
+`bed_works`, `respawn_anchor_works`, `piglin_safe` and `has_raids` are gone as top-level
+fields and now live in a namespaced `attributes` map -- `minecraft:gameplay/water_evaporates`,
+`minecraft:gameplay/bed_rule`, and so on -- alongside a new `visual/` and `audio/`
+namespace. `fixed_time` is gone too, replaced by `default_clock` and a `timelines` tag.
+A pre-2026 answer here would have been confidently, uniformly wrong, which is exactly
+what LESSONS #3 said would happen.
+
+That one is not just a correction, it is a gift to the design. WORLD.md has each god-world
+teaching its own rule before arrival; the Quiet One's silence is `minecraft:audio/*` and
+`minecraft:gameplay/sky_light_level` entries, not code.
+
+Then the finding. Verifying MODELS.md's item-model section meant looking at what this repo
+actually ships, and it ships SIX registered items and ZERO item definitions. Every check
+green. A dedicated server never loads assets/, so nothing in CI could see it -- and
+registry_check.py was asserting translation keys while its own summary line said items
+"resolve models". All six would have been the missing-model cube in front of a player.
+
+Both halves fixed: the definitions are written (block items point straight at the block
+model, flat items get a definition plus a generated model), and registry_check now asserts
+every registered item has a definition and that the model it names resolves. Watched
+failing three ways: no definition, a definition naming a model that does not exist, and a
+block model renamed out from under a block item.
+
+The transferable part is not "write your item models". It is that **the one area this
+container cannot look at directly is the one where a check's summary line has to be read
+twice.** The line said "all resolve models". It had never been true.

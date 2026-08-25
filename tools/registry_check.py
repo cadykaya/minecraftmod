@@ -108,6 +108,39 @@ def check_items(lang, block_names):
         n = const.lower()
         if n not in block_names:
             fails.append(f"block item for {const}: no such registered block {n}")
+
+    # Every item needs a DEFINITION in assets/<ns>/items/, and this check did not
+    # look for one until six items had shipped without any -- while its own summary
+    # line claimed everything "resolves models". In a client all six would have been
+    # the missing-model cube; a dedicated server never loads assets, so nothing in
+    # CI could notice. That is docs/LESSONS.md #5 exactly: a check that passes
+    # either way is not a check.
+    #
+    # 26.2 splits this in two (VERIFIED against the vanilla jar):
+    #   assets/<ns>/items/<name>.json   the DEFINITION -- names a model, and is
+    #                                   where condition/select/range dispatch lives
+    #   assets/<ns>/models/item/<name>.json  the model itself, for flat items
+    # A block item's definition points straight at `<ns>:block/<name>` and has no
+    # models/item/ file at all, which is how vanilla ships `stone`.
+    for n in sorted(set(simple)) + [c.lower() for c in sorted(set(block_items))]:
+        defn = os.path.join(A, "items", f"{n}.json")
+        if not os.path.exists(defn):
+            fails.append(f"item {n}: no assets/interregnum/items/{n}.json -- "
+                         f"it renders as the missing-model cube")
+            continue
+        try:
+            model = json.load(open(defn)).get("model", {}).get("model", "")
+        except (ValueError, AttributeError):
+            fails.append(f"item {n}: items/{n}.json is not a model definition")
+            continue
+        if not model.startswith("interregnum:"):
+            fails.append(f"item {n}: definition names {model!r}, not one of ours")
+            continue
+        kind, _, path = model.partition(":")[2].partition("/")
+        target = os.path.join(A, "models", kind, f"{path}.json")
+        if not os.path.exists(target):
+            fails.append(f"item {n}: definition points at {model}, "
+                         f"but {target} does not exist")
     return sorted(set(simple)), sorted(set(block_items))
 
 
@@ -168,7 +201,7 @@ def main():
         return 1
     print(f"\nOK: {len(blocks)} block(s), {len(items)} item(s), "
           f"{len(block_items)} block item(s), {len(entities)} entity(s); "
-          f"all resolve models, textures and names")
+          f"all resolve models, textures and names -- items included")
     return 0
 
 

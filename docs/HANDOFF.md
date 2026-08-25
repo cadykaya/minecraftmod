@@ -31,6 +31,27 @@ asserted against a running world rather than against its own source.
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
+### Six items that would have been purple cubes
+
+Clearing the `VERIFY:` markers turned up a shipping bug, which is the argument for
+clearing them.
+
+**26.2 splits item models in two** (verified against the vanilla jar):
+`assets/<ns>/items/<name>.json` is the *definition* — it names a model and is where
+`condition` / `select` / `range_dispatch` live — and `assets/<ns>/models/item/<name>.json`
+is the model itself. A **block item needs only the definition**, pointing straight at the
+block model, exactly as vanilla ships `stone`.
+
+This mod had **six registered items and zero definitions**, and every check was green.
+A dedicated server never loads `assets/`, so nothing in CI could see it — and
+`registry_check.py` was checking translation keys while its summary line claimed items
+"resolve models". All six would have been the missing-model cube in front of a player.
+
+Both halves are fixed: the definitions are written, and `registry_check.py` now asserts
+every registered item has one and that the model it names resolves. Watched failing three
+ways. **The lesson is not "write item models" — it is that the one area this container
+cannot look at directly is the one where a check has to be read twice.**
+
 ### The same unit, one question changed
 
 A Warden conducts a **census of the living** before the death and **takes statements
@@ -765,8 +786,11 @@ In order, all unblocked unless marked:
 4. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
    everything it would render is already proven server-side. Chat works meanwhile.
-5. **Clear remaining `VERIFY:` markers** in MODELS.md, DATAGEN.md, WORLDGEN.md against the
-   sources jar, exactly as PLATFORM.md's were.
+5. **Clear remaining `VERIFY:` markers.** The specific ones in WORLDGEN.md, DATAGEN.md
+   and MODELS.md are now **cleared and marked VERIFIED against 26.2.0.67** (see below).
+   What is left is the standing header caveat on each doc, which should stay: it is the
+   policy, not a debt. ARCHITECTURE.md's remaining markers (capabilities → data
+   attachments, payload/handler registration) are the next real batch.
 
 ## Standing warning
 
