@@ -890,3 +890,34 @@ with its loot table intact (LESSONS #14, in my own test this time). The first ve
 of the check "proved" the keeper stayed on the intact scene after a looting that had
 never happened. Air first, then chest -- and the check now asserts the loot table is
 present before, and gone after, so the setup cannot silently fail again (#15).
+
+## The keeper stays put
+
+CI failed on a check that passes here every time, and it was right to.
+
+`worldgen_check` asserted that an entity was within four blocks of the offering box
+and that its yaw pointed at it. Both are reasonable. Both passed locally, including
+two deliberate back-to-back runs looking for flakiness. The runner failed on the
+first attempt -- because the keeper had a stroll goal, RCON commands arrive seconds
+apart, the server ticks throughout, and by the time anything asked, the keeper had
+walked out of range and looked away.
+
+The interesting part is that the two halves needed different fixes.
+
+The POSITION was a design bug, not a test bug. A shrine-keeper who wanders off leaves
+a player standing at a shrine with a scene and nobody to have it with. They are
+tethered now, and the check asserts the tether -- which is time-invariant -- rather
+than the position, which is merely a consequence of it. CI did not find a bad test
+here. It found a bad mob.
+
+The FACING could not be asserted at all. A mob's yaw is set at placement and
+overwritten by whatever it looks at next, so no later moment still holds the evidence,
+and widening a tolerance would only have made the check pass without checking. The
+arithmetic moved to core/spatial/Facing: four assertions against the four cardinal
+directions, plus the exact shape the shrine uses (stand east of a thing, face west),
+and two mutations. Twenty now, all caught.
+
+LESSONS #21, and its corollary is the part I will need again: a flaky check can be
+perfectly reproducible on one machine. Running it twice here proved nothing, because
+both runs had the same timing. The disagreement between two ENVIRONMENTS is the
+signal; two runs in one environment is not.

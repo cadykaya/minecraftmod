@@ -59,8 +59,12 @@ quietly taught the opposite. Charging somebody for a creeper's work is the kind 
 unfairness that teaches people never to walk near an NPC again, so the check proves
 a death by no player's hand costs nobody.
 
-**Every shrine has one**, placed at worldgen, standing beside the offering box and
-facing it. The spot is chosen rather than fixed -- the court has missing paving by
+**Every shrine has one**, placed at worldgen, standing beside the offering box,
+facing it, and **tethered to the court** (`setHomeTo`, radius 5). The tether is not a
+nicety: without it they stroll away from the shrine they exist to attend and, being
+persistent, never come back — and CI caught exactly that, on a check that passed here
+every time. See [`LESSONS.md`](LESSONS.md) #21, which is the sharpest verification
+lesson in the file. The spot is chosen rather than fixed -- the court has missing paving by
 design, so the first candidate tile with solid footing and two blocks of headroom
 wins, and the shrine gets nobody if none of them do. A keeper standing in a wall is
 worse than a shrine with no keeper.

@@ -1,4 +1,4 @@
-"""Is the shrine-keeper standing on the shrine, facing the offering box?
+"""Is the shrine-keeper tethered to the shrine it was placed at?
 
 Split out of tools/worldgen_check.sh rather than inlined, for a boring reason worth
 recording: the check is a bash script that already uses a heredoc to pass commands to
@@ -6,21 +6,29 @@ the server, and a Python heredoc inside it closed the outer one early and silent
 corrupted the file. Nested heredocs sharing a terminator is a trap with no error
 message worth reading.
 
-Reads the raw `/data get` replies on argv so the parsing lives with the assertions.
+WHAT THIS DELIBERATELY DOES NOT ASSERT: the keeper's facing. A mob's yaw is set once
+at placement and then overwritten by whatever it looks at next, so by the time any
+command can observe it the evidence is gone -- an assertion about a live mob's yaw is
+an assertion about *when you looked*. The arithmetic is tested instead, in
+core/spatial/Facing, where the answer does not move.
 
-    python3 tools/keeper_pos_check.py "<Pos reply>" "<Rotation reply>" <boxX> <boxZ> <floorY>
+The same is true of the exact position, which is why the tolerance here is the mob's
+TETHER radius rather than a tight box: a keeper is allowed to shift about their post,
+and CI proved they do. What is invariant is that they cannot leave it.
+
+    python3 tools/keeper_pos_check.py "<Pos>" "<home_pos>" "<home_radius>" <cx> <cz> <floorY> <tether>
 """
-import math
 import re
 import sys
 
 
 def main():
-    if len(sys.argv) != 6:
-        print("  usage: keeper_pos_check.py <pos> <rot> <boxX> <boxZ> <floorY>")
+    if len(sys.argv) != 8:
+        print("  usage: keeper_pos_check.py <pos> <home_pos> <home_radius> "
+              "<cx> <cz> <floorY> <tether>")
         return 1
-    pos_reply, rot_reply = sys.argv[1], sys.argv[2]
-    box_x, box_z, floor_y = (float(v) for v in sys.argv[3:6])
+    pos_reply, home_reply, radius_reply = sys.argv[1], sys.argv[2], sys.argv[3]
+    cx, cz, floor_y, tether = (float(v) for v in sys.argv[4:8])
 
     pos = re.findall(r"(-?[0-9.]+)d", pos_reply)
     if len(pos) < 3:
@@ -28,34 +36,35 @@ def main():
         return 1
     x, y, z = (float(v) for v in pos[:3])
 
-    # Standing ON the paving. Asserted as a position rather than as mere existence:
-    # an entity that spawned at the wrong Y is still an entity, so "there is a
-    # keeper" would pass happily while the keeper was buried in the floor.
-    if abs(y - floor_y) > 0.01:
-        print(f"  y={y}: not standing on the paving (expected {floor_y})")
-        return 1
-    if max(abs(x - box_x), abs(z - box_z)) > 2.5:
-        print(f"  ({x}, {z}): not beside the offering box at ({box_x}, {box_z})")
+    # On the ground. An entity that spawned at the wrong Y is still an entity, so
+    # "there is a keeper" would pass happily while the keeper was inside the floor.
+    if abs(y - floor_y) > 1.01:
+        print(f"  y={y}: not standing on the shrine (expected about {floor_y})")
         return 1
 
-    # ...and FACING it. A keeper with their back to the thing they exist for is an
-    # error that only ever surfaces in a screenshot, so it gets an assertion. The
-    # first version had the yaw negated and pointed them away from the box.
-    rot = re.findall(r"(-?[0-9.]+)f", rot_reply)
-    if not rot:
-        print(f"  no keeper rotation in reply: {rot_reply!r}")
-        return 1
-    yaw = float(rot[0])
-    # Minecraft yaw: 0 looks along +z, 90 along -x.
-    look = (-math.sin(math.radians(yaw)), math.cos(math.radians(yaw)))
-    to_box = (box_x - x, box_z - z)
-    dist = math.hypot(*to_box) or 1.0
-    dot = (look[0] * to_box[0] + look[1] * to_box[1]) / dist
-    if dot < 0.9:
-        print(f"  yaw {yaw} looks along {look}; the box is at offset {to_box} -- not facing it")
+    # Within the tether. This is the invariant the mob's home radius guarantees --
+    # not a hope about how far it happened to have walked when we looked.
+    if max(abs(x - cx), abs(z - cz)) > tether + 1.5:
+        print(f"  ({x}, {z}): outside the tether around ({cx}, {cz})")
         return 1
 
-    print(f"  keeper attends the box from ({x}, {z}), looking at it (yaw {yaw})")
+    # And the tether is actually SET. Without this the position check above is just
+    # "it has not wandered off yet", which is what passed locally and failed in CI.
+    home = re.findall(r"(-?\d+)", home_reply)
+    if len(home) < 3:
+        print(f"  the keeper has no home position: {home_reply!r}")
+        return 1
+    hx, hy, hz = (int(v) for v in home[:3])
+    if hx != int(cx) or hz != int(cz):
+        print(f"  home is ({hx}, {hy}, {hz}), not the shrine centre ({int(cx)}, {int(cz)})")
+        return 1
+
+    radius = re.findall(r"(-?\d+)", radius_reply)
+    if not radius or int(radius[0]) != int(tether):
+        print(f"  home radius is {radius_reply!r}, expected {int(tether)}")
+        return 1
+
+    print(f"  keeper is at ({x}, {z}), tethered to ({hx}, {hz}) within {int(tether)}")
     return 0
 
 

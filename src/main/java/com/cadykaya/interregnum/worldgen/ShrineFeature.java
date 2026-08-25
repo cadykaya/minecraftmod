@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.ChestBlock;
 
 import com.cadykaya.interregnum.data.ModChestLoot;
 
+import com.cadykaya.interregnum.core.spatial.Facing;
 import com.cadykaya.interregnum.registry.ModBlocks;
 import com.cadykaya.interregnum.registry.ModEntities;
 import com.cadykaya.interregnum.content.entity.ShrineKeeperEntity;
@@ -207,15 +208,17 @@ public class ShrineFeature extends Feature<NoneFeatureConfiguration> {
             if (keeper == null) {
                 return;
             }
-            // Facing the box. Minecraft's yaw is the NEGATED atan2 of the offset
-            // (yaw 0 is +z, 90 is -x), and the offset here points away from the
-            // centre, so both negations are needed and they do not cancel. Getting
-            // it wrong put the keeper with their back to the thing they are here
-            // for, which is the sort of error that only ever shows up in a
-            // screenshot. (`moveTo` is `snapTo` in 26.2; the BlockPos overload
-            // bottom-centres for you.)
-            float facing = (float) -Math.toDegrees(Math.atan2(-d[0], -d[1]));
+            // Facing the box: the offset points away from the centre, so the
+            // vector to look along is its negation. The arithmetic lives in
+            // core/spatial/Facing where it can be tested -- a mob's yaw is
+            // overwritten by whatever it looks at next, so there is no way to
+            // assert this on a live entity after the fact.
+            // (`moveTo` is `snapTo` in 26.2; the BlockPos overload bottom-centres.)
+            float facing = Facing.yawToward(-d[0], -d[1]);
             keeper.snapTo(stand, facing, 0.0F);
+            // Tethered to the court. Without this they stroll away from the shrine
+            // they exist to attend -- and, being persistent, never come back.
+            keeper.setHomeTo(new BlockPos(cx, floorY + 1, cz), ShrineKeeperEntity.TETHER);
             keeper.setPersistenceRequired();
             level.addFreshEntity(keeper);
             return;

@@ -25,9 +25,9 @@ execute if block 8 -61 8 interregnum:shrine_stone_carved run say A_CENTRE_CARVED
 execute if block 6 -61 6 interregnum:shrine_stone run say B_CORNER_PAVING
 execute if block 6 -60 6 interregnum:warning_stele run say C_STELE_STANDS
 execute if block 8 -60 8 minecraft:chest run say D_OFFERING_BOX
-execute positioned 8 -60 8 if entity @e[type=interregnum:shrine_keeper,distance=..4] run say E_KEEPER_ATTENDS
 data get entity @e[type=interregnum:shrine_keeper,limit=1] Pos
-data get entity @e[type=interregnum:shrine_keeper,limit=1] Rotation
+data get entity @e[type=interregnum:shrine_keeper,limit=1] home_pos
+data get entity @e[type=interregnum:shrine_keeper,limit=1] home_radius
 data get block 8 -60 8 LootTable
 interregnum talk scene @e[limit=1,type=interregnum:shrine_keeper]
 setblock 8 -60 8 minecraft:air replace
@@ -42,21 +42,34 @@ grep -q 'Placed "interregnum:shrine"' /tmp/wg_smoke_out.txt || {
     grep -A3 'place feature' /tmp/wg_smoke_out.txt; exit 1; }
 
 missing=""
-for marker in A_CENTRE_CARVED B_CORNER_PAVING C_STELE_STANDS D_OFFERING_BOX E_KEEPER_ATTENDS; do
+for marker in A_CENTRE_CARVED B_CORNER_PAVING C_STELE_STANDS D_OFFERING_BOX; do
     grep -q "$marker" "$LOG" || missing="$missing $marker"
 done
 if [ -n "$missing" ]; then
     echo "FAIL: the shrine placed but is missing:$missing"
     exit 1
 fi
-# Where the keeper is standing and which way they are looking. The parsing lives in
-# tools/keeper_pos_check.py rather than inline: a Python heredoc inside this script
+# Where the keeper is, and what holds them there.
+#
+# The tether is the assertion; the position is a consequence of it. An earlier
+# version asserted "an entity is within four blocks" and "its yaw points at the box",
+# both of which PASSED HERE EVERY TIME and failed on the CI runner -- because RCON
+# commands are seconds apart, the server ticks throughout, and the keeper had simply
+# walked away and looked elsewhere between being placed and being asked about. The
+# assertions were fine; the mob was wrong, and it is now tethered. See LESSONS #21.
+#
+# Facing is not asserted here at all and cannot be: a mob's yaw is overwritten by
+# whatever it looks at next. The arithmetic is tested in core/spatial/Facing instead.
+#
+# The parsing lives in tools/keeper_pos_check.py: a Python heredoc inside this script
 # shares its terminator with the one feeding commands to the server, and nesting them
 # closed the outer one early and corrupted the file with no useful error.
 pos=$(grep -m1 -oE 'Shrine-Keeper has the following entity data: \[[^]]*d\]' /tmp/wg_smoke_out.txt || true)
-rot=$(grep -m1 -oE 'Shrine-Keeper has the following entity data: \[[^]]*f\]' /tmp/wg_smoke_out.txt || true)
-python3 tools/keeper_pos_check.py "$pos" "$rot" 8.5 8.5 -60 || {
-    echo "FAIL: the keeper is not attending the offering box"; exit 1; }
+home=$(grep -m1 -oE 'Shrine-Keeper has the following entity data: \[I; [^]]*\]' /tmp/wg_smoke_out.txt || true)
+radius=$(grep -m1 -oE 'Shrine-Keeper has the following entity data: [0-9-]+' /tmp/wg_smoke_out.txt || true)
+python3 tools/keeper_pos_check.py "$pos" "$home" "$radius" 8 8 -60 5 || {
+    echo "--- keeper replies ---"; grep -E 'Shrine-Keeper' /tmp/wg_smoke_out.txt || true
+    echo "FAIL: the keeper is not tethered to the shrine"; exit 1; }
 
 # --- which scene the keeper opens with -------------------------------------
 #

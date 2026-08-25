@@ -152,6 +152,7 @@ public final class SelfTest {
         try { c.submit("kaya", "a"); } catch (IllegalStateException e) { threw = true; }
         check(threw, "a finished conversation refuses picks");
 
+        facingChecks();
         chapterChecks();
         regardChecks();
         effectChecks();
@@ -215,6 +216,33 @@ public final class SelfTest {
         check(capped.value(Institution.VILLAGES) == 3, "the ceiling clamped the change");
         check(out.get("solo").get(Institution.VILLAGES) == 3,
               "the reported delta is what landed, not what the data asked for");
+    }
+
+    /**
+     * Minecraft's yaw convention, pinned. Asserted against the four cardinal
+     * directions rather than against a formula, because "the formula matches the
+     * formula" is what the broken version would also have passed.
+     */
+    static void facingChecks() {
+        check(near(com.cadykaya.interregnum.core.spatial.Facing.yawToward(0, 1), 0),
+              "looking along +z is yaw 0 (south)");
+        check(near(com.cadykaya.interregnum.core.spatial.Facing.yawToward(-1, 0), 90),
+              "looking along -x is yaw 90 (west)");
+        check(near(com.cadykaya.interregnum.core.spatial.Facing.yawToward(1, 0), -90),
+              "looking along +x is yaw -90 (east)");
+        check(Math.abs(Math.abs(com.cadykaya.interregnum.core.spatial.Facing.yawToward(0, -1)) - 180) < 0.001,
+              "looking along -z is yaw 180 (north)");
+
+        // The shape the shrine actually uses: standing at an offset from something
+        // and turning to look back at it. This is the case that was wrong.
+        int[] offset = {1, 0};                       // keeper is EAST of the box
+        float yaw = com.cadykaya.interregnum.core.spatial.Facing
+                .yawToward(-offset[0], -offset[1]);
+        check(near(yaw, 90), "standing east of a thing, you face west to look at it");
+    }
+
+    static boolean near(float a, double b) {
+        return Math.abs(a - b) < 0.001;
     }
 
     static void chapterChecks() {

@@ -51,6 +51,22 @@ public class ShrineKeeperEntity extends PathfinderMob {
     private static final int BOX_RANGE = 4;
 
     /**
+     * How far a keeper may get from their post, in blocks.
+     *
+     * They are AT something. A keeper who wanders off leaves the player standing at
+     * a shrine with a ledger scene and nobody to have it with, and finds them three
+     * fields away with no idea why they are there.
+     *
+     * This was not a design nicety until CI proved it was a bug. `worldgen_check`
+     * asserts the keeper is beside the box, it passed here every time, and it failed
+     * on the runner -- because RCON commands are seconds apart, the server ticks
+     * throughout, and the keeper had simply walked away between being placed and
+     * being asked about. The assertion was fine. The mob was wrong.
+     * See docs/LESSONS.md #21.
+     */
+    public static final int TETHER = 5;
+
+    /**
      * What killing one costs with the villages.
      *
      * `WORLD.md` says regard is moved by choices **and deeds**, and until now only
@@ -90,8 +106,10 @@ public class ShrineKeeperEntity extends PathfinderMob {
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new LookAtPlayerGoal(this, Player.class, 8.0F, 0.9F));
-        // Barely moves. They are AT something, and wandering off would make the
-        // whole scene a game of chase.
+        // Shifts weight; does not go anywhere. The tether set at placement (see
+        // TETHER) is what actually holds them, and this is deliberately slow and
+        // reluctant on top of it -- a keeper who paces the court reads as waiting,
+        // and one who crosses a field reads as gone.
         goalSelector.addGoal(2, new WaterAvoidingRandomStrollGoal(this, 0.35, 0.6F));
         goalSelector.addGoal(3, new RandomLookAroundGoal(this));
     }

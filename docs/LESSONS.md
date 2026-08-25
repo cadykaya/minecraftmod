@@ -720,3 +720,49 @@ Two things to take from it.
 > subtracting the cap somewhere. It is the SECOND reload that shows -65 and proves
 > the record is walking rather than merely wrong. The check now boots three times, and
 > the third boot is the assertion that actually catches this class of bug.
+
+---
+
+## 21. An assertion about a moving thing is an assertion about when you looked
+
+*Found by CI, on a check that passed here every single time.*
+
+`worldgen_check.sh` placed a shrine and asserted two things about its keeper: that an
+entity was within four blocks of the offering box, and that its yaw pointed at the
+box. Both passed locally, repeatedly, including two deliberate back-to-back runs to
+test for flakiness. The runner failed on the first:
+
+```
+FAIL: the shrine placed but is missing: E_KEEPER_ATTENDS
+```
+
+Neither assertion was wrong. The **mob** was: it had a stroll goal, RCON commands
+arrive seconds apart, the server ticks the entire time, and by the time anything
+asked, the keeper had walked out of range and turned to look at something else.
+Locally the timing happened to catch it before it moved.
+
+Two different fixes, and the interesting part is that they are different.
+
+**The position was a design bug.** A shrine-keeper who wanders off leaves a player
+standing at a shrine with a scene and nobody to have it with. They are now tethered
+(`setHomeTo`) to the court, and the check asserts **the tether**, which is
+time-invariant, rather than the position, which is a consequence of it. CI did not
+find a bad test here; it found a bad mob, and the test was right to complain.
+
+**The facing could not be asserted at all.** A mob's yaw is set once at placement and
+then overwritten by whatever it looks at next, so there is no later moment at which
+the evidence still exists. Widening a tolerance would only have made the check pass
+without checking anything. The arithmetic moved into `core/spatial/Facing`, where it
+is four assertions against the four cardinal directions and cannot move — the same
+trade the whole `core/` split exists to make.
+
+> **The rule: before asserting a property of live state, ask what else can change it
+> between the write and the read.** If the answer is "the thing itself, on its own
+> schedule", the property is not observable and no amount of tolerance makes it so.
+> Assert the constraint that holds it (a tether, a cap, an invariant), or move the
+> logic somewhere it stops moving.
+
+Corollary, and the reason this cost a red build rather than being caught here: **a
+flaky check can be perfectly reproducible on one machine.** Running it twice locally
+proved nothing, because both runs had the same timing. The disagreement between two
+*environments* is the signal; two runs in one environment is not.
