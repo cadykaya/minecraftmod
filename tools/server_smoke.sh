@@ -15,8 +15,27 @@ TIMEOUT=${TIMEOUT:-420}
 pkill -x java 2>/dev/null || true
 sleep 1
 rm -f run/world/session.lock
+# The script creates its ENTIRE run environment. run/ is gitignored, so anything
+# it does not write itself does not exist on a fresh checkout -- which is how the
+# first CI run failed while passing locally: server.properties existed on the dev
+# machine because it had been created by hand once. A smoke test that inherits
+# state from the machine it was written on is not testing the shipped repository.
 mkdir -p run
 echo "eula=true" > run/eula.txt
+cat > run/server.properties <<'PROPS'
+# Written by tools/server_smoke.sh. Tuned for a fast, deterministic boot:
+# a flat world with a tiny view distance loads in a fraction of the time and
+# removes terrain generation as a source of run-to-run variation.
+level-type=minecraft\:flat
+level-seed=interregnum
+max-players=1
+online-mode=false
+spawn-protection=0
+view-distance=4
+simulation-distance=4
+sync-chunk-writes=false
+enable-status=false
+PROPS
 
 FIFO=$(mktemp -u)
 mkfifo "$FIFO"
@@ -52,6 +71,8 @@ sleep 2
 kill $HOLD 2>/dev/null || true
 kill $GRADLE 2>/dev/null || true
 pkill -x java 2>/dev/null || true
+sleep 1
+pkill -9 -x java 2>/dev/null || true   # the runner reported an orphan java otherwise
 rm -f "$FIFO"
 rm -f run/world/session.lock
 

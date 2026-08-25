@@ -215,3 +215,35 @@ ignore entry. Verified both directions: the real log passes, and an injected
 
 *Grouping by stack shape was tried first and was also wrong — a gson "See https://..."
 advice line in the middle of a stack split one exception into two.*
+
+---
+
+## 8. A smoke test that inherits state from your machine is not testing the repository
+
+*Learned when the first CI run of the `game` job failed on a check that passed locally
+every time.*
+
+`tools/server_smoke.sh` wrote `run/eula.txt` but not `run/server.properties`. `run/` is
+gitignored, so on the dev machine the properties file existed -- created by hand, once,
+during the first manual experiment -- and on a fresh CI checkout it did not. The server
+booted either way, but on a clean checkout it logged:
+
+```
+[main/ERROR] [minecraft/Settings]: Failed to load properties from file: server.properties
+```
+
+which the log checker correctly refused to attribute to anything, and the job went red.
+
+**The tempting fix was to add the message to the ignore list**, and it would have worked
+and been wrong: the error is real, it just is not *interesting*, and the honest response is
+to stop causing it. The script now writes its entire run environment -- eula, properties,
+a flat world with a fixed seed and a small view distance -- so a run is deterministic and
+identical everywhere.
+
+> **The general rule: a check must create everything it depends on.** Anything it merely
+> *finds* on the machine where it was written is a difference between your box and every
+> other one, and it will surface as a CI failure that "cannot be reproduced."
+
+Reproduced locally first, exactly as `docs/VERIFICATION.md` requires for a CI fix: `rm -rf
+run/` reproduced the identical failure, the fix was applied, and the same clean state then
+passed.
