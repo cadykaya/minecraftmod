@@ -17,6 +17,7 @@ import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import com.cadykaya.interregnum.Interregnum;
+import com.cadykaya.interregnum.worldgen.ModDimensions;
 import com.cadykaya.interregnum.worldgen.ModWorldgen;
 
 /**
@@ -43,7 +44,13 @@ public final class DataGenerators {
         RegistrySetBuilder worldgen = new RegistrySetBuilder()
                 .add(Registries.CONFIGURED_FEATURE, ModWorldgen::bootstrapConfigured)
                 .add(Registries.PLACED_FEATURE, ModWorldgen::bootstrapPlaced)
-                .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldgen::bootstrapBiomeModifiers);
+                .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldgen::bootstrapBiomeModifiers)
+                // The god-worlds. DIMENSION_TYPE must be built before LEVEL_STEM in the
+                // same builder: the stem looks its type up through ctx.lookup, and a
+                // stem registered first would fail to resolve a type that does not
+                // exist yet.
+                .add(Registries.DIMENSION_TYPE, ModDimensions::bootstrapTypes)
+                .add(Registries.LEVEL_STEM, ModDimensions::bootstrapStems);
         gen.addProvider(true, new DatapackBuiltinEntriesProvider(
                 out, event.getLookupProvider(), worldgen, Set.of(Interregnum.MOD_ID)));
 

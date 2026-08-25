@@ -120,3 +120,6 @@ jobs:
 
       - name: The ferry lifts what was built and leaves the ground where it is
         run: ./tools/ferry_check.sh
+
+      - name: The Quiet One's world is a separate place with its own floor
+        run: ./tools/crossing_check.sh

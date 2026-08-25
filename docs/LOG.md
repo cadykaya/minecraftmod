@@ -1425,3 +1425,61 @@ occurrences and asserts block-by-block at the destination coordinates, and it ha
 watched failing. Written up as LESSONS #24, because the shape generalises: an
 assertion of the form "X is still true afterwards" is automatically satisfied by X
 having been true beforehand.
+
+## The world that will not answer you
+
+The ferry sailed and there was nowhere to sail to. `interregnum:unresponsive` is the
+first god-world surface layer, and the whole question was what makes a dimension worth
+the trouble of having.
+
+AESTHETIC.md's executioner, quoted in WORLDGEN.md: *could I replace it with a different
+random weird thing without changing anything?* "The same game with purple stone" fails
+it — swap purple for green and nothing moves. A dimension earns itself when its **rules**
+differ, when something is possible or impossible there that is not elsewhere.
+
+So the Quiet One's law could not be *quiet*. A muted soundtrack is purple stone. What
+the law had to be was already printed on every Warden docket that mentions this god:
+`SUBJECT: UNRESPONSIVE`. **Every affordance in Minecraft that consists of asking the
+world for something is dead here.** A bed. A respawn anchor. A raid. All three are
+attributes in 26.2's `dimension_type`, so the law is data, not code.
+
+The bed is the whole character in one record. `BedRule(NEVER, NEVER, explodes=false,
+message=absent)`. The Nether refuses you loudly. The End refuses you loudly. Both
+explode. This place declines to react — and the entire difference between "hostile" and
+"unresponsive" is one absent boolean and one absent string. It is the cheapest piece of
+characterisation in the mod and it required writing nothing.
+
+The audio attributes needed the opposite care: declared **empty**, not omitted. An
+omitted attribute inherits, and what would be inherited is the overworld's cave moaning
+— the one sound this world must not make. Present-and-empty is a decision; absent is an
+accident that sounds exactly like home.
+
+### Two checks, because they prove different things
+
+A dimension that merely *loads* proves almost nothing. A stem mis-wired to
+`minecraft:overworld`, a dimension_type that failed to resolve, a datapack that never
+loaded — all of them still let `execute in interregnum:unresponsive` succeed. So every
+assertion in `crossing_check.sh` is a **relationship between two worlds** rather than a
+fact about one (LESSONS #19): y=-10 is legal at home and illegal there, y=250 is legal
+in both, and a block written there is not at the same coordinates at home. Watched
+failing against a stem pointed at the overworld's dimension type, which is precisely the
+bug a "does it load?" check waves through.
+
+The law itself is not testable that way. A dedicated server exposes no command that
+reads a dimension's attributes back, so `dimension_check.py` asserts it as data and is
+labelled as the weaker proof it is: *the data we ship declares this*, not *the game
+behaves like this*. What it catches is the failure that would actually happen — somebody
+edits `ModDimensions` to fix a colour, regenerates, and quietly hands the bed back its
+explosion. Nothing else would fail. Nobody would notice until a player slept.
+
+Terrain is a placeholder and the file says so in its own javadoc: vanilla noise, one
+biome, ground you can stand on. Under-layer, far-layer and portal logic do not exist.
+Writing that down is cheaper than a later reader inferring that a placeholder was a
+decision.
+
+### The check written an hour earlier earned itself immediately
+
+Adding `crossing_check.sh` to the workflow made the live-check count 16 while HANDOFF
+still said 15. `tools/ci_claims_check.py` — committed earlier the same session, for
+exactly this — failed the gate before the commit. First real use, and it caught its
+author.

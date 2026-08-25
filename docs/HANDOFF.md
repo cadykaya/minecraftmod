@@ -27,9 +27,53 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **15**, every one mutation-verified, all in CI |
+| Live-world checks | **16**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
+
+### The Quiet One's world answers nobody
+
+`interregnum:unresponsive` — the first god-world surface layer, generated as data by
+`ModDimensions`.
+
+**The law is not "quiet".** Silence-as-decoration would be a muted soundtrack, and
+would fail [`AESTHETIC.md`](AESTHETIC.md)'s executioner: *could I replace it with a
+different random weird thing without changing anything?* The law that earns the world
+is the one already printed on every Warden docket that mentions it — `SUBJECT:
+UNRESPONSIVE`. So every affordance in Minecraft that consists of **asking the world for
+something** is dead here, and each one is an attribute rather than code:
+
+* **A bed does nothing at all.** Not a refusal — *nothing*. `can_sleep: never`,
+  `can_set_spawn: never`, `explodes: false`, and **no error message**. The Nether
+  refuses you loudly and the End refuses you loudly; both explode. This place declines
+  to react, and the entire difference is one absent boolean and one absent string.
+* **A respawn anchor does nothing.** Same refusal, same silence.
+* **No raid can ever start.** Nothing is summoned here, by anybody.
+* **The world makes no sound of its own** — and the audio attributes are declared
+  *empty* rather than omitted, because omitted means inherit and what would be
+  inherited is the overworld's cave moaning.
+
+There is no way to shorten a night here, no way to make this place a home, and no way
+to be answered. That is a rule a player has to adapt to, not a palette.
+
+**Terrain is a placeholder and says so in the file.** Vanilla noise, one biome
+(`the_void`, chosen for the ambience it does *not* carry), ground you can stand on. The
+under-layer and far-layer do not exist and no letter can be delivered here yet.
+
+Verified in two halves, deliberately, because they prove different things:
+
+* `tools/crossing_check.sh` (live) proves it is a **separate place with our floor**.
+  Every assertion is a relationship between two worlds rather than a fact about one:
+  y=-10 is legal at home and illegal there, y=250 is legal in both, and a block written
+  there is not at the same coordinates at home. A check that only proved "the dimension
+  loads" would pass against a stem mis-wired to `minecraft:overworld` — watched failing
+  against exactly that.
+* `tools/dimension_check.py` (static) proves **the law is still the law**, because a
+  headless server exposes no command that reads a dimension's attributes back. Weaker,
+  and labelled as weaker: it says *the data we ship declares this*, not *the game
+  behaves like this*. It catches the failure that would actually happen — somebody
+  edits `ModDimensions`, regenerates, and quietly hands the bed back its explosion.
+  Watched failing on exactly that, and on the audio attributes being omitted.
 
 ### The ferry lifts what was built
 
