@@ -873,15 +873,24 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
    unit* / **Warden** / *a docket* (villagers) / *a posting* (Theoclasts). No code
    change, no id change; the lore was already correct and had not been read.
 
-2. **Should the Anchorite's law lift dropped items too?** Currently only falling
-   blocks rise — sand, red sand, gravel, anvils, which is exactly the set the ferry's
-   boarding notice names. "Unanchored things" plainly also covers a dropped item, and
-   lifting those would be the more complete reading of the law.
+2. ~~**Should the Anchorite's law lift dropped items too?**~~ **Answered: no.** The
+   owner's words: *"I dont want death to cost the whole inventory."* Only
+   `FallingBlockEntity` rises — sand, red sand, gravel, anvils, exactly the set the
+   ferry's boarding notice names. Dropped items, players and mobs are untouched, which
+   is what already ships, so this needed no code change.
 
-   It is the owner's call because the consequence is large and one-way: every death in
-   that world would cost the entire inventory, unrecoverably, with the items visibly
-   leaving. That is either the best scene in the mod or the reason nobody goes back.
-   *No action needed unless the owner wants it; the restrained version ships.*
+   **[PROPOSED — not built, owner's call]** There is a version that keeps the law
+   whole without the punishment, and it is worth recording before it is forgotten.
+   *"They do not stop"* leaves a question the mod never answers: **where do they go?**
+   If everything that rises out of that world is *received* somewhere — a counter, a
+   ledger, a clerk who will return your property once you have described it correctly
+   — then items could rise, the law would be literally true, and losing your inventory
+   would be the start of an errand rather than the end of a session. The Anchorite's
+   Warden dockets already read `SUBJECT: MASS AUTHORITY`; an authority that catches
+   everything the world lets go of is the same joke as the rest of the mod, and the
+   retrieval scene would be one of the few places a player *wants* to talk to
+   bureaucracy. Costs a room, an inventory, and a conversation. Not built.
+
 3. **Playtesting, and looking at the Warden.** This container has no game client, so two
    things about the model are unverifiable here and are not claimed: how it looks
    **animated**, and how it looks **lit**. `tools/entity_view.py` covers shape and paint;

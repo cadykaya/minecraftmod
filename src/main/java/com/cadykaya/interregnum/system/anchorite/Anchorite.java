@@ -46,11 +46,16 @@ import net.minecraft.world.entity.item.FallingBlockEntity;
  * names, since sand, red sand, gravel and anvils are all of them. Dropped items,
  * players, mobs and minecarts are untouched.
  *
- * That restraint is a decision, not an oversight. "Unanchored things" plainly includes
- * a dropped item, and lifting those away would mean every death in this world costs the
- * whole inventory with no way to chase it. That is a large design consequence, it is
- * not written down anywhere in WORLD.md, and inventing it here would be new scope
- * arriving disguised as a detail. Flagged in HANDOFF for the owner instead.
+ * That restraint is a decision, and the owner has since confirmed it: <b>death here does
+ * not cost the inventory.</b> "Unanchored things" plainly includes a dropped item, and
+ * lifting those away would mean every death in this world costs everything with no way
+ * to chase it -- either the best scene in the mod or the reason nobody comes back. It
+ * was put to the owner rather than decided here, and the answer was no.
+ *
+ * If it is ever revisited, the version to revisit is not "lift items and accept the
+ * loss": it is answering the question the boarding notice leaves open -- *where do they
+ * go?* -- so that the law stays literally true and the loss becomes an errand. See
+ * HANDOFF, "Waiting on owner".
  */
 public final class Anchorite {
     private Anchorite() {}
