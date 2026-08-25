@@ -23,6 +23,7 @@
   "laws": [
     {
       "id": "quiet_one",
+            "destination": "interregnum:unresponsive",
       "rules": {
         "no_sound": {
           "reason_key": "interregnum.ferry.quiet_one.no_sound",
@@ -36,6 +37,7 @@
     },
     {
       "id": "anchorite",
+            "destination": "interregnum:mass_authority",
       "rules": {
         "nothing_loose": {
           "reason_key": "interregnum.ferry.anchorite.nothing_loose",
@@ -50,6 +52,7 @@
     },
     {
       "id": "verdant",
+            "destination": "interregnum:green_authority",
       "rules": {
         "nothing_stripped": {
           "reason_key": "interregnum.ferry.verdant.nothing_stripped",
@@ -64,6 +67,7 @@
     },
     {
       "id": "hearth_turner",
+            "destination": "interregnum:temporal_authority",
       "rules": {
         "nothing_waxed": {
           "reason_key": "interregnum.ferry.hearth_turner.nothing_waxed",

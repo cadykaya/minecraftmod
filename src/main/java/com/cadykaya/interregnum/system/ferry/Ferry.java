@@ -146,7 +146,16 @@ public final class Ferry {
     }
 
     /**
-     * Move a captured hull so the keel lands on {@code pad}.
+     * Move a captured hull so the keel lands on {@code pad} in {@code to}.
+     *
+     * `WORLD.md`: *travel between systems is only by ferry.* This is that sentence. The
+     * destination level comes from the law the hull was cleared against, so a hull
+     * cleared for the Quiet One's crossing arrives in the Quiet One's world and nowhere
+     * else — the boarding notice a player read on the dock names where they are going,
+     * and now it is true rather than flavour.
+     *
+     * {@code from} and {@code to} may be the same level, and usually will be while
+     * somebody is still building.
      *
      * Cleared before it is written, in two passes over the whole hull rather than
      * block-by-block. A one-pass move overwrites its own destination when origin and
@@ -158,23 +167,32 @@ public final class Ferry {
      * version of this method: it deletes the keel. Twice, in fact -- the first
      * version of the assertion could not fail at all (docs/LESSONS.md #24).
      */
-    public static void place(ServerLevel level, Hull hull, BlockPos keel, BlockPos pad) {
+    public static void place(ServerLevel from, Hull hull, BlockPos keel,
+                             ServerLevel to, BlockPos pad) {
         int dx = pad.getX() - keel.getX();
         int dy = pad.getY() - keel.getY();
         int dz = pad.getZ() - keel.getZ();
 
+        // Clear the origin FIRST, in its own complete pass. With two levels this looks
+        // unnecessary -- nothing in another dimension can overwrite anything here -- and
+        // it is still required, because the commonest crossing of all is the one that
+        // does not change dimension: a player nudging a ferry three blocks sideways.
+        // One rule for both cases beats a fast path that is wrong in the ordinary one.
         for (BlockPos pos : hull.blocks().keySet()) {
-            level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-            Claims.forget(level, pos);
+            from.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+            Claims.forget(from, pos);
         }
         for (var e : hull.blocks().entrySet()) {
-            BlockPos to = e.getKey().offset(dx, dy, dz);
-            level.setBlock(to, e.getValue(), 3);
-            // It is still a thing somebody built. Losing that on the crossing would
-            // hand the arriving ferry to the unraveling as scenery.
-            Claims.record(level, to);
+            BlockPos at = e.getKey().offset(dx, dy, dz);
+            to.setBlock(at, e.getValue(), 3);
+            // It is still a thing somebody built, and now it is somebody's work in a
+            // world that has its own opinions about blocks. Losing the claim on the
+            // crossing would hand the arriving ferry to the Verdant to grow over.
+            Claims.record(to, at);
         }
-        LOG.info("Ferry of {} block(s) crossed from {} to {}.", hull.size(), keel, pad);
+        LOG.info("Ferry of {} block(s) crossed from {} in {} to {} in {}.",
+                hull.size(), keel, from.dimension().identifier(),
+                pad, to.dimension().identifier());
     }
 
     /** The checklist a destination hands back, in the order a person reads it. */

@@ -42,9 +42,28 @@ public final class FerryDefs {
         ).apply(i, RuleDef::new));
     }
 
-    public record LawDef(String id, Map<String, RuleDef> rules) {
+    /**
+     * Where this crossing goes.
+     *
+     * A dimension id, decoded to an {@link Identifier} at load so a typo is a loud
+     * failure rather than a law that clears you for nowhere. It is deliberately NOT
+     * checked against the loaded dimensions here: datapacks load before levels do, and
+     * a law naming a dimension another datapack supplies is legitimate. The refusal for
+     * a destination that does not exist is at sail time, where it can say so.
+     */
+    private static final Codec<Identifier> DIMENSION_ID = Codec.STRING.comapFlatMap(
+            s -> {
+                Identifier id = Identifier.tryParse(s);
+                return id == null
+                        ? DataResult.error(() -> "not a dimension id: " + s)
+                        : DataResult.success(id);
+            },
+            Identifier::toString);
+
+    public record LawDef(String id, Identifier destination, Map<String, RuleDef> rules) {
         public static final Codec<LawDef> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.STRING.fieldOf("id").forGetter(LawDef::id),
+                DIMENSION_ID.fieldOf("destination").forGetter(LawDef::destination),
                 Codec.unboundedMap(Codec.STRING, RuleDef.CODEC).fieldOf("rules")
                         .forGetter(LawDef::rules)
         ).apply(i, LawDef::new));

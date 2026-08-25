@@ -96,10 +96,26 @@ public final class InterregnumCommand {
                     "ferry=clear law=" + lawId + " total=" + cap.hull().manifest().total()), false);
             return 1;
         }
+        // Where the law says this crossing goes. Not a parameter: the destination is a
+        // property of the law the hull was cleared against, so a hull cleared for the
+        // Quiet One cannot be sailed anywhere else. The boarding notice a player read
+        // on the dock names the destination, and this is what makes that true.
+        var target = com.cadykaya.interregnum.system.ferry.FerryLaws.destinationOf(lawId);
+        net.minecraft.server.level.ServerLevel to =
+                ctx.getSource().getServer().getLevel(target);
+        if (to == null) {
+            // A law may legitimately name a dimension another datapack supplies, so
+            // this is refused HERE rather than at load -- where it can name what is
+            // missing instead of taking down every law in the file.
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "ferry=refused reason=no such destination " + target.identifier()), false);
+            return 0;
+        }
         com.cadykaya.interregnum.system.ferry.Ferry
-                .place(ctx.getSource().getLevel(), cap.hull(), keel, pad);
+                .place(ctx.getSource().getLevel(), cap.hull(), keel, to, pad);
         ctx.getSource().sendSuccess(() -> Component.literal(
-                "ferry=sailed law=" + lawId + " total=" + cap.hull().manifest().total()), true);
+                "ferry=sailed law=" + lawId + " to=" + target.identifier()
+                        + " total=" + cap.hull().manifest().total()), true);
         return cap.hull().manifest().total();
     }
 

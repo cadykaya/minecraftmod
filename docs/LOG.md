@@ -1808,3 +1808,60 @@ the failure message with its own subject missing — on the failure path only, s
 when somebody most needed to read it. That is LESSONS #23 (*a failure path must not
 contain anything that can fail*) arriving by a route the original entry did not imagine,
 so it is recorded where it happened rather than as a new lesson.
+
+## The crossing crosses
+
+`WORLD.md` locks one sentence about how anybody reaches a god: *travel between systems is
+only by ferry.* The ferry had existed for hours and could not leave its own dimension, so
+that sentence was half true — a hull cleared for the Quiet One's crossing was picked up,
+checked against the Quiet One's law, and set down again in the overworld.
+
+That is the smaller half of the "portal logic" gap and it was worth doing first, because
+the other half is genuinely undesigned: each god's *own* portals between its surface,
+under-layer and far-layer are locked in principle and specified nowhere.
+
+**The destination is a property of the law, not a parameter.** That was the one design
+decision here and it decided the shape of everything else. `ferry sail <keel> <law> <pad>`
+reads where the crossing goes from the law the hull was cleared against — so a hull
+cleared for the Quiet One arrives in the Quiet One's world and *cannot* be sailed
+anywhere else. A destination argument would have made the checklist advisory: you could
+be refused for carrying a note block and then sail to a world that has no opinion about
+sound.
+
+It also closes a loop that has been open since the ferry shipped. The boarding notice a
+player reads on the dock says *"Refused for the crossing to the Unresponsive"*, and until
+today that name pointed at nothing.
+
+### Where the destination is validated, and where it deliberately is not
+
+Each law carries a `destination` dimension id, decoded to an `Identifier` at load so a
+typo is a loud failure rather than a law that clears you for nowhere. It is **not**
+checked against the loaded dimensions there: datapacks load before levels do, and a law
+naming a dimension another datapack supplies is legitimate. So a missing destination is
+refused at sail time, where the refusal can name what is missing instead of taking down
+every law in the file.
+
+That is the same reasoning as the ferry's other refusals, and the same reasoning the
+crossing laws already used for one broken file taking down all of them — the difference
+being *when* the information to decide exists.
+
+### The two-pass move still earns its keep
+
+`Ferry.place` clears the origin in a complete pass before writing anything, which across
+two levels looks like leftover caution: nothing in another dimension can overwrite
+anything here. It stays because the commonest crossing of all is the one that does not
+change dimension — somebody nudging a ferry three blocks sideways while still building —
+and one rule that is right in both cases beats a fast path that is wrong in the ordinary
+one.
+
+### What the check had to become
+
+Every arrival marker is now asserted **inside** `interregnum:unresponsive`, and a new
+`NEVER_LEFT_HOME` marker fails the run if the hull is sitting at the destination
+coordinates back in the overworld. That second marker is the one that matters: without
+it, a ferry that ignored the destination entirely would still put a keel at
+`20 100 20` and satisfy every positional assertion, because the check would have been
+looking in the wrong world.
+
+Watched failing two ways: the destination ignored (the hull moves sideways, and the
+notice naming a destination is decoration), and every law pointed at the same world.

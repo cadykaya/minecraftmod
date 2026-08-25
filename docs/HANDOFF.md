@@ -93,6 +93,40 @@ unraveling has loosened the limit enough for anybody to break it. Picking a lowe
 to make it findable today would be inventing a rule the world does not have. **Owner's
 call — see "Waiting on owner".**
 
+### The crossing crosses
+
+`WORLD.md`: *travel between systems is only by ferry.* The ferry existed and could not
+leave its own dimension, so that sentence was half true — a hull cleared for the Quiet
+One's crossing was moved sideways within the overworld.
+
+**The destination is a property of the LAW, not a parameter.** `interregnum ferry sail
+<keel> <law> <pad>` reads where the crossing goes from the law the hull was cleared
+against, so a hull cleared for the Quiet One arrives in the Quiet One's world and cannot
+be sailed anywhere else. The boarding notice a player reads on the dock names the
+destination; this is what makes that true rather than flavour.
+
+Each law in `data/interregnum/ferry/laws.json` now carries a `destination` dimension id,
+decoded to an `Identifier` at load so a typo is a loud failure. It is deliberately **not**
+checked against the loaded dimensions there — datapacks load before levels do, and a law
+naming a dimension another datapack supplies is legitimate — so a missing destination is
+refused at sail time, where it can name what is missing instead of taking down every law
+in the file.
+
+`Ferry.place` still clears the origin in a full pass before writing anything, which looks
+unnecessary across two levels and is not: the commonest crossing of all is the one that
+does not change dimension, a player nudging a ferry three blocks sideways while still
+building.
+
+`tools/ferry_check.sh` now asserts every arrival marker **inside**
+`interregnum:unresponsive`, plus a `NEVER_LEFT_HOME` marker that fails the run if the
+hull is sitting at the destination coordinates back in the overworld. Watched failing on
+the destination being ignored, and on every law being pointed at the same world.
+
+**Still missing, and it is now the whole gate:** the ferry reaches a god's *surface*.
+`WORLD.md` locks each god as **surface · under-layer · far-layer, joined by that world's
+own portal logic** — and none of the under-layers, far-layers or native portals exist.
+`FIRST_CROSSING` is reachable; `LETTER_DELIVERED` needs letters, which need scenes.
+
 ### The Hearth-Turner's world: nothing is allowed to be over
 
 `interregnum:temporal_authority` — the **fourth and last** god-world surface. All four

@@ -18,6 +18,12 @@
 #     count AND the reason
 #   * every violation is listed, not just the first
 #   * a bare keel on the ground is refused as NOTHING_BUILT rather than sailing empty
+#   * AND THE CROSSING CROSSES. WORLD.md: "travel between systems is only by ferry."
+#     A hull cleared for the Quiet One's crossing arrives in the Quiet One's world --
+#     the destination is a property of the LAW, not a parameter, so a hull cleared for
+#     one god cannot be sailed to another. The arrival markers are asserted inside
+#     interregnum:unresponsive, and a separate marker fails the run if the hull is
+#     sitting at those coordinates back home instead.
 #   * a coordinate with no keel on it is refused as NOT_A_KEEL, because otherwise the
 #     ferry is a command that teleports any structure anybody ever built
 #   * a hull NUDGED two blocks along -- destination overlapping origin -- arrives whole.
@@ -27,6 +33,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 fail() { echo "FAIL: $1"; exit 1; }
+mark_fc() { grep -q "$1" /tmp/ferry.log; }
 # `|| true` on every dump: under set -e -o pipefail a dump that matches nothing kills
 # the script before the message it exists to explain (docs/LESSONS.md #23).
 want() { grep -qF "$2" "$1" || { echo "--- looked for: $2"; grep -E 'ferry=' "$1" || true; fail "$3"; }; }
@@ -54,20 +61,22 @@ interregnum ferry check 4 -60 4 quiet_one
 interregnum ferry check 4 -60 4 anchorite
 setblock 6 -59 4 minecraft:air replace
 setblock 7 -59 4 minecraft:air replace
-interregnum ferry sail 4 -60 4 quiet_one 20 -60 20
-execute if block 20 -60 20 interregnum:ferry_keel run say KEEL_ARRIVED
-execute if block 21 -60 20 minecraft:oak_planks run say HULL_ARRIVED
-execute if block 23 -60 20 minecraft:oak_planks run say STERN_ARRIVED
-execute if block 21 -59 20 minecraft:chest run say FURNITURE_ARRIVED
+execute in interregnum:unresponsive run forceload add -16 -16 47 47
+wait 2
+interregnum ferry sail 4 -60 4 quiet_one 20 100 20
+execute in interregnum:unresponsive if block 20 100 20 interregnum:ferry_keel run say KEEL_ARRIVED
+execute in interregnum:unresponsive if block 21 100 20 minecraft:oak_planks run say HULL_ARRIVED
+execute in interregnum:unresponsive if block 23 100 20 minecraft:oak_planks run say STERN_ARRIVED
+execute in interregnum:unresponsive if block 21 101 20 minecraft:chest run say FURNITURE_ARRIVED
 execute if block 4 -60 4 minecraft:air run say ORIGIN_CLEARED
-execute if block 20 -61 20 minecraft:grass_block run say GROUND_INTACT
+execute if block 20 100 20 interregnum:ferry_keel run say NEVER_LEFT_HOME
 execute if block 4 -61 4 minecraft:grass_block run say SEABED_LEFT_BEHIND
-interregnum ferry sail 20 -60 20 quiet_one 22 -60 20
-interregnum ferry manifest 22 -60 20
-execute if block 22 -60 20 interregnum:ferry_keel run say NUDGE_KEEL_INTACT
-execute if block 25 -60 20 minecraft:oak_planks run say NUDGE_STERN_INTACT
-execute if block 23 -59 20 minecraft:chest run say NUDGE_FURNITURE_INTACT
-execute if block 20 -60 20 minecraft:air run say NUDGE_ORIGIN_CLEARED
+execute in interregnum:unresponsive run interregnum ferry sail 20 100 20 quiet_one 22 100 20
+execute in interregnum:unresponsive run interregnum ferry manifest 22 100 20
+execute in interregnum:unresponsive if block 22 100 20 interregnum:ferry_keel run say NUDGE_KEEL_INTACT
+execute in interregnum:unresponsive if block 25 100 20 minecraft:oak_planks run say NUDGE_STERN_INTACT
+execute in interregnum:unresponsive if block 23 101 20 minecraft:chest run say NUDGE_FURNITURE_INTACT
+execute in interregnum:unresponsive if block 20 100 20 minecraft:air run say NUDGE_ORIGIN_CLEARED
 interregnum ferry manifest 12 -60 12
 setblock 12 -60 12 interregnum:ferry_keel replace
 interregnum claim record 12 -60 12 12 -60 12
@@ -104,7 +113,14 @@ want /tmp/fc.txt 'ferry=clear law=anchorite' \
     "a hull the Quiet One refused was also refused by the Anchorite -- the laws are not distinct"
 
 # --- the crossing itself ----------------------------------------------------
-want /tmp/fc.txt 'ferry=sailed law=quiet_one total=5' "the cleared hull did not sail"
+want /tmp/fc.txt 'ferry=sailed law=quiet_one to=interregnum:unresponsive total=5' \
+    "the cleared hull did not sail, or did not sail to the world its law names"
+# The crossing CROSSED. WORLD.md: travel between systems is only by ferry -- so a hull
+# cleared for the Quiet One arrives in the Quiet One's world and nowhere else. Every
+# arrival marker below is asserted INSIDE interregnum:unresponsive.
+if mark_fc NEVER_LEFT_HOME; then
+    fail "the hull is at the destination coordinates in the OVERWORLD -- the ferry moved it sideways instead of across, and the boarding notice naming a destination is decoration"
+fi
 for marker in KEEL_ARRIVED HULL_ARRIVED STERN_ARRIVED FURNITURE_ARRIVED ORIGIN_CLEARED; do
     grep -q "$marker" /tmp/ferry.log || {
         grep -E 'ferry=|Ferry' /tmp/fc.txt /tmp/ferry.log | tail -10 || true
