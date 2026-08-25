@@ -27,9 +27,52 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **16**, every one mutation-verified, all in CI |
+| Live-world checks | **17**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
+
+### The Anchorite's world: unanchored things rise
+
+`interregnum:mass_authority` — the second god-world surface layer.
+
+**This law was already promised in the mod's own words.** The ferry has printed it as a
+boarding refusal since before the world existed: *"Nothing that pours. Where you are
+going, unanchored things go up, and they do not stop."* A player reads that before they
+arrive, so the world has to mean it — and that line is the constraint on the
+implementation, not just its flavour.
+
+**"And they do not stop" is load-bearing.** A rising `FallingBlockEntity` never satisfies
+vanilla's ground test, so it never places itself; it climbs past the build height and
+vanilla's own timeout discards it. Nothing had to be written for that. A version that
+stuck sand to ceilings would be a nicer toy and a broken promise.
+
+**Weight costs code where silence cost data.** Every one of the Quiet One's rules turned
+out to be a 26.2 `dimension_type` attribute. Weight is not — there is no gravity
+attribute, no fall-damage attribute, nothing that inverts anything; the full list was
+read out of `EnvironmentAttributes`, not guessed. So this law is a tick handler. The
+asymmetry is worth recording rather than hiding: the platform made one god cheap and the
+next one not.
+
+**The two worlds refuse a bed differently, and that is deliberate.** The Quiet One
+declines to react at all. The Anchorite detonates. One boolean is most of the difference
+between two gods, it costs nothing to get wrong in a refactor, and no test looking at one
+dimension alone would notice — so `dimension_check.py` now holds them apart explicitly.
+
+`tools/anchorite_check.sh` measures both halves, because either alone is worthless: at
+home the sand lands (the control), and in the Anchorite's it does not land, is no longer
+where it was put, and a falling-block entity is found *above* its start. Those last two
+clauses are what make it an assertion about **rising** rather than about vanishing —
+"did not land" is equally satisfied by sand that was deleted, sand that fell through the
+void, and sand whose gravity was switched *off* rather than reversed. The first draft
+waited six seconds, by which time the sand had legitimately left the world, and could
+not tell "rose out of the world" from "never moved". Watched failing on the law never
+applying, and on gravity being zeroed instead of inverted.
+
+**Deliberately not lifted: dropped items, players, mobs.** Only `FallingBlockEntity` —
+exactly the class the ferry's law names. Lifting items away would mean every death in
+this world costs the whole inventory with no way to chase it. That is a large design
+consequence, it is nowhere in WORLD.md, and inventing it here would be new scope arriving
+disguised as a detail. **Owner's call — see "Waiting on owner".**
 
 ### The Quiet One's world answers nobody
 
@@ -830,7 +873,16 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
    unit* / **Warden** / *a docket* (villagers) / *a posting* (Theoclasts). No code
    change, no id change; the lore was already correct and had not been read.
 
-2. **Playtesting, and looking at the Warden.** This container has no game client, so two
+2. **Should the Anchorite's law lift dropped items too?** Currently only falling
+   blocks rise — sand, red sand, gravel, anvils, which is exactly the set the ferry's
+   boarding notice names. "Unanchored things" plainly also covers a dropped item, and
+   lifting those would be the more complete reading of the law.
+
+   It is the owner's call because the consequence is large and one-way: every death in
+   that world would cost the entire inventory, unrecoverably, with the items visibly
+   leaving. That is either the best scene in the mod or the reason nobody goes back.
+   *No action needed unless the owner wants it; the restrained version ships.*
+3. **Playtesting, and looking at the Warden.** This container has no game client, so two
    things about the model are unverifiable here and are not claimed: how it looks
    **animated**, and how it looks **lit**. `tools/entity_view.py` covers shape and paint;
    it cannot cover those. The render has been sent for review.

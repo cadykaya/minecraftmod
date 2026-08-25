@@ -102,6 +102,22 @@ public final class ModDimensions {
             ResourceKey.create(Registries.DIMENSION, UNRESPONSIVE_STEM.identifier());
 
     /**
+     * The Anchorite's surface.
+     *
+     * Named, like the Quiet One's, for the docket header rather than for the god.
+     */
+    public static final ResourceKey<DimensionType> MASS_AUTHORITY_TYPE =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "mass_authority"));
+
+    public static final ResourceKey<LevelStem> MASS_AUTHORITY_STEM =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "mass_authority"));
+
+    public static final ResourceKey<net.minecraft.world.level.Level> MASS_AUTHORITY =
+            ResourceKey.create(Registries.DIMENSION, MASS_AUTHORITY_STEM.identifier());
+
+    /**
      * Deliberately unlike the overworld's -64..320.
      *
      * This is load-bearing for verification as well as for feel. A dimension that
@@ -140,6 +156,42 @@ public final class ModDimensions {
                 unresponsive(),
                 HolderSet.empty(),                  // timelines: no weather, ever
                 Optional.empty()));                 // defaultClock
+
+        // The Anchorite's world. Its law is CODE, not attributes -- see
+        // com.cadykaya.interregnum.system.anchorite.Anchorite for why, and for what
+        // 26.2 does and does not let a dimension declare about weight.
+        //
+        // What the attributes CAN carry is the consequence of that law. Nothing here
+        // holds still, so nothing here can be a home either: the bed and the anchor
+        // fail exactly as they do for the Quiet One, but for the opposite reason.
+        // There it is that nobody answers. Here it is that nothing stays put.
+        ctx.register(MASS_AUTHORITY_TYPE, new DimensionType(
+                false, true, false, false, 1.0,
+                MIN_Y, HEIGHT, HEIGHT,
+                blocks.getOrThrow(BlockTags.INFINIBURN_OVERWORLD),
+                0.0F,
+                new DimensionType.MonsterSettings(ConstantInt.of(0), 0),
+                DimensionType.Skybox.OVERWORLD,
+                CardinalLighting.Type.DEFAULT,
+                unmoored(),
+                HolderSet.empty(),
+                Optional.empty()));
+    }
+
+    /**
+     * A bed you cannot sleep in, and it DOES explode.
+     *
+     * Deliberately not the Quiet One's silence. Setting a bed down in a world where
+     * unanchored things rise is a mistake the world will answer immediately and
+     * loudly, and the Anchorite is not the god who declines to react. Two dimensions
+     * refusing the same object for visibly different reasons is most of what makes
+     * them feel like different people.
+     */
+    private static EnvironmentAttributeMap unmoored() {
+        return EnvironmentAttributeMap.builder()
+                .set(EnvironmentAttributes.BED_RULE, BedRule.EXPLODES)
+                .set(EnvironmentAttributes.RESPAWN_ANCHOR_WORKS, false)
+                .build();
     }
 
     /** The law, in vanilla's own vocabulary. See the class javadoc for why each one. */
@@ -168,6 +220,12 @@ public final class ModDimensions {
         // biome, ground you can stand on. The law above is the part that is designed.
         ctx.register(UNRESPONSIVE_STEM, new LevelStem(
                 types.getOrThrow(UNRESPONSIVE_TYPE),
+                new NoiseBasedChunkGenerator(
+                        new FixedBiomeSource(biomes.getOrThrow(quietBiome())),
+                        noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
+
+        ctx.register(MASS_AUTHORITY_STEM, new LevelStem(
+                types.getOrThrow(MASS_AUTHORITY_TYPE),
                 new NoiseBasedChunkGenerator(
                         new FixedBiomeSource(biomes.getOrThrow(quietBiome())),
                         noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));

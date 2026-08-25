@@ -123,3 +123,6 @@ jobs:
 
       - name: The Quiet One's world is a separate place with its own floor
         run: ./tools/crossing_check.sh
+
+      - name: In the Anchorite's world, unanchored things rise
+        run: ./tools/anchorite_check.sh

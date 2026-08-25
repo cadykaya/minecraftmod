@@ -1,5 +1,10 @@
 """The god-worlds' laws are still the laws.
 
+Two worlds so far, and the most valuable thing this file does is hold them APART.
+Both refuse a bed. The Quiet One declines to react at all; the Anchorite detonates.
+That single boolean is most of the difference between two gods, it costs nothing to
+get wrong in a refactor, and no test that looked at one dimension alone would notice.
+
 `tools/crossing_check.sh` proves the Quiet One's world is a separate place with its
 own floor. It cannot prove the thing that makes the place worth crossing to, because
 a dedicated server exposes no command that reads a dimension's attributes back. So
@@ -85,7 +90,29 @@ def unresponsive(dt, a):
            "something other than what this file describes", dt.get("min_y") == 0)
 
 
+def mass_authority(dt, a):
+    """The Anchorite refuses a bed too, and it is important that it refuses it
+    DIFFERENTLY. Two worlds rejecting the same object for visibly different reasons
+    is most of what makes them feel like different people, and the difference here
+    is one boolean: the Quiet One declines to react, the Anchorite detonates. If
+    these two ever converge, the pantheon has lost a character."""
+    bed = a.get("minecraft:gameplay/bed_rule")
+    yield ("`bed_rule` is absent, so this world inherits the overworld's",
+           bed is not None)
+    if bed is not None:
+        yield ("a bed can be slept in", bed.get("can_sleep") == "never")
+        yield ("the bed does NOT explode. That is the Quiet One's silence, and it is "
+               "the wrong god: this world is not unresponsive, it is unmoored, and it "
+               "answers a bed immediately",
+               bed.get("explodes", False) is True)
+    yield ("a respawn anchor works here",
+           a.get("minecraft:gameplay/respawn_anchor_works") is False)
+    yield ("min_y is not 0 -- crossing coordinates in the live checks assume it is",
+           dt.get("min_y") == 0)
+
+
 law("unresponsive", unresponsive)
+law("mass_authority", mass_authority)
 
 if fails:
     print()
@@ -94,4 +121,4 @@ if fails:
     print(f"\nFAIL: {len(fails)} law violation(s)")
     sys.exit(1)
 
-print("\nOK: the Quiet One's world still answers nobody")
+print("\nOK: nobody answers in the Quiet One's world; nothing holds still in the Anchorite's")

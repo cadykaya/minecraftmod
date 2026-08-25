@@ -1483,3 +1483,71 @@ Adding `crossing_check.sh` to the workflow made the live-check count 16 while HA
 still said 15. `tools/ci_claims_check.py` — committed earlier the same session, for
 exactly this — failed the gate before the commit. First real use, and it caught its
 author.
+
+## The world where nothing holds still
+
+Second god-world, and unlike the first one it was not a design problem at all. The law
+was already written, in the mod's own voice, on a boarding notice that has been shipping
+for hours:
+
+> Refused for the crossing to the Mass Authority. Nothing that pours. Where you are
+> going, unanchored things go up, and they do not stop.
+
+A player reads that before they arrive. So the implementation had no freedom: it had to
+be the thing that line describes, because the line shipped first and a world that
+contradicts its own boarding notice is worse than one with no notice at all.
+
+**"And they do not stop" turned out to be load-bearing.** A rising `FallingBlockEntity`
+never satisfies vanilla's ground test, so it never places itself — it climbs past the
+build height and vanilla's own timeout discards it. Nothing had to be written to get
+that. The tempting version, where sand sticks to ceilings, is a nicer toy and a broken
+promise.
+
+### Weight cost code where silence cost data
+
+Every one of the Quiet One's rules turned out to be a 26.2 `dimension_type` attribute:
+beds, raids, respawn anchors, ambience, all of it declarative. Weight is not there. The
+full attribute list was read out of `EnvironmentAttributes` rather than guessed at —
+there is no gravity attribute, no fall-damage attribute, and nothing that inverts
+anything. So this law is a tick handler where the last one was a JSON field.
+
+Worth recording rather than hiding: the platform made one god cheap and the next one
+not, and any estimate of "three more worlds to go" that assumed the first one's cost
+would have been wrong by an order of magnitude.
+
+### The check had to distinguish rising from three kinds of vanishing
+
+"The sand did not land" is satisfied by sand that was deleted, sand that fell through
+the void, sand that never became an entity because gravity was switched *off* rather
+than reversed, and sand that never spawned because the chunk was not loaded. Every one
+of those is a bug that would ship green against a naive check.
+
+So the check measures four things: the control at home (sand lands), no landing there,
+the block is no longer sitting where it was placed, and a falling-block entity exists
+*above* its start position.
+
+The first draft waited six seconds and failed — correctly, and for a reason I had not
+predicted. In six seconds the sand had legitimately risen out of the world and been
+discarded, so "no falling block exists" was true *because the law worked*. That is
+indistinguishable from "the law never ran" unless you also ask whether the sand is still
+sitting at its original coordinates, which is why that assertion exists. Watched failing
+on the law never applying, and on gravity being zeroed rather than inverted — the second
+of which a check that only asked "did it land?" would have called a pass.
+
+### Two gods, one boolean apart
+
+Both worlds refuse a bed. The Quiet One declines to react at all: never/never, no
+explosion, no error message. The Anchorite detonates. That single boolean is most of the
+difference between two characters, it costs nothing to lose in a refactor, and no test
+looking at one dimension alone would notice — so `dimension_check.py` now asserts them
+against each other rather than each in isolation.
+
+### What was left out, and why it is the owner's
+
+Only `FallingBlockEntity` rises: sand, red sand, gravel, anvils — exactly the set the
+ferry's notice names. "Unanchored things" plainly also covers a dropped item, and the
+more complete reading would lift those too. It would also mean every death in that world
+costs the whole inventory, unrecoverably, with the items visibly leaving. That is either
+the best scene in the mod or the reason nobody goes back, it is nowhere in WORLD.md, and
+inventing it here would be new scope arriving disguised as a detail. Flagged for the
+owner; the restrained version ships.
