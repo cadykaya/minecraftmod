@@ -610,3 +610,69 @@ wrong value arrived with nothing invested in expecting the right one.
 > mistake as #14 in the other direction: there a probe reported a number nobody
 > sanity-checked; here nobody had yet decided what the number should be, which is
 > exactly why the real one was believed.
+
+---
+
+## 18. A mutation caught for the wrong reason leaves the check unverified
+
+*Found while mutation-testing the conversation runtime.*
+
+Five guards, five mutations, five `[CAUGHT]`. One of them was a lie:
+
+```
+[CAUGHT]  the initiator leaving does not end the table -- FAIL: 2 unattributed problem record(s):
+```
+
+The assertion that was *supposed* to catch it never ran. Deleting that guard made the
+server throw — the core engine refuses to remove an initiator, so the command hit an
+unhandled exception and the smoke test's log scanner failed the run on the stack trace.
+The mutation was caught by a completely different instrument than the one being tested,
+and the check I actually wanted to verify was still unverified while the report said
+otherwise.
+
+The fix was a second, quieter mutation: make the guard a no-op *without* throwing, so
+the only thing that can notice is the assertion under test. It failed by name —
+`z2 was left sitting at a table whose initiator had gone` — and only then was that
+assertion known to work.
+
+> **The rule: a mutation test verifies an assertion only if the FAILURE MESSAGE is
+> the one that assertion produces.** Reading exit codes is not enough; read what
+> failed. A mutation that crashes, times out, or trips an unrelated guard has proved
+> that the mutation is bad, which was never in question — the thing being measured is
+> whether *this check* can see it.
+
+Corollary, and the reason this is worth a whole entry: the more guards a project
+accumulates, the more likely any given mutation trips one of the *others* first. A
+mature suite makes this failure mode more common, not less.
+
+---
+
+## 19. If the expected value comes from an unordered collection, the test is flaky by construction
+
+*Found in the same hour, one layer down.*
+
+`Resolution.stances()` returned `Map.copyOf(picks)`. The picks are a `LinkedHashMap`
+specifically so the table can show who spoke first — that order is content, it is most
+of what an argument reads as — and `Map.copyOf` throws it away.
+
+The tell was two probe runs of the same code printing different orders:
+
+```
+stances={p2=comply, p3=refuse, kaya=comply}
+stances={kaya=comply, p2=refuse, p3=refuse}
+```
+
+Java's immutable maps iterate in a **salted** hash order; the salt is randomised per
+JVM run. So the first version of the test — one table asserted against a literal —
+would have passed or failed depending on which JVM it ran in, and would have looked
+like a real intermittent bug for as long as anyone tolerated it.
+
+The test that works asserts a **relationship instead of a value**: two tables, same
+participants, different submission orders, and the assertion is that their stance
+orders *differ*. An unordered map gives both the same order — same keys, same salt —
+so the mutation is caught deterministically, on every JVM, forever.
+
+> **The rule: when a value's order or identity is not guaranteed, assert a
+> relationship between two observations instead of one observation against a
+> literal.** Two runs that must differ, or must agree, are checkable even when
+> neither one alone is predictable.

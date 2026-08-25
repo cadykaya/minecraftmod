@@ -96,6 +96,53 @@ public final class SelfTest {
         c.submit("kaya", "a"); c.submit("p2", "a");
         check(c.resolve(new Random(1)).chosen().id().equals("a"), "accord advances");
 
+        // -- stances come back in the order people spoke ----------------------
+        //
+        // Who answered first, before the others fell in behind them, is most of what
+        // an argument reads as -- so the order is content and has to be stable.
+        //
+        // Asserted by COMPARING TWO TABLES rather than by checking one against a
+        // literal. Java's immutable maps iterate in a salted hash order that changes
+        // between JVM runs, so a single assertion could pass or fail on luck. Two
+        // tables with the same participants in different submission orders cannot:
+        // an unordered map gives both the same order, an insertion-ordered one
+        // cannot. (The first version of this test was the flaky kind.)
+        var a1 = new Conversation(graph(ResolutionRule.INITIATOR), "kaya",
+                                  List.of("kaya", "p2", "p3"));
+        a1.submit("p2", "b"); a1.submit("p3", "b"); a1.submit("kaya", "a");
+        var order1 = new java.util.ArrayList<>(a1.resolve(new Random(1)).stances().keySet());
+
+        var a2 = new Conversation(graph(ResolutionRule.INITIATOR), "kaya",
+                                  List.of("kaya", "p2", "p3"));
+        a2.submit("kaya", "a"); a2.submit("p3", "b"); a2.submit("p2", "b");
+        var order2 = new java.util.ArrayList<>(a2.resolve(new Random(1)).stances().keySet());
+
+        check(order1.equals(List.of("p2", "p3", "kaya")), "stances follow the order people spoke");
+        check(!order1.equals(order2), "a different speaking order gives a different stance order");
+
+        // -- leaving the table ------------------------------------------------
+        //
+        // Asserted on the EFFECT -- who wins the vote afterwards -- rather than on
+        // participants().size(). A remove() that dropped the name but kept the pick
+        // would pass a size check and still let someone who quit swing the table.
+        c = new Conversation(graph(ResolutionRule.VOTE), "kaya", List.of("kaya", "p2", "p3"));
+        c.submit("p2", "b"); c.submit("p3", "b"); c.submit("kaya", "a");
+        check(c.remove("p3"), "removing a participant reports they were there");
+        check(!c.remove("p3"), "removing them twice reports they were not");
+        check(c.resolve(new Random(1)).chosen().id().equals("a"),
+              "a departed player's vote leaves with them, so the tie breaks to the initiator");
+
+        // allSubmitted must follow the shrunken table, or a leaver deadlocks it.
+        c = new Conversation(graph(ResolutionRule.VOTE), "kaya", List.of("kaya", "p2"));
+        c.submit("kaya", "a");
+        check(!c.allSubmitted(), "table is not complete while someone has not picked");
+        c.remove("p2");
+        check(c.allSubmitted(), "table completes once the absentee is off it");
+
+        threw = false;
+        try { c.remove("kaya"); } catch (IllegalArgumentException e) { threw = true; }
+        check(threw, "the initiator cannot be removed; the conversation ends instead");
+
         // -- terminal prose ends the conversation -----------------------------
         c = new Conversation(graph(ResolutionRule.INITIATOR), "kaya", List.of("kaya"));
         c.submit("kaya", "b");

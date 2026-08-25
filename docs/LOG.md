@@ -595,3 +595,38 @@ Wardens exist and nothing spawns one; that is the next decision and it is the ow
 because the good answer -- the woken statue calls them -- turns statue placement into a
 strategy layer and hands players a lever on enforcement that reaches the endgame. It is
 in HANDOFF as a proposal, not in the code.
+
+## The table argues
+
+`warden_intake` has been written since the first week and no one could reach it. It
+runs now, and everything about how it runs is server-side.
+
+The engine in `core/` already knew who wins a node. What did not exist is the half a
+server has to own: who is at which table, when a node resolves, and what happens when
+somebody walks off mid-sentence. Every rule in `Conversations` is a way a table wedges
+in front of real people -- resolve on the last pick rather than the first, a leaver's
+vote leaves with them, a departure that completes the table resolves it on the way
+out, the initiator leaving ends it, and silence times out rather than deadlocking.
+
+Participants are opaque string ids rather than players. That is what the core engine
+asked for, and it turns out to be the whole reason this could be built at all here: a
+container with no game client can still drive three-way votes, ties, failed unanimity
+and someone rage-quitting, because none of that needs a player object.
+
+Talking to a Warden is what records `WARDEN_CONTACT` -- being addressed, not seeing
+one -- so a world can reach band 2 by playing now instead of by command.
+
+Two core fixes fell out. `Conversation.remove` did not exist despite the class comment
+describing exactly when a caller would need it. And stance ordering was being thrown
+away by `Map.copyOf`, which matters because who spoke first before the others fell in
+behind them is most of what an argument reads as.
+
+The more useful half of this pass is in LESSONS #18 and #19, and neither is about
+dialogue. One mutation reported `[CAUGHT]` while the assertion it was meant to verify
+never ran -- deleting the guard crashed the server, and a different instrument caught
+it. The check under test was still unverified while the report said otherwise. And the
+stance-order test, in its first form, asserted one observation against a literal, which
+cannot work when Java salts immutable-map iteration order per JVM run; the version that
+works asserts that two tables with different submission orders *differ*.
+
+Still missing: the screen. A player cannot see any of this yet.

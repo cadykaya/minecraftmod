@@ -1,5 +1,6 @@
 package com.cadykaya.interregnum.core.dialogue;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -39,7 +40,20 @@ public final class Conversation {
 
     public DialogueNode current() { return current; }
     public boolean ended() { return ended; }
-    public Map<String, String> picks() { return Map.copyOf(picks); }
+    /**
+     * Who has said what so far, IN THE ORDER THEY SPOKE.
+     *
+     * The order is content, not incidental: a table showing stances is showing an
+     * argument, and who answered first before the others fell in behind them is
+     * most of what that argument reads as. `Map.copyOf` was wrong here -- it
+     * returns an unordered map, so the display order changed between nodes and
+     * between runs for no reason a player could see.
+     */
+    public Map<String, String> ordered() {
+        return Collections.unmodifiableMap(new LinkedHashMap<>(picks));
+    }
+
+    public Map<String, String> picks() { return ordered(); }
 
     /** Record a participant's pick. Repicking before resolution is allowed (changing your mind is legal). */
     public void submit(String participant, String optionId) {
@@ -53,6 +67,31 @@ public final class Conversation {
 
     public boolean allSubmitted() { return picks.keySet().containsAll(participants); }
 
+    public Set<String> participants() { return Set.copyOf(participants); }
+
+    public String initiator() { return initiator; }
+
+    /**
+     * Take someone off the table: they logged off, walked away, or timed out.
+     *
+     * Their pick goes with them rather than standing as a vote in their absence.
+     * Someone who left did not abstain into whatever the majority wanted -- they
+     * are not there, and a VOTE that counted an absent player's earlier click
+     * would let a player influence a table they had already quit.
+     *
+     * Refuses to remove the INITIATOR, because there is no sensible answer for a
+     * node whose rule is INITIATOR once they are gone. The caller ends the
+     * conversation instead: the Warden was talking to *them*.
+     *
+     * @return true if they were at the table.
+     */
+    public boolean remove(String participant) {
+        if (participant.equals(initiator))
+            throw new IllegalArgumentException("cannot remove the initiator; end the conversation");
+        picks.remove(participant);
+        return participants.remove(participant);
+    }
+
     /**
      * Resolve the current node per its rule. Caller decides WHEN (usually on
      * allSubmitted() or a timeout that defaults absentees to abstention by
@@ -61,7 +100,7 @@ public final class Conversation {
     public Resolution resolve(RandomGenerator roll) {
         if (ended) throw new IllegalStateException("conversation is over");
         if (picks.isEmpty()) throw new IllegalStateException("nothing submitted");
-        Map<String, String> stances = Map.copyOf(picks);
+        Map<String, String> stances = ordered();
 
         String winnerId = switch (current.rule()) {
             case INITIATOR -> picks.getOrDefault(initiator, picks.values().iterator().next());

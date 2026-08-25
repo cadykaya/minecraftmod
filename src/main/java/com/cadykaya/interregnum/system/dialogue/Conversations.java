@@ -1,0 +1,256 @@
+package com.cadykaya.interregnum.system.dialogue;
+
+import com.mojang.logging.LogUtils;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.Entity;
+import org.slf4j.Logger;
+
+import com.cadykaya.interregnum.content.dialogue.DialogueLoader;
+import com.cadykaya.interregnum.content.entity.WardenEntity;
+import com.cadykaya.interregnum.core.chapter.Milestone;
+import com.cadykaya.interregnum.core.dialogue.Conversation;
+import com.cadykaya.interregnum.core.dialogue.DialogueGraph;
+import com.cadykaya.interregnum.core.dialogue.DialogueNode;
+import com.cadykaya.interregnum.core.dialogue.Resolution;
+import com.cadykaya.interregnum.system.ChapterSavedData;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+import java.util.random.RandomGenerator;
+
+/**
+ * Live conversations on the server.
+ *
+ * The decisions -- who wins a node, what dissent does -- are all in
+ * {@link Conversation} in `core/`, tested with no game running. This class is the
+ * part that needs a server: who is at which table, when a node resolves, and what
+ * happens when somebody walks away mid-sentence.
+ *
+ * **Participants are opaque string ids, not players.** That is what the core engine
+ * asked for and it is load-bearing here for two reasons. A real player is their UUID
+ * string; but a table that only knows ids also means the whole multiplayer state
+ * machine -- votes, ties, unanimity, someone quitting -- can be driven and asserted
+ * on a headless server with no client in existence. Every rule below is exercised
+ * that way in `tools/talk_check.sh`.
+ *
+ * **Nothing here is persisted.** A conversation is a thing happening between people
+ * right now; if the server stops, the table is over. Saving one would mean restoring
+ * a player into a half-finished argument they no longer remember having.
+ */
+public final class Conversations {
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private Conversations() {}
+
+    /**
+     * How long a table waits on somebody who has stopped answering.
+     *
+     * A minute is a long time to stare at a dialogue box and a short time to walk
+     * to the kitchen. Erring long is right: the failure mode of a short timeout is
+     * that a table resolves without a player who was still reading, and there is no
+     * undo for that.
+     */
+    public static final int TIMEOUT_TICKS = 20 * 60;
+
+    public static final class Table {
+        public final UUID id;
+        public final Identifier scene;
+        public final Conversation conversation;
+        /** The entity being spoken to, or null for a conversation with nobody. */
+        public final UUID speaker;
+        private final RandomGenerator roll;
+        private long lastActivity;
+
+        Table(UUID id, Identifier scene, Conversation conversation, UUID speaker,
+              RandomGenerator roll, long now) {
+            this.id = id;
+            this.scene = scene;
+            this.conversation = conversation;
+            this.speaker = speaker;
+            this.roll = roll;
+            this.lastActivity = now;
+        }
+
+        public DialogueNode node() {
+            return conversation.current();
+        }
+    }
+
+    private static final Map<UUID, Table> TABLES = new LinkedHashMap<>();
+    private static final Map<String, UUID> SEATED = new HashMap<>();
+
+    /** Everything is dropped when a server starts: nothing here outlives a session. */
+    public static void reset() {
+        TABLES.clear();
+        SEATED.clear();
+    }
+
+    public static int active() {
+        return TABLES.size();
+    }
+
+    /** The table this participant is at, or null. */
+    public static Table of(String participant) {
+        UUID id = SEATED.get(participant);
+        return id == null ? null : TABLES.get(id);
+    }
+
+    /**
+     * Sit a group down in front of a scene. The first id is the initiator.
+     *
+     * @param speaker the entity being addressed, or null.
+     * @throws IllegalArgumentException with a message meant to be shown, not logged.
+     */
+    public static Table open(MinecraftServer server, Identifier scene,
+                             List<String> participants, Entity speaker) {
+        if (participants.isEmpty()) {
+            throw new IllegalArgumentException("nobody is at the table");
+        }
+        DialogueGraph graph = DialogueLoader.get(scene);
+        if (graph == null) {
+            throw new IllegalArgumentException("no such conversation: " + scene);
+        }
+        for (String p : participants) {
+            if (SEATED.containsKey(p)) {
+                throw new IllegalArgumentException(p + " is already in a conversation");
+            }
+        }
+
+        UUID id = UUID.randomUUID();
+        // Seeded from the world and the table, per the core engine's contract: two
+        // tables never share dice, and one table's dice are reproducible from its id.
+        long seed = server.overworld().getSeed()
+                ^ id.getMostSignificantBits() ^ id.getLeastSignificantBits();
+        Table table = new Table(id, scene,
+                new Conversation(graph, participants.get(0), participants),
+                speaker == null ? null : speaker.getUUID(),
+                new Random(seed), server.overworld().getGameTime());
+        TABLES.put(id, table);
+        for (String p : participants) {
+            SEATED.put(p, id);
+        }
+
+        // The world answers back.
+        //
+        // This is what ends Chapter 1: not seeing a Warden, not being near one, but
+        // being *addressed* by one. It belongs here rather than in the entity because
+        // this is the single place a conversation with a Warden can begin, however it
+        // was started -- by a right-click, or by a command on a headless server.
+        if (speaker instanceof WardenEntity) {
+            ChapterSavedData data = ChapterSavedData.get(server);
+            var before = data.chapter();
+            if (data.record(Milestone.WARDEN_CONTACT)) {
+                // Reported as a transition rather than a state, because it is often
+                // NOT one: ENFORCEMENT needs the deicide as well, so contact before
+                // the god dies records the milestone and moves nothing. A log line
+                // saying "the interregnum is now DORMANT" reads like a bug.
+                LOG.info("First Warden contact recorded; chapter {} -> {}.",
+                        before, data.chapter());
+            }
+        }
+        return table;
+    }
+
+    /**
+     * Record a pick, and resolve the node if that was the last one outstanding.
+     *
+     * @return the resolution if the node resolved, or null if the table is still
+     *         waiting on somebody.
+     */
+    public static Resolution submit(MinecraftServer server, String participant, String optionId) {
+        Table table = of(participant);
+        if (table == null) {
+            throw new IllegalArgumentException(participant + " is not in a conversation");
+        }
+        table.conversation.submit(participant, optionId);
+        table.lastActivity = server.overworld().getGameTime();
+        if (!table.conversation.allSubmitted()) {
+            return null;
+        }
+        return resolve(table);
+    }
+
+    private static Resolution resolve(Table table) {
+        Resolution r = table.conversation.resolve(table.roll);
+        if (table.conversation.ended()) {
+            close(table);
+        }
+        return r;
+    }
+
+    /**
+     * Take somebody off a table.
+     *
+     * If the initiator leaves, the whole conversation ends -- there is no sensible
+     * INITIATOR node without one, and the fiction agrees: the Warden was addressing
+     * them. Otherwise the table shrinks, and shrinking can complete it, so a leave
+     * may resolve the node on its way out. Without that, one player alt-tabbing
+     * leaves everyone else staring at a box forever.
+     *
+     * @return the resolution if their departure completed the node, else null.
+     */
+    public static Resolution leave(String participant) {
+        Table table = of(participant);
+        if (table == null) {
+            return null;
+        }
+        if (participant.equals(table.conversation.initiator())) {
+            close(table);
+            return null;
+        }
+        table.conversation.remove(participant);
+        SEATED.remove(participant);
+        if (table.conversation.participants().isEmpty()) {
+            close(table);
+            return null;
+        }
+        return table.conversation.allSubmitted() ? resolve(table) : null;
+    }
+
+    public static void close(Table table) {
+        TABLES.remove(table.id);
+        SEATED.values().removeIf(id -> id.equals(table.id));
+    }
+
+    /**
+     * Drop tables nobody is answering.
+     *
+     * Silence from the initiator ends the conversation; silence from anybody else
+     * takes them off the table and lets the rest carry on. A table that can deadlock
+     * on one absent player is a griefing tool in multiplayer, and this mod is
+     * deliberately full of conversations several people are in at once.
+     */
+    public static void tick(MinecraftServer server) {
+        if (TABLES.isEmpty()) {
+            return;
+        }
+        long now = server.overworld().getGameTime();
+        for (Table table : List.copyOf(TABLES.values())) {
+            if (now - table.lastActivity < TIMEOUT_TICKS) {
+                continue;
+            }
+            List<String> silent = new ArrayList<>();
+            Map<String, String> picks = table.conversation.picks();
+            for (String p : table.conversation.participants()) {
+                if (!picks.containsKey(p)) {
+                    silent.add(p);
+                }
+            }
+            if (silent.contains(table.conversation.initiator()) || picks.isEmpty()) {
+                LOG.info("Conversation {} timed out with nobody answering.", table.scene);
+                close(table);
+                continue;
+            }
+            table.lastActivity = now;
+            for (String p : silent) {
+                leave(p);
+            }
+        }
+    }
+}

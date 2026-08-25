@@ -27,7 +27,42 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **12**, every one mutation-verified, all in CI |
+| Live-world checks | **13**, every one mutation-verified, all in CI |
+
+### The Warden speaks, and the table argues
+
+`warden_intake` was written in the first week, validated ever since, and unreachable.
+It runs now.
+
+The decisions -- who wins a node, what dissent does -- were already in `core/` and
+tested with no game running. What was missing is the half that only exists on a
+server: **who is at which table, when a node resolves, and what happens when somebody
+walks off mid-sentence.** Every rule in `Conversations` is a way a table can wedge in
+front of real people:
+
+- a node resolves on the **last** pick, never the first and never a timer;
+- one player leaving must not deadlock the rest -- and a departure that completes the
+  table resolves it **on the way out**;
+- a leaver's vote leaves with them, or someone who quit could still swing a VOTE;
+- the initiator leaving ends it (there is no INITIATOR node without one);
+- silence times out after a minute: the initiator going quiet ends the table, anyone
+  else going quiet is taken off it so the rest can carry on.
+
+**Participants are opaque string ids, not players.** The core engine asked for that,
+and it is what lets the entire multiplayer state machine -- votes, ties, unanimity,
+walking away -- be asserted on a headless server with no client in existence.
+`/interregnum talk start|say|status|leave` drives it; six mutations, six caught.
+
+**Talking to a Warden is what records `WARDEN_CONTACT`** -- being *addressed*, not
+seeing one -- so a world can now reach band 2 by playing rather than by command.
+
+Two core fixes fell out of it: `Conversation.remove` (the engine described removing
+absentees and had no way to), and stance ordering, which `Map.copyOf` was silently
+discarding. See [`LESSONS.md`](LESSONS.md) #18 and #19 -- both are about verification
+rather than about dialogue, and both are the more useful half of this pass.
+
+**Still missing: the screen.** Everything above is server-side and proven; a player
+cannot yet see any of it. That, and right-clicking a Warden to begin, is what remains.
 
 ### The Warden takes the field
 
@@ -413,10 +448,13 @@ In order, all unblocked unless marked:
    Unambiguously in scope meanwhile: **first Warden contact records
    `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
    currently reachable only by command.
-3. **The Warden speaks.** `warden_intake` has been written and validated since the
-   first week and nothing can reach it. This needs the interaction path (right-click a
-   Warden → conversation) and a client screen, and it is the largest remaining item in
-   Phase 1.
+3. **The dialogue screen, and the right-click.** The conversation runtime is done and
+   verified; what is missing is any way for a player to see or reach it. Two pieces:
+   `WardenEntity#mobInteract` opening a table, and a client screen rendering
+   `Conversations.Table` (node text, options, and — the whole multiplayer point —
+   everyone else's stance as they pick). The screen cannot be verified in this
+   container, so build it last and keep every decision on the server, where it is
+   already proven.
 5. **More dialogue scenes** (shrine-keeper, first dream-audience) and the client screen.
    The engine, the loader and the first scene are done and verified end to end.
 6. **Clear remaining `VERIFY:` markers** in MODELS.md, DATAGEN.md, WORLDGEN.md against the

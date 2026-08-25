@@ -15,6 +15,10 @@ import com.cadykaya.interregnum.Interregnum;
 import com.cadykaya.interregnum.core.chapter.Milestone;
 import com.cadykaya.interregnum.system.claim.Claims;
 import com.cadykaya.interregnum.system.unraveling.Unraveling;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import net.minecraft.commands.arguments.EntityArgument;
+import com.cadykaya.interregnum.core.dialogue.Resolution;
+import com.cadykaya.interregnum.system.dialogue.Conversations;
 
 /**
  * `/interregnum` -- read and drive the world's progress.
@@ -47,6 +51,136 @@ public final class InterregnumCommand {
         ctx.getSource().sendSuccess(() -> Component.literal(
                 (claim ? "claimed " : "released ") + total + " position(s)"), true);
         return total;
+    }
+
+    /** One line describing where a table currently stands. */
+    private static String describe(Conversations.Table t) {
+        var node = t.node();
+        StringBuilder sb = new StringBuilder("scene=").append(t.scene)
+                .append(" node=").append(node.id())
+                .append(" speaker=").append(node.speaker())
+                .append(" rule=").append(node.rule())
+                .append(" options=");
+        for (var o : node.options()) {
+            sb.append(o.id());
+            if (!o.requiredTags().isEmpty()) {
+                sb.append(o.requiredTags());
+            }
+            sb.append(',');
+        }
+        sb.append(" waiting=");
+        var picks = t.conversation.picks();
+        for (String p : t.conversation.participants()) {
+            if (!picks.containsKey(p)) {
+                sb.append(p).append(',');
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * `/interregnum talk` -- run a conversation from the console.
+     *
+     * The honest justification, because this one looks the most like a test hook of
+     * anything in this file: a conversation is the only system in the mod whose
+     * whole state lives in memory for a few minutes and then is gone. When a table
+     * wedges -- somebody's client desynced, an option will not take, a node will not
+     * resolve -- there is nothing to inspect afterwards and no log of what the table
+     * was waiting on. `status` answers that, and `say`/`leave` are how an operator
+     * unsticks it without kicking everyone.
+     *
+     * It is also, not coincidentally, the only way to exercise multiplayer dialogue
+     * on a server with no players: participants are opaque ids by design, so the
+     * vote, tie, unanimity and walk-away rules can all be asserted headlessly.
+     */
+    private static LiteralArgumentBuilder<CommandSourceStack> talk() {
+        return Commands.literal("talk")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("start")
+                        .then(Commands.argument("scene", net.minecraft.commands.arguments.IdentifierArgument.id())
+                                .then(Commands.argument("participants", StringArgumentType.string())
+                                        .executes(ctx -> start(ctx, null))
+                                        .then(Commands.argument("speaker", EntityArgument.entity())
+                                                .executes(ctx -> start(ctx,
+                                                        EntityArgument.getEntity(ctx, "speaker")))))))
+                .then(Commands.literal("say")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("option", StringArgumentType.string())
+                                        .executes(ctx -> {
+                                            String who = StringArgumentType.getString(ctx, "who");
+                                            String opt = StringArgumentType.getString(ctx, "option");
+                                            Resolution r;
+                                            try {
+                                                r = Conversations.submit(
+                                                        ctx.getSource().getServer(), who, opt);
+                                            } catch (IllegalArgumentException | IllegalStateException e) {
+                                                ctx.getSource().sendSuccess(() -> Component.literal(
+                                                        "talk=refused reason=" + e.getMessage()), false);
+                                                return 0;
+                                            }
+                                            if (r == null) {
+                                                var t = Conversations.of(who);
+                                                ctx.getSource().sendSuccess(() -> Component.literal(
+                                                        "talk=pending " + describe(t)), false);
+                                                return 1;
+                                            }
+                                            var t = Conversations.of(who);
+                                            final Resolution res = r;
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "talk=" + res.kind()
+                                                            + " chose=" + (res.chosen() == null
+                                                                    ? "none" : res.chosen().id())
+                                                            + " stances=" + res.stances()
+                                                            + (t == null ? " ended=true"
+                                                                    : " " + describe(t))), false);
+                                            return 1;
+                                        }))))
+                .then(Commands.literal("status")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .executes(ctx -> {
+                                    String who = StringArgumentType.getString(ctx, "who");
+                                    var t = Conversations.of(who);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            t == null ? "talk=none active=" + Conversations.active()
+                                                    : "talk=live " + describe(t)), false);
+                                    return t == null ? 0 : 1;
+                                })))
+                .then(Commands.literal("leave")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .executes(ctx -> {
+                                    String who = StringArgumentType.getString(ctx, "who");
+                                    Resolution r = Conversations.leave(who);
+                                    var t = Conversations.of(who);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "talk=left resolved="
+                                                    + (r == null ? "none"
+                                                            : r.kind() + "/" + (r.chosen() == null
+                                                                    ? "none" : r.chosen().id()))
+                                                    + " active=" + Conversations.active()
+                                                    + (t == null ? "" : " " + describe(t))), false);
+                                    return 1;
+                                })));
+    }
+
+    private static int start(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
+                             net.minecraft.world.entity.Entity speaker) {
+        var id = net.minecraft.commands.arguments.IdentifierArgument.getId(ctx, "scene");
+        // Comma OR plus, because brigadier's unquoted strings do not allow commas:
+        // `kaya,p2,p3` parses as `kaya` and then fails on trailing data, with an
+        // error that points at the end of the line and blames whatever is there.
+        // `kaya+p2+p3` needs no quoting; "kaya,p2,p3" quoted works too.
+        var who = java.util.List.of(
+                StringArgumentType.getString(ctx, "participants").split("[,+]"));
+        Conversations.Table t;
+        try {
+            t = Conversations.open(ctx.getSource().getServer(), id, who, speaker);
+        } catch (IllegalArgumentException e) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "talk=refused reason=" + e.getMessage()), false);
+            return 0;
+        }
+        ctx.getSource().sendSuccess(() -> Component.literal("talk=open " + describe(t)), true);
+        return 1;
     }
 
     @SubscribeEvent
@@ -150,6 +284,8 @@ public final class InterregnumCommand {
                                                     "swept=" + samples + " converted=" + n), true);
                                             return n;
                                         })))));
+
+        root = root.then(talk());
 
         for (Milestone m : Milestone.values()) {
             record = record.then(Commands.literal(m.name().toLowerCase(java.util.Locale.ROOT))

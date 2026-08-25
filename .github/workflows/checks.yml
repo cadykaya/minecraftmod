@@ -105,3 +105,6 @@ jobs:
 
       - name: A Warden exists, and cannot attack anyone
         run: ./tools/warden_check.sh
+
+      - name: Three people can argue in front of a Warden
+        run: ./tools/talk_check.sh
