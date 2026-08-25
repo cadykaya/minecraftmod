@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **17**, every one mutation-verified, all in CI |
+| Live-world checks | **15**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
@@ -60,6 +60,13 @@ capture eats the world), the keel test removed (bare ground answers to the ferry
 `place` collapsed to one pass (the nudge deletes the keel). That third mutation
 initially passed — the assertion was matching the manifest printed *before* the
 crossing, since the two are identical by design. See [`LESSONS.md`](LESSONS.md) #24.
+
+`tools/ci_claims_check.py` counts the live-world checks in the workflow on every push
+and fails if the table above disagrees. It was written because the table *did*
+disagree — it said seventeen and the workflow ran fifteen, drift accumulated over
+several sessions of adding a check and bumping a number by hand. Nobody catches that
+by reading, because the only way to catch it is to count a workflow, and nobody counts
+a workflow. The count in that row is now the workflow's, not a claim about it.
 
 One of the core mutations for the manifest's stable order was itself flaky, and CI
 found it: `Map.copyOf` randomises iteration order with a per-JVM salt, so about one

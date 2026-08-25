@@ -19,6 +19,9 @@ python3 tools/dialogue_check.py
 echo "== registry =="
 python3 tools/registry_check.py
 
+echo "== ci claims =="
+python3 tools/ci_claims_check.py
+
 echo "== regard lines =="
 python3 tools/regard_lines_check.py
 
