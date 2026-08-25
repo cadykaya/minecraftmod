@@ -28,6 +28,15 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 13 documents, see [`INDEX.md`](INDEX.md) |
 
+### CI
+
+`.github/workflows/checks.yml` runs `tools/check_all.sh` on every push and PR. The
+workflow deliberately calls that one script rather than re-listing the checks, so CI and a
+local run cannot disagree. No Minecraft toolchain is needed for it yet — everything checked
+so far is dependency-free Python and Java 21. Verified by breaking three things in a clean
+checkout (stale generated texture, missing translation key, broken doc link); each failed
+the gate, and the restored tree passed.
+
 ### What actually runs today
 
 ```sh

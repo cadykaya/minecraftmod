@@ -1,0 +1,40 @@
+# The gate, enforced. tools/check_all.sh is the single source of truth for what
+# "green" means -- this workflow deliberately runs that one script rather than
+# re-listing the checks here, so CI and a local run can never disagree.
+#
+# No Minecraft toolchain is needed yet: everything checked so far is pure Python
+# and dependency-free Java. When the NeoForge module lands this job gains a Gradle
+# step; the script stays the entry point.
+name: checks
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Report versions
+        run: |
+          java -version
+          javac -version
+          python3 --version
+
+      # Runs: palette law, dialogue data, client-leak boundary, core self-test,
+      # core mutation check, generated-asset staleness, doc links.
+      - name: Run all checks
+        run: ./tools/check_all.sh

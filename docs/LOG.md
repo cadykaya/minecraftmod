@@ -156,3 +156,9 @@ already passed 44 checks and been hand-verified against three mutations, it foun
 surviving mutations** — both assertions correct, both blind. Hand-checking a few mutations
 is not checking them all. Now a tool, wired into the gate, 11 mutations all caught.
 Recorded as LESSONS #5.
+
+**CI landed.** `.github/workflows/checks.yml` runs the gate on every push and PR — the
+first thing enforcing `check_all.sh` anywhere but a local shell. PR #1 had zero check runs
+before this. Verified the way everything else here is: three real regressions introduced
+in a clean checkout (stale texture, missing lang key, broken doc link), each caught, tree
+restored and green.
