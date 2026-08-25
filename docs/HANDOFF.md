@@ -1308,10 +1308,31 @@ next to each, so the provenance travels with the decision.
 5. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
    everything it would render is already proven server-side. Chat works meanwhile.
-6. **Clear remaining `VERIFY:` markers.** WORLDGEN.md, DATAGEN.md and MODELS.md are
-   cleared and marked VERIFIED against 26.2.0.67. What is left is ARCHITECTURE.md
-   (capabilities → data attachments, payload/handler registration) plus the standing
-   header caveat on each doc, which should stay: that is policy, not debt.
+6. **`VERIFY:` markers — the API-specific ones are cleared.** ARCHITECTURE.md's three
+   (registration, capabilities → data attachments, payload/handler registration),
+   DATAGEN.md's item-model row and TEXTURING.md's paths are now **VERIFIED against
+   26.2.0.67** — most of them by shapes this repo compiles and CI boots a server on.
+
+   **Four remain, and none of them is debt.** Each now says what evidence would clear it,
+   because "unverified" and "unverifiable here" were being conflated:
+
+   * `MODELS.md` **render types** — every block here is an opaque cube and every item is
+     `item/generated`, so nothing exercises them. Clearing it needs the first cutout or
+     translucent model *and a client to look at it*: unlike the datagen shapes, this one
+     cannot be settled by reading the jar, because the question is whether it renders
+     correctly.
+   * `MODELS.md` **tint sources** — there is no tinted texture. A note to whoever adds the
+     first one, not debt: `palette_check.py` would fail a greyscale source for being
+     off-palette, which is the check working.
+   * `PLATFORM.md` **`gradle.properties` values** — a standing caveat that the *names* are
+     stable and the *build numbers* must be checked at setup. Policy; it should never be
+     cleared.
+   * `VERIFICATION.md` **gametests** — overtaken rather than skipped. Block and entity
+     behaviour is tested by booting a real server and driving it over RCON, which covers
+     what gametests would and additionally proves the mod loads. Clearing it needs a
+     behaviour a command cannot reach and a headless server cannot observe.
+
+   The standing header caveat on each doc stays: that is policy, not debt.
 
 ## Standing warning
 

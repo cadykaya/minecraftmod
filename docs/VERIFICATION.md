@@ -193,7 +193,13 @@ failures in modded content.
 
 ### Tier 3
 
-8. **In-game gametests** for block/machine behaviour. `VERIFY:` the current framework.
+8. **In-game gametests** for block/machine behaviour. `VERIFY:` — **still open, and it
+   has been overtaken.** This mod tests block and entity behaviour by booting a real
+   dedicated server and driving it over RCON (`tools/*_check.sh`, 21 of them in CI),
+   which covers what gametests would and additionally proves the mod loads. The
+   framework's current shape is therefore unverified here because nothing has needed it
+   — not because it was skipped. *What would clear it:* a behaviour that a command
+   cannot reach and a headless server cannot observe.
 9. **Worldgen probes** — fixed seed, generation timing, structure encounter rate.
 10. **Render probes** — the texture bench in [`TEXTURING.md`](TEXTURING.md).
 

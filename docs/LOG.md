@@ -1987,3 +1987,49 @@ interchangeable — shrine chests implies it never sent them, the crater implies
 them standing in the hole you made, and *returned undelivered* implies it did send them
 and they came back, which is a different and sadder story. That choice is the story rather
 than the plumbing, so it went to the owner instead of being decided here.
+
+## Unverified and unverifiable are not the same word
+
+The last real batch of `VERIFY:` markers — the ones ARCHITECTURE.md carried for
+registration, for capabilities, and for networking. Clearing them turned out to be less
+about looking things up than about noticing that the markers were being used for two
+different situations that deserve different answers.
+
+**Registration and state cleared on evidence this repo generates.** Every shape is one
+CI compiles and boots a server on: `DeferredRegister.Blocks`, `registerSimpleBlock` with
+a `UnaryOperator`, and — the one the marker was really about — the capability rework.
+Capabilities are genuinely gone as the place you hang arbitrary data. Attachments
+replaced them, and this mod's single most load-bearing piece of state is one: the
+per-chunk record of player-placed blocks that the unraveling, the ferry and three of the
+four god-worlds all consult.
+
+The section now separates attachments from **data components**, because both are
+"arbitrary data on a thing" and they are different registries. Writing them side by side
+surfaced the trap worth recording: a component that is `persistent` but not
+`networkSynchronized` exists on the server and is invisible to the client, which for a
+tooltip is a bug that presents as a rendering problem.
+
+**Networking cleared on weaker evidence, and says so.** This mod does not send a packet.
+The shapes came out of `PayloadRegistrar`, `RegisterPayloadHandlersEvent`,
+`IPayloadHandler` and `CustomPacketPayload` in the sources jar, so the section is marked
+as read rather than compiled. That is a real distinction and the doc makes it, because a
+reader who cannot tell which kind of claim they are looking at will trust both equally
+and be wrong about one.
+
+### The four that remain are not debt
+
+The interesting half. `MODELS.md`'s render types cannot be cleared by reading the jar at
+all — the question is whether a cutout model *renders correctly*, and answering it needs
+a client this container does not have. The tint marker is a note to whoever adds the
+first tinted texture. `PLATFORM.md`'s is a standing caveat that build numbers must be
+checked at setup, and should never be cleared. And `VERIFICATION.md`'s gametest marker
+has been **overtaken**: block and entity behaviour here is tested by booting a real
+server and driving it over RCON, which covers what gametests would and additionally
+proves the mod loads.
+
+Each of those now states what evidence would clear it. That was the actual work. A
+marker that says only "unverified" invites someone to clear it by looking harder, and
+three of these four cannot be cleared that way — one needs a client, one needs a feature
+nobody has written, one is permanent policy. Saying so is the difference between a
+to-do list and a list of things that will sit there forever making the to-do list look
+longer than it is.

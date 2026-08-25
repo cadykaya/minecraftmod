@@ -97,7 +97,7 @@ the singular directory names, which is the trap: `loot_table/`, not `loot_tables
 | Tag | `data/<ns>/tags/` | **the most important one — see below** |
 | Advancement | `data/<ns>/advancement/` | also the progression/trigger system |
 | Block state + model | `assets/<ns>/blockstates`, `models/block` | mostly one-liners off vanilla parents |
-| Item model | `assets/<ns>/models/item` | `VERIFY:` — highest-churn area, see `MODELS.md` |
+| Item model | `assets/<ns>/items` **+** `assets/<ns>/models/item` **VERIFIED** | **two files**, not one — the definition and the model. A block item needs only the first. See [`MODELS.md`](MODELS.md) |
 | Language | `assets/<ns>/lang/en_us.json` | generate it; see below |
 | Worldgen | `data/<ns>/worldgen/` **VERIFIED** | ours emits `worldgen/configured_feature/` and `worldgen/placed_feature/` |
 | Biome modifier | `data/<ns>/neoforge/biome_modifier/` **VERIFIED** | NeoForge, not vanilla; see [`WORLDGEN.md`](WORLDGEN.md) |

@@ -109,8 +109,16 @@ Four things that bite:
 
 ### Render type
 
-`VERIFY:` — the mechanism moved between the JSON model and client-side registration during
-the 1.21 line and may have moved again.
+`VERIFY:` — **still open, and it will stay open until this mod ships a model that is not
+solid.** Every block here is an opaque cube and every item is `item/generated`, so there
+is nothing in the repo that exercises render types and nothing CI could catch. The
+mechanism moved between the JSON model and client-side registration during the 1.21 line
+and may have moved again.
+
+*What would clear it:* the first cutout or translucent model — a glass-like shrine block,
+a plant, anything with real alpha — plus a client to look at it, which this container does
+not have. Note the second half: unlike the datagen and registration shapes, this one
+cannot be settled by reading the jar, because "does it render correctly" is the question.
 
 | Type | For | Cost |
 |---|---|---|
@@ -136,9 +144,11 @@ source is off-palette by construction.
 > and the greyscale source must be built from palette L\* values so the multiplied result
 > lands on the ramp. A tint chosen by eye is the seven-greens failure with an extra step.
 
-`VERIFY:` — and note the tinted texture must be excluded from `palette_check.py`, which
-currently has no notion of tint sources. Extend the skip list deliberately when the first
-one appears; do not quietly widen it.
+`VERIFY:` — **still open, and deliberately so: there is no tinted texture in the mod.**
+This is a note to the person who adds the first one, not debt. `palette_check.py` has no
+notion of tint sources, so a greyscale source would fail it for being off-palette — which
+is the check working, not a bug. Extend the skip list deliberately when the first one
+appears; do not quietly widen it.
 
 ---
 
