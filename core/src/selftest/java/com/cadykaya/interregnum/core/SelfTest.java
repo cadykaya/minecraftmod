@@ -373,8 +373,16 @@ public final class SelfTest {
         check(notes.count() == 2, "and says how many, because two is a different search than twelve");
         check(notes.reasonKey().equals("interregnum.ferry.quiet_one.no_sound"),
               "and carries the reason, which is the whole point of a checklist");
-        check(bad.get(0).blockId().compareTo(bad.get(1).blockId()) < 0,
+        // The WHOLE list, not just the pair that happens to be violations. Comparing two
+        // entries is a coin flip against any shuffle, and a coin-flip assertion is how
+        // the mutation for this guard used to escape on CI (docs/LESSONS.md #19).
+        var keys = new java.util.ArrayList<>(noisy.blocks().keySet());
+        var sorted = new java.util.ArrayList<>(keys);
+        java.util.Collections.sort(sorted);
+        check(keys.equals(sorted),
               "in a stable order: a bill of lading that reshuffles is one nobody can trust");
+        check(bad.get(0).blockId().compareTo(bad.get(1).blockId()) < 0,
+              "and the checklist a player actually reads is in that order too");
 
         // A law that refuses nothing is not a law, and a rule that names nothing can
         // never appear on a checklist -- so it can never be seen to be wrong.

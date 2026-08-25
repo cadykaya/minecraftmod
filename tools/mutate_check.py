@@ -131,10 +131,19 @@ MUTATIONS = [
     ("ferry: one block may be refused by two rules",
      f"{MAIN}/ferry/Law.java",
      "                if (other != null) {", "                if (false) {"),
+    # DETERMINISTICALLY reversed, not merely unsorted. The obvious mutation here is
+    # `Map.copyOf(blocks)`, and it is wrong: Java's immutable maps randomise their
+    # iteration order with a per-JVM salt, so on roughly one run in six a three-key
+    # manifest comes out in sorted order by luck and the mutation escapes. It escaped
+    # on CI while passing locally, twice. A mutation must fail for the reason it names,
+    # every time -- docs/LESSONS.md #19, which is about assertions and applies just as
+    # hard to the deliberate bugs used to test them.
     ("ferry: the bill of lading reshuffles between crossings",
      f"{MAIN}/ferry/Manifest.java",
      "        blocks = Collections.unmodifiableMap(new TreeMap<>(blocks));",
-     "        blocks = Map.copyOf(blocks);"),
+     "        Map<String, Integer> flipped = new TreeMap<>(java.util.Comparator.reverseOrder());\n"
+     "        flipped.putAll(blocks);\n"
+     "        blocks = Collections.unmodifiableMap(flipped);"),
 
     # The standing gate. This is the first thing in the mod that READS regard, so its
     # failure mode is content appearing to players who have not earned it -- which

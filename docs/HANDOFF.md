@@ -61,6 +61,14 @@ capture eats the world), the keel test removed (bare ground answers to the ferry
 initially passed — the assertion was matching the manifest printed *before* the
 crossing, since the two are identical by design. See [`LESSONS.md`](LESSONS.md) #24.
 
+One of the core mutations for the manifest's stable order was itself flaky, and CI
+found it: `Map.copyOf` randomises iteration order with a per-JVM salt, so about one
+run in six a three-key manifest came out sorted by luck, the mutation escaped, and
+`mutate_check` reported a deliberate bug surviving against a guard that was fine. The
+mutation now reverses the order deterministically and the assertion compares the whole
+key list rather than two entries. [`LESSONS.md`](LESSONS.md) #19 has the detail —
+everything demanded of an assertion is demanded of the mutation that tests it.
+
 ### The advancement that must not speak
 
 `WORLD.md` locks two things that collide: the advancement at the moment of death is

@@ -677,6 +677,45 @@ so the mutation is caught deterministically, on every JVM, forever.
 > literal.** Two runs that must differ, or must agree, are checkable even when
 > neither one alone is predictable.
 
+### The same salt, from the other side — a *mutation* that was flaky
+
+Weeks later the ferry's manifest arrived with the same guard: a `TreeMap` in the
+canonical constructor, so a bill of lading a person reads does not reorder itself
+between two identical crossings. The mutation written to prove that guard was the
+obvious one:
+
+```python
+"        blocks = Collections.unmodifiableMap(new TreeMap<>(blocks));",
+"        blocks = Map.copyOf(blocks);"
+```
+
+It passed locally, failed on CI, passed locally again. Eight runs of the same three-key
+map showed why:
+
+```
+[minecraft:oak_planks, minecraft:jukebox, minecraft:note_block]
+[minecraft:oak_planks, minecraft:note_block, minecraft:jukebox]
+[minecraft:jukebox, minecraft:note_block, minecraft:oak_planks]   <-- sorted, by luck
+[minecraft:note_block, minecraft:oak_planks, minecraft:jukebox]
+```
+
+The third one is in sorted order. On that JVM the mutated code produced exactly what
+the correct code produces, the assertion passed, and `mutate_check` reported that a
+deliberate bug had escaped — a *false alarm about a real guard*, which is the most
+expensive kind of noise a verification tool can make. Roughly one run in six.
+
+Two corrections, both needed. The mutation now reverses the order deterministically
+(`new TreeMap<>(Comparator.reverseOrder())`), so it fails for the reason it names on
+every JVM. And the assertion, which compared only the two entries that happened to be
+violations, now compares the entire key list against its own sorted copy — comparing
+two entries is a coin flip against any shuffle, and half of a shuffle still looks
+sorted.
+
+> **The rule, restated for the other side: a deliberate bug must be deliberately
+> wrong.** Everything demanded of an assertion — deterministic, failing for its stated
+> reason, not merely *likely* to differ — is demanded of the mutation that tests it.
+> "Unordered" is not a synonym for "in a different order".
+
 ---
 
 ## 20. A relative API cannot restore an absolute value once something moved the baseline
