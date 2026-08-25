@@ -573,6 +573,36 @@ public final class InterregnumCommand {
                                     return n;
                                 }))));
 
+        // The mail, from the console. A letter is a thing a player reads, and a headless
+        // server has nobody to read it -- the same seam as `warden post` and `ferry`.
+        root = root.then(Commands.literal("letter")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("read")
+                        .then(Commands.argument("god", StringArgumentType.word())
+                                .executes(ctx -> {
+                                    String god = StringArgumentType.getString(ctx, "god");
+                                    var letter = com.cadykaya.interregnum.system.letters
+                                            .Letters.forGod(god);
+                                    if (letter == null) {
+                                        ctx.getSource().sendSuccess(() -> Component.literal(
+                                                "letter=none for " + god), false);
+                                        return 0;
+                                    }
+                                    // `To --` when there is no addressee. The em dash is
+                                    // the Quiet One's whole character and it is not a
+                                    // fallback for a missing value -- see core Letter.
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "letter=" + letter.id() + " to="
+                                                    + letter.addressee().orElse("--")), false);
+                                    ctx.getSource().sendSuccess(() -> Component.translatable(
+                                            letter.subjectKey()), false);
+                                    for (String key : letter.bodyKeys()) {
+                                        ctx.getSource().sendSuccess(
+                                                () -> Component.translatable(key), false);
+                                    }
+                                    return 1;
+                                }))));
+
         // The Turning, from the console. Ageing is slow on purpose and its most
         // important property is a CHAIN, so waiting for two rolls to land on one block
         // would make a categorical fact statistical for nothing. Same seam as

@@ -145,6 +145,21 @@ MUTATIONS = [
      "        flipped.putAll(blocks);\n"
      "        blocks = Collections.unmodifiableMap(flipped);"),
 
+    # The dead god's mail. The invariant here is about a SET -- three letters open with
+    # a name, the fourth opens `To --` -- so nothing about an individual letter can
+    # catch it going. If it goes, the mid-game's best reveal quietly stops being one and
+    # the only people who find out are the readers who never see it work.
+    ("letters: any number of letters may open unaddressed",
+     f"{MAIN}/letters/Post.java",
+     "        if (unnamed != UNADDRESSED) {", "        if (false) {"),
+    ("letters: a blank addressee passes for an absent one",
+     f"{MAIN}/letters/Letter.java",
+     "        if (addressee.isPresent() && addressee.get().isBlank()) {",
+     "        if (false) {"),
+    ("letters: a letter with nothing written in it opens a questline",
+     f"{MAIN}/letters/Letter.java",
+     "        if (bodyKeys.isEmpty()) {", "        if (false) {"),
+
     # The standing gate. This is the first thing in the mod that READS regard, so its
     # failure mode is content appearing to players who have not earned it -- which
     # looks exactly like the game working and is the one bug a playtester cannot file.

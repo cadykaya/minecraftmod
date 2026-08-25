@@ -135,3 +135,6 @@ jobs:
 
       - name: The Hearth-Turner's world keeps every past
         run: ./tools/turning_check.sh
+
+      - name: The dead god's mail loads, and the fourth letter opens To --
+        run: ./tools/mail_check.sh

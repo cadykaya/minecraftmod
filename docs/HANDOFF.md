@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **20**, every one mutation-verified, all in CI |
+| Live-world checks | **21**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
@@ -92,6 +92,55 @@ no magic, one is the sleep code and the other is **permitted airspace** (`WORLD.
 unraveling has loosened the limit enough for anybody to break it. Picking a lower ceiling
 to make it findable today would be inventing a rule the world does not have. **Owner's
 call — see "Waiting on owner".**
+
+### The dead god's mail
+
+Four letters, one per god, in `data/interregnum/letters/post.json` with their prose in
+the lang file. `WORLD.md`: *the route to a successor is the dead god's unanswered
+correspondence to its estranged family, and you are the only one left carrying their
+mail.*
+
+**The reveal these exist for can be destroyed from anywhere in the mod.** Not by touching
+the letters — by a villager mentioning Rill, a Warden docket carrying Ballast, a scene
+that has somebody say Ash. Any of those spend the name early, the letter lands as
+recognition rather than as a stranger's correspondence, and *nothing anywhere fails*.
+So `tools/letters_check.py`'s load-bearing assertion is a **negative one about the whole
+shipped string table**: the three names appear in their own letters and absolutely
+nowhere else. Watched failing on a planted villager line.
+
+**Three open with a name; the fourth opens `To —`.** That is a rule about a *set*, so no
+individual letter can be checked against it — an unaddressed letter is legal (exactly one
+must be) and an addressed one is too. It lives in `core/letters/Post`, with mutations, and
+is re-checked in the fast gate and again on a live server.
+
+**Absence is `Optional.empty()`, never `""`.** `To —` is a decision and `To ` is a typo,
+and in a JSON file they are one keystroke apart. The core `Letter` refuses a blank
+addressee for exactly that reason, so the codec uses `optionalFieldOf` with no default —
+a default would turn a caught mistake into an uncaught one.
+
+**Voice:** the dead god speaks in procedure, because that is where the Wardens got it.
+These are not laments — they are correspondence between colleagues who have stopped
+speaking, filed by somebody who has one register and is using it to say something else.
+Every letter carries a `SUBJECT:` line, and the check enforces it: that prefix is the tell
+that this is filed correspondence rather than a farewell. None of them explains the plot,
+the same constraint the last letter is built on.
+
+`interregnum letter read <god>` is the seam CI reads through, since a letter is a thing a
+player reads and a headless server has nobody to read it.
+
+Two check bugs worth recording, both false positives that named the wrong culprit:
+
+* `grep -q 'interregnum.letter.'` with **unescaped dots** matched the echoed command line
+  `$ interregnum letter read verdant` — the dots matched the spaces — so the check
+  reported a raw translation key while the letter had rendered perfectly.
+* A broken post makes the loader log an ERROR and degrade to no mail, which is correct,
+  and which `server_smoke.sh` then fails the whole run for. Reporting *"the run did not
+  complete"* there is true and useless; the failure path now looks for the loader's own
+  message first and quotes it.
+
+**Not built:** the letters are not *items* yet, so nothing carries or delivers one, and
+`LETTER_DELIVERED` is unreachable. Delivery is a scene per god — their reaction to the
+news is their characterization — and scenes are the next content gate.
 
 ### The crossing crosses
 

@@ -635,5 +635,63 @@ public final class SelfTest {
             threw = true;
         }
         check(threw, "a band change that changes no band is refused");
+
+        // -- the dead god's mail ----------------------------------------------
+        //
+        // The rule these guard is about a SET, not a letter: three open with a name and
+        // the fourth opens `To --`. No individual letter can be checked against it, and
+        // if it breaks the mid-game's best reveal quietly stops working for readers who
+        // will never know it was supposed to.
+        var named = new com.cadykaya.interregnum.core.letters.Letter(
+                "verdant", java.util.Optional.of("Rill"), "s", List.of("a"));
+        var unnamed = new com.cadykaya.interregnum.core.letters.Letter(
+                "quiet_one", java.util.Optional.empty(), "s", List.of("a"));
+        check(named.named(), "a letter with an addressee is named");
+        check(!unnamed.named(), "a letter without one is not");
+
+        // Absence must be explicit absence. `To --` is a decision; `To ` is a typo, and
+        // in a JSON file the two are one keystroke apart.
+        threw = false;
+        try {
+            new com.cadykaya.interregnum.core.letters.Letter(
+                    "x", java.util.Optional.of("  "), "s", List.of("a"));
+        } catch (IllegalArgumentException e) {
+            threw = true;
+        }
+        check(threw, "a blank addressee is refused; an unaddressed letter is Optional.empty()");
+
+        threw = false;
+        try {
+            new com.cadykaya.interregnum.core.letters.Letter(
+                    "x", java.util.Optional.empty(), "s", List.of());
+        } catch (IllegalArgumentException e) {
+            threw = true;
+        }
+        check(threw, "a letter with no body cannot open a questline");
+
+        var post = new com.cadykaya.interregnum.core.letters.Post(java.util.Map.of(
+                "verdant", named, "quiet_one", unnamed));
+        check(post.size() == 2, "the post holds its letters");
+        check(post.namesUsed().equals(List.of("Rill")),
+              "only the named letters contribute a name, so the Quiet One spends nothing");
+
+        // Two unaddressed, or none, and the reveal is gone.
+        threw = false;
+        try {
+            new com.cadykaya.interregnum.core.letters.Post(java.util.Map.of(
+                    "a", unnamed, "b", new com.cadykaya.interregnum.core.letters.Letter(
+                            "b", java.util.Optional.empty(), "s", List.of("a"))));
+        } catch (IllegalArgumentException e) {
+            threw = true;
+        }
+        check(threw, "two unaddressed letters are refused: exactly one opens `To --`");
+
+        threw = false;
+        try {
+            new com.cadykaya.interregnum.core.letters.Post(java.util.Map.of("a", named));
+        } catch (IllegalArgumentException e) {
+            threw = true;
+        }
+        check(threw, "a post where every letter is named is refused for the same reason");
     }
 }

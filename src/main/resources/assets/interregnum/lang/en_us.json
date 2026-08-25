@@ -192,5 +192,21 @@
   "interregnum.ferry.quiet_one.no_sound": "Refused for the crossing to the Unresponsive. A thing that can make a sound will make one, and there is no procedure for apologising after.",
   "interregnum.ferry.anchorite.nothing_loose": "Refused for the crossing to the Mass Authority. Nothing that pours. Where you are going, unanchored things go up, and they do not stop.",
   "interregnum.ferry.verdant.nothing_stripped": "Refused for the crossing to the Green Authority. You are carrying something you stripped. It will be recognised.",
-  "interregnum.ferry.hearth_turner.nothing_waxed": "Refused for the crossing to the Temporal Authority. You are carrying something you stopped from ageing. Of all of them, that one takes it personally."
+  "interregnum.ferry.hearth_turner.nothing_waxed": "Refused for the crossing to the Temporal Authority. You are carrying something you stopped from ageing. Of all of them, that one takes it personally.",
+  "interregnum.letter.anchorite.subject": "SUBJECT: MASS AUTHORITY — no matter arising",
+  "interregnum.letter.anchorite.1": "Ballast —",
+  "interregnum.letter.anchorite.2": "There is no matter arising. I have checked the register twice and there is nothing I am required to raise with you, which is why this has taken the form it has. The undersigned has no procedure for the other kind.",
+  "interregnum.letter.anchorite.3": "You held the corner of it while I set the rest. I do not think either of us has said so since. Filed for the record, in case there is one.",
+  "interregnum.letter.verdant.subject": "SUBJECT: GREEN AUTHORITY — return of duties",
+  "interregnum.letter.verdant.1": "Rill —",
+  "interregnum.letter.verdant.2": "The duties you assumed during the interval have not been formally returned. This is not a complaint and no finding is recorded against you. The office simply notes that the interval ended some time ago and the register still lists you.",
+  "interregnum.letter.verdant.3": "You did it well. That is also on the register and I have never known how to send it on its own.",
+  "interregnum.letter.hearth_turner.subject": "SUBJECT: TEMPORAL AUTHORITY — request for a copy",
+  "interregnum.letter.hearth_turner.1": "Ash —",
+  "interregnum.letter.hearth_turner.2": "You will have kept it. You keep all of them. I am asking for the version where I was wrong, and I am asking because I no longer have it and I have looked.",
+  "interregnum.letter.hearth_turner.3": "Send it as it was filed. Do not correct it on my account. I am aware that asking you not to correct a record is its own kind of request.",
+  "interregnum.letter.quiet_one.subject": "SUBJECT: UNRESPONSIVE — further to previous",
+  "interregnum.letter.quiet_one.1": "To —",
+  "interregnum.letter.quiet_one.2": "Further to previous. There is no previous on file that has been answered, so the office is unable to state which previous this is further to.",
+  "interregnum.letter.quiet_one.3": "The sun is turned daily. Attendance is recorded. The undersigned continues to write and has stopped stating why."
 }

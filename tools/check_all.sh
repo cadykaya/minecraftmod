@@ -25,6 +25,9 @@ python3 tools/ci_claims_check.py
 echo "== dimension laws =="
 python3 tools/dimension_check.py
 
+echo "== the mail =="
+python3 tools/letters_check.py
+
 echo "== regard lines =="
 python3 tools/regard_lines_check.py
 

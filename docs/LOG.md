@@ -1865,3 +1865,66 @@ looking in the wrong world.
 
 Watched failing two ways: the destination ignored (the hull moves sideways, and the
 notice naming a destination is decoration), and every law pointed at the same world.
+
+## The mail
+
+`WORLD.md` builds the whole mid-game on four letters and one reveal:
+
+> You spend a hundred hours calling it The Verdant. Then you open the mail you are
+> carrying and it says **"Rill —"**, and you understand for the first time that you are
+> holding a stranger's correspondence about people you have never met.
+
+The letters now exist. The interesting part was working out what could break that reveal,
+because it is not the letters.
+
+**It can be destroyed from anywhere in the mod.** A villager mentioning Rill. A Warden
+docket carrying Ballast. A scene where somebody says Ash. Any one of those spends the name
+early, the letter lands as recognition instead of as a stranger's mail, and nothing
+anywhere fails — no test, no load error, nothing. The reveal simply stops being one, for
+readers who will never know it was supposed to work.
+
+So the load-bearing assertion is a **negative one about the whole shipped string table**:
+the three names appear in their own letters and absolutely nowhere else. It is the first
+check in this repo whose subject is the *absence* of something across every file, and it
+was watched failing on a planted villager line.
+
+### A rule about a set
+
+*Three letters open with a name; the fourth opens `To —`.* No individual letter can be
+checked against that: an unaddressed letter is legal — exactly one must be — and an
+addressed one is legal too. The invariant only exists once you have all four, which makes
+it precisely the kind of thing that rots quietly. Somebody decides the Quiet One should
+have a name after all, or drafts a fifth letter and leaves the addressee out because they
+have not written it yet, and nothing fails.
+
+It lives in `core/letters/Post`, with mutations, and is re-checked in the fast gate and
+again on a live server — three places, because the cost of it going is invisible.
+
+Absence is `Optional.empty()` and a blank string is refused. `To —` is a decision; `To `
+is a typo; in a JSON file they are one keystroke apart and they mean opposite things.
+
+### Voice
+
+The last letter's design says where the Wardens got their register: *they speak in
+procedure because it did.* So these are not laments. They are correspondence between
+colleagues who have stopped speaking, filed by somebody who has one register and is using
+it to say something else — and the check enforces the `SUBJECT:` line, because that prefix
+is the tell that this is filed mail rather than a farewell.
+
+None of them explains the plot. Same constraint the last letter is built on: a letter that
+told you what happened would make the search retroactively pointless.
+
+### Two false positives, both naming the wrong culprit
+
+`grep -q 'interregnum.letter.'` — **unescaped dots** — matched the echoed command line
+`$ interregnum letter read verdant`, because `.` matches a space. The check reported a raw
+translation key while the letter had rendered perfectly.
+
+And a broken post makes the loader log an ERROR and degrade to no mail, which is correct
+and which `server_smoke.sh` then fails the run for, because it fails on any ERROR.
+Reporting "the run did not complete" is true and useless — the run did not complete
+*because the mail is broken*. The failure path now looks for the loader's own message
+first and quotes it.
+
+Both are the same shape as the backtick bug from the Turning: a failure path that fires
+for the right reason and says the wrong thing costs as much as one that does not fire.
