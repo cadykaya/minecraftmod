@@ -28,6 +28,23 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 13 documents, see [`INDEX.md`](INDEX.md) |
 
+### Chapter 0 is playable end to end
+
+Shrines generate with an **offering box** standing on the carved centre stone --
+deliberately obvious, because the opening of this mod is a player doing the most ordinary
+thing in Minecraft and it being deicide. The box holds mundane offerings (bread, a candle,
+a little copper) and, on a **12% roll while the god still lives**, the heart.
+
+The uniqueness falls out of *when* loot tables roll: they roll on first open, not at
+worldgen, so every shrine in the world is a candidate until one pays out and none are
+afterwards. No shrine is chosen in advance, nothing is tracked per-shrine. The heart is
+somewhere until it is taken, and then it is nowhere.
+
+Measured: 8 hearts in 60 rolls before the death (13%, matching the 12% configured), and a
+deterministic **0 in 60 after**. `tools/heart_check.sh` asserts both and is
+mutation-verified -- deleting the `god_lives` condition makes hearts appear after the god
+is already dead, which it catches by name.
+
 ### The god can die
 
 `Deicide.commit()` is the one place the catastrophe happens, and it is idempotent -- a
@@ -247,12 +264,7 @@ carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
 
 In order, all unblocked unless marked:
 
-1. **Put the heart in the shrine.** The deicide itself is done and tested -- what is
-   missing is the way a player *reaches* it. Intent: the heart is present in shrine loot
-   only while the god lives, so after DEICIDE no shrine holds one and exactly one heart
-   exists per world without ever choosing a shrine in advance. Needs a container (or a
-   breakable centre stone) in `ShrineFeature` plus a loot condition on chapter state.
-2. **More consequences.** The sun stopping is the first band. Still to come: the crater at
+1. **More consequences.** The sun stopping is the first band. Still to come: the crater at
    the site (`Deicide.markSite` is a stub), Warden statues waking, and the unraveling bands
    already defined in data being applied.
 3. **The heart in loot**, and the deicide event: sky change, crater, statues wake. The

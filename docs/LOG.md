@@ -372,3 +372,30 @@ Three more API facts corrected from the sources: **gamerules were renamed in 26.
 `tools/deicide_check.sh` asserts the whole beat and is mutation-verified: removing the
 consequence fails with "the sun did not stop", removing idempotence fails with "a second
 deicide was NOT a no-op". In CI.
+
+---
+
+## Heartbeat tick 6 -- the heart is in the shrine
+
+Chapter 0 is now playable end to end: walk, find a shrine, open the offering box standing on
+its centre stone, and eventually take something warm and gold out of it, and the sun stops.
+
+The offering box is deliberately obvious. The opening of this mod is a player doing the most
+ordinary thing in Minecraft, and it being deicide -- a shrine you have to dig up would be a
+puzzle instead.
+
+**Uniqueness without bookkeeping.** `interregnum:god_lives` is a custom loot condition that
+is true only while the overworld has a god. Loot tables roll when a container is first
+OPENED, not at worldgen, so every shrine is a candidate until one pays out and none are
+afterwards. No shrine is chosen in advance and nothing is tracked per-shrine: the heart is
+somewhere until it is taken, and then it is nowhere.
+
+Measured 8/60 (13%) before the death against a configured 12%, and a deterministic 0/60
+after.
+
+**The probe was wrong first, again.** It reported 47/60 because `setblock` on a position
+that already holds that block is a no-op, so the same chest survived every iteration and
+`loot insert` kept adding to it. The check PASSED both before and after the fix -- its
+assertions were sound and only the number was nonsense, one sentence away from being quoted
+as a measured drop rate. LESSONS #14, and the sixth bench in this session to be wrong on
+first run.

@@ -18,12 +18,13 @@ export LOG
 # Coordinates: flat-world surface is grass at y=-61. findSurface returns the topmost
 # SOLID block, so paving replaces the grass AT -61 -- it does not sit on top of it.
 # Steles are 1 or 2 tall, so -60 is the only course guaranteed to be there.
+# The offering box stands ON the carved centre stone, so it is at -60 too.
 COMMANDS='forceload add -16 -16 47 47
 place feature interregnum:shrine 8 -60 8
 execute if block 8 -61 8 interregnum:shrine_stone_carved run say A_CENTRE_CARVED
 execute if block 6 -61 6 interregnum:shrine_stone run say B_CORNER_PAVING
 execute if block 6 -60 6 interregnum:warning_stele run say C_STELE_STANDS
-execute if block 8 -60 8 air run say D_CENTRE_CLEAR' \
+execute if block 8 -60 8 minecraft:chest run say D_OFFERING_BOX' \
     ./tools/server_smoke.sh > /tmp/wg_smoke_out.txt 2>&1 || {
         echo "FAIL: the server smoke run itself failed"; tail -20 /tmp/wg_smoke_out.txt; exit 1; }
 
@@ -32,7 +33,7 @@ grep -q 'Placed "interregnum:shrine"' /tmp/wg_smoke_out.txt || {
     grep -A3 'place feature' /tmp/wg_smoke_out.txt; exit 1; }
 
 missing=""
-for marker in A_CENTRE_CARVED B_CORNER_PAVING C_STELE_STANDS D_CENTRE_CLEAR; do
+for marker in A_CENTRE_CARVED B_CORNER_PAVING C_STELE_STANDS D_OFFERING_BOX; do
     grep -q "$marker" "$LOG" || missing="$missing $marker"
 done
 if [ -n "$missing" ]; then
@@ -40,4 +41,4 @@ if [ -n "$missing" ]; then
     exit 1
 fi
 echo "OK: shrine places on flat ground with carved centre, paving, a standing stele"
-echo "    and clear air above the centre"
+echo "    and an offering box on the centre stone"

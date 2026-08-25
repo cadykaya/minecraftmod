@@ -11,6 +11,10 @@ import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.minecraft.util.RandomSource;
 import net.minecraft.core.Direction;
+import net.minecraft.world.RandomizableContainer;
+import net.minecraft.world.level.block.ChestBlock;
+
+import com.cadykaya.interregnum.data.ModChestLoot;
 
 import com.cadykaya.interregnum.registry.ModBlocks;
 
@@ -142,8 +146,8 @@ public class ShrineFeature extends Feature<NoneFeatureConfiguration> {
             }
         }
 
-        // Clear the air directly above the centre so the inscribed stone is visible
-        // from above -- a shrine buried under a bush is a shrine nobody finds.
+        // Clear the air above the centre so the shrine is visible from above -- one
+        // buried under a bush is one nobody finds.
         for (int h = 1; h <= 3; h++) {
             BlockPos p = new BlockPos(cx, floorY + h, cz);
             BlockState s = level.getBlockState(p);
@@ -151,6 +155,16 @@ public class ShrineFeature extends Feature<NoneFeatureConfiguration> {
                 setBlock(level, p, Blocks.AIR.defaultBlockState());
             }
         }
+
+        // The offering box, standing on the inscribed stone in the middle of the
+        // court. Deliberately obvious. A shrine you have to dig up is a puzzle; this
+        // has to read as "there is a chest here", because the opening of this mod is
+        // a player doing the most ordinary thing in Minecraft and it being deicide.
+        BlockPos boxPos = new BlockPos(cx, floorY + 1, cz);
+        setBlock(level, boxPos, Blocks.CHEST.defaultBlockState()
+                .setValue(ChestBlock.FACING, Direction.Plane.HORIZONTAL.getRandomDirection(rand)));
+        RandomizableContainer.setBlockEntityLootTable(level, rand, boxPos, ModChestLoot.SHRINE);
+
         return placedAnything;
     }
 }

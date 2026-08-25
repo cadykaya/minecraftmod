@@ -87,3 +87,6 @@ jobs:
 
       - name: Kill the god and check the world notices
         run: ./tools/deicide_check.sh
+
+      - name: The heart is findable once and only once
+        run: ./tools/heart_check.sh

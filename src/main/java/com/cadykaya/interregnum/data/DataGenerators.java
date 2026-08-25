@@ -50,8 +50,11 @@ public final class DataGenerators {
         gen.addProvider(true, new LootTableProvider(
                 out,
                 Set.of(),
-                List.of(new LootTableProvider.SubProviderEntry(
-                        ModBlockLoot::new, LootContextParamSets.BLOCK)),
+                List.of(
+                        new LootTableProvider.SubProviderEntry(
+                                ModBlockLoot::new, LootContextParamSets.BLOCK),
+                        new LootTableProvider.SubProviderEntry(
+                                registries -> new ModChestLoot(), LootContextParamSets.CHEST)),
                 event.getLookupProvider()));
     }
 }

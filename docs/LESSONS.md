@@ -465,3 +465,32 @@ restart"*.
 `./tools/persistence_check.sh | tail -4; echo "exit=$?"` and printed `exit=0` while the
 script had plainly failed — `$?` was `tail`'s. The `FAIL:` line was the real evidence.
 Knowing a rule really does not exempt you from it.*
+
+---
+
+## 14. setblock on an identical block is a no-op, and the probe inflated by 6x
+
+*Found while measuring how often a shrine's offering box holds the heart.*
+
+The probe rebuilt a chest at one position, rolled the loot table into it, and read the
+contents back — sixty times. It reported **47 hearts in 60 rolls of a 12% pool**.
+
+`setblock <pos> minecraft:chest` where a chest already stands is a **no-op**. So the same
+chest survived every iteration and `loot insert` kept *adding* to it: once a heart landed
+around roll 14, every later read still saw it. Clearing to air first gives the honest
+answer, **8 in 60 — 13%**, which is the 12% it was configured for.
+
+**The check still passed both times.** Its assertions are "at least one before" and "exactly
+zero after", and both held. The *number* was nonsense, and the number was the interesting
+part — it was one sentence away from being written into a design document as a measured
+drop rate.
+
+> **A passing test can still be reporting a lie.** Assertions and measurements are different
+> things: an assertion that survives a broken instrument tells you nothing about the numbers
+> that instrument printed. If a probe reports a figure anybody might act on, sanity-check
+> that figure against what it should be — 47/60 is not 12% and never was.
+
+*This is the sixth measurement tool in this session to be wrong on its first run, and the
+second where the tool passed anyway (see #13). The pattern is now unmistakable enough to
+state plainly: **assume a new bench is wrong until it has agreed with something you already
+knew.***
