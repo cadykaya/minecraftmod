@@ -109,6 +109,33 @@ MUTATIONS = [
     ("crossing: an event that crossed nothing is allowed through",
      f"{MAIN}/regard/BandChange.java",
      "if (from == to) {", "if (false) {"),
+    # The ferry's bill of lading. Every one of these is a way the crossing stops
+    # TEACHING -- which is the whole reason the checklist exists -- while still
+    # letting or refusing exactly the right cargo, so none of them looks like a bug.
+    ("ferry: the checklist stops at the first violation",
+     f"{MAIN}/ferry/Manifest.java",
+     "                out.add(new Violation(rule, entry.getKey(), entry.getValue(),\n"
+     "                        law.rules().get(rule).reasonKey()));",
+     "                out.add(new Violation(rule, entry.getKey(), entry.getValue(),\n"
+     "                        law.rules().get(rule).reasonKey()));\n                return out;"),
+    ("ferry: the checklist loses the count",
+     f"{MAIN}/ferry/Manifest.java",
+     "        Map<String, Integer> counts = new TreeMap<>();",
+     "        Map<String, Integer> counts = new TreeMap<>() {\n"
+     "            @Override public Integer merge(String k, Integer v,\n"
+     "                    java.util.function.BiFunction<? super Integer, ? super Integer, ? extends Integer> f) {\n"
+     "                return super.merge(k, v, (a, b) -> 1);\n            }\n        };"),
+    ("ferry: a law that refuses nothing is allowed",
+     f"{MAIN}/ferry/Law.java",
+     "        if (rules.isEmpty()) {", "        if (false) {"),
+    ("ferry: one block may be refused by two rules",
+     f"{MAIN}/ferry/Law.java",
+     "                if (other != null) {", "                if (false) {"),
+    ("ferry: the bill of lading reshuffles between crossings",
+     f"{MAIN}/ferry/Manifest.java",
+     "        blocks = Collections.unmodifiableMap(new TreeMap<>(blocks));",
+     "        blocks = Map.copyOf(blocks);"),
+
     # The standing gate. This is the first thing in the mod that READS regard, so its
     # failure mode is content appearing to players who have not earned it -- which
     # looks exactly like the game working and is the one bug a playtester cannot file.

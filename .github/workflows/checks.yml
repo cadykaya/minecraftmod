@@ -117,3 +117,6 @@ jobs:
 
       - name: The dead god reaches its killer, once
         run: ./tools/haunt_check.sh
+
+      - name: The ferry lifts what was built and leaves the ground where it is
+        run: ./tools/ferry_check.sh

@@ -55,6 +55,54 @@ public final class InterregnumCommand {
         return total;
     }
 
+
+    /**
+     * Validate a hull against a destination law, and sail it if a pad was given.
+     *
+     * One method for both `check` and `sail` on purpose: a `check` that could pass
+     * while `sail` refused (or worse, the reverse) would make the checklist a lie,
+     * and the checklist is the entire teaching mechanism.
+     */
+    private static int ferryCheck(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
+                                  BlockPos pad) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        BlockPos keel = BlockPosArgument.getLoadedBlockPos(ctx, "keel");
+        String lawId = StringArgumentType.getString(ctx, "law");
+        var law = com.cadykaya.interregnum.system.ferry.FerryLaws.of(lawId);
+        if (law == null) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "ferry=refused reason=no such law " + lawId), false);
+            return 0;
+        }
+        var cap = com.cadykaya.interregnum.system.ferry.Ferry
+                .capture(ctx.getSource().getLevel(), keel);
+        if (!cap.ok()) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "ferry=refused reason=" + cap.refusal()), false);
+            return 0;
+        }
+        var bad = com.cadykaya.interregnum.system.ferry.Ferry.checklist(cap.hull(), law);
+        if (!bad.isEmpty()) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "ferry=held law=" + lawId + " violations=" + bad.size()), false);
+            for (var v : bad) {
+                ctx.getSource().sendSuccess(() -> Component.literal(
+                        "  ferry-notice " + v.rule() + " " + v.blockId()
+                                + " x" + v.count() + " [" + v.reasonKey() + "]"), false);
+            }
+            return 0;
+        }
+        if (pad == null) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "ferry=clear law=" + lawId + " total=" + cap.hull().manifest().total()), false);
+            return 1;
+        }
+        com.cadykaya.interregnum.system.ferry.Ferry
+                .place(ctx.getSource().getLevel(), cap.hull(), keel, pad);
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                "ferry=sailed law=" + lawId + " total=" + cap.hull().manifest().total()), true);
+        return cap.hull().manifest().total();
+    }
+
     /** One line describing where a table currently stands. */
     private static String describe(Conversations.Table t) {
         var node = t.node();
@@ -508,6 +556,43 @@ public final class InterregnumCommand {
                                             "posted=" + n), true);
                                     return n;
                                 }))));
+
+        // The crossing, from the console. A keel is a block a player right-clicks and
+        // a headless server has nobody to click it, so this is the seam that makes the
+        // whole mechanism reachable from CI -- the same shape as `unravel at` and
+        // `warden post`.
+        root = root.then(Commands.literal("ferry")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("manifest")
+                        .then(Commands.argument("keel", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos keel = BlockPosArgument.getLoadedBlockPos(ctx, "keel");
+                                    var cap = com.cadykaya.interregnum.system.ferry.Ferry
+                                            .capture(ctx.getSource().getLevel(), keel);
+                                    if (!cap.ok()) {
+                                        ctx.getSource().sendSuccess(() -> Component.literal(
+                                                "ferry=refused reason=" + cap.refusal()), false);
+                                        return 0;
+                                    }
+                                    var m = cap.hull().manifest();
+                                    StringBuilder sb = new StringBuilder("ferry=manifest total=")
+                                            .append(m.total());
+                                    m.blocks().forEach((b, n) ->
+                                            sb.append(' ').append(b).append('x').append(n));
+                                    ctx.getSource().sendSuccess(
+                                            () -> Component.literal(sb.toString()), false);
+                                    return m.total();
+                                })))
+                .then(Commands.literal("check")
+                        .then(Commands.argument("keel", BlockPosArgument.blockPos())
+                                .then(Commands.argument("law", StringArgumentType.word())
+                                        .executes(ctx -> ferryCheck(ctx, null)))))
+                .then(Commands.literal("sail")
+                        .then(Commands.argument("keel", BlockPosArgument.blockPos())
+                                .then(Commands.argument("law", StringArgumentType.word())
+                                        .then(Commands.argument("pad", BlockPosArgument.blockPos())
+                                                .executes(ctx -> ferryCheck(ctx,
+                                                        BlockPosArgument.getLoadedBlockPos(ctx, "pad"))))))));
 
         root = root.then(Commands.literal("haunt")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))

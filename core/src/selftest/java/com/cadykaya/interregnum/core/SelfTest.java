@@ -2,6 +2,7 @@ package com.cadykaya.interregnum.core;
 
 import com.cadykaya.interregnum.core.chapter.*;
 import com.cadykaya.interregnum.core.dialogue.*;
+import com.cadykaya.interregnum.core.ferry.*;
 import com.cadykaya.interregnum.core.regard.*;
 
 import java.util.List;
@@ -159,6 +160,7 @@ public final class SelfTest {
         crossingChecks();
         standingGateChecks();
         textVariantChecks();
+        ferryChecks();
         effectChecks();
         System.out.println("SelfTest: " + passed + " checks passed");
     }
@@ -337,6 +339,67 @@ public final class SelfTest {
         q.recordDeicide(Institution.ANCHORITE);
         check(q.value(Institution.WARDENATE) == -60,
               "a second deicide is more evidence, not a different crime");
+    }
+
+    /**
+     * The bill of lading, and what a destination makes of it.
+     *
+     * The checklist is the tutorial: a law only ever explains itself at the moment a
+     * player has broken it, so these assertions are as much about the TEXT reaching
+     * the player as about the arithmetic.
+     */
+    static void ferryChecks() {
+        var quiet = new Law("quiet_one", Map.of(
+                "no_sound", new Law.Rule(java.util.Set.of(
+                        "minecraft:note_block", "minecraft:jukebox", "minecraft:bell"),
+                        "interregnum.ferry.quiet_one.no_sound")));
+
+        var plain = Manifest.of(List.of("minecraft:oak_planks", "minecraft:oak_planks",
+                                        "minecraft:chest"));
+        check(plain.total() == 3, "a manifest counts what it was given");
+        check(plain.blocks().get("minecraft:oak_planks") == 2, "and groups duplicates");
+        check(plain.admissible(quiet), "a silent cargo crosses");
+        check(plain.validate(quiet).isEmpty(), "with nothing on the checklist");
+
+        var noisy = Manifest.of(List.of("minecraft:oak_planks", "minecraft:note_block",
+                                        "minecraft:note_block", "minecraft:jukebox"));
+        var bad = noisy.validate(quiet);
+        check(!noisy.admissible(quiet), "a cargo that can make a sound does not cross");
+        check(bad.size() == 2, "every violation is reported, not just the first");
+
+        // The COUNT is the closest the checklist gets to answering "where is it".
+        var notes = bad.stream().filter(v -> v.blockId().equals("minecraft:note_block"))
+                .findFirst().orElseThrow();
+        check(notes.count() == 2, "and says how many, because two is a different search than twelve");
+        check(notes.reasonKey().equals("interregnum.ferry.quiet_one.no_sound"),
+              "and carries the reason, which is the whole point of a checklist");
+        check(bad.get(0).blockId().compareTo(bad.get(1).blockId()) < 0,
+              "in a stable order: a bill of lading that reshuffles is one nobody can trust");
+
+        // A law that refuses nothing is not a law, and a rule that names nothing can
+        // never appear on a checklist -- so it can never be seen to be wrong.
+        boolean threw = false;
+        try { new Law("empty", Map.of()); } catch (IllegalArgumentException e) { threw = true; }
+        check(threw, "a law with no rules is refused");
+        threw = false;
+        try {
+            new Law.Rule(java.util.Set.of(), "interregnum.ferry.nothing");
+        } catch (IllegalArgumentException e) { threw = true; }
+        check(threw, "a rule that names no blocks is refused");
+
+        // One mistake, one line: a block refused twice would read as two problems.
+        threw = false;
+        try {
+            new Law("double", Map.of(
+                    "a", new Law.Rule(java.util.Set.of("minecraft:bell"), "k.a"),
+                    "b", new Law.Rule(java.util.Set.of("minecraft:bell"), "k.b")));
+        } catch (IllegalArgumentException e) { threw = true; }
+        check(threw, "a block refused by two rules is refused at construction");
+
+        // An empty ferry is legal, and says so rather than throwing. Somebody will
+        // absolutely put a bare keel on a pad and press the thing.
+        check(Manifest.of(List.of()).admissible(quiet), "an empty cargo crosses");
+        check(Manifest.of(List.of()).total() == 0, "and weighs nothing");
     }
 
     /**

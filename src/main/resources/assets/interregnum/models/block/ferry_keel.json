@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "interregnum:block/ferry_keel_top",
+    "side": "interregnum:block/ferry_keel_side"
+  }
+}

@@ -72,6 +72,23 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.METAL)));
 
+    /**
+     * The mail-ferry's keel. See {@link com.cadykaya.interregnum.system.ferry.Ferry}
+     * for what it does; this is only what it IS.
+     *
+     * Wood, not the god's masonry -- and deliberately cheap to break. The keel is
+     * the one piece of infrastructure in the mod that a player builds for
+     * themselves, and a keel that resisted a hand would read as furniture placed
+     * by somebody else. It is also the only block whose position is load-bearing:
+     * the ferry captures from here, so it must be findable at a glance, which is
+     * what the brass ring on the top face is for.
+     */
+    public static final DeferredBlock<Block> FERRY_KEEL = BLOCKS.registerSimpleBlock(
+            "ferry_keel",
+            p -> p.mapColor(MapColor.WOOD)
+                    .strength(2.0F, 3.0F)
+                    .sound(SoundType.WOOD));
+
     public static void register(IEventBus modBus) {
         BLOCKS.register(modBus);
     }

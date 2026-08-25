@@ -942,3 +942,56 @@ This is [#4](#4-measure-the-process-you-mean-not-the-pipelines-tail) wearing the
 face. There, a pipe *swallowed* a failure and reported success. Here, a pipe
 *manufactured* a failure and swallowed the explanation. Both come from the same
 place: a pipeline's exit status is not the thing you meant to measure.
+
+---
+
+## 24. If the expected string already appears earlier in the log, the assertion is a no-op
+
+The ferry's most ordinary use is nudging a hull a couple of blocks along, and that is
+the one move that eats it: origin and destination overlap, so a naive block-by-block
+`clear this, write that` erases blocks it has already placed. `Ferry.place` runs two
+passes over the whole hull for exactly this reason, and the check I wrote to guard it
+was, on its face, perfect:
+
+```bash
+want /tmp/fc.txt 'ferry=manifest total=5 interregnum:ferry_keelx1 minecraft:chestx1 minecraft:oak_planksx3' \
+    "the hull did not survive a two-block nudge"
+```
+
+Then I broke `place` into a single pass on purpose to watch the check fail, and it
+printed `OK`.
+
+The reason is the assertion's own premise. What it means to say is *the hull that
+arrived is the same hull that left* -- so the string it looks for is, deliberately and
+necessarily, character-for-character the manifest printed at the dock before the
+crossing. `grep -q` cannot tell the two apart. It found the dock's line, every time,
+no matter what happened to the boat. The keel was genuinely being deleted mid-move and
+the check had no way to notice.
+
+This is not the same mistake as [#15](#15-a-check-that-cannot-fail-is-a-comment)
+(a check whose subject never varies). Every ingredient here varies; the check was
+written *because* it varies. The failure is that the log is append-only and `grep` is
+position-blind, so an assertion of the form "X is still true afterwards" is
+automatically satisfied by X having been true beforehand.
+
+Two ways out, and the check now uses both:
+
+```bash
+# Count, so "still true" means twice, not once.
+seen=$(grep -cF 'ferry=manifest total=5 ...' /tmp/fc.txt || true)
+[ "$seen" = 2 ] || fail "... (saw $seen/2 identical manifests)"
+
+# And assert the world, not the log: coordinates cannot be printed twice.
+execute if block 22 -60 20 interregnum:ferry_keel run say NUDGE_KEEL_INTACT
+```
+
+> **The rule: before trusting an assertion about an "after" state, ask whether its
+> expected text could have been emitted by the "before".** If it could, `grep -q` is
+> measuring history, not outcome -- count the occurrences, or assert something the
+> earlier state could not have produced.
+
+The general shape is [#18](#18-a-mutation-that-crashes-has-not-tested-the-assertion)
+again from a new angle: a mutation is the only thing that tells you which of these two
+kinds of check you wrote, and it is worth the compile every single time. This one had
+been green, reviewed, and believed for a whole run before a deliberate break exposed
+it.

@@ -1,0 +1,80 @@
+{
+  "_comment": [
+    "What each destination will not admit, and WHY -- because the reason is the",
+    "feature. WORLD.md: 'the validation checklist teaches each world's rule before",
+    "arrival.' A crossing that answered 'no' would be a locked door. A crossing that",
+    "answers 'no note blocks, the Quiet One's crossing is silent' has taught a world's",
+    "law before the player has seen a single block of it.",
+    "",
+    "So every rule is chosen to be LEGIBLE rather than merely restrictive. Each one is",
+    "the god's law applied to your luggage, and a player who reads it understands what",
+    "they are sailing into:",
+    "",
+    "  the Quiet One  -- a thing that CAN sound, will. Silence is not a preference.",
+    "  the Anchorite  -- unanchored things rise. Bring nothing that pours.",
+    "  the Verdant    -- you brought something you stripped and killed.",
+    "  the Hearth-Turner -- you brought something you stopped from ageing. To a god",
+    "                       whose law is keeping every past, wax is the insult.",
+    "",
+    "Only the Quiet One's rule is specified in WORLD.md; the other three are derived",
+    "from each god's locked law and grief-shape. Names in the letters are Rill,",
+    "Ballast and Ash -- see WORLD.md, 'The pantheon'."
+  ],
+  "laws": [
+    {
+      "id": "quiet_one",
+      "rules": {
+        "no_sound": {
+          "reason_key": "interregnum.ferry.quiet_one.no_sound",
+          "blocks": [
+            "minecraft:note_block",
+            "minecraft:jukebox",
+            "minecraft:bell"
+          ]
+        }
+      }
+    },
+    {
+      "id": "anchorite",
+      "rules": {
+        "nothing_loose": {
+          "reason_key": "interregnum.ferry.anchorite.nothing_loose",
+          "blocks": [
+            "minecraft:sand",
+            "minecraft:red_sand",
+            "minecraft:gravel",
+            "minecraft:anvil"
+          ]
+        }
+      }
+    },
+    {
+      "id": "verdant",
+      "rules": {
+        "nothing_stripped": {
+          "reason_key": "interregnum.ferry.verdant.nothing_stripped",
+          "blocks": [
+            "minecraft:stripped_oak_log",
+            "minecraft:stripped_birch_log",
+            "minecraft:stripped_spruce_log",
+            "minecraft:dead_bush"
+          ]
+        }
+      }
+    },
+    {
+      "id": "hearth_turner",
+      "rules": {
+        "nothing_waxed": {
+          "reason_key": "interregnum.ferry.hearth_turner.nothing_waxed",
+          "blocks": [
+            "minecraft:waxed_copper_block",
+            "minecraft:waxed_exposed_copper",
+            "minecraft:waxed_weathered_copper",
+            "minecraft:waxed_oxidized_copper"
+          ]
+        }
+      }
+    }
+  ]
+}

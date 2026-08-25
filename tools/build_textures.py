@@ -444,6 +444,101 @@ def shrine_keeper_entity(seed=17):
     return img
 
 
+def ferry_keel_side(seed=41):
+    """The mail-ferry's keel beam, seen from the side.
+
+    Wood, because the ferry is a THING SOMEBODY BUILT and wood is the only family
+    in the palette a player reads as carpentry rather than as ruin. Warm, per the
+    semantic law -- spent, worked, handled. The god's masonry is cool and held; this
+    is the opposite kind of object and it must not look like shrine furniture.
+
+    Two brass straps hold it together, and each one is TWO pixels: a wood-0 shadow
+    followed by a brass-2 highlight. Brass alone did not work. The brass ramp and
+    the wood ramp are both warm browns a step apart in L*, so three bare brass
+    columns over a busy grain dissolved into noise in the contact sheet -- the
+    bands were in the file and absent from the block. Metal on wood reads by the
+    dark seam where it is seated, not by its own colour.
+
+    The grain was quieted to match: long horizontal streaks only, because the beam
+    runs along the hull. Vertical variation would read as planking, and planking is
+    the deck, not the keel.
+    """
+    img = Image(SIZE, SIZE)
+    for y in range(SIZE):
+        for x in range(SIZE):
+            step = 1
+            # Runs of 4 keep the grain reading as LENGTH. At width 2 it was speckle.
+            if h2(x // 4, y, seed) < 0.22:
+                step = 2
+            elif h2(x // 4, y, seed + 7) < 0.14:
+                step = 0
+            img.set(x, y, pal("wood", step) + (255,))
+    # Two straps, at 3 and 10. Uneven gaps (7 and 9 counting the wrap) so they do
+    # not tile into a rhythm; two rather than three because at 16px a third strap
+    # left no beam between them to strap.
+    for bx in (3, 10):
+        for y in range(SIZE):
+            img.set(bx, y, pal("wood", 0) + (255,))          # seated in shadow
+            img.set(bx + 1, y, pal("brass", 2) + (255,))     # the strap itself
+        # Rivets: two per strap, and only on the strap. Brass 0 against brass 2 is
+        # the largest separation the family has.
+        for ry in (4, 11):
+            img.set(bx + 1, ry, pal("brass", 0) + (255,))
+    return img
+
+
+def ferry_keel_top(seed=41):
+    """The keel's upper face: the beam, and the brass ring you read the law from.
+
+    The ring is the only affordance the block has. A player who has never heard the
+    word `ferry` should be able to look down at this block and understand that it is
+    the part you touch -- so it is centred, brass, and the single brightest thing on
+    an otherwise dim tile.
+
+    Everything else on this face was deleted to get there. A first pass carried the
+    side face's brass strapping through, plus tarnish speckle around the rim: in the
+    8x8 contact sheet the strapping ran vertically straight through the ring and the
+    speckle broke its top-left, so the whole thing read as a repeating `@`. The ring
+    only becomes a ring when it is the ONLY circle-adjacent thing on the tile.
+    """
+    img = Image(SIZE, SIZE)
+    for y in range(SIZE):
+        for x in range(SIZE):
+            # Grain only, no strapping: see the docstring. Quieter than the side
+            # face on purpose -- this face has one job and it is not being wood.
+            step = 1
+            if h2(x // 3, y, seed) < 0.22:
+                step = 2
+            elif h2(x // 2, y, seed + 7) < 0.14:
+                step = 0
+            img.set(x, y, pal("wood", step) + (255,))
+    cx = cy = 7.5
+    for y in range(SIZE):
+        for x in range(SIZE):
+            d = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
+            if d <= 3.6:
+                # A recess, so the ring reads as a rim around a hollow rather than
+                # as a drawn circle. Cut to STONE's darkest step rather than wood's:
+                # the marks below sit in here, and against wood 0 they measured 0.09
+                # L* apart -- present in the file, invisible on the block, which is
+                # the failure this repo keeps re-learning. Read it as shadow, not
+                # as a second material.
+                img.set(x, y, pal("stone", 0) + (255,))
+            elif d <= 4.6:
+                # One unbroken pixel-thick ring. No hash, no wear, no gaps: a
+                # broken ring is a letter and a closed one is a fitting.
+                img.set(x, y, pal("brass", 2) + (255,))
+            elif d <= 5.4:
+                img.set(x, y, pal("brass", 0) + (255,))     # seated shadow
+    # Four marks inside the recess, on the cardinals: not script -- a compass rose
+    # worn down to the bearings. The ferry serves four destinations and this is the
+    # only place in the world that number is stated without words.
+    for (mx, my) in ((7, 5), (7, 10), (5, 7), (10, 7)):
+        img.set(mx, my, pal("brass", 1) + (255,))
+        img.set(mx + 1, my, pal("brass", 1) + (255,))
+    return img
+
+
 ASSETS = {
     (ENTITY, "warden"): warden_entity,
     (ENTITY, "shrine_keeper"): shrine_keeper_entity,
@@ -455,6 +550,8 @@ ASSETS = {
     (BLOCK, "warden_statue_front_woken"): warden_statue_front_woken,
     (BLOCK, "warden_statue_side"): warden_statue_side,
     (BLOCK, "warden_statue_top"): warden_statue_top,
+    (BLOCK, "ferry_keel_side"): ferry_keel_side,
+    (BLOCK, "ferry_keel_top"): ferry_keel_top,
     (ITEM, "god_heart"): god_heart,
     (ITEM, "clast"): clast,
 }

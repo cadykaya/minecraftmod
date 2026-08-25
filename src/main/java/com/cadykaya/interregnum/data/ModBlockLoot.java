@@ -55,6 +55,11 @@ public class ModBlockLoot extends BlockLootSubProvider {
         // about the block -- re-place one after the death and it is awake again,
         // because the god is still dead.
         dropSelf(ModBlocks.WARDEN_STATUE.get());
+
+        // The keel drops itself, and it has to. A ferry is a thing you build, move,
+        // regret the position of, and rebuild -- and a keel you could lose by
+        // mis-hitting it would turn a hull you spent an hour on into scenery.
+        dropSelf(ModBlocks.FERRY_KEEL.get());
     }
 
     @Override

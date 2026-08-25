@@ -1347,3 +1347,81 @@ advancement is not generated at all, and it stops being hidden.
 
 Generated rather than hand-written, so the staleness check covers it -- and because a
 hand-edited JSON is exactly where that flag would quietly come back.
+
+## The boat that must not eat the world
+
+WORLD.md gives the mail-ferry one sentence: *built and furnished from real blocks; a
+keel block captures the structure, validates it against the destination's law, and
+re-places it at the far pad.* Every hard problem is in the first clause.
+
+A flood-fill from the keel through connected solid blocks eats the seabed, then the
+mountain the seabed is attached to, then the world. The usual answers are all bad. A
+fixed bounding box makes the ferry a template rather than something you built. A
+"boat blocks only" whitelist makes you furnish it from a catalogue. A size cap alone
+does not help: it just decides how much of the planet leaves with you.
+
+The answer was already in the repo. `Claims` has recorded every player-placed block
+since the unraveling needed to know what not to eat. **The ferry takes only what a
+player placed.** The walk stops dead at natural terrain, so a hull resting on the
+seabed lifts off it, and a hull carved *out of* the seabed does not float -- which is
+correct, because this is a thing you build, not a thing you dig. One system, three
+jobs now: it stops the apocalypse eating your house, it will decide what attrition
+may generalise, and it is the hull of the ferry.
+
+That claim is the thing `tools/ferry_check.sh` exists to test, and it was watched
+failing: with the claim test removed, the capture ran off the four-block hull into
+the flat world's ground and hit `MAX_HULL` -- `ferry=refused reason=TOO_LARGE`,
+repeatedly. The cap did its second job there. It is not a performance guard; it is
+what stands between a bug in the walk and somebody's island.
+
+### The keel had to be a block
+
+`ferry sail <x> <y> <z>` without a keel requirement is a command that teleports any
+structure anybody has ever built. So `capture` refuses `NOT_A_KEEL` unless the block
+at that position really is one, and the keel is also the single block admitted to the
+hull without a claim -- it is the origin of the walk, and demanding a claim on it
+would make an unclaimable ferry unbuildable.
+
+It is cheap wood on purpose. It is the one piece of infrastructure a player builds for
+themselves rather than finds, and a keel that resisted a hand would read as furniture
+somebody else placed. It drops itself for the same reason: losing a keel to a
+mis-swing would turn an hour's hull into scenery.
+
+The top face carries a brass ring, because the block's position is load-bearing and it
+has to be findable at a glance. Getting that ring to read took two rewrites. The first
+carried the side face's brass strapping through and speckled tarnish round the rim; in
+the contact sheet the strapping ran straight through the ring and the speckle broke its
+top-left, so the whole tile read as a repeating `@`. A ring only becomes a ring when it
+is the only circle-adjacent thing on the face. The side face needed the opposite
+correction: bare brass columns over a busy grain dissolved entirely, because the brass
+and wood ramps are both warm browns a step apart in L*. Metal on wood reads by the dark
+seam where it is seated, not by its own colour, so each strap is now a wood-0 shadow
+followed by a brass-2 highlight.
+
+### The checklist is the tutorial
+
+Four destinations, four laws, in `data/interregnum/ferry/laws.json`: the Quiet One
+refuses anything that can make a sound, the Anchorite anything loose, the Verdant
+anything stripped or dead, the Hearth-Turner anything waxed. A held hull gets every
+violation named -- block, count and reason -- not just the first, because a checklist
+that reports one problem at a time is a checklist you fight rather than read.
+
+The check asserts the same hull is *cleared* by a different law. Without that it would
+pass against an implementation that simply refuses everything (LESSONS #15).
+
+### The nudge
+
+The most ordinary thing anybody will do with a ferry is move it two blocks along, and
+that is the move that eats it: origin and destination overlap, so a block-by-block
+clear-then-write erases blocks it has already placed. `Ferry.place` runs two full
+passes for exactly this reason.
+
+The check I wrote to guard that was green against a deliberately one-pass version. It
+asserted the arriving hull's manifest, and the arriving hull's manifest is
+character-for-character the manifest printed at the dock -- that is the point of the
+assertion -- so `grep -q` found the *earlier* line every time. The keel was genuinely
+being deleted mid-move and the check had no way to notice. It now counts the
+occurrences and asserts block-by-block at the destination coordinates, and it has been
+watched failing. Written up as LESSONS #24, because the shape generalises: an
+assertion of the form "X is still true afterwards" is automatically satisfied by X
+having been true beforehand.

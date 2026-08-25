@@ -27,9 +27,39 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **16**, every one mutation-verified, all in CI |
+| Live-world checks | **17**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
+
+### The ferry lifts what was built
+
+`interregnum ferry manifest|check|sail`, four destination laws in
+`data/interregnum/ferry/laws.json`, and a `ferry_keel` block that decides where a
+crossing starts.
+
+The hard problem is the capture, and the answer was already in the repo: **the ferry
+takes only what a player placed.** `Claims` has recorded that since the unraveling
+needed to know what not to eat, so the walk stops dead at natural terrain — a hull
+resting on the seabed lifts off it, a hull carved *out of* the seabed does not float.
+`MAX_HULL` (4096) refuses rather than sailing half a boat, and when the claim test was
+removed to watch the check fail, that cap is what stood between a bug in the walk and
+the whole flat world.
+
+`Ferry.capture` refuses `NOT_A_KEEL` off a bare coordinate, because without it `ferry
+sail` is a command that teleports any structure anybody ever built. It refuses
+`NOTHING_BUILT` on a keel with nothing attached. `Ferry.place` runs two full passes —
+clear everything, then write everything — so a two-block nudge, where destination
+overlaps origin, does not erase blocks it has already placed.
+
+A held hull is told **every** violation, with block, count and reason, and the same
+hull is asserted *cleared* by a different law so the check cannot pass against an
+implementation that simply refuses everything.
+
+`tools/ferry_check.sh` was watched failing three ways: the claim test removed (the
+capture eats the world), the keel test removed (bare ground answers to the ferry), and
+`place` collapsed to one pass (the nudge deletes the keel). That third mutation
+initially passed — the assertion was matching the manifest printed *before* the
+crossing, since the two are identical by design. See [`LESSONS.md`](LESSONS.md) #24.
 
 ### The advancement that must not speak
 

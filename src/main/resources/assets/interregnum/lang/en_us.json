@@ -22,6 +22,7 @@
   "itemGroup.interregnum.main": "INTERREGNUM",
   "block.interregnum.warning_stele": "Warning Stele",
   "block.interregnum.warden_statue": "Warden Statue",
+  "block.interregnum.ferry_keel": "Ferry Keel",
   "entity.interregnum.warden": "Warden",
   "interregnum.speaker.warden": "WARDEN",
   "interregnum.dlg.say": "Say this",
@@ -187,5 +188,9 @@
   "interregnum.dlg.warden_interrogation.filed_unsigned": "Unrecorded, then. That is permitted.\n\nThe register has a column for parties who decline. It has not been used before. This unit will use it correctly.",
   "interregnum.dlg.warden_interrogation.offer_declined": "No. Statements must be taken by an authorised unit.\n\nThis unit is authorised. This unit will continue.",
   "advancements.interregnum.deicide.title": "Deicide",
-  "advancements.interregnum.deicide.description": "The box was addressed to the holder. It did not say which one."
+  "advancements.interregnum.deicide.description": "The box was addressed to the holder. It did not say which one.",
+  "interregnum.ferry.quiet_one.no_sound": "Refused for the crossing to the Unresponsive. A thing that can make a sound will make one, and there is no procedure for apologising after.",
+  "interregnum.ferry.anchorite.nothing_loose": "Refused for the crossing to the Mass Authority. Nothing that pours. Where you are going, unanchored things go up, and they do not stop.",
+  "interregnum.ferry.verdant.nothing_stripped": "Refused for the crossing to the Green Authority. You are carrying something you stripped. It will be recognised.",
+  "interregnum.ferry.hearth_turner.nothing_waxed": "Refused for the crossing to the Temporal Authority. You are carrying something you stopped from ageing. Of all of them, that one takes it personally."
 }
