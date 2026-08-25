@@ -710,3 +710,44 @@ regex that did not match, and a script that carried on past it. The result looke
 exactly like a real hole in the suite. Every mutation run now proves the file changed
 before it believes the outcome, which is the same rule as LESSONS #18 one level down:
 check what actually happened, not what the exit code implies.
+
+## Conversations have consequences
+
+`RegardState` has sat in `core/` since the first week, fully tested, and nothing read
+or wrote it. Dead tested code is a smell; it is now the spine of what a conversation
+is for.
+
+One rule carries the whole design: **each participant is judged on what they said, not
+on what the table decided.** A vote you lost is still on your record with the party you
+sided with, and going along with a group atrocity does not launder it, because you
+still said the words. Without that, every player ends up with the initiator's record
+and the ensemble system is decoration -- the only choice that ever mattered would be
+whoever clicked first. The live check proves it the only way that means anything: two
+players at the same node, opposite stances, opposite records, while the table resolves
+to one of them.
+
+Effects are data, and the data check refuses unknown institutions, non-integers,
+out-of-range values, no-op zeroes, and anything bigger than 25 -- a band is 35 wide and
+one sentence should not cross one. All five watched failing.
+
+Nothing is announced. No karma bar and no "+5 Villages": you find out what an
+institution thinks of you from how it treats you. The operator readout prints numbers,
+which is not the meter coming back -- its audience is someone asking "did that scene do
+anything", and the first version printed bands only, where a conversation that moved
+five institutions read exactly like one that moved none.
+
+Wiring the deicide surfaced a contradiction worth recording: `recordDeicide` capped
+VILLAGES along with the gods, while WORLD.md's four voices has the villagers whispering
+*saint* for the killer. Mechanics that contradict locked lore are a bug, not a
+tradeoff, so the coupling was narrowed to gods. The people are genuinely undecided and
+that is the content; it is also the only regard the killer can still play for, besides
+the ghost's.
+
+And the persistence check earned its keep on its first run. Saved records were restored
+through a RELATIVE api after the ceilings had already pulled every capped value down to
+its cap -- so a god saved at -45 under a -10 ceiling came back at -55, then -65, drifting
+by exactly the cap every restart until it hit the floor. Nothing threw, nothing logged,
+every number stayed legal. LESSONS #20, and the second half of that lesson is the one
+that matters: a single reload showed -55, which reads like an off-by-something. It takes
+the SECOND reload, showing -65, to prove the record is walking rather than merely wrong.
+The check boots three times now.

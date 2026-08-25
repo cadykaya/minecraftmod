@@ -676,3 +676,47 @@ so the mutation is caught deterministically, on every JVM, forever.
 > relationship between two observations instead of one observation against a
 > literal.** Two runs that must differ, or must agree, are checkable even when
 > neither one alone is predictable.
+
+---
+
+## 20. A relative API cannot restore an absolute value once something moved the baseline
+
+*Found by the persistence half of the regard check, on its first run.*
+
+`RegardState.adjust(institution, delta)` is relative — it adds. Saving a record meant
+storing the absolute values and the ceilings; restoring it meant applying the ceilings
+first, then the values. The ordering was deliberate and I wrote a comment defending
+it: `adjust` clamps to the ceiling, so restoring values before their caps would
+truncate every capped institution.
+
+That reasoning was right, and it is what caused the bug. `lowerCeiling` **also moves
+the value** — anything above the new cap is pulled down to it immediately. So by the
+time the values were restored, every capped institution was already sitting at its
+cap, and `adjust(VERDANT, -45)` added -45 to -10 rather than setting -45.
+
+```
+saved:   VERDANT = -45, ceiling -10
+reload:  ceiling applied -> value -10;  adjust(-45) -> -55
+reload:  ceiling applied -> value -10;  adjust(-55) -> -65
+```
+
+Nothing threw. Nothing logged. Every number stayed inside its legal range and looked
+entirely plausible at every step — a god that resented you a little more each time the
+server came up, drifting by exactly the size of the ceiling per restart until it hit
+the floor weeks later.
+
+The fix is to restore the delta *from wherever the ceiling left it*:
+`s.adjust(inst, val - s.value(inst))`.
+
+Two things to take from it.
+
+> **A correct decision in one half can be exactly what breaks the other.** The
+> ceilings-first ordering was not a mistake and reversing it would have caused a
+> different bug. What was missing was noticing that the first step had side effects
+> the second step assumed away.
+
+> **One round trip does not prove a round trip.** A single save-and-reload showed
+> -55, which reads like an off-by-something and could have been "fixed" by
+> subtracting the cap somewhere. It is the SECOND reload that shows -65 and proves
+> the record is walking rather than merely wrong. The check now boots three times, and
+> the third boot is the assertion that actually catches this class of bug.

@@ -4,11 +4,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cadykaya.interregnum.core.dialogue.DialogueGraph;
 import com.cadykaya.interregnum.core.dialogue.DialogueNode;
 import com.cadykaya.interregnum.core.dialogue.DialogueOption;
 import com.cadykaya.interregnum.core.dialogue.ResolutionRule;
+import com.cadykaya.interregnum.core.regard.Institution;
 
 /**
  * The on-disk shape of a dialogue file, and the adapter from it to the engine.
@@ -21,17 +23,38 @@ import com.cadykaya.interregnum.core.dialogue.ResolutionRule;
 public final class DialogueDefs {
     private DialogueDefs() {}
 
-    public record OptionDef(String id, String textKey, String target, List<String> requiredTags) {
+    /**
+     * Institutions are decoded through a codec that names the bad value, because the
+     * realistic failure here is a writer typing VILLAGE for VILLAGES at two in the
+     * morning -- and a silently dropped effect is a choice that reads as consequential
+     * and is not.
+     */
+    private static final Codec<Institution> INSTITUTION = Codec.STRING.comapFlatMap(
+            s -> {
+                try {
+                    return com.mojang.serialization.DataResult.success(
+                            Institution.valueOf(s.toUpperCase(java.util.Locale.ROOT)));
+                } catch (IllegalArgumentException e) {
+                    return com.mojang.serialization.DataResult.error(
+                            () -> "unknown institution: " + s);
+                }
+            },
+            Institution::name);
+
+    public record OptionDef(String id, String textKey, String target, List<String> requiredTags,
+                            Map<Institution, Integer> regard) {
         public static final Codec<OptionDef> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.STRING.fieldOf("id").forGetter(OptionDef::id),
                 Codec.STRING.fieldOf("text_key").forGetter(OptionDef::textKey),
                 Codec.STRING.fieldOf("target").forGetter(OptionDef::target),
                 Codec.STRING.listOf().optionalFieldOf("required_tags", List.of())
-                        .forGetter(OptionDef::requiredTags)
+                        .forGetter(OptionDef::requiredTags),
+                Codec.unboundedMap(INSTITUTION, Codec.intRange(-100, 100))
+                        .optionalFieldOf("regard", Map.of()).forGetter(OptionDef::regard)
         ).apply(i, OptionDef::new));
 
         DialogueOption toOption() {
-            return new DialogueOption(id, textKey, target, requiredTags);
+            return new DialogueOption(id, textKey, target, requiredTags, regard);
         }
     }
 

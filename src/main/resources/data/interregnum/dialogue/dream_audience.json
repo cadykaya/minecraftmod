@@ -18,7 +18,9 @@
     "",
     "NOTE: the god says 'a family' and never a number. The pantheon roster is still",
     "[WORKSHOP] in WORLD.md, and shipped dialogue that counted them would settle a",
-    "question the owner has not settled."
+    "question the owner has not settled.",
+    "",
+    "Regard: THE_GHOST only, which is the point. A deicide caps every god at permanent hostility and files the killer with the Wardenate forever; the ghost's regard is the one relationship left that can still go anywhere, and it belongs to nobody else -- RegardState refuses to move it for a non-killer at all. The asymmetry the owner asked for, priced."
   ],
   "id": "dream_audience",
   "start": "wake",
@@ -37,12 +39,18 @@
         {
           "id": "sorry",
           "text_key": "interregnum.dlg.dream_audience.wake.sorry",
-          "target": "estate"
+          "target": "estate",
+          "regard": {
+            "THE_GHOST": 6
+          }
         },
         {
           "id": "refuse",
           "text_key": "interregnum.dlg.dream_audience.wake.refuse",
-          "target": "estate"
+          "target": "estate",
+          "regard": {
+            "THE_GHOST": -5
+          }
         }
       ]
     },
@@ -78,7 +86,10 @@
         {
           "id": "no",
           "text_key": "interregnum.dlg.dream_audience.estate.no",
-          "target": "decline"
+          "target": "decline",
+          "regard": {
+            "THE_GHOST": -10
+          }
         }
       ]
     },
@@ -104,17 +115,26 @@
         {
           "id": "accept",
           "text_key": "interregnum.dlg.dream_audience.terms.accept",
-          "target": "charged"
+          "target": "charged",
+          "regard": {
+            "THE_GHOST": 12
+          }
         },
         {
           "id": "bargain",
           "text_key": "interregnum.dlg.dream_audience.terms.bargain",
-          "target": "cost"
+          "target": "cost",
+          "regard": {
+            "THE_GHOST": -4
+          }
         },
         {
           "id": "no",
           "text_key": "interregnum.dlg.dream_audience.terms.no",
-          "target": "decline"
+          "target": "decline",
+          "regard": {
+            "THE_GHOST": -10
+          }
         }
       ]
     },
@@ -127,12 +147,18 @@
         {
           "id": "anyway",
           "text_key": "interregnum.dlg.dream_audience.cost.anyway",
-          "target": "charged"
+          "target": "charged",
+          "regard": {
+            "THE_GHOST": 10
+          }
         },
         {
           "id": "no",
           "text_key": "interregnum.dlg.dream_audience.cost.no",
-          "target": "decline"
+          "target": "decline",
+          "regard": {
+            "THE_GHOST": -8
+          }
         }
       ]
     },

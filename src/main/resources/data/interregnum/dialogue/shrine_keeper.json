@@ -14,7 +14,9 @@
     "",
     "Rules used: INITIATOR for the keeper's beats, VOTE where the group decides how to",
     "treat a person, UNANIMOUS on the one cruelty -- telling them there is no reader --",
-    "because that is irreversible and nobody should be able to do it alone."
+    "because that is irreversible and nobody should be able to do it alone.",
+    "",
+    "Regard: the keeper's scene moves VILLAGES, because it is the people's scene. Refusing the 'authorised holder' label costs nothing with the villages and earns a little with the Wardenate -- an honest answer on the record is exactly what they want, and it is the one place in this scene where the two institutions disagree. Telling the keeper there is nothing on the other end of the slot is the expensive one, and pressing it after they answer is the most expensive thing a player can do here."
   ],
   "id": "shrine_keeper",
   "start": "ledger",
@@ -74,7 +76,10 @@
         {
           "id": "then_tell",
           "text_key": "interregnum.dlg.shrine_keeper.stop.then_tell",
-          "target": "truth"
+          "target": "truth",
+          "regard": {
+            "VILLAGES": -4
+          }
         }
       ]
     },
@@ -87,12 +92,18 @@
         {
           "id": "give",
           "text_key": "interregnum.dlg.shrine_keeper.restore.give",
-          "target": "close_signed"
+          "target": "close_signed",
+          "regard": {
+            "VILLAGES": 8
+          }
         },
         {
           "id": "renege",
           "text_key": "interregnum.dlg.shrine_keeper.restore.renege",
-          "target": "close_unsigned"
+          "target": "close_unsigned",
+          "regard": {
+            "VILLAGES": -6
+          }
         }
       ]
     },
@@ -105,17 +116,28 @@
         {
           "id": "accept_label",
           "text_key": "interregnum.dlg.shrine_keeper.admit.accept_label",
-          "target": "close_signed"
+          "target": "close_signed",
+          "regard": {
+            "VILLAGES": 5,
+            "WARDENATE": -4
+          }
         },
         {
           "id": "refuse_label",
           "text_key": "interregnum.dlg.shrine_keeper.admit.refuse_label",
-          "target": "close_unsigned"
+          "target": "close_unsigned",
+          "regard": {
+            "VILLAGES": 3,
+            "WARDENATE": 2
+          }
         },
         {
           "id": "tell_truth",
           "text_key": "interregnum.dlg.shrine_keeper.admit.tell_truth",
-          "target": "truth"
+          "target": "truth",
+          "regard": {
+            "VILLAGES": -10
+          }
         }
       ]
     },
@@ -128,12 +150,18 @@
         {
           "id": "press",
           "text_key": "interregnum.dlg.shrine_keeper.truth.press",
-          "target": "remarks"
+          "target": "remarks",
+          "regard": {
+            "VILLAGES": -12
+          }
         },
         {
           "id": "relent",
           "text_key": "interregnum.dlg.shrine_keeper.truth.relent",
-          "target": "close_unsigned"
+          "target": "close_unsigned",
+          "regard": {
+            "VILLAGES": 4
+          }
         }
       ]
     },

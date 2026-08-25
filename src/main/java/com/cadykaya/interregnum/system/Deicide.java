@@ -58,6 +58,19 @@ public final class Deicide {
         }
         data.setKiller(killer);
 
+        // The scar. Every surviving god learns what you are and caps you there
+        // forever; the Wardenate takes a flat hit and files it. The victim here is
+        // THE_GHOST -- the overworld's own god -- and `recordDeicide` deliberately
+        // does NOT floor it: you destroyed it, and its opinion of you is the one
+        // relationship still open. The villages are left alone for the same kind of
+        // reason, and both are argued in RegardState.
+        if (killer != null) {
+            RegardSavedData regard = RegardSavedData.get(server);
+            regard.of(server, killer).recordDeicide(
+                    com.cadykaya.interregnum.core.regard.Institution.THE_GHOST);
+            regard.touch();
+        }
+
         // The sun stops.
         //
         // The day cycle was never the sky's; it was the god's, and with nobody left

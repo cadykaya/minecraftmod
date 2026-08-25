@@ -1,7 +1,10 @@
 package com.cadykaya.interregnum.core.dialogue;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+
+import com.cadykaya.interregnum.core.regard.Institution;
 
 /**
  * One selectable reply. {@code textKey} is a translation key, never English text --
@@ -11,12 +14,18 @@ import java.util.Objects;
  * ends the conversation.
  */
 public record DialogueOption(String id, String textKey, String targetNodeId,
-                             List<String> requiredTags) {
+                             List<String> requiredTags, Map<Institution, Integer> regard) {
     public DialogueOption {
         Objects.requireNonNull(id);
         Objects.requireNonNull(textKey);
         Objects.requireNonNull(targetNodeId);
         requiredTags = List.copyOf(requiredTags);
+        regard = Map.copyOf(regard);
+    }
+
+    /** An option with no consequences. Most options are this. */
+    public DialogueOption(String id, String textKey, String targetNodeId, List<String> requiredTags) {
+        this(id, textKey, targetNodeId, requiredTags, Map.of());
     }
 
     public boolean visibleTo(java.util.Set<String> playerTags) {

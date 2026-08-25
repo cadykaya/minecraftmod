@@ -45,6 +45,21 @@ MUTATIONS = [
      "        if (participant.equals(initiator))\n"
      "            throw new IllegalArgumentException(\"cannot remove the initiator; end the conversation\");",
      ""),
+    ("effects: everyone is judged on the winning option, not their own stance",
+     f"{MAIN}/regard/RegardEffects.java",
+     "            DialogueOption option = resolution.stanceOf(participant);",
+     "            DialogueOption option = resolution.chosen();"),
+    ("effects: a failed unanimous vote still gets recorded",
+     f"{MAIN}/regard/RegardEffects.java",
+     "        if (resolution.kind() != Resolution.Kind.ADVANCED) {\n"
+     "            return applied;                    // nothing was settled, so nothing was said\n"
+     "        }",
+     ""),
+    ("effects: the requested delta is reported instead of the applied one",
+     f"{MAIN}/regard/RegardEffects.java",
+     "                int delta = state.adjust(entry.getKey(), entry.getValue());",
+     "                state.adjust(entry.getKey(), entry.getValue());\n"
+     "                int delta = entry.getValue();"),
     ("chapter: high-water mark may regress",
      f"{MAIN}/chapter/ChapterState.java",
      "if (derived.band > highWater.band) highWater = derived;", "highWater = derived;"),
@@ -64,6 +79,11 @@ MUTATIONS = [
     ("regard: ghost relationship leaks to non-killers",
      f"{MAIN}/regard/RegardState.java",
      "if (i == Institution.THE_GHOST && !isKiller) return 0;", ""),
+    ("regard: a deicide drags the villages down with the gods",
+     f"{MAIN}/regard/RegardState.java",
+     "            if (i == Institution.WARDENATE || i == Institution.THE_GHOST\n"
+     "                    || i == Institution.VILLAGES) continue;",
+     "            if (i == Institution.WARDENATE || i == Institution.THE_GHOST) continue;"),
     ("regard: adjust reports the requested delta, not the applied one",
      f"{MAIN}/regard/RegardState.java",
      "return after - before;", "return delta;"),

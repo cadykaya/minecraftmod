@@ -16,6 +16,8 @@ import com.cadykaya.interregnum.core.dialogue.DialogueGraph;
 import com.cadykaya.interregnum.core.dialogue.DialogueNode;
 import com.cadykaya.interregnum.core.dialogue.Resolution;
 import com.cadykaya.interregnum.system.ChapterSavedData;
+import com.cadykaya.interregnum.system.RegardSavedData;
+import com.cadykaya.interregnum.core.regard.RegardEffects;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -112,6 +114,35 @@ public final class Conversations {
             return null;                       // not a player id; nothing to show
         }
         return server.getPlayerList().getPlayer(uuid);
+    }
+
+    /**
+     * Write what was said into the record.
+     *
+     * The rule -- each participant judged on their OWN stance, not on what the table
+     * decided -- lives in {@link com.cadykaya.interregnum.core.regard.RegardEffects}
+     * where it is tested without a game. This is the seam that hands it the states.
+     *
+     * Nothing is announced to the player. There is no karma bar and no "+5 Villages"
+     * (docs/WORLD.md): you find out what an institution thinks of you from how it
+     * treats you, which is the only version of this that is not a meter wearing a
+     * relationship's clothes.
+     */
+    private static void record(MinecraftServer server, Resolution r) {
+        RegardSavedData regard = RegardSavedData.get(server);
+        var applied = RegardEffects.apply(r, id -> {
+            UUID uuid;
+            try {
+                uuid = UUID.fromString(id);
+            } catch (IllegalArgumentException e) {
+                return null;               // not a player; nothing keeps their record
+            }
+            return regard.of(server, uuid);
+        });
+        if (!applied.isEmpty()) {
+            regard.touch();
+            LOG.info("Regard moved for {} participant(s): {}", applied.size(), applied);
+        }
     }
 
     /** Show every participant where the table stands. */
@@ -238,6 +269,7 @@ public final class Conversations {
      */
     private static Resolution resolveAndShow(MinecraftServer server, Table table) {
         Resolution r = table.conversation.resolve(table.roll);
+        record(server, r);
         pushStances(server, table, r);
         push(server, table);                   // the next beat -- or the last line
         if (table.conversation.ended()) {

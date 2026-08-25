@@ -336,6 +336,29 @@ public final class InterregnumCommand {
                                             return n;
                                         })))));
 
+        // Reading the record. Bands, never numbers, even here -- the day this prints
+        // a score is the day somebody optimises against it, and the whole point of
+        // regard is that it is a relationship rather than a meter.
+        root = root.then(Commands.literal("regard")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("who", StringArgumentType.string())
+                        .executes(ctx -> {
+                            String who = StringArgumentType.getString(ctx, "who");
+                            java.util.UUID uuid;
+                            try {
+                                uuid = java.util.UUID.fromString(who);
+                            } catch (IllegalArgumentException e) {
+                                ctx.getSource().sendSuccess(() -> Component.literal(
+                                        "regard=none reason=not a player id"), false);
+                                return 0;
+                            }
+                            var state = RegardSavedData.get(ctx.getSource().getServer()).peek(uuid);
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                    state == null ? "regard=none"
+                                            : "regard= " + RegardSavedData.describe(state)), false);
+                            return state == null ? 0 : 1;
+                        })));
+
         root = root.then(talk());
 
         // `reply` is the ONLY player-facing node in this command, and it is
@@ -365,6 +388,49 @@ public final class InterregnumCommand {
                         })));
 
         for (Milestone m : Milestone.values()) {
+            // DEICIDE takes an optional killer id. Not a test hook: a server that
+            // restored a backup, or migrated, needs a way to say who the First
+            // Theoclast is -- the whole regard scar and the ghost's private
+            // relationship hang off that one UUID, and there is otherwise no way to
+            // set it after the fact.
+            if (m == Milestone.DEICIDE) {
+                record = record.then(Commands.literal("deicide")
+                        .then(Commands.argument("killer", StringArgumentType.string())
+                                .executes(ctx -> {
+                                    java.util.UUID who;
+                                    try {
+                                        who = java.util.UUID.fromString(
+                                                StringArgumentType.getString(ctx, "killer"));
+                                    } catch (IllegalArgumentException e) {
+                                        ctx.getSource().sendSuccess(() -> Component.literal(
+                                                "refused reason=not a player id"), false);
+                                        return 0;
+                                    }
+                                    ChapterSavedData data =
+                                            ChapterSavedData.get(ctx.getSource().getServer());
+                                    boolean isNew = Deicide.commit(
+                                            ctx.getSource().getServer(), who,
+                                            ctx.getSource().getLevel(),
+                                            BlockPos.containing(ctx.getSource().getPosition()));
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            (isNew ? "recorded " : "already recorded ")
+                                                    + "DEICIDE by " + who
+                                                    + "; chapter=" + data.chapter()), true);
+                                    return 1;
+                                }))
+                        .executes(ctx -> {
+                            ChapterSavedData data =
+                                    ChapterSavedData.get(ctx.getSource().getServer());
+                            boolean isNew = Deicide.commit(ctx.getSource().getServer(), null,
+                                    ctx.getSource().getLevel(),
+                                    BlockPos.containing(ctx.getSource().getPosition()));
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                    (isNew ? "recorded " : "already recorded ") + "DEICIDE"
+                                            + "; chapter=" + data.chapter()), true);
+                            return 1;
+                        }));
+                continue;
+            }
             record = record.then(Commands.literal(m.name().toLowerCase(java.util.Locale.ROOT))
                     .executes(ctx -> {
                         ChapterSavedData data = ChapterSavedData.get(ctx.getSource().getServer());

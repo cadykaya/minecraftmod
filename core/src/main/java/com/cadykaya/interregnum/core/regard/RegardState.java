@@ -58,10 +58,25 @@ public final class RegardState {
      *
      * The Wardenate is deliberately NOT coupled here beyond a flat hit -- to them a
      * second deicide is not worse than the first, it is simply more evidence.
+     *
+     * **Neither is VILLAGES, and that is load-bearing.** The coupling is between
+     * GODS: they hold worlds, they know what you did to one of their own, and none
+     * of them will fully trust you again. Ordinary people are not the pantheon and
+     * do not share its verdict. WORLD.md's four-voices table is explicit that the
+     * villagers' word for the killer is **saint** -- so capping their regard at
+     * permanent hostility would make the mechanics contradict locked lore, and would
+     * flatten every village-facing scene into a formality nobody can move.
+     *
+     * The split is the content: the gods write you off, the Wardenate files you, and
+     * the people are genuinely undecided. That last one is the only regard the
+     * killer can still play for -- along with the ghost's, which is why THE_GHOST is
+     * skipped here too rather than floored. You destroyed it and its opinion of you
+     * is the one relationship still open.
      */
     public void recordDeicide(Institution victim) {
         for (Institution i : Institution.values()) {
-            if (i == Institution.WARDENATE || i == Institution.THE_GHOST) continue;
+            if (i == Institution.WARDENATE || i == Institution.THE_GHOST
+                    || i == Institution.VILLAGES) continue;
             if (i == victim) {
                 lowerCeiling(i, MIN);
             } else {

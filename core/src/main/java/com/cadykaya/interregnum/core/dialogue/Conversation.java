@@ -101,6 +101,7 @@ public final class Conversation {
         if (ended) throw new IllegalStateException("conversation is over");
         if (picks.isEmpty()) throw new IllegalStateException("nothing submitted");
         Map<String, String> stances = ordered();
+        DialogueNode resolved = current;
 
         String winnerId = switch (current.rule()) {
             case INITIATOR -> picks.getOrDefault(initiator, picks.values().iterator().next());
@@ -126,7 +127,7 @@ public final class Conversation {
 
         if (winnerId == null) {
             picks.clear();                       // the table argues and re-picks
-            return new Resolution(Resolution.Kind.REPROMPT, null, stances);
+            return new Resolution(Resolution.Kind.REPROMPT, resolved, null, stances);
         }
         DialogueOption chosen = current.options().stream()
                 .filter(o -> o.id().equals(winnerId)).findFirst().orElseThrow();
@@ -137,6 +138,6 @@ public final class Conversation {
             current = graph.node(chosen.targetNodeId());
             if (current.terminal()) ended = true;
         }
-        return new Resolution(Resolution.Kind.ADVANCED, chosen, stances);
+        return new Resolution(Resolution.Kind.ADVANCED, resolved, chosen, stances);
     }
 }

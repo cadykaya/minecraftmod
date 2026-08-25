@@ -154,7 +154,67 @@ public final class SelfTest {
 
         chapterChecks();
         regardChecks();
+        effectChecks();
         System.out.println("SelfTest: " + passed + " checks passed");
+    }
+
+    /**
+     * The rule that makes ensemble dialogue mean anything: you are judged on what
+     * YOU said, not on what the table decided.
+     */
+    static void effectChecks() {
+        var pro = new DialogueOption("a", "d.a", "ok", List.of(),
+                java.util.Map.of(Institution.VILLAGES, 10));
+        var anti = new DialogueOption("b", "d.b", "ok", List.of(),
+                java.util.Map.of(Institution.VILLAGES, -10));
+        var node = new DialogueNode("q", "x", "d.q", ResolutionRule.VOTE, List.of(pro, anti));
+        var graph = new DialogueGraph("q", List.of(node,
+                new DialogueNode("ok", "x", "d.ok", ResolutionRule.INITIATOR, List.of())));
+
+        var c = new Conversation(graph, "kaya", List.of("kaya", "p2", "p3"));
+        c.submit("kaya", "a"); c.submit("p2", "a"); c.submit("p3", "b");
+        var r = c.resolve(new Random(1));
+        check(r.chosen().id().equals("a"), "the majority carried");
+
+        var states = new java.util.HashMap<String, RegardState>();
+        for (String who : List.of("kaya", "p2", "p3")) states.put(who, new RegardState(false));
+        var applied = RegardEffects.apply(r, states::get);
+
+        // p3 lost the vote and is still on record for what they said. This is the
+        // assertion the whole ensemble design rests on: if losing a vote moved p3 by
+        // the WINNER's effect, every player would end up with the initiator's record
+        // and dissent would be decoration.
+        check(states.get("kaya").value(Institution.VILLAGES) == 10, "the winner's own stance moved them");
+        check(states.get("p3").value(Institution.VILLAGES) == -10,
+              "a dissenter is judged on their own stance, not on the table's decision");
+        check(applied.get("p3").get(Institution.VILLAGES) == -10, "the applied delta is reported");
+
+        // A REPROMPT settled nothing, so nobody has said anything to be held to.
+        var u = new Conversation(new DialogueGraph("q", List.of(
+                new DialogueNode("q", "x", "d.q", ResolutionRule.UNANIMOUS, List.of(pro, anti)),
+                new DialogueNode("ok", "x", "d.ok", ResolutionRule.INITIATOR, List.of()))),
+                "kaya", List.of("kaya", "p2"));
+        u.submit("kaya", "a"); u.submit("p2", "b");
+        var rr = u.resolve(new Random(1));
+        var fresh = new java.util.HashMap<String, RegardState>();
+        fresh.put("kaya", new RegardState(false));
+        fresh.put("p2", new RegardState(false));
+        RegardEffects.apply(rr, fresh::get);
+        check(fresh.get("kaya").value(Institution.VILLAGES) == 0,
+              "a reprompt records nothing -- the argument is not over");
+
+        // Reported deltas are what LANDED, not what was asked for. A ceiling makes
+        // the two differ, and a UI that showed the request would promise a change
+        // that never happened.
+        var capped = new RegardState(false);
+        capped.lowerCeiling(Institution.VILLAGES, 3);
+        var one = new Conversation(graph, "solo", List.of("solo"));
+        one.submit("solo", "a");
+        var r2 = one.resolve(new Random(1));
+        var out = RegardEffects.apply(r2, k -> capped);
+        check(capped.value(Institution.VILLAGES) == 3, "the ceiling clamped the change");
+        check(out.get("solo").get(Institution.VILLAGES) == 3,
+              "the reported delta is what landed, not what the data asked for");
     }
 
     static void chapterChecks() {
@@ -228,6 +288,20 @@ public final class SelfTest {
         check(q.value(Institution.ANCHORITE) == -10, "no later kindness passes the ceiling");
         check(q.standing(Institution.ANCHORITE) == Standing.WARY, "which reads as WARY forever");
         check(q.value(Institution.WARDENATE) == -30, "the Wardenate takes a flat hit");
+
+        // The people are NOT the pantheon. WORLD.md's four voices has the villagers
+        // whispering *saint* for the killer, so a deicide that permanently floored
+        // VILLAGES would put the mechanics in contradiction with locked lore and
+        // flatten every village scene into a formality nobody can move. The gods
+        // write you off; the people are genuinely undecided, and that is playable.
+        var r0 = new RegardState(true);
+        r0.adjust(Institution.VILLAGES, 40);
+        r0.recordDeicide(Institution.VERDANT);
+        check(r0.value(Institution.VILLAGES) == 40, "a deicide does not move the villages");
+        check(r0.adjust(Institution.VILLAGES, 50) == 50,
+              "and leaves no ceiling on them -- the people can still be won over");
+        check(r0.standing(Institution.VILLAGES) == Standing.BELOVED,
+              "all the way to BELOVED, which the gods can never be again");
         q.recordDeicide(Institution.ANCHORITE);
         check(q.value(Institution.WARDENATE) == -60,
               "a second deicide is more evidence, not a different crime");

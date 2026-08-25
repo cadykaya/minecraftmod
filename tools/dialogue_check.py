@@ -12,6 +12,11 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DLG = os.path.join(REPO, "src/main/resources/data/interregnum/dialogue")
 LANG = os.path.join(REPO, "src/main/resources/assets/interregnum/lang/en_us.json")
 RULES = {"INITIATOR", "VOTE", "ROLL", "UNANIMOUS"}
+# Kept in step with core's Institution enum. A typo here is the realistic failure --
+# VILLAGE for VILLAGES at two in the morning -- and the runtime rejects the file
+# outright, so the whole scene disappears rather than one effect going quiet.
+INSTITUTIONS = {"WARDENATE", "VILLAGES", "VERDANT", "ANCHORITE",
+                "HEARTH_TURNER", "QUIET_ONE", "THE_GHOST"}
 END = "$end"
 fails = []
 
@@ -34,6 +39,25 @@ def check_file(path, lang):
                 fails.append(f"{name}/{n['id']}/{o.get('id')}: dangling target {o.get('target')!r}")
             if o.get("text_key") not in lang:
                 fails.append(f"{name}/{n['id']}/{o.get('id')}: text_key not in en_us.json")
+            where = f"{name}/{n['id']}/{o.get('id')}"
+            regard = o.get("regard", {})
+            if not isinstance(regard, dict):
+                fails.append(f"{where}: regard must be an object")
+                regard = {}
+            for inst, delta in regard.items():
+                if inst not in INSTITUTIONS:
+                    fails.append(f"{where}: unknown institution {inst!r}")
+                if not isinstance(delta, int) or isinstance(delta, bool):
+                    fails.append(f"{where}: regard {inst} must be a whole number")
+                elif not -100 <= delta <= 100:
+                    fails.append(f"{where}: regard {inst}={delta} outside [-100, 100]")
+                elif delta == 0:
+                    fails.append(f"{where}: regard {inst}=0 does nothing; "
+                                 f"omit it rather than implying a consequence")
+                elif abs(delta) > 25:
+                    fails.append(f"{where}: regard {inst}={delta} is too large for one "
+                                 f"line of dialogue; the band scale is 35 wide and a "
+                                 f"single sentence should not cross one")
     seen, queue = set(), [d["start"]]
     while queue:
         i = queue.pop()
@@ -57,7 +81,15 @@ def main():
         print(f"FAIL: {len(fails)} dialogue violation(s)")
         for f in fails: print("  -", f)
         return 1
-    print(f"OK: {n} dialogue file(s) valid, all keys resolve")
+    effects = 0
+    for root, _, files in os.walk(DLG):
+        for f in files:
+            if f.endswith(".json"):
+                doc = json.load(open(os.path.join(root, f)))
+                effects += sum(1 for nd in doc["nodes"]
+                               for o in nd.get("options", []) if o.get("regard"))
+    print(f"OK: {n} dialogue file(s) valid, all keys resolve, "
+          f"{effects} option(s) carry consequences")
     return 0
 
 if __name__ == "__main__":

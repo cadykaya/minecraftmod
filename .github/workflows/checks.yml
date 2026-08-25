@@ -108,3 +108,6 @@ jobs:
 
       - name: Three people can argue in front of a Warden
         run: ./tools/talk_check.sh
+
+      - name: People carry what they said, and a deicide leaves a mark
+        run: ./tools/regard_check.sh

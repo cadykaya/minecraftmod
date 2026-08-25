@@ -27,7 +27,44 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **13**, every one mutation-verified, all in CI |
+| Live-world checks | **14**, every one mutation-verified, all in CI |
+
+### Conversations have consequences
+
+Every scene used to resolve and change nothing. `RegardState` sat in `core/`, fully
+tested, and no code read or wrote it. It does now.
+
+**One rule, and it is the whole design: each participant is judged on what THEY said,
+not on what the table decided.** A vote you lost is still on your record with the
+party you sided with; going along with a group atrocity does not launder it, because
+you still said the words. Without this, everybody ends up with the initiator's record
+and the ensemble system is decoration -- the only choice that ever mattered would be
+whoever clicked first. It lives in `RegardEffects` in `core/`, tested without a game,
+and `tools/regard_check.sh` proves it against a live server: two players at the same
+node, opposite stances, opposite records.
+
+Effects are **data** -- `"regard": {"VILLAGES": 5, "WARDENATE": -4}` on any option.
+`dialogue_check.py` rejects unknown institutions, non-integers, out-of-range values,
+no-op zeroes, and anything above 25 (the band scale is 35 wide; one sentence should
+not cross a band). All five verified by breaking the data on purpose.
+
+**Nothing is announced to the player.** No karma bar, no "+5 Villages" -- you find out
+what an institution thinks of you from how it treats you. `/interregnum regard <uuid>`
+is a gamemaster readout and prints band AND number, which is *not* the meter coming
+back: its audience is somebody asking "did that scene do anything", and bands cannot
+answer that because most changes do not cross one.
+
+The deicide now leaves its scar: gods hit and permanently capped, the Wardenate filed.
+**VILLAGES is deliberately spared**, because `WORLD.md`'s four voices has the
+villagers whispering *saint* -- capping them would put mechanics in contradiction with
+locked lore and flatten every village scene into a formality nobody can move. THE_GHOST
+is spared for a different reason: you destroyed it, and its regard is the one
+relationship still open to the killer.
+
+That persistence found the nastiest bug of the project so far -- see
+[`LESSONS.md`](LESSONS.md) #20. Saved records were restored through a *relative* API
+after the ceilings had already moved the baseline, so every capped god drifted down by
+the size of its cap on **every single restart**, silently, plausibly, forever.
 
 ### The Warden speaks, and the table argues
 
@@ -485,10 +522,12 @@ In order, all unblocked unless marked:
    shrine, and the dream-audience wants a sleep trigger on the killer (a
    `PlayerWakeUpEvent`-shaped hook checking `ChapterSavedData#killer`) that fires
    once. Both are thin adapters over `Conversations.open`, which is tested.
-4. **Consequences.** Every scene currently resolves and changes nothing.
-   `RegardState` exists in `core/`, tested, and nothing reads or writes it. The
-   scenes now exist to say what the outcomes should be -- which is why this comes
-   after them rather than before.
+4. **Let a player feel the regard.** It is recorded, persisted and invisible.
+   Deliberately no meter -- but a *band change* is a relationship event and is worth
+   surfacing as text with no number ("The Wardenate has noticed you."). That needs a
+   line per institution per crossing, and a hook where `RegardEffects` reports what
+   it applied. Institutions should also begin to *act* on it: option gating by
+   standing, and a Warden's opening line depending on your file.
 5. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
    everything it would render is already proven server-side. Chat works meanwhile.
