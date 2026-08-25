@@ -743,10 +743,13 @@ queried the keeper's position 120 commands later found it at exactly its spawn
 coordinate, unmoved. Whatever happened on the runner, drift was not it.
 
 What is actually true is weaker and more useful: **the check asserted a property of a
-live mob and could not say why the property was absent.** The cause is still unknown
-as of writing. What changed is that the check can now answer the question -- it dumps
-every keeper reply and the placement log on failure -- and that the two assertions
-were replaced by ones that do not depend on when you looked.
+live mob and could not say why the property was absent.** What changed is that the
+check can now answer the question -- it dumps every keeper reply and the placement log
+on failure -- and that the two assertions were replaced by ones that do not depend on
+when you looked.
+
+*(The cause was unknown when this was written. That reporting is what found it, one
+hour later: the keeper was never missing, it was invisible. See #22.)*
 
 Two different fixes, and the interesting part is that they are different.
 
@@ -782,3 +785,103 @@ useful output of the episode was not the explanation; it was noticing that a liv
 assertion had no way to report *why* it failed, and fixing that. Along the way it also
 turned up an ignored boolean: `addFreshEntity` returns false when the level declines
 an entity, and a shrine with no keeper had no line anywhere saying so.
+
+## 22. The entity was not missing. It was invisible.
+
+*Three red builds, six local runs, and one line of log that should have existed from
+the start.*
+
+This is the answer to #21, which ended with the cause unknown. It is worth reading in
+that order, because the wrong explanation was reasonable, survived a day, and was
+refuted by exactly the reporting #21 added.
+
+### The symptom
+
+`worldgen_check.sh` forceloads a region, generates a shrine into it with `/place
+feature`, and asks about the keeper the feature places. Sometimes the keeper was not
+there. The block assertions all passed -- carved centre stone, paving, standing stele,
+offering box -- and then every selector came up empty:
+
+```
+$ data get entity @e[type=interregnum:shrine_keeper,limit=1] Pos
+  No entity was found
+```
+
+The same check passed on the same commit on a different runner. **Two runs of the
+identical tree, one green and one red**, which was the first hard proof that this was
+a race and not an environment difference -- and worth noting because #21's corollary
+says the disagreement between two environments is the signal. That corollary needs an
+amendment: the disagreement between two *runs* is just as good a signal, and I nearly
+missed it by assuming a green push run and a red pull-request run must differ in the
+tree they tested. They did not; `main` was an ancestor, so the merge commit was the
+head commit.
+
+### What the log said
+
+The decisive evidence came from a line added the hour before, for a different reason:
+
+```
+The shrine at 8,8 seated its keeper at BlockPos{x=9, y=-60, z=8}.
+```
+
+That line was present in **every failing run**. Six local runs, three of them red, and
+all six seated a keeper at exactly the same coordinate. `addFreshEntity` returned
+true. The feature did its job perfectly, every time.
+
+So the entity existed and nothing could see it.
+
+### The mechanism
+
+`forceload add` returns immediately; the chunk arrives later. `/place feature` needs
+only the chunk's **blocks**, so it succeeds in that window -- and an entity added
+during it goes into a section whose visibility is never established. The entity is
+accepted, is in the level, and is not in what any selector iterates. Permanently: it
+was still invisible at the end of the batch, many commands later.
+
+Blocks fine. Mob gone. `addFreshEntity` true. Nothing anywhere reporting a problem.
+
+The fix is that the check now waits after forceloading, before generating. Confirmed
+by measurement rather than by argument: **3 of 6 runs failed without the wait, 0 of 6
+with it.**
+
+### The part that is not a sleep
+
+A bare `wait 5` is a magic number tuned on this machine, which is precisely the thing
+that has now failed on the runner three times. So the wait is followed by a probe: a
+`minecraft:marker` summoned into the chunk and an assertion that `@e` can see it.
+
+That is a live question rather than a hope. If the marker is visible, entities added
+to this chunk are visible and generating the shrine is safe. If it is not, the check
+fails **as itself**:
+
+```
+FAIL: the chunk was still loading when the shrine was generated.
+  A marker summoned into it was invisible to @e, so any entity the feature
+  places would be invisible too. The wait ... is too short for this machine
+  -- lengthen it; do not delete the probe.
+```
+
+Verified by watching it fail: with the wait set to zero, that is the message that
+comes out, not a word about keepers. A check that cannot distinguish "the thing is
+broken" from "I asked too early" will eventually blame the thing.
+
+### Two siblings had it too
+
+`warden_check.sh` and `talk_check.sh` both summon an entity immediately after a
+forceload and then interrogate it. Same race, same fix. `warden_check`'s restart pass
+needed it for the mirrored reason: there the Warden is read back **off disk**, and a
+chunk's entities arrive after its blocks, so asking too early answers "No entity was
+found" -- which that check would have reported as a Warden that failed to survive a
+restart. The loudest possible wrong answer.
+
+> **The rule: an API that accepts your write has not promised anyone can read it.**
+> `addFreshEntity` answering true means the level took the entity, not that the entity
+> is live, findable, or in any structure a query walks. Where a write and a read cross
+> an asynchronous boundary -- chunk loading, disk, a worker thread -- assert the
+> boundary is closed before asserting anything through it.
+
+Corollary, and the fourth time this project has paid for it: **the log line that finds
+the bug is usually one added for a different reason.** "Seated its keeper at ..." was
+written to catch a silent `return`. It never caught one. It answered a question nobody
+had thought to ask instead, by being the only thing in the system that knew what had
+actually happened.

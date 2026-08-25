@@ -933,3 +933,42 @@ LESSONS #21, and its corollary is the part I will need again: a flaky check can 
 perfectly reproducible on one machine. Running it twice here proved nothing, because
 both runs had the same timing. The disagreement between two ENVIRONMENTS is the
 signal; two runs in one environment is not.
+
+---
+
+## The keeper was never missing
+
+The answer to yesterday's unknown, and it took the reporting added for a different
+reason to find it.
+
+Three red builds said the shrine-keeper was not at the shrine. It was. In all six
+local runs -- three of which failed -- the feature logged "seated its keeper at
+BlockPos{x=9, y=-60, z=8}", `addFreshEntity` returned true, and every single `@e`
+selector afterwards answered "No entity was found". The entity existed and nothing
+could see it.
+
+`forceload add` returns before the chunk arrives. `place feature` needs only the
+chunk's BLOCKS, so it succeeds inside that window, and an entity added there lands in
+a section whose visibility is never established -- permanently, not transiently. It
+was still invisible at the end of the batch.
+
+The proof that this was a race and not an environment came from two runs of the SAME
+commit: the push run green, the pull-request run red, identical trees. LESSONS #21
+said the disagreement between two environments is the signal; it needed amending. Two
+runs are just as good a signal, and I nearly discarded it by assuming a PR run must
+test a different tree. It did not.
+
+The fix is a wait after forceloading, measured rather than argued: 3 of 6 runs failed
+without it, 0 of 6 with it. But a bare wait is a magic number tuned on this machine,
+which is exactly what has now failed on the runner three times -- so it is followed by
+a probe. A marker is summoned into the chunk and the check asserts that `@e` can see
+it. If it cannot, the check fails as ITSELF ("the chunk was still loading"), not as a
+missing keeper. Verified by watching it fail with the wait set to zero.
+
+Two sibling checks had the same race latent in them and are fixed the same way.
+warden_check's restart pass needed it for the mirrored reason: there the Warden is
+read back off disk, and a chunk's entities arrive after its blocks, so asking too
+early would have reported a Warden that failed to survive a restart -- the loudest
+possible wrong answer.
+
+LESSONS #22: an API that accepts your write has not promised anyone can read it.

@@ -27,7 +27,11 @@ WARDEN='@e[limit=1,type=interregnum:warden]'
 # Participants are separated with + rather than , because brigadier's unquoted
 # strings do not accept commas: `a,b,c` parses as `a` and then fails on trailing
 # data, blaming whatever happens to be at the end of the line.
+# `wait` after the forceload: the chunk's entity storage loads asynchronously, and
+# a Warden summoned before it arrives is invisible to every selector afterwards --
+# the conversation would then be held in front of nobody. See docs/LESSONS.md #22.
 COMMANDS="forceload add -32 -32 31 31
+wait 5
 summon interregnum:warden 8 -60 8
 execute positioned 0 -60 0 run interregnum record deicide
 interregnum status

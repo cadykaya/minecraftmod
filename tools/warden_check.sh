@@ -33,7 +33,13 @@ KEEP='@e[type=interregnum:shrine_keeper,limit=1]'
 BYSTANDER=88888888-8888-4888-8888-888888888888
 
 echo "1/2 summon one of each, and interrogate them"
+# `wait` after the forceload, for the reason worldgen_check found the hard way:
+# the chunk arrives asynchronously, and an entity added before its ENTITY storage
+# has loaded is accepted and then invisible to every selector for the rest of the
+# run. The summons below would succeed and every `data get entity` would answer
+# "No entity was found". See docs/LESSONS.md #22.
 COMMANDS="forceload add -32 -32 31 31
+wait 5
 summon interregnum:warden 8 -60 8
 data get entity $SEL Health
 data get entity $SEL PersistenceRequired
@@ -94,7 +100,12 @@ want /tmp/wd1.txt 'talk=open scene=interregnum:shrine_keeper' \
          fail "a keeper's death by no player's hand still moved somebody's regard (or the honest ledger fix did not land in the first place)"; }
 
 echo "2/2 restart: is it still standing there?"
+# Same wait, mirrored reason: here the Warden is being read back OFF DISK, and the
+# chunk's entities arrive after the chunk's blocks do. Asking too early answers
+# "No entity was found", which this check would have reported as a Warden that did
+# not survive the restart -- the loudest possible wrong answer.
 KEEP_WORLD=1 COMMANDS="forceload add -32 -32 31 31
+wait 5
 data get entity $SEL Pos
 data get entity $SEL PersistenceRequired" \
     LOG=/tmp/warden2.log timeout 2000 ./tools/server_smoke.sh > /tmp/wd2.txt 2>&1 \

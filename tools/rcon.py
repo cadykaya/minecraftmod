@@ -12,6 +12,7 @@ import argparse
 import socket
 import struct
 import sys
+import time
 
 LOGIN, COMMAND, RESPONSE = 3, 2, 0
 
@@ -90,6 +91,17 @@ def main():
     try:
         with Rcon(a.host, a.port, a.password, a.timeout) as r:
             for cmd in cmds:
+                # `wait <seconds>` is not a Minecraft command. Commands go over one
+                # connection back to back, so a whole batch can run inside a fraction
+                # of a second of server time -- which is fine for asking questions and
+                # wrong for anything that has to finish first. Loading a chunk is
+                # asynchronous: `forceload add` returns immediately and the chunk
+                # arrives later, so a batch that forceloads and then immediately
+                # generates into the result is racing the server. See docs/LESSONS.md.
+                if cmd.startswith("wait "):
+                    print(f"$ {cmd}")
+                    time.sleep(float(cmd.split(None, 1)[1]))
+                    continue
                 reply = r.run(cmd).strip()
                 print(f"$ {cmd}")
                 if reply:

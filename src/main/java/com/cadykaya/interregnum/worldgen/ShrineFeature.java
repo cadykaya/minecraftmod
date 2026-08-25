@@ -191,6 +191,14 @@ public class ShrineFeature extends Feature<NoneFeatureConfiguration> {
      *
      * They face the offering box, because that is what they are here for and it is
      * the first thing that tells a player these two things go together.
+     *
+     * Every way out of this method says so. There are four -- no tile, no entity,
+     * the level refusing it, and success -- and until recently three of them were
+     * silent `return`s, which is how a shrine can end up with nobody attending it
+     * and nothing anywhere admitting that happened. A check watching from outside
+     * sees one symptom ("no keeper") for four different causes, and picking between
+     * them by reasoning is guessing (docs/LESSONS.md #21). So the code answers
+     * instead: exactly one line is logged per shrine, naming which way out it took.
      */
     private static void placeKeeper(WorldGenLevel level, RandomSource rand,
                                     int cx, int cz, int floorY) {
@@ -198,16 +206,24 @@ public class ShrineFeature extends Feature<NoneFeatureConfiguration> {
         // reads as loitering.
         int[][] spots = {{1, 0}, {-1, 0}, {0, 1}, {0, -1},
                          {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
+        StringBuilder rejected = new StringBuilder();
         for (int[] d : spots) {
             BlockPos stand = new BlockPos(cx + d[0], floorY + 1, cz + d[1]);
             if (!level.getBlockState(stand.below()).isSolid()
                     || !level.getBlockState(stand).isAir()
                     || !level.getBlockState(stand.above()).isAir()) {
+                // Which of the three it was, per tile. "No footing" and "no headroom"
+                // are different bugs and the summary has to be able to tell them apart.
+                rejected.append(' ').append(stand.getX()).append(',').append(stand.getZ())
+                        .append(level.getBlockState(stand.below()).isSolid()
+                                ? "(blocked)" : "(no footing)");
                 continue;
             }
             ShrineKeeperEntity keeper = ModEntities.SHRINE_KEEPER.get()
                     .create(level.getLevel(), EntitySpawnReason.STRUCTURE);
             if (keeper == null) {
+                LOG.warn("The shrine at {},{} has no keeper: the entity type "
+                        + "refused to make one.", cx, cz);
                 return;
             }
             // Facing the box: the offset points away from the centre, so the
@@ -231,8 +247,16 @@ public class ShrineFeature extends Feature<NoneFeatureConfiguration> {
             if (!level.addFreshEntity(keeper)) {
                 LOG.warn("The shrine at {},{} could not seat its keeper: the level "
                         + "refused the entity at {}.", cx, cz, stand);
+            } else {
+                LOG.info("The shrine at {},{} seated its keeper at {}.", cx, cz, stand);
             }
             return;
         }
+        // Not a warning about the world: a shrine in broken ground is allowed to have
+        // nobody, and a keeper standing in a wall would be worse. It is a warning
+        // about the silence -- this used to be the one exit that left no trace, so a
+        // check could only report that the keeper was missing, never why.
+        LOG.warn("The shrine at {},{} has no keeper: none of its eight tiles could "
+                + "hold one --{}", cx, cz, rejected);
     }
 }

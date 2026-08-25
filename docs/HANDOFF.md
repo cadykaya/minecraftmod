@@ -62,9 +62,12 @@ a death by no player's hand costs nobody.
 **Every shrine has one**, placed at worldgen, standing beside the offering box,
 facing it, and **tethered to the court** (`setHomeTo`, radius 5). The tether is not a
 nicety: without it they stroll away from the shrine they exist to attend and, being
-persistent, never come back — and CI caught exactly that, on a check that passed here
-every time. See [`LESSONS.md`](LESSONS.md) #21, which is the sharpest verification
-lesson in the file. The spot is chosen rather than fixed -- the court has missing paving by
+persistent, never come back. It was added while chasing a red build that turned out to
+have a different cause entirely — the tether is good design regardless, and the
+episode is worth reading as [`LESSONS.md`](LESSONS.md) #21 followed by #22, which are
+between them the sharpest verification lessons in the file: an assertion about a
+moving thing is an assertion about when you looked, and an API that accepts your write
+has not promised anyone can read it. The spot is chosen rather than fixed -- the court has missing paving by
 design, so the first candidate tile with solid footing and two blocks of headroom
 wins, and the shrine gets nobody if none of them do. A keeper standing in a wall is
 worse than a shrine with no keeper.
@@ -380,7 +383,17 @@ it scans for the surface rather than reading a worldgen heightmap so it can also
 never a biome list.
 
 `tools/worldgen_check.sh` places a shrine in a live flat world and asserts what it built.
-Verified failing two ways -- a wrong assertion, and a deliberately broken feature.
+Verified failing three ways -- a wrong assertion, a deliberately broken feature, and a
+chunk that had not finished loading.
+
+**It waits after forceloading, and then proves the wait was long enough.** Chunks load
+asynchronously; `place feature` needs only the blocks, so it can generate into a chunk
+whose entity storage has not arrived, and any mob it places is then accepted and
+invisible to every selector for the rest of the run. This cost three red builds. After
+the wait, a `minecraft:marker` is summoned and asserted visible: if it is not, the
+check fails as *"the chunk was still loading"* rather than blaming the keeper.
+**Lengthen the wait if that fires; do not delete the probe.** `warden_check.sh` and
+`talk_check.sh` carry the same wait for the same reason. LESSONS #22.
 
 `tools/shrine_rate_probe.sh` measures density on **real** terrain (`GRID=8` takes ~2 min).
 Measured: **45-46% of natural sites are level enough**, so with the rarity filter at 55 the
