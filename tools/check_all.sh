@@ -19,6 +19,9 @@ rm -rf build/core && mkdir -p build/core
 javac -d build/core $(find core/src -name '*.java') 2>/dev/null
 java -cp build/core com.cadykaya.interregnum.core.SelfTest 2>/dev/null
 
+echo "== core mutation check =="
+python3 tools/mutate_check.py 2>/dev/null | tail -1
+
 echo "== generated assets current (textures + resources rebuild with no diff) =="
 python3 tools/build_textures.py >/dev/null
 python3 tools/gen_resources.py >/dev/null

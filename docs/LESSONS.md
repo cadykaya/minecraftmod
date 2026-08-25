@@ -119,3 +119,30 @@ in shell form, committed within the hour of porting that exact sentence into
 **Fixes:** redirect instead of piping when the exit code matters (`java ... >out.txt 2>&1;
 echo $?`), or use `PIPESTATUS`. `tools/check_all.sh` runs every stage bare under `set -e`
 for this reason.
+
+---
+
+## 5. A test that passes either way is not a test
+
+*Learned the moment `tools/mutate_check.py` was first run against a self-test that had
+already "passed" 44 checks and been hand-verified against three mutations.*
+
+Two of eleven mutations **survived** — the engine was broken and the suite stayed green:
+
+| Mutation | Why the test could not see it |
+|---|---|
+| VOTE's tie-break rule deleted | The test submitted the **initiator first**, so tally insertion order already put their pick at `top.get(0)`. Deleting the rule changed nothing. Fixed by having the other player submit first. |
+| Chapter's monotonic guard deleted | Every case only ever **added** milestones, so the derived chapter never fell below the high-water mark and the guard was never load-bearing. Fixed by deserializing a save whose milestones no longer justify its chapter. |
+
+Both assertions were *correct*. Both were *blind*. This is DOWNTIME's **"a metric must be
+able to see the thing you are asking about"** — if a change you can plainly make does not
+move the number, the number is the wrong number.
+
+**Hand-checking a few mutations is not the same as checking them all**, which is why this
+is now a tool (`tools/mutate_check.py`, wired into `check_all.sh`) instead of something
+done from memory in a shell loop. Every new guard gets a mutation added beside it; a
+surviving mutation fails the build and names itself.
+
+*Footnote, and it is the third instance of the same pattern: the first version of that
+shell loop was itself broken — bash heredoc escaping mangled the `javac` line — which is
+precisely why the harness became a real program with a real exit code (see #4).*
