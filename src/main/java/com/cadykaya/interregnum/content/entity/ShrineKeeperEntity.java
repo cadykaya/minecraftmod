@@ -16,6 +16,8 @@ import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.level.Level;
 
 import com.cadykaya.interregnum.Interregnum;
@@ -37,8 +39,16 @@ import com.cadykaya.interregnum.system.dialogue.Conversations;
  * at their post, because the post is the only thing left that has a shape.
  */
 public class ShrineKeeperEntity extends PathfinderMob {
+    /** The shortfall scene: the box has been opened and the ledger does not balance. */
     public static final Identifier LEDGER =
             Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "shrine_keeper");
+
+    /** The contented scene: nothing has happened here yet. */
+    public static final Identifier INTACT =
+            Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "shrine_keeper_intact");
+
+    /** How far to look for the box this keeper is attending. */
+    private static final int BOX_RANGE = 4;
 
     /**
      * What killing one costs with the villages.
@@ -89,9 +99,46 @@ public class ShrineKeeperEntity extends PathfinderMob {
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (player instanceof ServerPlayer initiator) {
-            Conversations.address(initiator, this, LEDGER);
+            Conversations.address(initiator, this, openingScene());
         }
         return InteractionResult.SUCCESS;
+    }
+
+    /**
+     * Has anybody opened the offering box?
+     *
+     * Read from the chest's own pending loot table, which Minecraft clears the
+     * instant a container is unpacked. That makes it the honest signal for "nobody
+     * has been in here" -- no bookkeeping of our own, nothing to keep in sync, and
+     * it stays true if an admin replaces the chest or a player builds their own.
+     *
+     * It decides which scene the keeper opens with. The ledger scene is about a
+     * shortfall the players caused, and at an untouched shrine its first line is
+     * simply false; the intact scene is the same person before any of it, content,
+     * apologising for the housekeeping on a box that opens for somebody who is never
+     * coming. Both are true at different times, which is why there are two.
+     *
+     * No chest at all counts as touched: something has happened here.
+     *
+     * Exposed through {@link #openingScene()} so `/interregnum talk scene` can ask
+     * the same question the right-click asks. A headless server has no players and
+     * therefore no way to reach `mobInteract` at all, and "why is this keeper saying
+     * the wrong thing" is a question an operator will have long before that.
+     */
+    public Identifier openingScene() {
+        return boxUntouched() ? INTACT : LEDGER;
+    }
+
+    private boolean boxUntouched() {
+        BlockPos here = blockPosition();
+        for (BlockPos p : BlockPos.betweenClosed(here.offset(-BOX_RANGE, -2, -BOX_RANGE),
+                                                 here.offset(BOX_RANGE, 2, BOX_RANGE))) {
+            if (level().getBlockEntity(p) instanceof RandomizableContainer box
+                    && box.getLootTable() != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

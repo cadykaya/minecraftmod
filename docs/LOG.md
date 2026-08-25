@@ -852,3 +852,41 @@ Flagged rather than hidden: the ledger scene opens with "the offering box is sho
 which presumes the box has been looted. At an untouched shrine the line still works --
 offerings stopped coming -- but the "It was us. We took it." reply becomes a strange
 lie. HANDOFF has it as the next content item.
+
+## The world tells you, mildly
+
+The ledger scene presumes the offering box has been looted -- that is the whole
+consequence-comedy engine, the players asked politely to help with the paperwork for
+their own deicide -- and at an untouched shrine its first line is simply false.
+Diluting it so it worked in both cases would have cost the best thing about it. So
+there are two scenes and the keeper picks.
+
+`shrine_keeper_intact` is the same person before any of it. The ledger balances, the
+quarter is closing, they are pleased somebody came. The warning is real and arrives
+as an apology for the housekeeping: the box opens for the one it is addressed to,
+nobody has come to open it in a very long time, and they keep it tidy anyway because
+it would be embarrassing otherwise. Ask who it is addressed to and the register says
+"the holder", and they have never needed to write anything else down, and you will
+forgive them, it has not come up.
+
+A player reads that as flavour and opens the chest. That is the design. The world told
+you, in a tone so mild you did not register it as being told.
+
+The signal is the box's own PENDING loot table, which Minecraft clears the instant a
+container is unpacked: no bookkeeping of ours, nothing to keep in sync, still true if
+an admin replaces the chest.
+
+Two Minecraft gotchas, both found by probing rather than reasoning, and both already
+in LESSONS in other clothes.
+
+`@e` could not see an entity summoned into a chunk the same command block had just
+forceloaded -- the chunk had not finished loading. Every earlier check happened to
+summon at (8, 8), inside the always-loaded spawn chunks, so this never showed. The
+new assertions use the shrine at spawn for the same reason.
+
+And clearing the loot table by writing a plain chest over the loot chest is a NO-OP:
+setblock on an identical block does nothing, and the block entity survives untouched
+with its loot table intact (LESSONS #14, in my own test this time). The first version
+of the check "proved" the keeper stayed on the intact scene after a looting that had
+never happened. Air first, then chest -- and the check now asserts the loot table is
+present before, and gone after, so the setup cannot silently fail again (#15).

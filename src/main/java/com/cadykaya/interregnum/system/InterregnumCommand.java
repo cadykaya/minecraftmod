@@ -157,6 +157,20 @@ public final class InterregnumCommand {
                                         .executes(ctx -> show(ctx, java.util.Set.of(
                                                 StringArgumentType.getString(ctx, "tags")
                                                         .split("[,+]")))))))
+                .then(Commands.literal("scene")
+                        .then(Commands.argument("who", EntityArgument.entity())
+                                .executes(ctx -> {
+                                    var e = EntityArgument.getEntity(ctx, "who");
+                                    if (!(e instanceof com.cadykaya.interregnum.content.entity
+                                            .ShrineKeeperEntity keeper)) {
+                                        ctx.getSource().sendSuccess(() -> Component.literal(
+                                                "scene=none reason=not a shrine-keeper"), false);
+                                        return 0;
+                                    }
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "scene=" + keeper.openingScene()), false);
+                                    return 1;
+                                })))
                 .then(Commands.literal("status")
                         .then(Commands.argument("who", StringArgumentType.string())
                                 .executes(ctx -> {
@@ -254,6 +268,20 @@ public final class InterregnumCommand {
                                         .executes(ctx -> show(ctx, java.util.Set.of(
                                                 StringArgumentType.getString(ctx, "tags")
                                                         .split("[,+]")))))))
+                .then(Commands.literal("scene")
+                        .then(Commands.argument("who", EntityArgument.entity())
+                                .executes(ctx -> {
+                                    var e = EntityArgument.getEntity(ctx, "who");
+                                    if (!(e instanceof com.cadykaya.interregnum.content.entity
+                                            .ShrineKeeperEntity keeper)) {
+                                        ctx.getSource().sendSuccess(() -> Component.literal(
+                                                "scene=none reason=not a shrine-keeper"), false);
+                                        return 0;
+                                    }
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "scene=" + keeper.openingScene()), false);
+                                    return 1;
+                                })))
                 .then(Commands.literal("status").executes(ctx -> {
                     ChapterSavedData data = ChapterSavedData.get(ctx.getSource().getServer());
                     ctx.getSource().sendSuccess(() -> Component.literal(

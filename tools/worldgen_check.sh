@@ -27,7 +27,13 @@ execute if block 6 -60 6 interregnum:warning_stele run say C_STELE_STANDS
 execute if block 8 -60 8 minecraft:chest run say D_OFFERING_BOX
 execute positioned 8 -60 8 if entity @e[type=interregnum:shrine_keeper,distance=..4] run say E_KEEPER_ATTENDS
 data get entity @e[type=interregnum:shrine_keeper,limit=1] Pos
-data get entity @e[type=interregnum:shrine_keeper,limit=1] Rotation' \
+data get entity @e[type=interregnum:shrine_keeper,limit=1] Rotation
+data get block 8 -60 8 LootTable
+interregnum talk scene @e[limit=1,type=interregnum:shrine_keeper]
+setblock 8 -60 8 minecraft:air replace
+setblock 8 -60 8 minecraft:chest replace
+data get block 8 -60 8 LootTable
+interregnum talk scene @e[limit=1,type=interregnum:shrine_keeper]' \
     ./tools/server_smoke.sh > /tmp/wg_smoke_out.txt 2>&1 || {
         echo "FAIL: the server smoke run itself failed"; tail -20 /tmp/wg_smoke_out.txt; exit 1; }
 
@@ -51,6 +57,31 @@ pos=$(grep -m1 -oE 'Shrine-Keeper has the following entity data: \[[^]]*d\]' /tm
 rot=$(grep -m1 -oE 'Shrine-Keeper has the following entity data: \[[^]]*f\]' /tmp/wg_smoke_out.txt || true)
 python3 tools/keeper_pos_check.py "$pos" "$rot" 8.5 8.5 -60 || {
     echo "FAIL: the keeper is not attending the offering box"; exit 1; }
+
+# --- which scene the keeper opens with -------------------------------------
+#
+# The ledger scene is about a shortfall the players caused; at an untouched shrine
+# its first line is simply false. The keeper picks by reading the offering box's
+# PENDING loot table, which Minecraft clears the instant anybody opens the container.
+#
+# The setup is asserted at both ends (LESSONS #15). It has to be: clearing the table
+# by writing a plain chest over the loot chest is a NO-OP, because setblock on an
+# identical block does nothing and the block entity -- loot table and all -- survives
+# untouched (LESSONS #14). That is exactly how the first version of this check
+# "proved" the keeper was still intact-scened after a looting that never happened.
+# Hence air first, then chest.
+grep -q 'has the following block data: "interregnum:chests/shrine"' /tmp/wg_smoke_out.txt || {
+    echo "FAIL: the offering box has no pending loot table, so 'untouched' proves nothing"; exit 1; }
+grep -q 'Found no elements matching LootTable' /tmp/wg_smoke_out.txt || {
+    echo "FAIL: the box's loot table was not actually cleared -- the setblock was a no-op"; exit 1; }
+
+intact=$(grep -c 'scene=interregnum:shrine_keeper_intact' /tmp/wg_smoke_out.txt || true)
+ledger=$(grep -c 'scene=interregnum:shrine_keeper$' /tmp/wg_smoke_out.txt || true)
+[ "$intact" = "1" ] && [ "$ledger" = "1" ] || {
+    grep -E 'scene=' /tmp/wg_smoke_out.txt
+    echo "FAIL: the keeper does not change scene when the box is opened (intact=$intact ledger=$ledger, want 1 and 1)"
+    exit 1; }
+echo "  keeper greets an untouched shrine, and reaches for the ledger once it is not"
 
 echo "OK: shrine places on flat ground with carved centre, paving, a standing stele,"
 echo "    an offering box on the centre stone, and a keeper attending it"

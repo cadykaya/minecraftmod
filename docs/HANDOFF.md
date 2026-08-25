@@ -65,11 +65,20 @@ design, so the first candidate tile with solid footing and two blocks of headroo
 wins, and the shrine gets nobody if none of them do. A keeper standing in a wall is
 worse than a shrine with no keeper.
 
-**Rough edge, flagged rather than hidden:** the ledger scene opens with "the offering
-box is short", which presumes the box has been looted. Talk to a keeper at an
-untouched shrine and the line still works (offerings stopped coming) but the
-"It was us. We took it." reply becomes a strange lie. A pre-loot variant of the
-opening node would sharpen it.
+**The keeper picks its scene.** The ledger scene is about a shortfall the players
+caused -- that is the mod's whole consequence-comedy engine -- so instead of diluting
+its opening to also work at an untouched shrine, there are two scenes.
+`shrine_keeper_intact` is the same person before any of it: content, the ledger
+balancing, pleased somebody came, and apologising for keeping tidy a box that
+"opens for the one it is addressed to" and which nobody has come to open in a very
+long time. A player reads that as flavour and opens the chest anyway. **The world
+told you, in a tone so mild you did not register it as being told.**
+
+The signal is the offering box's own **pending loot table**, which Minecraft clears
+the instant anybody opens a container -- no bookkeeping of ours, nothing to keep in
+sync, and it stays true if an admin replaces the chest. `/interregnum talk scene`
+asks the same question the right-click asks, because a headless server can never
+reach `mobInteract`.
 
 ### The Haunt begins
 
@@ -581,10 +590,11 @@ In order, all unblocked unless marked:
    Unambiguously in scope meanwhile: **first Warden contact records
    `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
    currently reachable only by command.
-3. **A pre-loot line for the keeper.** See the rough edge under "The shrine-keeper,
-   in person": the ledger scene presumes the box has been opened. Either a second
-   opening node chosen on whether the shrine's chest has been looted, or a rewrite of
-   the first line that carries both readings.
+3. **Let a player feel the regard.** It is recorded, persisted, and invisible. No
+   meter -- but a *band change* is a relationship event worth surfacing as text with
+   no number ("The Wardenate has noticed you."), and institutions should start
+   *acting* on standing: options gated on it, and a Warden's opening line depending
+   on your file. That last one needs a condition type beyond `required_tags`.
 4. **Let a player feel the regard.** It is recorded, persisted and invisible.
    Deliberately no meter -- but a *band change* is a relationship event and is worth
    surfacing as text with no number ("The Wardenate has noticed you."). That needs a

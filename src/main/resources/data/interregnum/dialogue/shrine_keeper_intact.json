@@ -1,0 +1,142 @@
+{
+  "_comment": [
+    "The shrine-keeper at a shrine nothing has happened to yet.",
+    "",
+    "The ledger scene (shrine_keeper) is about a shortfall the players caused, which",
+    "is the whole consequence-comedy engine of this mod: you are asked, very politely,",
+    "to help with the paperwork for your own deicide. Diluting its opening line so it",
+    "also worked at an untouched shrine would have cost the best thing about it. So",
+    "there are two scenes and the keeper picks.",
+    "",
+    "This one is dramatic irony and nothing else. The keeper is CONTENT. The ledger",
+    "balances, the quarter is closing, and they are pleased somebody came. Three feet",
+    "away is a chest, and opening it kills God.",
+    "",
+    "The warning is real and is delivered as an apology for the housekeeping: the box",
+    "opens for the one it is addressed to, nobody has come in a very long time, and",
+    "the keeper keeps it tidy anyway because it would be embarrassing otherwise. A",
+    "player will read that as flavour and open the chest. That is the design. The",
+    "world told you, in a tone so mild you did not register it as being told.",
+    "",
+    "Dread covenant: not ominous, not winking, not foreshadowing at the audience. The",
+    "keeper is sincere and slightly apologetic, and the scene is funny only in the way",
+    "counter service at a dead institution is funny."
+  ],
+  "id": "shrine_keeper_intact",
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_intact.greet",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "what_box",
+          "text_key": "interregnum.dlg.keeper_intact.greet.what_box",
+          "target": "explains"
+        },
+        {
+          "id": "offer",
+          "text_key": "interregnum.dlg.keeper_intact.greet.offer",
+          "target": "offering"
+        },
+        {
+          "id": "may_i_open",
+          "text_key": "interregnum.dlg.keeper_intact.greet.may_i_open",
+          "target": "permission"
+        },
+        {
+          "id": "nothing",
+          "text_key": "interregnum.dlg.keeper_intact.greet.nothing",
+          "target": "leave"
+        }
+      ]
+    },
+    {
+      "id": "explains",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_intact.explains",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "then_offer",
+          "text_key": "interregnum.dlg.keeper_intact.explains.then_offer",
+          "target": "offering"
+        },
+        {
+          "id": "then_ask",
+          "text_key": "interregnum.dlg.keeper_intact.explains.then_ask",
+          "target": "permission"
+        }
+      ]
+    },
+    {
+      "id": "offering",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_intact.offering",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "give",
+          "text_key": "interregnum.dlg.keeper_intact.offering.give",
+          "target": "thanks",
+          "regard": {
+            "VILLAGES": 5
+          }
+        },
+        {
+          "id": "decline",
+          "text_key": "interregnum.dlg.keeper_intact.offering.decline",
+          "target": "no_offering"
+        }
+      ]
+    },
+    {
+      "id": "permission",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_intact.permission",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "press",
+          "text_key": "interregnum.dlg.keeper_intact.permission.press",
+          "target": "shrug"
+        },
+        {
+          "id": "fine",
+          "text_key": "interregnum.dlg.keeper_intact.permission.fine",
+          "target": "leave"
+        }
+      ]
+    },
+    {
+      "id": "shrug",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_intact.shrug",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "thanks",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_intact.thanks",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "no_offering",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_intact.no_offering",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "leave",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_intact.leave",
+      "rule": "INITIATOR",
+      "options": []
+    }
+  ]
+}
