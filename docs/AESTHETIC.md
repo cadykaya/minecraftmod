@@ -151,14 +151,12 @@ From DOWNTIME's handoff, and it is the reason the doctrine has teeth:
 
 ---
 
-## Open
+## The subject — answered
 
-> **BLOCKING for any content work.** This mod has no subject yet.
->
-> Until it has one, there is nothing for this document to judge, `PALETTE.md` has no
-> semantic law, and `WORLDGEN.md`'s dimension question cannot be answered. Everything built
-> so far — the palette machinery, the texture pipeline, the doc set — is deliberately
-> subject-agnostic and survives whatever the answer turns out to be.
->
-> **The first real decision is what the mod is about.** It should be run through the seven
-> questions in writing, here, before any content is registered.
+The mod is **INTERREGNUM** — see [`WORLD.md`](WORLD.md), which contains the full
+seven-question audit in writing, as this document requires. The audit passes question 7:
+the dead-isolationist-god premise cannot be swapped out without collapsing the quest
+structure, the class origin, the magic ban's correctness, and all three endings.
+
+This document remains the standing filter for every *new* strange idea added to that
+world. The bar does not lower because the premise passed once.

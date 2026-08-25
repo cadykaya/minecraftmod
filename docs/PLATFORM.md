@@ -114,18 +114,18 @@ neo_version_range=[26.2,)
 loader_version_range=[4,)
 
 # mod
-mod_id=<TBD>
-mod_name=<TBD>
-mod_license=<TBD>
+mod_id=interregnum
+mod_name=INTERREGNUM
+mod_license=<TBD -- owner's call before any public release>
 mod_version=0.1.0
-mod_group_id=com.cadykaya.<TBD>
+mod_group_id=com.cadykaya.interregnum
 mod_authors=cadykaya
 ```
 
-**`mod_id` is effectively permanent.** It is the namespace on every resource location, every
-texture path, every registry key, every save-game reference. Renaming it after a world has
-been saved orphans every block placed in it. Decide it once, deliberately, at the same time
-the mod's subject is decided — see the open question in `HANDOFF.md`.
+**`mod_id` is effectively permanent, and it is decided: `interregnum`.** It is the
+namespace on every resource location, every texture path, every registry key, every
+save-game reference. Renaming it after a world has been saved orphans every block placed
+in it. Locked by the owner alongside the subject — see `WORLD.md`.
 
 Constraints: lowercase, `[a-z0-9_]`, no leading digit, and short — it prefixes every asset
 path you will ever type.

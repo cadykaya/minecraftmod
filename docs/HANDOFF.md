@@ -6,7 +6,9 @@ says what is *currently true*; everything else says what is *always true*.
 Updated at every phase boundary, so that if a session ends — for any reason — the next one
 picks up cold without archaeology.
 
-**Last updated:** initial doc-set pass. No mod code exists yet.
+**Last updated:** the subject is decided. The mod is **INTERREGNUM** — see
+[`WORLD.md`](WORLD.md), the product of a long workshop session with the owner. Still no
+mod code; that is now the next real work.
 
 ---
 
@@ -62,33 +64,29 @@ overturn them on grounds rather than taste.
 
 ---
 
-## Open questions, in the order they block things
+## Open questions
 
-### 1. What is the mod about? — **BLOCKING**
+### Answered this session
 
-Nothing content-shaped can start without this. It blocks, specifically:
+- **The subject**: INTERREGNUM. You accidentally kill the overworld's god by looting a
+  shrine chest; vanilla's rules were its policy; the world unravels chapter by chapter
+  while you carry the dead god's unanswered letters to its estranged family, looking for a
+  successor. Full design + seven-question audit in [`WORLD.md`](WORLD.md).
+- **`mod_id`**: `interregnum`, locked, recorded in `PLATFORM.md`.
+- **Loader check-in**: NeoForge stands. The mod is broad content+systems (dimensions,
+  dialogue, classes, enforcement AI) — the Fabric fork in `PLATFORM.md` was for a small
+  mechanical mod, which this is not.
 
-- `PALETTE.md`'s **semantic law** (the "warm means it is leaving" sentence). Without it the
-  families mean "brown things" and "grey things", which is a colour picker, not a palette.
-- `AESTHETIC.md`'s **seven-question audit**, which nothing ships without.
-- `WORLDGEN.md`'s **dimension question**.
-- `mod_id`, which is effectively permanent once a world is saved.
+### Still open — [WORKSHOP] with the owner
 
-**Everything built so far is deliberately unaffected by the answer.** That was the point of
-starting here.
+1. **First class name.** Shortlist: **Hollow Saint** (recommended), Usurper, Executor,
+   Deicide. Owner picks; details in `WORLD.md`.
+2. **God roster** — working set is four named gods + the dead one; final count and names.
+3. **The dead god's last letter** (the ending document) — co-write with owner, later.
 
-### 2. `mod_id` — blocked on #1
+### [NEEDS PLAYTEST] (cannot be settled by argument)
 
-Lowercase `[a-z0-9_]`, short, no leading digit. It prefixes every asset path forever and
-renaming it after a world is saved orphans every block placed in it.
-
-### 3. Is NeoForge still right once #1 is known? — revisit, cheap now
-
-`PLATFORM.md` records a genuine fork: **if the mod turns out small and mechanical rather
-than broad and content-heavy, Fabric is the better call, and switching early is cheap.**
-Worth one deliberate look once the subject exists, and not worth revisiting after.
-
----
+Deicide trigger reliability · splinter scarcity · unraveling band pacing.
 
 ## Working agreement
 
@@ -108,26 +106,22 @@ was the same in spirit — *"You know this stuff better than i do"* — so:
 
 ## What to do next
 
-In order. The first is blocked on the owner; the rest are not.
+In order:
 
-1. **Decide the subject** (open question #1), then run it through `AESTHETIC.md`'s seven
-   questions *in writing*, in that file.
-2. **Create the Gradle project** — MDG, Java 21, NeoForge 26.2.x. **Look up the real build
-   number**; do not paste one from `PLATFORM.md`, which deliberately does not contain one.
-3. **Verify the platform doc against reality** and correct it. It was written without access
-   to `neoforged.net` (blocked by this sandbox's egress proxy), so every `VERIFY:` marker in
-   the doc set is an unpaid debt. Clearing them against the NeoForge sources in the Gradle
-   cache is a high-value first task.
-4. **Write the Tier 1 tests before there is much content** —
-   [`VERIFICATION.md`](VERIFICATION.md) lists them. Registry completeness, client-leak grep,
-   datagen staleness. Cheap, and they catch the three commonest silent failures in modded
-   content.
-5. **Write the semantic law into `PALETTE.md`** and re-theme `FAMILIES` to the subject.
-6. **First block, end to end** — generator → texture → model → blockstate → datagen → in
-   game, beside its nearest vanilla neighbour, at play distance. One block through the whole
-   pipeline is worth more than ten through half of it.
-
----
+1. **Create the Gradle project** — MDG, Java 21, NeoForge 26.2.x. Look up the real build
+   number; `PLATFORM.md` deliberately does not contain one.
+2. **Clear the `VERIFY:` debt** against the NeoForge sources once the Gradle cache exists.
+3. **Tier 1 tests before content** — registry completeness, client-leak grep, datagen
+   staleness (`VERIFICATION.md`).
+4. **Phase 1 vertical slice — "Chapter 0 and the Death"**, overworld only, no dimensions,
+   no ferry: shrine + steles + Warden statues (inert) → heart loot → server-wide death
+   event (sky, crater, statues wake) → first unraveling band → splinters + first-class
+   skeleton → Warden patrols + citations. This is a complete, shippable horror-comedy mod
+   on its own.
+5. **Dialogue v1** — state machine + one screen + the Warden interrogation as the first
+   written scene (small, tests every resolution rule).
+6. **First block end-to-end** through the art pipeline (shrine-stone family is the obvious
+   candidate), beside its vanilla neighbour, at play distance.
 
 ## Standing warning
 

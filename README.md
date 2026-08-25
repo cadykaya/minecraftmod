@@ -1,4 +1,4 @@
-# minecraftmod
+# INTERREGNUM
 
 A Minecraft mod, at the foundations stage. **There is no mod yet** — there is a verified
 art pipeline, a palette system, and the doctrine to build one against.
@@ -79,5 +79,8 @@ of them invented.
 
 ## Status
 
-See [`docs/HANDOFF.md`](docs/HANDOFF.md). The blocking open question is **what the mod is
-about** — everything built so far is deliberately subject-agnostic and survives any answer.
+The mod is **INTERREGNUM**: you accidentally kill the overworld's god by looting a chest,
+discover that vanilla's rules were its policy, and carry its unanswered letters across the
+worlds of its estranged family while your own world unravels. Full design and
+seven-question audit: [`docs/WORLD.md`](docs/WORLD.md). Current state and next steps:
+[`docs/HANDOFF.md`](docs/HANDOFF.md). No mod code yet — Phase 1 is defined.

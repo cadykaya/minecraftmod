@@ -73,3 +73,29 @@ them, both recorded in `LESSONS.md`:
 
 The subject of the mod. Everything built in this phase is subject-agnostic on purpose and
 survives whatever the answer is.
+
+---
+
+## Phase 0.5 — the subject
+
+**The mod is INTERREGNUM.** Decided across one workshop session with the owner, who drove
+every major turn. The trail, because the rejections shaped it more than the acceptances:
+
+1. First pitch: parameter-driven "drift" worlds (eight named constants). **Rejected by our
+   own doctrine** — false specificity; a slider constrains nobody.
+2. Second pitch: governors — physical law as maintained infrastructure, machines you can
+   walk to. The architecture survived; the *dress* did not.
+3. Owner's pivot: **more fantasy — it should be god.** Real magic, illegal in the
+   overworld; the modpack opens with the player accidentally killing Earth's god. This
+   fixed the thing the governor version lacked: a wound.
+4. Owner locked: the name (**Interregnum**), vanilla-until-death pacing, world-systems
+   (each god holds surface/under/far dimensions — vanilla's own triad generalized),
+   deicide inheritance → first playable class, the Haunt (dead gods torment their
+   killers), repeatable deicide, and **ensemble BioWare dialogue** (SWTOR/DOS) — which the
+   owner correctly spotted as the fix for the pseudo-main-character concern.
+
+`WORLD.md` written with the full seven-question audit (passes). Palette semantic law
+written: **cool means held, warm means spent.** `mod_id=interregnum` locked in PLATFORM.
+Open: class name ([WORKSHOP], shortlist in WORLD.md), god roster, playtest items.
+
+No code yet. Phase 1 is defined in HANDOFF: "Chapter 0 and the Death," overworld only.
