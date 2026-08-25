@@ -93,3 +93,6 @@ jobs:
 
       - name: The ground gives way without eating anyone's house
         run: ./tools/crater_check.sh
+
+      - name: Every Warden statue opens its eyes
+        run: ./tools/statue_check.sh

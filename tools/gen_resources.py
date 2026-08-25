@@ -30,6 +30,27 @@ for name in CUBE_ALL_BLOCKS:
     w(os.path.join(ASSETS, "blockstates", name + ".json"),
       {"variants": {"": {"model": f"interregnum:block/{name}"}}})
 
+# The Warden statue: 4 facings x 2 states. Two models (asleep / awake) differing
+# only in the front texture, and the blockstate rotates them.
+_STATUE_ROT = {"north": 0, "east": 90, "south": 180, "west": 270}
+for suffix, front in (("", "warden_statue_front"), ("_woken", "warden_statue_front_woken")):
+    w(os.path.join(ASSETS, "models/block", "warden_statue" + suffix + ".json"),
+      {"parent": "minecraft:block/orientable",
+       "textures": {
+           "front": f"interregnum:block/{front}",
+           "side": "interregnum:block/warden_statue_side",
+           "top": "interregnum:block/warden_statue_top",
+       }})
+_statue_variants = {}
+for facing, rot in _STATUE_ROT.items():
+    for woken in (False, True):
+        model = "interregnum:block/warden_statue" + ("_woken" if woken else "")
+        entry = {"model": model}
+        if rot:
+            entry["y"] = rot
+        _statue_variants[f"facing={facing},woken={str(woken).lower()}"] = entry
+w(os.path.join(ASSETS, "blockstates", "warden_statue.json"), {"variants": _statue_variants})
+
 for name, (side, end) in COLUMN_BLOCKS.items():
     tex = {"side": f"interregnum:block/{side}", "end": f"interregnum:block/{end}"}
     w(os.path.join(ASSETS, "models/block", name + ".json"),

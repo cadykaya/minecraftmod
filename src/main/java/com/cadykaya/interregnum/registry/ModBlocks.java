@@ -2,6 +2,8 @@ package com.cadykaya.interregnum.registry;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
+
+import com.cadykaya.interregnum.content.block.WardenStatueBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
@@ -58,6 +60,17 @@ public final class ModBlocks {
                     .strength(3.0F, 9.0F)
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.STONE)));
+
+    /** A Warden, standing still. See WardenStatueBlock for why that matters. */
+    public static final DeferredBlock<WardenStatueBlock> WARDEN_STATUE = BLOCKS.register(
+            "warden_statue",
+            key -> new WardenStatueBlock(BlockBehaviour.Properties.of()
+                    .setId(net.minecraft.resources.ResourceKey.create(
+                            net.minecraft.core.registries.Registries.BLOCK, key))
+                    .mapColor(MapColor.METAL)
+                    .strength(4.0F, 12.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL)));
 
     public static void register(IEventBus modBus) {
         BLOCKS.register(modBus);

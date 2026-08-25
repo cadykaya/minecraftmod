@@ -24,6 +24,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> WARNING_STELE =
             ITEMS.registerSimpleBlockItem(ModBlocks.WARNING_STELE);
 
+    public static final DeferredItem<BlockItem> WARDEN_STATUE =
+            ITEMS.registerSimpleBlockItem(ModBlocks.WARDEN_STATUE);
+
     /**
      * The heart. Deliberately named "A Warm Gold Thing" in en_us: in Chapter 0 the
      * player has no reason to know what it is, and the item telling them would give

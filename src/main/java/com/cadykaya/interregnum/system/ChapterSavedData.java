@@ -60,6 +60,20 @@ public final class ChapterSavedData extends SavedData {
         this.state = state;
     }
 
+    /**
+     * Is the world still dormant? Convenience for callers that hold a level rather
+     * than a server, and which must behave sanely on the logical client (where
+     * there is no server and no saved data): a client assumes dormant, because the
+     * server is the only thing entitled to say otherwise.
+     */
+    public static boolean isDormant(net.minecraft.world.level.LevelReader level) {
+        if (!(level instanceof net.minecraft.world.level.Level lvl)) {
+            return true;
+        }
+        MinecraftServer server = lvl.getServer();
+        return server == null || get(server).mechanicsDormant();
+    }
+
     public static ChapterSavedData get(MinecraftServer server) {
         return server.overworld().getDataStorage().computeIfAbsent(TYPE);
     }

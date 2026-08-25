@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "interregnum:block/warden_statue_front_woken",
+    "side": "interregnum:block/warden_statue_side",
+    "top": "interregnum:block/warden_statue_top"
+  }
+}

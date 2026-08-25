@@ -192,11 +192,107 @@ def stele_top(seed=21):
     return img
 
 
+def _statue_inset(y):
+    """Half-width of the figure at row y. Narrow head, wide plinth."""
+    if y < 3:
+        return 4
+    if y < 6:
+        return 3
+    if y < 12:
+        return 2
+    return 1
+
+
+def _statue_body(seed):
+    """The shared carcass of a Warden statue: a standing figure in cold iron.
+
+    Wardens are the dead god's enforcement, so per the palette law they are HELD --
+    cool metal, upright, symmetrical, unweathered. Everything about the silhouette
+    should say "this was maintained", because that is exactly what stopped.
+    """
+    img = Image(SIZE, SIZE)
+    for y in range(SIZE):
+        for x in range(SIZE):
+            inset = _statue_inset(y)
+            if x < inset or x >= SIZE - inset:
+                img.set(x, y, pal("stone", 0) + (255,))       # the gap around it
+            else:
+                edge = x == inset or x == SIZE - 1 - inset
+                img.set(x, y, pal("metal", 1 if edge else 2) + (255,))
+    return img
+
+
+def warden_statue_front(seed=31, woken=False):
+    """The face. One dominant cue and nothing competing with it.
+
+    ARTSTYLE 3c: whatever a character's facing cue is, it wins, and secondary head
+    detail is cut until it does. Here it is the eye band -- two slots on a dark
+    visor. Dormant they are the darkest value in the palette; woken they are EMBER,
+    because a Warden enforcing a dead god's law is running on the corpse. Warm means
+    spent. The eyes are the only warm pixels on an otherwise entirely cool figure,
+    which is the whole point: you can see one across a field.
+    """
+    img = _statue_body(seed)
+    # Every mark below is CLIPPED to the body. A first pass drew the visor at a
+    # fixed width and it overflowed the head into the empty margin, which made a
+    # figure read as a box with ears -- ARTSTYLE rule 1: if the silhouette is wrong
+    # no amount of painting fixes it, and paint that leaves the silhouette IS the
+    # silhouette being wrong.
+    def band(y, colour, margin=1):
+        inset = _statue_inset(y)
+        for x in range(inset + margin, SIZE - inset - margin):
+            img.set(x, y, colour + (255,))
+
+    for y in range(4, 7):
+        band(y, pal("metal", 0), margin=0)          # recessed visor across the head
+    eye = pal("ember", 2) if woken else pal("stone", 0)
+    for ex in (5, 6, 9, 10):
+        img.set(ex, 5, eye + (255,))
+    band(10, pal("metal", 0), margin=2)             # chest seam
+    band(13, pal("metal", 0), margin=2)             # belt line
+    return img
+
+
+def warden_statue_front_woken(seed=31):
+    return warden_statue_front(seed, woken=True)
+
+
+def warden_statue_side(seed=31):
+    """Profile: same carcass, no face, one vertical seam so it reads as a figure
+    rather than a post when seen edge-on."""
+    img = _statue_body(seed)
+    for y in range(4, SIZE - 2):
+        img.set(SIZE // 2, y, pal("metal", 0) + (255,))
+    inset = _statue_inset(13)
+    for x in range(inset + 2, SIZE - inset - 2):
+        img.set(x, 13, pal("metal", 0) + (255,))
+    return img
+
+
+def warden_statue_top(seed=31):
+    """The crown of the head: a plain plate, rimmed."""
+    img = Image(SIZE, SIZE)
+    for y in range(SIZE):
+        for x in range(SIZE):
+            rim = min(x, y, SIZE - 1 - x, SIZE - 1 - y)
+            if rim < 2:
+                img.set(x, y, pal("stone", 0) + (255,))
+            elif rim == 2:
+                img.set(x, y, pal("metal", 1) + (255,))
+            else:
+                img.set(x, y, pal("metal", 2) + (255,))
+    return img
+
+
 ASSETS = {
     (BLOCK, "shrine_stone"): shrine_stone,
     (BLOCK, "shrine_stone_carved"): shrine_stone_carved,
     (BLOCK, "stele_side"): stele_side,
     (BLOCK, "stele_top"): stele_top,
+    (BLOCK, "warden_statue_front"): warden_statue_front,
+    (BLOCK, "warden_statue_front_woken"): warden_statue_front_woken,
+    (BLOCK, "warden_statue_side"): warden_statue_side,
+    (BLOCK, "warden_statue_top"): warden_statue_top,
     (ITEM, "god_heart"): god_heart,
     (ITEM, "clast"): clast,
 }

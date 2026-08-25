@@ -49,6 +49,12 @@ public class ModBlockLoot extends BlockLootSubProvider {
         // A warning you can carry is a warning you can misplace. On a server that
         // is a genuinely interesting thing for someone to do, and it stays legal.
         dropSelf(ModBlocks.WARNING_STELE.get());
+
+        // Statues drop themselves, and they drop the SAME item whether awake or
+        // asleep. Whether a Warden's eyes are open is a fact about the world, not
+        // about the block -- re-place one after the death and it is awake again,
+        // because the god is still dead.
+        dropSelf(ModBlocks.WARDEN_STATUE.get());
     }
 
     @Override

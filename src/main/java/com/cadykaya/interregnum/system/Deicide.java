@@ -7,6 +7,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.gamerules.GameRules;
 import org.slf4j.Logger;
 
@@ -71,9 +76,56 @@ public final class Deicide {
             formCrater(level, site);
         }
 
+        int woken = wakeWitnesses(server, level, site);
+        if (woken > 0) {
+            LOG.info("{} Warden statue(s) opened their eyes.", woken);
+        }
+
         LOG.info("Deicide committed{}; the daylight cycle has stopped.",
                 killer == null ? " (no killer recorded)" : " by " + killer);
         return true;
+    }
+
+    /** How far around a witness statues wake immediately, in chunks. */
+    private static final int WAKE_RADIUS_CHUNKS = 8;
+
+    /**
+     * Statues near anyone who could see it happen open their eyes at once.
+     *
+     * Deliberately NOT every loaded chunk in the world: walking a whole server's
+     * loaded set means touching the internals of ChunkMap, and walking its region
+     * files would take minutes and lock the server. Everything outside this radius
+     * wakes on chunk load instead (see WardenWakeEvents), which is the better beat
+     * anyway -- a player who was underground when it happened climbs out and finds
+     * the statue in their garden already watching, and gets to notice it themselves.
+     *
+     * Only chunks that are ALREADY loaded are touched: `getChunk(..., false)`
+     * returns null rather than generating, so this can never drag new terrain into
+     * existence as a side effect of the god dying.
+     */
+    private static int wakeNear(ServerLevel level, ChunkPos centre) {
+        int count = 0;
+        for (int dx = -WAKE_RADIUS_CHUNKS; dx <= WAKE_RADIUS_CHUNKS; dx++) {
+            for (int dz = -WAKE_RADIUS_CHUNKS; dz <= WAKE_RADIUS_CHUNKS; dz++) {
+                ChunkAccess access = level.getChunk(centre.x() + dx, centre.z() + dz,
+                        ChunkStatus.FULL, false);
+                if (access instanceof LevelChunk chunk) {
+                    count += WardenWake.wakeChunk(level, chunk);
+                }
+            }
+        }
+        return count;
+    }
+
+    private static int wakeWitnesses(MinecraftServer server, ServerLevel level, BlockPos site) {
+        int count = 0;
+        if (level != null && site != null) {
+            count += wakeNear(level, ChunkPos.containing(site));
+        }
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            count += wakeNear(player.level(), player.chunkPosition());
+        }
+        return count;
     }
 
     /** How wide and deep the ground gives up. */

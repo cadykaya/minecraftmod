@@ -28,6 +28,25 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 13 documents, see [`INDEX.md`](INDEX.md) |
 
+### The statues open their eyes
+
+`warden_statue` is a decorative block for the whole of Chapter 0 -- players build around
+them, put them in gardens -- and the moment the god dies **every one of them wakes**. The
+eyes are the only warm pixels on an entirely cool figure, so a woken Warden is visible
+across a field, and per the palette law that ember means the same thing it always means:
+this is running on the corpse.
+
+Two paths, both verified. Statues within eight chunks of the site (or of any player) wake at
+the instant of death. Everything else wakes **on chunk load**, which is the better beat
+anyway: a player who was underground climbs out and finds the one in their garden already
+watching.
+
+Only already-loaded chunks are touched -- `getChunk(..., false)` never generates terrain as
+a side effect of the god dying -- and waking is a blockstate flip, so there is no block
+entity, no ticking, and no per-statue bookkeeping.
+
+`tools/statue_check.sh` proves both paths across two server runs and is mutation-verified.
+
 ### The ground gives way
 
 The crater is **subsidence, not an explosion** -- nothing detonated; a god died and the
@@ -287,9 +306,10 @@ In order, all unblocked unless marked:
    a tag whitelist because it fires once at one spot; the unraveling runs forever over a
    whole world, so it likely needs real placement tracking (a chunk attachment fed by
    `BlockEvent.EntityPlaceEvent`). **Design that before writing it.**
-2. **Warden statue → entity.** The biggest single art+code item in Phase 1: a statue block
-   that becomes a patrolling, citation-issuing Warden when the god dies. Every statue on
-   the server opening its eyes at once is the beat this whole chapter is built toward.
+2. **Warden statue → living Warden.** The statues now wake, but they only *look* awake.
+   Next is the entity: a patrolling figure that inspects, cites, and speaks in procedure --
+   with `warden_intake`, the first written dialogue scene, already waiting for it. This is
+   the largest remaining item in Phase 1.
 5. **More dialogue scenes** (shrine-keeper, first dream-audience) and the client screen.
    The engine, the loader and the first scene are done and verified end to end.
 6. **Clear remaining `VERIFY:` markers** in MODELS.md, DATAGEN.md, WORLDGEN.md against the

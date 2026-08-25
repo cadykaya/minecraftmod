@@ -494,3 +494,35 @@ drop rate.
 second where the tool passed anyway (see #13). The pattern is now unmistakable enough to
 state plainly: **assume a new bench is wrong until it has agreed with something you already
 knew.***
+
+---
+
+## 15. Assert the setup, or the test proves whatever absence implies
+
+*Found while testing that distant Warden statues wake when their chunk loads.*
+
+The test placed a statue far from spawn, killed the god, loaded that chunk, and checked the
+statue was awake. It reported **no markers at all** — not even the "still asleep" one that
+was supposed to fail first.
+
+There was no statue. `setblock 100 -60 100 ...` had answered:
+
+```
+That position is not loaded
+```
+
+`setblock` does not throw; it declines and carries on. The reply was right there in the
+output and nothing read it, so every later assertion was quietly measuring an empty
+coordinate. **A test built on setup that silently failed will confidently report whatever
+the absence of that setup implies** — here, "the statue is not awake", which is true, means
+nothing, and looks exactly like a real failure.
+
+Fixed by asserting the setup itself: the check now proves each statue exists and is asleep
+*before* the god dies, and says "the far statue was never placed" if it does not.
+
+> **The rule: a check needs a positive assertion at every step it depends on, not only at
+> the step it is about.** Absence is not evidence unless you have proved presence first —
+> which is the same shape as #5 (a test that passes either way), #13 (a test that only
+> exercised the easy path), and #14 (a passing test reporting a lie). Four different
+> disguises for one mistake: *believing an outcome without checking the conditions that
+> would make it meaningful.*

@@ -426,3 +426,33 @@ Also cleaned a stale HANDOFF entry that still listed already-finished work.
 Next is the unraveling, and it needs design before code: the crater gets away with a tag
 whitelist because it fires once at one spot, but the unraveling runs forever over a whole
 world and will need real placement tracking.
+
+---
+
+## Heartbeat tick 8 -- every statue opens its eyes
+
+The beat this chapter was built toward. `warden_statue` is decorative furniture for the
+whole of Chapter 0 -- the mod hands you a nice statue for hours and players put them in
+gardens -- and the moment the god dies, every one of them wakes, including the one in your
+garden.
+
+The art carries it: the eyes are the ONLY warm pixels on an entirely cool figure, so a woken
+Warden reads across a field, and the ember says what ember always says in this palette --
+this is running on the corpse.
+
+Two paths. Statues within eight chunks of the site or of a player wake instantly; everything
+else wakes on chunk load, which is the better version anyway because the player gets to
+notice it themselves. Only already-loaded chunks are touched: `getChunk(..., false)` never
+generates terrain as a side effect of a god dying. Waking is a blockstate flip -- no block
+entity, no ticking, no bookkeeping.
+
+**The test lied first, in a new way.** It reported no markers at all, because `setblock` at
+an unloaded position answers "That position is not loaded" and carries on -- so the far
+statue never existed and every assertion was measuring an empty coordinate. The check now
+asserts its own setup. LESSONS #15, which names the pattern the last four lessons have all
+been wearing different disguises of: believing an outcome without checking the conditions
+that make it meaningful.
+
+Art notes: the statue's first pass drew its visor at a fixed width, overflowing the head
+into the empty margin, and read as a box with ears. Marks are clipped to the silhouette now
+-- paint that leaves the silhouette IS the silhouette being wrong.
