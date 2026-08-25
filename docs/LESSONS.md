@@ -196,9 +196,14 @@ mod** — and the check that was supposed to confirm the fix reported:
 Zero, because the server never got far enough to read pack metadata. The check could not
 see the thing it was asking about. **That is LESSONS #5 for the third time in one session**,
 which is why the fix was to stop writing this in ad-hoc shell and build
-`tools/server_smoke.sh`: it shuts the server down cleanly through stdin (`stop`), clears the
-lock, and **fails loudly if the server never finished loading** instead of silently finding
-nothing.
+`tools/server_smoke.sh`: it clears the lock and **fails loudly if the server never finished
+loading** instead of silently finding nothing.
+
+> **Correction, several commits later.** This entry originally said the script "shuts the
+> server down cleanly through stdin (`stop`)". **It did not.** Stdin never reached the
+> server under Gradle's `runServer`; the process died on `SIGTERM` and the JVM shutdown
+> hook saved chunks, which made the log look exactly like a clean stop. The claim went
+> unverified into this file — in an entry about unverified claims. Corrected in #10.
 
 ### The corollary: a filter widened until it is green cannot fail
 
@@ -289,3 +294,49 @@ The first attempt at this fix silently vanished, because the test for the stale-
 used `git reset --hard HEAD~1` to undo a simulated commit — which reverted
 `tools/check_all.sh` along with it. The next run tested the *old* file and its results were
 meaningless. Destructive verification now happens in a scratch clone.
+
+---
+
+## 10. The shutdown that was never a shutdown
+
+*Found while trying to run a command in the live server, and it invalidated a claim already
+written into #7.*
+
+`server_smoke.sh` held a fifo on the server's stdin and wrote `stop` to it. The server did
+stop. Every log ended with chunks saved and all dimensions written. It looked clean, it was
+documented as clean, and **none of it was true**: stdin does not reach the game under
+Gradle's `runServer`. The process was dying on the `SIGTERM` that followed, and Minecraft's
+shutdown hook saves on the way out — so the evidence of a clean stop is *also* the evidence
+of a killed process.
+
+The tell, once looked for, was one grep: **`Stopping server` appeared in zero smoke logs.**
+That line is the `/stop` path. Its absence had been sitting in every log the whole time.
+
+```
+smoke_final.log: 0 'Stopping server' | 3 saves
+smoke_dlg.log:   0 'Stopping server' | 3 saves
+smoke_loot.log:  0 'Stopping server' | 3 saves
+```
+
+**Fixed with RCON** (`tools/rcon.py`), which is a real channel with real replies rather than
+a hope: commands now come back with the server's own answer, and `Stopping server` appears
+for the first time. The same channel is what makes worldgen verifiable at all without a
+client — `setblock 8 66 8 interregnum:warning_stele[axis=y]` answering *"Changed the block
+at 8, 66, 8"* is proof the block is registered, has a valid blockstate, and can exist in a
+world.
+
+**Two things to carry:**
+
+- **A side effect that resembles success is not success.** Saving chunks is what a clean
+  stop does *and* what a killed process does. When two very different causes produce the
+  same evidence, the evidence decides nothing — find a signal only the intended cause
+  produces (here, one log line).
+- **Prefer a channel that answers.** Writing into a pipe and assuming it arrived is the same
+  shape of mistake as a filter that cannot express failure (#4, #9). RCON returns the
+  server's reply, so "the command ran" stops being an assumption.
+
+*Footnote: the first RCON wiring split commands in the shell with `IFS=$'\n'` under
+`#!/bin/sh`, where that is not a newline but the literal characters — including `n`, so
+`minecraft` split into `mi` and `ecraft`. Same class as #9, second occurrence. Commands now
+go to `rcon.py` through a file and no shell touches them; the script is `#!/bin/bash` with
+`set -euo pipefail`.*

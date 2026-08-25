@@ -249,3 +249,26 @@ tutorial writes `bus = Bus.MOD` and it no longer compiles. `ARCHITECTURE.md` cor
 
 `registry_check.py`'s loot warning is now a hard failure, since something generates them.
 CI's game job regenerates data and fails on a dirty tree.
+
+---
+
+## Heartbeat tick 1 — the smoke test was lying
+
+Network probe: 200. Picked HANDOFF item 1 (the shrine structure) and got one step in before
+discovering that the tool meant to verify it does not work.
+
+`server_smoke.sh` wrote `stop` into a fifo on the server's stdin. **Stdin does not reach the
+game under Gradle's `runServer`.** No command ever ran, and the "clean shutdown" documented
+in LESSONS #7 was the JVM's SIGTERM hook saving chunks -- which looks identical in a log.
+The tell was one grep: `Stopping server` appeared in zero smoke logs, and had been absent
+all along.
+
+Replaced with **RCON** (`tools/rcon.py`): commands come back with the server's own reply
+instead of being hoped into a pipe. `Stopping server` now appears, and
+`setblock 8 66 8 interregnum:warning_stele[axis=y]` answers *"Changed the block at 8, 66,
+8"* -- the first proof that one of our blocks can exist in a real world with a valid
+blockstate.
+
+LESSONS #7 corrected in place (an unverified claim, in the entry about unverified claims)
+and #10 added. The shrine structure moves to the next tick, now that there is a way to check
+it.

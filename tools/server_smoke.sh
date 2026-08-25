@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Boot the dedicated server, wait for it to finish loading, shut it down CLEANLY,
 # and fail if the mod produced any error.
 #
@@ -6,8 +6,12 @@
 # leaves run/world/session.lock behind, and the NEXT boot then dies on the lock
 # before it ever loads a mod -- which looks exactly like "no errors found". A
 # check that cannot reach the thing it is checking will only ever report success.
-# See docs/LESSONS.md #5 and #7.
-set -e
+# See docs/LESSONS.md #5, #7 and #10.
+#
+# bash, not sh: a /bin/sh version of this file split command strings on the wrong
+# characters because IFS=$'\n' is not a newline under dash. Same class of bug as
+# the one that made check_all.sh print ALL CHECKS PASSED while broken.
+set -euo pipefail
 cd "$(dirname "$0")/.."
 LOG=${LOG:-/tmp/interregnum-server.log}
 TIMEOUT=${TIMEOUT:-420}
@@ -35,6 +39,12 @@ view-distance=4
 simulation-distance=4
 sync-chunk-writes=false
 enable-status=false
+# RCON is how commands reach the server. Piping to stdin does NOT work under
+# Gradle's runServer -- see tools/rcon.py and docs/LESSONS.md #10.
+enable-rcon=true
+rcon.port=25575
+rcon.password=interregnum
+broadcast-rcon-to-ops=true
 PROPS
 
 FIFO=$(mktemp -u)
@@ -58,7 +68,30 @@ while [ $i -lt $((TIMEOUT / 3)) ]; do
 done
 
 if [ "$booted" = "1" ]; then
-    echo "stop" > "$FIFO"          # clean shutdown: releases the world lock
+    # Commands go over RCON. This is how worldgen gets verified without a client:
+    # `/place feature ...` either succeeds or answers with a reason, and the reply
+    # is captured here rather than merely hoped for.
+    RCON_OUT=""
+    if [ -n "${COMMANDS:-}" ]; then
+        CMDFILE=$(mktemp)
+        printf '%s\n' "$COMMANDS" > "$CMDFILE"
+        if ! RCON_OUT=$(python3 tools/rcon.py --port 25575 --password interregnum \
+                        --file "$CMDFILE" 2>&1); then
+            rm -f "$CMDFILE"
+            echo "FAIL: could not run commands over RCON:"
+            echo "$RCON_OUT"
+            kill $HOLD $GRADLE 2>/dev/null || true
+            pkill -x java 2>/dev/null || true
+            exit 1
+        fi
+        rm -f "$CMDFILE"
+        echo "--- commands ---"
+        echo "$RCON_OUT"
+    fi
+    # A real /stop, over RCON. (This used to be `echo stop > fifo`, which never
+    # reached the server; the process died on SIGTERM instead and its shutdown hook
+    # saved chunks, which made the log look like a clean stop.)
+    python3 tools/rcon.py --port 25575 --password interregnum stop >/dev/null 2>&1 || true
     j=0
     while [ $j -lt 20 ]; do
         grep -qE 'Stopping server|ThreadedAnvilChunkStorage: All dimensions are saved' "$LOG" && break

@@ -28,6 +28,21 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 13 documents, see [`INDEX.md`](INDEX.md) |
 
+### Verifying against a live server
+
+`tools/server_smoke.sh` boots a dedicated server, and `COMMANDS` (newline-separated) runs
+them over **RCON**, printing the server's own replies:
+
+```sh
+COMMANDS='forceload add 0 0 15 15
+setblock 8 66 8 interregnum:warning_stele[axis=y]' ./tools/server_smoke.sh
+```
+
+This is the only way worldgen and block behaviour get verified without a client, and it is
+how the next tasks (shrine structure, deicide event) will be checked. Note that **stdin does
+not reach the server under Gradle's runServer** — RCON is not a preference, it is the only
+channel that works. See LESSONS #10.
+
 ### Datagen works
 
 `gradle runServerData` regenerates every JSON this mod ships into `src/generated/resources`
