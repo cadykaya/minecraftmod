@@ -39,7 +39,7 @@ public final class ConversationEvents {
         // thinking about their answer, and the rest of the table should not spend a
         // minute finding that out.
         if (event.getEntity() instanceof ServerPlayer player) {
-            Conversations.leave(player.getUUID().toString());
+            Conversations.leave(player.level().getServer(), player.getUUID().toString());
         }
     }
 }

@@ -1,0 +1,154 @@
+{
+  "_comment": [
+    "The first dream-audience: the dead god, to the one who killed it.",
+    "",
+    "Every node is INITIATOR, and that is the design rather than laziness. Every other",
+    "scene in the mod is an ensemble where each player has an equal voice -- that is",
+    "what redeems the pseudo-main-character. This is the ONE table nobody else sits at,",
+    "and the contrast is the point. The asymmetry is a room, not a privilege.",
+    "",
+    "The ghost calls them EXECUTOR and never explains it, because an executor is the",
+    "person who settles an estate. The word is doing the work; a line explaining it",
+    "would take the work away. Never state the theme.",
+    "",
+    "Dread covenant: the grief is sincere throughout and is never the punchline. What",
+    "is allowed to be funny is the god's pettiness about small things and the sheer",
+    "administrative shape of what it wants -- it is not seeking revenge, it is trying",
+    "to hand over a job.",
+    "",
+    "NOTE: the god says 'a family' and never a number. The pantheon roster is still",
+    "[WORKSHOP] in WORLD.md, and shipped dialogue that counted them would settle a",
+    "question the owner has not settled."
+  ],
+  "id": "dream_audience",
+  "start": "wake",
+  "nodes": [
+    {
+      "id": "wake",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_audience.wake",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "who",
+          "text_key": "interregnum.dlg.dream_audience.wake.who",
+          "target": "name"
+        },
+        {
+          "id": "sorry",
+          "text_key": "interregnum.dlg.dream_audience.wake.sorry",
+          "target": "estate"
+        },
+        {
+          "id": "refuse",
+          "text_key": "interregnum.dlg.dream_audience.wake.refuse",
+          "target": "estate"
+        }
+      ]
+    },
+    {
+      "id": "name",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_audience.name",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "go_on",
+          "text_key": "interregnum.dlg.dream_audience.name.go_on",
+          "target": "estate"
+        }
+      ]
+    },
+    {
+      "id": "estate",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_audience.estate",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "family",
+          "text_key": "interregnum.dlg.dream_audience.estate.family",
+          "target": "letters"
+        },
+        {
+          "id": "settle",
+          "text_key": "interregnum.dlg.dream_audience.estate.settle",
+          "target": "terms"
+        },
+        {
+          "id": "no",
+          "text_key": "interregnum.dlg.dream_audience.estate.no",
+          "target": "decline"
+        }
+      ]
+    },
+    {
+      "id": "letters",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_audience.letters",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "onward",
+          "text_key": "interregnum.dlg.dream_audience.letters.onward",
+          "target": "terms"
+        }
+      ]
+    },
+    {
+      "id": "terms",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_audience.terms",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "accept",
+          "text_key": "interregnum.dlg.dream_audience.terms.accept",
+          "target": "charged"
+        },
+        {
+          "id": "bargain",
+          "text_key": "interregnum.dlg.dream_audience.terms.bargain",
+          "target": "cost"
+        },
+        {
+          "id": "no",
+          "text_key": "interregnum.dlg.dream_audience.terms.no",
+          "target": "decline"
+        }
+      ]
+    },
+    {
+      "id": "cost",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_audience.cost",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "anyway",
+          "text_key": "interregnum.dlg.dream_audience.cost.anyway",
+          "target": "charged"
+        },
+        {
+          "id": "no",
+          "text_key": "interregnum.dlg.dream_audience.cost.no",
+          "target": "decline"
+        }
+      ]
+    },
+    {
+      "id": "charged",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_audience.charged",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "decline",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_audience.decline",
+      "rule": "INITIATOR",
+      "options": []
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "_comment": [
+    "The shrine-keeper, still doing the accounts.",
+    "",
+    "This is the dread covenant's permitted comedy and none of the forbidden kind:",
+    "the joke is the SYSTEM -- an offering ledger that must be reconciled quarterly,",
+    "reconciled for a report, filed for a reader who is dead -- and the keeper is",
+    "played completely straight. Nobody here is stupid. The keeper knows. Everyone",
+    "knows. The quarter closes anyway.",
+    "",
+    "It is also the mod's first consequence conversation: the shortfall in the box is",
+    "the players' own looting, which is how the god died. They are being asked, very",
+    "politely, to help with the paperwork for their own deicide. Nobody says that.",
+    "",
+    "Rules used: INITIATOR for the keeper's beats, VOTE where the group decides how to",
+    "treat a person, UNANIMOUS on the one cruelty -- telling them there is no reader --",
+    "because that is irreversible and nobody should be able to do it alone."
+  ],
+  "id": "shrine_keeper",
+  "start": "ledger",
+  "nodes": [
+    {
+      "id": "ledger",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.ledger",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "restore",
+          "text_key": "interregnum.dlg.shrine_keeper.ledger.restore",
+          "target": "restore"
+        },
+        {
+          "id": "admit",
+          "text_key": "interregnum.dlg.shrine_keeper.ledger.admit",
+          "target": "admit"
+        },
+        {
+          "id": "whose",
+          "text_key": "interregnum.dlg.shrine_keeper.ledger.whose",
+          "target": "report"
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.report",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "pressed",
+          "text_key": "interregnum.dlg.shrine_keeper.report.pressed",
+          "target": "stop"
+        },
+        {
+          "id": "enough",
+          "text_key": "interregnum.dlg.shrine_keeper.report.enough",
+          "target": "admit"
+        }
+      ]
+    },
+    {
+      "id": "stop",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.stop",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "then_help",
+          "text_key": "interregnum.dlg.shrine_keeper.stop.then_help",
+          "target": "restore"
+        },
+        {
+          "id": "then_tell",
+          "text_key": "interregnum.dlg.shrine_keeper.stop.then_tell",
+          "target": "truth"
+        }
+      ]
+    },
+    {
+      "id": "restore",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.restore",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "give",
+          "text_key": "interregnum.dlg.shrine_keeper.restore.give",
+          "target": "close_signed"
+        },
+        {
+          "id": "renege",
+          "text_key": "interregnum.dlg.shrine_keeper.restore.renege",
+          "target": "close_unsigned"
+        }
+      ]
+    },
+    {
+      "id": "admit",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.admit",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "accept_label",
+          "text_key": "interregnum.dlg.shrine_keeper.admit.accept_label",
+          "target": "close_signed"
+        },
+        {
+          "id": "refuse_label",
+          "text_key": "interregnum.dlg.shrine_keeper.admit.refuse_label",
+          "target": "close_unsigned"
+        },
+        {
+          "id": "tell_truth",
+          "text_key": "interregnum.dlg.shrine_keeper.admit.tell_truth",
+          "target": "truth"
+        }
+      ]
+    },
+    {
+      "id": "truth",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.truth",
+      "rule": "UNANIMOUS",
+      "options": [
+        {
+          "id": "press",
+          "text_key": "interregnum.dlg.shrine_keeper.truth.press",
+          "target": "remarks"
+        },
+        {
+          "id": "relent",
+          "text_key": "interregnum.dlg.shrine_keeper.truth.relent",
+          "target": "close_unsigned"
+        }
+      ]
+    },
+    {
+      "id": "remarks",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.remarks",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "close_signed",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.close_signed",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "close_unsigned",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.close_unsigned",
+      "rule": "INITIATOR",
+      "options": []
+    }
+  ]
+}

@@ -77,7 +77,19 @@ interregnum talk say v1 comply
 interregnum talk show v1
 interregnum talk show v2
 interregnum talk show nobody
-interregnum reply comply" \
+interregnum reply comply
+interregnum talk start interregnum:shrine_keeper s1+s2
+interregnum talk say s1 whose
+interregnum talk say s2 whose
+interregnum talk say s1 pressed
+interregnum talk say s2 pressed
+interregnum talk say s1 then_tell
+interregnum talk say s2 then_tell
+interregnum talk say s1 press
+interregnum talk say s2 press
+interregnum talk start interregnum:dream_audience d1
+interregnum talk say d1 refuse
+interregnum talk say d1 no" \
     LOG=/tmp/talk_check.log timeout 2000 ./tools/server_smoke.sh > /tmp/tc.txt 2>&1 \
     || { tail -25 /tmp/tc.txt; fail "the run did not complete"; }
 
@@ -195,5 +207,35 @@ want /tmp/tc.txt 'show=none' "a view was rendered for somebody who is not in a c
 want /tmp/tc.txt 'talk=refused reason=only a player can reply' \
     "reply accepted a caller with no player behind it"
 
+# --- a scene's LAST line reaches the table ----------------------------------
+#
+# The terminal node is the payoff of every branch, and for a while it was resolved,
+# recorded and thrown away without ever being shown: the table closed the instant
+# the conversation ended, so nothing pushed the final view. Nothing about that is
+# wrong from the inside -- the state machine was perfectly correct -- and it was
+# only found by playing a scene through and reading the output.
+want /tmp/tc.txt 'ended=true final=remarks' \
+    "the run did not reach the shrine-keeper's ending"
+#
+# HONEST LIMIT, stated so nobody reads more into these than they carry: the lines
+# below come from the COMMAND rendering the finished table, not from the push that
+# sends it to players. `push` only writes to real ServerPlayers and this server has
+# none, so the push itself cannot be observed here at all -- a mutation that deletes
+# it passes this file. What IS proved is that a terminal node renders, with its text,
+# to the end, and that the command shows it. The push is one line over a render path
+# that is covered.
+want /tmp/tc.txt 'show| SHRINE-KEEPER  Noted. Under remarks.' \
+    "a terminal node rendered nothing -- the payoff of every branch is missing"
+want /tmp/tc.txt 'show| The quarter closes at moonrise. You are welcome to attend. Most people do not.' \
+    "a multi-line beat lost everything after its first newline"
+want /tmp/tc.txt 'ended=true final=decline' \
+    "the dream-audience did not reach its refusal ending"
+
+# A finished conversation has nothing outstanding. Telling somebody the scene they
+# just ended is "waiting on 1 other" would be its last impression.
+[ "$(grep -c 'show| waiting on' /tmp/tc.txt)" = "3" ] \
+    || { grep -n 'show| waiting on' /tmp/tc.txt;
+         fail "wrong number of waiting lines -- either one was rendered for a conversation that has already ended, or the reader is being counted among the people being waited for"; }
+
 echo
-echo "OK: tables resolve on the last word, survive dissent, cannot be left hanging, and render"
+echo "OK: tables resolve on the last word, survive dissent, cannot be left hanging, and render to the end"

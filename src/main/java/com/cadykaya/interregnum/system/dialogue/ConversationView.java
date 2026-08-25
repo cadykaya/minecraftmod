@@ -85,6 +85,12 @@ public final class ConversationView {
         // Counting the viewer among the people being waited for was the first
         // version, and it read as "waiting on 2 more" to one of the two people it
         // was waiting for.
+        if (table.conversation.ended()) {
+            // Nothing is outstanding and nothing can be re-picked. Telling a player
+            // the finished conversation is "waiting on 1 other" would be the worst
+            // possible last impression of the scene.
+            return out;
+        }
         Map<String, String> picks = table.conversation.picks();
         int othersOutstanding = 0;
         for (String p : table.conversation.participants()) {
@@ -136,11 +142,21 @@ public final class ConversationView {
         return out;
     }
 
-    /** Plain text of a rendered view, for logs and for `/interregnum talk show`. */
+    /**
+     * Plain text of a rendered view, for logs and for `/interregnum talk show`.
+     *
+     * Split on embedded newlines, because a scene's lines use them as a beat --
+     * "Yes.\n\nThe quarter still closes." is two breaths, and chat renders it that
+     * way. Without the split, only the first breath carries whatever prefix the
+     * caller is putting on each line, and the rest of the sentence falls out of
+     * every log and every grep looking for it.
+     */
     public static List<String> plain(List<Component> lines) {
         List<String> out = new ArrayList<>();
         for (Component c : lines) {
-            out.add(c.getString());
+            for (String piece : c.getString().split("\n", -1)) {
+                out.add(piece);
+            }
         }
         return out;
     }

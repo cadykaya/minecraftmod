@@ -667,3 +667,46 @@ one from some seats. The fix was to assert an exact tally *and* an absence — t
 direction. There, a mutation was caught by the wrong instrument; here, a mutation
 walked straight through a real assertion that was simply too weak to see it. Both say
 the same thing: read what the mutation run actually did, never just its exit code.
+
+## Two scenes, and the ending nobody saw
+
+`shrine_keeper` and `dream_audience` are written.
+
+The keeper is the dread covenant's permitted comedy and none of the forbidden kind.
+The joke is the *system* -- an offering ledger that must be reconciled quarterly, for
+a report, filed for a reader who is dead -- and the keeper is played completely
+straight. Nobody in the scene is stupid. The keeper knows. Everyone knows. The
+quarter closes anyway. It is also the mod's first consequence conversation without
+saying so: the shortfall in the box is the players' own looting, which is how the god
+died, and they are being asked very politely to help with the paperwork for their own
+deicide. Telling the keeper there is nothing on the other end of the slot is a
+UNANIMOUS node, because it is irreversible and nobody should be able to do it alone.
+
+The dream-audience is every node INITIATOR, and that is the design rather than
+laziness: every other scene is an ensemble where each player has an equal voice, this
+is the one table nobody else sits at, and the contrast is the point. The god calls
+them EXECUTOR and never explains it -- an executor settles an estate, and a line
+explaining that would take the work away from the word. It is not seeking revenge. It
+is trying to hand over a job. The roster stays uncounted ("a family", never a number)
+because the pantheon size is still [WORKSHOP] and shipped dialogue would settle it.
+
+Playing the keeper through found a bug that nothing else could have. **The terminal
+node was never shown.** The table closed the instant the conversation ended, so every
+scene's last line -- the payoff of every branch, the line the whole conversation walks
+toward -- was resolved, recorded and thrown away without ever reaching a player. From
+the inside nothing was wrong: the state machine was correct, the tests passed, the
+resolution was right. It was only visible by reading what came out.
+
+Two verification notes, both worth more than the fix.
+
+The mutation for that fix was **MISSED**, and correctly so: the assertion reads the
+command's rendering of the finished table, not the push that sends it to players, and
+`push` writes only to real ServerPlayers of which a headless server has none. That
+limit is now written into the check itself rather than left for someone to assume
+away.
+
+And a second mutation reported MISSED when it had never been applied at all -- a
+regex that did not match, and a script that carried on past it. The result looked
+exactly like a real hole in the suite. Every mutation run now proves the file changed
+before it believes the outcome, which is the same rule as LESSONS #18 one level down:
+check what actually happened, not what the exit code implies.

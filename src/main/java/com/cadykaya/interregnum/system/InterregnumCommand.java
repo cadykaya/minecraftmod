@@ -110,6 +110,7 @@ public final class InterregnumCommand {
                                         .executes(ctx -> {
                                             String who = StringArgumentType.getString(ctx, "who");
                                             String opt = StringArgumentType.getString(ctx, "option");
+                                            var was = Conversations.of(who);
                                             Resolution r;
                                             try {
                                                 r = Conversations.submit(
@@ -132,8 +133,20 @@ public final class InterregnumCommand {
                                                             + " chose=" + (res.chosen() == null
                                                                     ? "none" : res.chosen().id())
                                                             + " stances=" + res.stances()
-                                                            + (t == null ? " ended=true"
+                                                            + (t == null
+                                                                    ? " ended=true final=" + was.node().id()
                                                                     : " " + describe(t))), false);
+                                            // The table is gone but the object is not, and its
+                                            // terminal node is the last thing the players were
+                                            // shown. An operator who just ended somebody's
+                                            // conversation should be able to see how it ended.
+                                            if (t == null) {
+                                                for (String line : ConversationView.plain(
+                                                        ConversationView.render(was, who, java.util.Set.of()))) {
+                                                    ctx.getSource().sendSuccess(
+                                                            () -> Component.literal("show| " + line), false);
+                                                }
+                                            }
                                             return 1;
                                         }))))
                 .then(Commands.literal("show")
@@ -157,7 +170,7 @@ public final class InterregnumCommand {
                         .then(Commands.argument("who", StringArgumentType.string())
                                 .executes(ctx -> {
                                     String who = StringArgumentType.getString(ctx, "who");
-                                    Resolution r = Conversations.leave(who);
+                                    Resolution r = Conversations.leave(ctx.getSource().getServer(), who);
                                     var t = Conversations.of(who);
                                     ctx.getSource().sendSuccess(() -> Component.literal(
                                             "talk=left resolved="

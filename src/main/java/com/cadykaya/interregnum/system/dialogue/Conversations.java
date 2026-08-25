@@ -220,16 +220,26 @@ public final class Conversations {
         if (!table.conversation.allSubmitted()) {
             return null;
         }
-        Resolution r = resolve(table);
-        pushStances(server, table, r);
-        if (TABLES.containsKey(table.id)) {
-            push(server, table);               // the next beat, if there is one
-        }
-        return r;
+        return resolveAndShow(server, table);
     }
 
-    private static Resolution resolve(Table table) {
+    /**
+     * Resolve the node, show everyone what happened, and only then tidy up.
+     *
+     * The order matters and the first version had it wrong: closing the table as
+     * soon as the conversation ended meant the TERMINAL NODE WAS NEVER SHOWN. Every
+     * scene's last line -- the payoff of every branch, the line the whole
+     * conversation was walking toward -- was resolved, recorded, and thrown away
+     * without ever reaching a player. The state machine was perfectly correct and
+     * the experience was missing its ending.
+     *
+     * Found by playing a scene through and reading the output, which is the only
+     * way it could have been found: nothing about it is wrong from the inside.
+     */
+    private static Resolution resolveAndShow(MinecraftServer server, Table table) {
         Resolution r = table.conversation.resolve(table.roll);
+        pushStances(server, table, r);
+        push(server, table);                   // the next beat -- or the last line
         if (table.conversation.ended()) {
             close(table);
         }
@@ -247,7 +257,7 @@ public final class Conversations {
      *
      * @return the resolution if their departure completed the node, else null.
      */
-    public static Resolution leave(String participant) {
+    public static Resolution leave(MinecraftServer server, String participant) {
         Table table = of(participant);
         if (table == null) {
             return null;
@@ -262,7 +272,7 @@ public final class Conversations {
             close(table);
             return null;
         }
-        return table.conversation.allSubmitted() ? resolve(table) : null;
+        return table.conversation.allSubmitted() ? resolveAndShow(server, table) : null;
     }
 
     public static void close(Table table) {
@@ -301,7 +311,7 @@ public final class Conversations {
             }
             table.lastActivity = now;
             for (String p : silent) {
-                leave(p);
+                leave(server, p);
             }
         }
     }

@@ -86,6 +86,12 @@ any scene uses is `class/theoclast` and no clast can be attuned yet. When attune
 lands it lands there, and every scene already written starts offering its gated lines
 with no edit.
 
+**Three scenes exist**: `warden_intake`, `shrine_keeper` (the offering ledger that
+must still be reconciled, quarterly, for a reader who is dead) and `dream_audience`
+(the god handing over an estate to the person holding its power). The last is the one
+table nobody else sits at -- every node INITIATOR, against every other scene's
+ensemble, and that contrast is the design. Only `warden_intake` is reachable in game.
+
 **Still missing: the screen**, which is deliberately last — it is the one part this
 container cannot verify, and everything it will render is already proven.
 
@@ -473,12 +479,17 @@ In order, all unblocked unless marked:
    Unambiguously in scope meanwhile: **first Warden contact records
    `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
    currently reachable only by command.
-3. **More scenes.** The engine, the runtime, the interface and the right-click are
-   all done, and there is exactly **one** written scene. This is now the cheapest
-   high-value work in the project: scenes are pure data, `dialogue_check.py` and the
-   graph validator catch every structural mistake, and nothing needs a client. The
-   shrine-keeper and the first dream-audience are the two named in `WORLD.md`.
-4. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
+3. **Reach the two new scenes.** `shrine_keeper` and `dream_audience` are written
+   and play correctly, and **nothing in the game opens either one**. Neither needs
+   new scope: a shrine-keeper wants a villager profession or a placed NPC at a
+   shrine, and the dream-audience wants a sleep trigger on the killer (a
+   `PlayerWakeUpEvent`-shaped hook checking `ChapterSavedData#killer`) that fires
+   once. Both are thin adapters over `Conversations.open`, which is tested.
+4. **Consequences.** Every scene currently resolves and changes nothing.
+   `RegardState` exists in `core/`, tested, and nothing reads or writes it. The
+   scenes now exist to say what the outcomes should be -- which is why this comes
+   after them rather than before.
+5. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
    everything it would render is already proven server-side. Chat works meanwhile.
 5. **More dialogue scenes** (shrine-keeper, first dream-audience) and the client screen.
