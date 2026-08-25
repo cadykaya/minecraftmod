@@ -11,6 +11,9 @@ python3 tools/palette_check.py --textures src/main/resources/assets
 echo "== dialogue =="
 python3 tools/dialogue_check.py
 
+echo "== unraveling =="
+python3 tools/unraveling_check.py
+
 echo "== client leak =="
 python3 tools/client_leak_check.py
 

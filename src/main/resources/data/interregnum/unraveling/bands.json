@@ -1,0 +1,43 @@
+{
+  "_comment": [
+    "How the overworld spends itself once its god is dead. One entry per band;",
+    "band N applies at chapter band >= N and never reverses (docs/WORLD.md).",
+    "",
+    "HARD GUARANTEE, enforced in code and asserted here so it is never lost:",
+    "the unraveling NEVER converts a player-placed block. It warps the world,",
+    "never the player's work. Every 'from' below is a naturally-generated vanilla",
+    "block; the runtime additionally consults placement tracking before touching",
+    "anything. A conversion that could eat a build is a design failure, not a",
+    "difficulty setting.",
+    "",
+    "Direction follows the palette's semantic law -- cool means held, warm means",
+    "spent -- so conversions run intact -> loosened -> dry, never the reverse."
+  ],
+  "bands": [
+    {
+      "band": 1,
+      "chapter": "VIGIL",
+      "note": "Barely there, and only near the crater and the shrines. The world has not understood yet.",
+      "scope": "thin_places",
+      "conversions": [
+        { "id": "grass_thins",   "from": "minecraft:short_grass", "to": "minecraft:air",       "chance": 0.30 },
+        { "id": "flowers_wilt",  "from": "minecraft:dandelion",   "to": "minecraft:dead_bush", "chance": 0.25 },
+        { "id": "poppies_wilt",  "from": "minecraft:poppy",       "to": "minecraft:dead_bush", "chance": 0.25 },
+        { "id": "ferns_wilt",    "from": "minecraft:fern",        "to": "minecraft:dead_bush", "chance": 0.20 }
+      ]
+    },
+    {
+      "band": 2,
+      "chapter": "ENFORCEMENT",
+      "note": "Everywhere now, and structural: what was bound begins to let go.",
+      "scope": "overworld",
+      "conversions": [
+        { "id": "grass_dries",    "from": "minecraft:grass_block", "to": "minecraft:coarse_dirt",      "chance": 0.06 },
+        { "id": "stone_cracks",   "from": "minecraft:stone",       "to": "minecraft:cobblestone",      "chance": 0.05 },
+        { "id": "cobble_loosens", "from": "minecraft:cobblestone", "to": "minecraft:gravel",           "chance": 0.02 },
+        { "id": "leaves_brown",   "from": "minecraft:oak_leaves",  "to": "minecraft:dead_bush",        "chance": 0.03 },
+        { "id": "moss_retreats",  "from": "minecraft:mossy_cobblestone", "to": "minecraft:cobblestone", "chance": 0.08 }
+      ]
+    }
+  ]
+}
