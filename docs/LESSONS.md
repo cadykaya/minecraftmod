@@ -885,3 +885,60 @@ the bug is usually one added for a different reason.** "Seated its keeper at ...
 written to catch a silent `return`. It never caught one. It answered a question nobody
 had thought to ask instead, by being the only thing in the system that knew what had
 actually happened.
+
+## 23. A diagnostic dump that finds nothing kills the failure it was explaining
+
+*Found while deliberately breaking a brand-new assertion to confirm it could fail.*
+
+The assertion was fine. What was broken was the machinery for TELLING me it had failed.
+
+Every check in `tools/` follows the same shape: assert, and on failure dump the
+evidence before saying what went wrong.
+
+```bash
+[ "$n" = "1" ] || { grep -n 'show| KEEPER' /tmp/tc.txt | tail -8;
+                    fail "the keeper's opening does not change"; }
+```
+
+Under `set -e -o pipefail` -- which every one of these scripts sets, for good
+reasons -- that is a trap. When the assertion fails, the dump runs; if the dump's
+`grep` **matches nothing** it exits non-zero; `pipefail` propagates that through the
+pipe; and because the whole `{ ... }` is the last branch of an `||` list, `set -e` is
+back in force inside it. The shell kills the script **at the dump**, before `fail`
+ever runs.
+
+The symptom is a check that exits 1 having printed **nothing**:
+
+```
+$ ./tools/talk_check.sh; echo "exit=$?"
+  ... the previous assertion's success line ...
+exit=1
+```
+
+That is worse than a bad error message. A silent exit 1 in a suite that prints
+progress reads as "the last thing you saw is where it stopped", and the last thing
+you saw was something PASSING. I read that output and briefly concluded the new
+assertion could not fail -- the exact opposite of what had happened.
+
+The fix is one `|| true` per dump, and it is load-bearing rather than defensive:
+
+```bash
+[ "$n" = "1" ] || { grep -n 'show|' /tmp/tc.txt | tail -8 || true;
+                    fail "the keeper's opening does not change"; }
+```
+
+Note the second bug hiding inside the first: the pattern was `'show| KEEPER'`, and
+the speaker renders as `SHRINE-KEEPER`. So the dump matched nothing *because the
+pattern was wrong* -- a harmless mistake in a diagnostic, which under `pipefail`
+became the thing that hid the failure. Two errors, neither serious, and together they
+produced a check that appeared to be unable to fail.
+
+> **The rule: a failure path must not contain anything that can fail.** Whatever
+> gathers evidence for a failure message runs at exactly the moment the script is
+> least able to cope with a surprise. Terminate every dump with `|| true`, and never
+> let one sit between the test and the message it explains.
+
+This is [#4](#4-measure-the-process-you-mean-not-the-pipelines-tail) wearing the other
+face. There, a pipe *swallowed* a failure and reported success. Here, a pipe
+*manufactured* a failure and swallowed the explanation. Both come from the same
+place: a pipeline's exit status is not the thing you meant to measure.

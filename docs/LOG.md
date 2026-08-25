@@ -1110,3 +1110,45 @@ which had ALSO gone in unchecked one commit earlier, where a misspelt band does 
 fail the load but decodes to an absent gate and shows content nobody had earned.
 
 Three new mutations, 31 now, all caught. Self-test 99 -> 106.
+
+---
+
+## The keeper knows what the village thinks
+
+The villages are the second institution to act on standing. The keeper is the place
+for it because there is no separate village institution to meet -- only its people,
+and the keeper is one of them.
+
+Two ways it shows. The opening changes: a party the villages resent is told, mildly,
+that they are already in the register under remarks, in another keeper's hand, and
+that the keeper would rather reconcile than do the other thing. And a courtesy is
+withdrawn -- writing a theft up as "a withdrawal against an authorised holder" is the
+keeper being kind on the record, and somebody they resent is not offered it.
+
+The rule that kept this honest: standing costs you the easy way out, never the
+content. The admit node still has two replies for a resented party and both lead
+somewhere, and the check asserts it, because a gate that empties a node is a wedged
+table rather than a consequence.
+
+An idea that died on contact with the text, which is the good kind of dying: a
+trusted party skipping straight to the `truth` node. That node reads "Yes. The
+quarter still closes." -- it is the keeper CONCEDING, and it only lands after the
+player has said there is nothing on the other end of the slot. Reached directly it
+answers a question nobody asked. Reading the destination before wiring the shortcut
+is the whole of that decision.
+
+The real finding was in the failure machinery, not the feature. Breaking the new
+assertion on purpose produced a check that exited 1 having printed NOTHING -- and the
+last line on screen was something passing, so it read as "this cannot fail". The
+opposite was true. Under set -e -o pipefail a diagnostic dump whose grep matches
+nothing exits non-zero, pipefail propagates it, and because the dump sits in the last
+branch of an || the shell kills the script before the fail message runs.
+
+Two harmless mistakes made one dangerous one: the dump's pattern was 'show| KEEPER'
+while the speaker renders as SHRINE-KEEPER, so it matched nothing -- and matching
+nothing is what hid the failure. LESSONS #23, which is #4 wearing its other face:
+there a pipe swallowed a failure and reported success, here a pipe manufactured a
+failure and swallowed the explanation.
+
+Every dump in talk_check now ends in `|| true`. A failure path must not contain
+anything that can fail.

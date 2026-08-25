@@ -19,6 +19,12 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 fail() { echo "FAIL: $1"; exit 1; }
+# Every diagnostic dump below ends in `|| true`, and it is load-bearing rather than
+# defensive. Under `set -e -o pipefail`, a dump that MATCHES NOTHING exits non-zero,
+# and because it sits in the last branch of an `||` the shell kills the script right
+# there -- before the `fail` that was supposed to explain what happened. The symptom
+# is a check that exits 1 having printed nothing at all, which is how this was found:
+# a deliberately broken assertion failed silently and looked like it had passed.
 want() { grep -qF "$2" "$1" || { echo "--- looked for: $2"; grep -E 'talk=' "$1" || true; fail "$3"; }; }
 
 SCENE=interregnum:warden_intake
@@ -31,6 +37,7 @@ WARDEN='@e[limit=1,type=interregnum:warden]'
 # a Warden summoned before it arrives is invisible to every selector afterwards --
 # the conversation would then be held in front of nobody. See docs/LESSONS.md #22.
 G=44444444-4444-4444-8444-444444444444
+H=55555555-5555-4555-8555-555555555555
 COMMANDS="forceload add -32 -32 31 31
 wait 5
 summon interregnum:warden 8 -60 8
@@ -100,7 +107,18 @@ interregnum talk show $G
 interregnum regard $G adjust WARDENATE 50
 interregnum talk show $G
 interregnum regard $G adjust WARDENATE -90
-interregnum talk show $G" \
+interregnum talk show $G
+interregnum talk start interregnum:shrine_keeper $H
+interregnum talk show $H
+interregnum talk say $H admit
+interregnum talk show $H
+interregnum talk leave $H
+interregnum regard $H adjust VILLAGES -50
+interregnum talk start interregnum:shrine_keeper $H
+interregnum talk show $H
+interregnum talk say $H admit
+interregnum talk show $H
+interregnum talk leave $H" \
     LOG=/tmp/talk_check.log timeout 2000 ./tools/server_smoke.sh > /tmp/tc.txt 2>&1 \
     || { tail -25 /tmp/tc.txt; fail "the run did not complete"; }
 
@@ -161,7 +179,7 @@ want /tmp/tc.txt 'talk=none active=0' "the table outlived the conversation"
 # occurrences alone would pass an implementation that showed both gated options in
 # one render and neither in the others.
 python3 tools/standing_gate_check.py /tmp/tc.txt \
-    || { grep -n "show| " /tmp/tc.txt | tail -24; fail "an institution's opinion does not change what it offers you"; }
+    || { grep -n "show| " /tmp/tc.txt | tail -24 || true; fail "an institution's opinion does not change what it offers you"; }
 
 # And the adjustments that moved the standing actually landed. Without this the three
 # renders above could be three identical renders agreeing with each other, which is
@@ -170,6 +188,38 @@ want /tmp/tc.txt 'adjust= WARDENATE moved=50 now=TRUSTED' \
     "the standing never reached TRUSTED, so the gate above was never exercised"
 want /tmp/tc.txt 'adjust= WARDENATE moved=-90 now=RESENTED' \
     "the standing never reached RESENTED, so the ceiling above was never exercised"
+
+# --- the villages are the second institution that shows -------------------
+#
+# The keeper IS the villages: there is no separate village institution to meet, only
+# its people. So VILLAGES standing reaches this scene, and it reaches it twice --
+# once in what the keeper SAYS, once in what they are willing to offer.
+#
+# Exactly two renders of each node, so a count is a real assertion here rather than a
+# proxy for one: the resented opening must appear once (it fired) and the courtesy
+# must appear once across BOTH renders of `admit` (it was withdrawn the second time).
+
+# The setup, asserted before anything that depends on it. Three identical renders
+# agreeing with each other is the trap in docs/LESSONS.md #15.
+want /tmp/tc.txt 'adjust= VILLAGES moved=-50 now=RESENTED' \
+    "the keeper's regard never fell, so nothing below was exercised"
+
+n_known=$(grep -c 'in another keeper.s hand' /tmp/tc.txt || true)
+[ "$n_known" = "1" ] || { grep -n 'show|' /tmp/tc.txt | tail -8 || true;
+    fail "the keeper's opening does not change for a party the villages resent (matched $n_known time(s), want 1)"; }
+
+# The courtesy: writing a theft up as an authorised withdrawal. Offered to an
+# ordinary party, withdrawn from one the villages resent. Two renders of `admit`,
+# so twice means the gate did nothing and zero means the setup never got there.
+n_courtesy=$(grep -c 'Write it however it balances' /tmp/tc.txt || true)
+[ "$n_courtesy" = "1" ] || { grep -n 'show|' /tmp/tc.txt | tail -16 || true;
+    fail "the keeper offered the kind label $n_courtesy time(s) across two standings, want exactly 1"; }
+
+# And the node did not simply empty out. Standing costs you the easy way out, never
+# the content -- a scene with no replies left is a wedged table, not a consequence.
+n_truth=$(grep -c 'There is nothing on the other end of that slot' /tmp/tc.txt || true)
+[ "$n_truth" -ge 2 ] \
+    || fail "the resented party has no way through the admit node -- gating removed content, not a courtesy"
 
 # --- refusals are answers, not crashes --------------------------------------
 want /tmp/tc.txt 'talk=refused reason=no option nonsense on node open' \

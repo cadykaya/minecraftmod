@@ -42,6 +42,21 @@
           "text_key": "interregnum.dlg.shrine_keeper.ledger.whose",
           "target": "report"
         }
+      ],
+      "_variant_comment": "The keeper IS the villages -- there is no separate village institution to meet, only its people, and this is one of them. So VILLAGES standing is the one that reaches this scene. The shortfall is identical in all three wordings, because the shortfall is a fact; what changes is how much of the register the keeper reads aloud before getting to it.",
+      "text_variants": [
+        {
+          "text_key": "interregnum.dlg.keeper.ledger.known_of",
+          "standing_at_most": {
+            "VILLAGES": "RESENTED"
+          }
+        },
+        {
+          "text_key": "interregnum.dlg.keeper.ledger.welcome",
+          "standing_at_least": {
+            "VILLAGES": "TRUSTED"
+          }
+        }
       ]
     },
     {
@@ -120,6 +135,10 @@
           "regard": {
             "VILLAGES": 5,
             "WARDENATE": -4
+          },
+          "_comment": "A COURTESY, and courtesies are the thing standing takes away first. Writing a theft up as an authorised withdrawal is the keeper being kind on the record; somebody the villages already resent does not get offered it, and is left with telling the truth or refusing the label. Nothing is removed from the scene -- the node still has two replies and both lead somewhere -- which is the rule: standing costs you the easy way out, never the content.",
+          "standing_at_least": {
+            "VILLAGES": "WARY"
           }
         },
         {

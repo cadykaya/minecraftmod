@@ -31,6 +31,23 @@ asserted against a running world rather than against its own source.
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
+### The keeper knows what the village thinks
+
+The villages are the second institution to act on standing, and the keeper is the
+natural place for it: there is no separate village institution to meet, only its
+people, and the keeper is one of them.
+
+Two ways it shows, deliberately. The **opening** changes -- a party the villages
+resent is told, mildly, that they are already in the register under remarks *in
+another keeper's hand*, and the keeper adds that they would rather reconcile than do
+the other thing. The **courtesy** is withdrawn: writing a theft up as "a withdrawal
+against an authorised holder" is the keeper being kind on the record, and somebody
+they resent is not offered it.
+
+**Standing costs you the easy way out, never the content.** The `admit` node still has
+two replies for a resented party and both go somewhere; the check asserts that, because
+a gate that empties a node is a wedged table rather than a consequence.
+
 ### How they greet you
 
 The other half of the same idea, and less machinery than it looks like. A node can
@@ -710,12 +727,12 @@ In order, all unblocked unless marked:
    Unambiguously in scope meanwhile: **first Warden contact records
    `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
    currently reachable only by command.
-3. **More scenes, now that scenes can do something.** Standing gates options AND
-   rewords lines (see below), so the dialogue system has the expressive range it was
-   missing and the shortage is content rather than machinery. The Wardenate is the
-   only institution whose regard currently changes anything a player sees; the
-   villages are the obvious next one, and shrine-keeper scenes are the place for it.
-   **Bands 3 and 4 and the statue-summons-Warden proposal remain the owner's call.**
+3. **More scenes.** Two institutions now change what a player sees -- the Wardenate
+   in `warden_intake`, the villages in `shrine_keeper` -- and the machinery has the
+   range it was missing, so the shortage from here is content rather than plumbing.
+   The four gods have regard lines but no scenes at all; `dream_audience` is the only
+   place any of them speaks. **Bands 3 and 4 and the statue-summons-Warden proposal
+   remain the owner's call.**
 4. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
    everything it would render is already proven server-side. Chat works meanwhile.
