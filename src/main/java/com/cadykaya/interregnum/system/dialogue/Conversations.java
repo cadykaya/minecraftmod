@@ -1,8 +1,10 @@
 package com.cadykaya.interregnum.system.dialogue;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import org.slf4j.Logger;
 
@@ -95,6 +97,50 @@ public final class Conversations {
         return TABLES.size();
     }
 
+    /**
+     * The online player behind a participant id, or null.
+     *
+     * Null is ordinary, not exceptional: participants are opaque ids, so a table may
+     * legitimately contain someone who has logged off, or an id that was never a
+     * player at all. Every push below simply skips those.
+     */
+    private static ServerPlayer playerFor(MinecraftServer server, String id) {
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(id);
+        } catch (IllegalArgumentException e) {
+            return null;                       // not a player id; nothing to show
+        }
+        return server.getPlayerList().getPlayer(uuid);
+    }
+
+    /** Show every participant where the table stands. */
+    public static void push(MinecraftServer server, Table table) {
+        for (String p : table.conversation.participants()) {
+            ServerPlayer player = playerFor(server, p);
+            if (player == null) {
+                continue;
+            }
+            for (Component line : ConversationView.render(table, p, PlayerTags.of(player))) {
+                player.sendSystemMessage(line);
+            }
+        }
+    }
+
+    /** Show every participant what the table just said, losing stances included. */
+    private static void pushStances(MinecraftServer server, Table table, Resolution r) {
+        List<Component> stances = ConversationView.stances(r);
+        for (String p : table.conversation.participants()) {
+            ServerPlayer player = playerFor(server, p);
+            if (player == null) {
+                continue;
+            }
+            for (Component line : stances) {
+                player.sendSystemMessage(line);
+            }
+        }
+    }
+
     /** The table this participant is at, or null. */
     public static Table of(String participant) {
         UUID id = SEATED.get(participant);
@@ -135,6 +181,7 @@ public final class Conversations {
         for (String p : participants) {
             SEATED.put(p, id);
         }
+        push(server, table);
 
         // The world answers back.
         //
@@ -173,7 +220,12 @@ public final class Conversations {
         if (!table.conversation.allSubmitted()) {
             return null;
         }
-        return resolve(table);
+        Resolution r = resolve(table);
+        pushStances(server, table, r);
+        if (TABLES.containsKey(table.id)) {
+            push(server, table);               // the next beat, if there is one
+        }
+        return r;
     }
 
     private static Resolution resolve(Table table) {

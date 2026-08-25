@@ -13,6 +13,8 @@ import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
+import com.cadykaya.interregnum.system.dialogue.Conversations;
+
 /**
  * A Warden, walking.
  *
@@ -117,5 +119,60 @@ public class WardenEntity extends PathfinderMob {
     @Override
     public boolean isPushable() {
         return false;
+    }
+
+    /** The scene a Warden opens with. Datapack-defined; this only names it. */
+    public static final net.minecraft.resources.Identifier INTAKE =
+            net.minecraft.resources.Identifier.fromNamespaceAndPath(
+                    com.cadykaya.interregnum.Interregnum.MOD_ID, "warden_intake");
+
+    /** How far a bystander can stand and still be part of the conversation. */
+    private static final double TABLE_RADIUS = 8.0;
+
+    /**
+     * Being addressed.
+     *
+     * **Everyone nearby is pulled in**, not just whoever clicked. That is the
+     * Star Wars: The Old Republic beat the owner asked for by name, and it is the
+     * only version that makes the resolution rules mean anything -- a VOTE node
+     * with one player at the table is an INITIATOR node with extra steps.
+     *
+     * Line of sight is required, so being underground or behind a wall keeps you
+     * out of it, and standing back is a real way to decline. Anyone already in
+     * another conversation is left alone.
+     *
+     * **[NEEDS PLAYTEST]** the radius, and the failure mode: an AFK player who gets
+     * pulled in makes the rest of the table wait out the timeout before it can move.
+     * The timeout exists precisely for this and a minute may still be too long.
+     */
+    @Override
+    protected net.minecraft.world.InteractionResult mobInteract(
+            net.minecraft.world.entity.player.Player player,
+            net.minecraft.world.InteractionHand hand) {
+        if (!(player instanceof net.minecraft.server.level.ServerPlayer initiator)) {
+            return net.minecraft.world.InteractionResult.SUCCESS;
+        }
+        var server = level().getServer();
+        if (server == null || Conversations.of(initiator.getUUID().toString()) != null) {
+            return net.minecraft.world.InteractionResult.SUCCESS;
+        }
+
+        java.util.List<String> table = new java.util.ArrayList<>();
+        table.add(initiator.getUUID().toString());
+        for (net.minecraft.server.level.ServerPlayer other
+                : level().getEntitiesOfClass(net.minecraft.server.level.ServerPlayer.class,
+                        getBoundingBox().inflate(TABLE_RADIUS))) {
+            String id = other.getUUID().toString();
+            if (other != initiator && hasLineOfSight(other) && Conversations.of(id) == null) {
+                table.add(id);
+            }
+        }
+
+        try {
+            Conversations.open(server, INTAKE, table, this);
+        } catch (IllegalArgumentException e) {
+            initiator.sendSystemMessage(net.minecraft.network.chat.Component.literal(e.getMessage()));
+        }
+        return net.minecraft.world.InteractionResult.SUCCESS;
     }
 }

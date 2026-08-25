@@ -61,8 +61,33 @@ absentees and had no way to), and stance ordering, which `Map.copyOf` was silent
 discarding. See [`LESSONS.md`](LESSONS.md) #18 and #19 -- both are about verification
 rather than about dialogue, and both are the more useful half of this pass.
 
-**Still missing: the screen.** Everything above is server-side and proven; a player
-cannot yet see any of it. That, and right-clicking a Warden to begin, is what remains.
+**It is playable now, in chat.** Right-clicking a Warden opens a table; the scene
+renders as chat with **clickable options**, which is vanilla, so a player on an
+unmodified client can play every scene in the mod with no client code in existence.
+That was the point of building it this way: the dialogue system could be finished and
+verified end to end in a container with no game client, and the eventual screen is an
+upgrade to something already working rather than the thing standing between the
+writing and anyone reading it.
+
+**Everyone within 8 blocks with line of sight is pulled in**, not just whoever
+clicked — the SWTOR beat, and the only version where the resolution rules mean
+anything, because a VOTE node with one player is an INITIATOR node with extra steps.
+**[NEEDS PLAYTEST]** the radius, and the AFK case: someone pulled in who then does
+nothing makes the rest wait out the timeout.
+
+`/interregnum reply <option>` is the one **unprivileged** node in the command, and is
+what the clickable options run — it can only ever speak for whoever ran it.
+`/interregnum talk show <who> [tags]` renders a participant's exact view, which is
+the only way to answer "why is that option not there for them"; it takes tags so an
+operator can ask what a Theoclast would see without granting anything.
+
+`PlayerTags` returns nothing today and that is correct, not unfinished: the only tag
+any scene uses is `class/theoclast` and no clast can be attuned yet. When attunement
+lands it lands there, and every scene already written starts offering its gated lines
+with no edit.
+
+**Still missing: the screen**, which is deliberately last — it is the one part this
+container cannot verify, and everything it will render is already proven.
 
 ### The Warden takes the field
 
@@ -448,13 +473,14 @@ In order, all unblocked unless marked:
    Unambiguously in scope meanwhile: **first Warden contact records
    `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
    currently reachable only by command.
-3. **The dialogue screen, and the right-click.** The conversation runtime is done and
-   verified; what is missing is any way for a player to see or reach it. Two pieces:
-   `WardenEntity#mobInteract` opening a table, and a client screen rendering
-   `Conversations.Table` (node text, options, and — the whole multiplayer point —
-   everyone else's stance as they pick). The screen cannot be verified in this
-   container, so build it last and keep every decision on the server, where it is
-   already proven.
+3. **More scenes.** The engine, the runtime, the interface and the right-click are
+   all done, and there is exactly **one** written scene. This is now the cheapest
+   high-value work in the project: scenes are pure data, `dialogue_check.py` and the
+   graph validator catch every structural mistake, and nothing needs a client. The
+   shrine-keeper and the first dream-audience are the two named in `WORLD.md`.
+4. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
+   rendering. Deliberately last: it is the one part this container cannot verify, and
+   everything it would render is already proven server-side. Chat works meanwhile.
 5. **More dialogue scenes** (shrine-keeper, first dream-audience) and the client screen.
    The engine, the loader and the first scene are done and verified end to end.
 6. **Clear remaining `VERIFY:` markers** in MODELS.md, DATAGEN.md, WORLDGEN.md against the

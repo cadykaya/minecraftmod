@@ -630,3 +630,40 @@ cannot work when Java salts immutable-map iteration order per JVM run; the versi
 works asserts that two tables with different submission orders *differ*.
 
 Still missing: the screen. A player cannot see any of this yet.
+
+## Playable, in chat
+
+The conversation runtime worked and nothing in the game could open one. Two pieces
+closed that: right-clicking a Warden, and an interface.
+
+The interface is **chat**, and that is a decision rather than a stopgap. Clickable
+text is vanilla, so a player on an unmodified client can play every scene in the mod
+with no client code in existence — which means the dialogue system could be finished
+and verified end to end in a container that has no game client. The screen, when it
+comes, upgrades something already working instead of being the thing between the
+writing and anyone reading it.
+
+Right-clicking pulls in **everyone within 8 blocks with line of sight**, not just
+whoever clicked. That is the SWTOR beat the owner asked for by name, and it is the
+only version where the resolution rules mean anything: a VOTE node with one player at
+the table is an INITIATOR node with extra steps. Standing back is how you decline.
+
+`/interregnum reply` is the single unprivileged node in the whole command tree, which
+is what makes it safe to hang off a clickable option — it can only ever speak for
+whoever ran it. Everything under `talk` moves other people's conversations and stays
+gamemaster-gated.
+
+Two view bugs, both found by rendering it and reading the output rather than by
+reasoning about it. The waiting line counted the reader among the people being waited
+for, so one of two participants was told the table was waiting on two of them. And a
+participant who had answered was not told what they had said, which matters because
+re-picking before a node resolves is legal.
+
+The second of those produced the more useful failure. The mutation that removes the
+viewer exclusion was **MISSED** on the first attempt: the assertion only asked whether
+a "waiting on 1 other(s)" line existed, and a view that counts the reader still emits
+one from some seats. The fix was to assert an exact tally *and* an absence — three
+"waiting on 1" and zero "waiting on 2" — which is LESSONS #18 arriving from the other
+direction. There, a mutation was caught by the wrong instrument; here, a mutation
+walked straight through a real assertion that was simply too weak to see it. Both say
+the same thing: read what the mutation run actually did, never just its exit code.

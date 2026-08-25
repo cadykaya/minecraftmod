@@ -69,7 +69,15 @@ interregnum talk leave q
 interregnum talk status q
 interregnum talk start $SCENE z1+z2
 interregnum talk leave z1
-interregnum talk status z2" \
+interregnum talk status z2
+interregnum talk start $SCENE v1+v2
+interregnum talk show v1
+interregnum talk show v1 \"class/theoclast\"
+interregnum talk say v1 comply
+interregnum talk show v1
+interregnum talk show v2
+interregnum talk show nobody
+interregnum reply comply" \
     LOG=/tmp/talk_check.log timeout 2000 ./tools/server_smoke.sh > /tmp/tc.txt 2>&1 \
     || { tail -25 /tmp/tc.txt; fail "the run did not complete"; }
 
@@ -142,5 +150,50 @@ grep -q 'talk=none' /tmp/tc.txt \
     || { grep -nE 'talk=(left|none|open)' /tmp/tc.txt;
          fail "z2 was left sitting at a table whose initiator had gone"; }
 
+# --- what a player actually sees --------------------------------------------
+#
+# The conversation renders to CHAT, with clickable options, which is why the mod
+# is playable at all right now: no client code exists and none is needed. These
+# assert the view because a table that is correct and invisible is not a feature.
+
+# The scene's text reaches the player, not a raw translation key. (The dedicated
+# server does resolve the mod's lang file -- checked, not assumed.)
+want /tmp/tc.txt 'show| WARDEN  This unit is conducting a census of the living.' \
+    "the speaker line did not render, or came out as an unresolved translation key"
+want /tmp/tc.txt "show|   > We're here. We're present." \
+    "the options did not render, so there is nothing for a player to click"
+
+# THE gating assertion. `mark` requires class/theoclast, which no player can hold
+# until attunement exists, so it must be absent from an untagged view and present
+# from a tagged one. Both halves matter: absence alone would also be produced by
+# the option failing to render at all.
+untagged=$(grep -c 'show|   > Say nothing. The warmth in your chest says it for you.' /tmp/tc.txt || true)
+[ "$untagged" = "1" ] \
+    || { grep -c 'show|' /tmp/tc.txt; fail "a tag-gated option appeared $untagged time(s); it must be hidden from the untagged view and shown in exactly the tagged one"; }
+
+# The waiting line counts OTHER people, not the reader. Getting this wrong told one
+# of two participants that the table was waiting on two of them.
+#
+# Asserted as an exact tally plus an absence, because merely asking whether the line
+# EXISTS does not catch it: a view that counts the reader still emits "waiting on 1"
+# from some seats, and the first version of this check passed the mutation happily.
+# Four `show` calls on a two-person table: v1 untagged, v1 tagged, v1 after picking,
+# and v2. Correct code says "1 other" for the three v1 views and nothing for v2,
+# whose only outstanding participant is v2.
+ones=$(grep -c 'show| waiting on 1 other(s)...' /tmp/tc.txt || true)
+twos=$(grep -c 'show| waiting on 2 other(s)...' /tmp/tc.txt || true)
+[ "$ones" = "3" ] && [ "$twos" = "0" ] \
+    || { grep 'show| waiting' /tmp/tc.txt;
+         fail "waiting counts are wrong (got $ones ones, $twos twos; want 3 and 0) -- the reader is being counted among the people the table is waiting for"; }
+want /tmp/tc.txt "show| you said: We're here. We're present." \
+    "a participant who has answered is not told what they said"
+
+want /tmp/tc.txt 'show=none' "a view was rendered for somebody who is not in a conversation"
+
+# `reply` is the unprivileged, player-facing half: it can only ever speak for whoever
+# ran it, which is what makes it safe to hang off a clickable chat option.
+want /tmp/tc.txt 'talk=refused reason=only a player can reply' \
+    "reply accepted a caller with no player behind it"
+
 echo
-echo "OK: tables resolve on the last word, survive dissent, and cannot be left hanging"
+echo "OK: tables resolve on the last word, survive dissent, cannot be left hanging, and render"

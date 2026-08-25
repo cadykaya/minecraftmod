@@ -19,6 +19,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.commands.arguments.EntityArgument;
 import com.cadykaya.interregnum.core.dialogue.Resolution;
 import com.cadykaya.interregnum.system.dialogue.Conversations;
+import com.cadykaya.interregnum.system.dialogue.ConversationView;
 
 /**
  * `/interregnum` -- read and drive the world's progress.
@@ -135,6 +136,13 @@ public final class InterregnumCommand {
                                                                     : " " + describe(t))), false);
                                             return 1;
                                         }))))
+                .then(Commands.literal("show")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .executes(ctx -> show(ctx, java.util.Set.of()))
+                                .then(Commands.argument("tags", StringArgumentType.string())
+                                        .executes(ctx -> show(ctx, java.util.Set.of(
+                                                StringArgumentType.getString(ctx, "tags")
+                                                        .split("[,+]")))))))
                 .then(Commands.literal("status")
                         .then(Commands.argument("who", StringArgumentType.string())
                                 .executes(ctx -> {
@@ -162,6 +170,29 @@ public final class InterregnumCommand {
                                 })));
     }
 
+    /**
+     * What is this participant actually looking at?
+     *
+     * The one question that is impossible to answer any other way. A player says the
+     * option is not there; the option is gated on a tag; nothing in any log says
+     * which lines that player was sent. This renders their exact view, and takes an
+     * optional tag set so an operator can ask "what would a Theoclast see here?"
+     * without giving anybody anything.
+     */
+    private static int show(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
+                            java.util.Set<String> tags) {
+        String who = StringArgumentType.getString(ctx, "who");
+        var t = Conversations.of(who);
+        if (t == null) {
+            ctx.getSource().sendSuccess(() -> Component.literal("show=none"), false);
+            return 0;
+        }
+        for (String line : ConversationView.plain(ConversationView.render(t, who, tags))) {
+            ctx.getSource().sendSuccess(() -> Component.literal("show| " + line), false);
+        }
+        return 1;
+    }
+
     private static int start(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
                              net.minecraft.world.entity.Entity speaker) {
         var id = net.minecraft.commands.arguments.IdentifierArgument.getId(ctx, "scene");
@@ -186,6 +217,13 @@ public final class InterregnumCommand {
     @SubscribeEvent
     public static void register(RegisterCommandsEvent event) {
         LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal("interregnum")
+                .then(Commands.literal("show")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .executes(ctx -> show(ctx, java.util.Set.of()))
+                                .then(Commands.argument("tags", StringArgumentType.string())
+                                        .executes(ctx -> show(ctx, java.util.Set.of(
+                                                StringArgumentType.getString(ctx, "tags")
+                                                        .split("[,+]")))))))
                 .then(Commands.literal("status").executes(ctx -> {
                     ChapterSavedData data = ChapterSavedData.get(ctx.getSource().getServer());
                     ctx.getSource().sendSuccess(() -> Component.literal(
@@ -286,6 +324,32 @@ public final class InterregnumCommand {
                                         })))));
 
         root = root.then(talk());
+
+        // `reply` is the ONLY player-facing node in this command, and it is
+        // deliberately outside `talk`: everything under `talk` moves other people's
+        // conversations and is gamemaster-gated, while this can only ever speak for
+        // whoever ran it. It exists because the clickable options in chat have to
+        // run *something*, and a permission-gated command would make dialogue
+        // playable only by operators.
+        root = root.then(Commands.literal("reply")
+                .then(Commands.argument("option", StringArgumentType.string())
+                        .executes(ctx -> {
+                            var player = ctx.getSource().getPlayer();
+                            if (player == null) {
+                                ctx.getSource().sendSuccess(() -> Component.literal(
+                                        "talk=refused reason=only a player can reply"), false);
+                                return 0;
+                            }
+                            String opt = StringArgumentType.getString(ctx, "option");
+                            try {
+                                Conversations.submit(ctx.getSource().getServer(),
+                                        player.getUUID().toString(), opt);
+                            } catch (IllegalArgumentException | IllegalStateException e) {
+                                player.sendSystemMessage(Component.literal(e.getMessage()));
+                                return 0;
+                            }
+                            return 1;
+                        })));
 
         for (Milestone m : Milestone.values()) {
             record = record.then(Commands.literal(m.name().toLowerCase(java.util.Locale.ROOT))

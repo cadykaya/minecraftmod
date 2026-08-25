@@ -22,5 +22,10 @@
   "itemGroup.interregnum.main": "INTERREGNUM",
   "block.interregnum.warning_stele": "Warning Stele",
   "block.interregnum.warden_statue": "Warden Statue",
-  "entity.interregnum.warden": "Warden"
+  "entity.interregnum.warden": "Warden",
+  "interregnum.speaker.warden": "WARDEN",
+  "interregnum.dlg.say": "Say this",
+  "interregnum.dlg.waiting": "waiting on %s other(s)...",
+  "interregnum.dlg.reprompt": "The statement is not valid. Answer again.",
+  "interregnum.dlg.you_said": "you said: %s"
 }
