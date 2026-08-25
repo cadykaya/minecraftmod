@@ -343,3 +343,32 @@ exposes the bug. The check now restarts, mutates the loaded data, and restarts a
 deleting `setDirty()` now fails it by name. LESSONS #13.
 
 Both the worldgen check and the persistence check are in CI's game job.
+
+---
+
+## Heartbeat tick 5 -- the sun stops
+
+The deicide exists. `Deicide.commit()` is the single place the catastrophe happens: it
+records the milestone, remembers who did it, and **stops the day cycle in every level**.
+The day cycle was the god's, and with nobody left to turn it the light stays exactly where
+it was at the moment of death. There is no message and no name, per WORLD.md -- the world
+just stops moving.
+
+It is idempotent, because a world can only lose its god once, and both the chapter and the
+stopped sun survive a restart, because otherwise the catastrophe un-happens the first time
+an operator reboots.
+
+**Two callers, one implementation.** The pickup handler needs a real player and a headless
+server has none, so `/interregnum record deicide` calls the same method. The command is not
+a test hook bolted on; it is the second legitimate caller, and having exactly one
+implementation is what lets the untestable path be three lines of adapter over a path that
+is verified end to end.
+
+Three more API facts corrected from the sources: **gamerules were renamed in 26.x**
+(`doDaylightCycle` is now `advance_time`, and most of the set moved with it),
+`ItemStack.is()` takes a `Predicate<Holder<Item>>`, and `ServerPlayer#getServer()` is gone
+-- the server comes off the level.
+
+`tools/deicide_check.sh` asserts the whole beat and is mutation-verified: removing the
+consequence fails with "the sun did not stop", removing idempotence fails with "a second
+deicide was NOT a no-op". In CI.

@@ -84,3 +84,6 @@ jobs:
 
       - name: Verify chapter state survives a server restart
         run: ./tools/persistence_check.sh
+
+      - name: Kill the god and check the world notices
+        run: ./tools/deicide_check.sh

@@ -28,6 +28,20 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 13 documents, see [`INDEX.md`](INDEX.md) |
 
+### The god can die
+
+`Deicide.commit()` is the one place the catastrophe happens, and it is idempotent -- a
+world can lose its god exactly once. Its consequence today: **the sun stops.** The day
+cycle was the god's, and with nobody left to turn it the light stays where it was. Per
+`WORLD.md` there is no announcement and no name; the world simply stops moving.
+
+Two callers, one implementation: the pickup handler (needs a real player) and
+`/interregnum record deicide` (does not). That is deliberate -- it is what lets the
+untestable path be three lines of adapter over a path that is verified end to end.
+
+`tools/deicide_check.sh` asserts the whole beat and was mutation-verified: removing the
+consequence and removing idempotence both fail it by name.
+
 ### Chapter state persists
 
 `/interregnum status` reports the world's chapter; `/interregnum record <milestone>` (level
@@ -233,12 +247,14 @@ carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
 
 In order, all unblocked unless marked:
 
-1. **The heart in a shrine, and the deicide event.** Chapter state now persists and
-   `/interregnum record deicide` already moves the world to VIGIL, so what remains is the
-   *fiction*: put the heart in shrine loot (present only while the god lives -- after
-   DEICIDE no shrine holds one, which is how exactly one heart exists per world without
-   choosing a shrine in advance), fire the consequences on pickup (sky, crater, statues
-   wake), and give the killer the Executor role. This is the emotional core of Chapter 0.
+1. **Put the heart in the shrine.** The deicide itself is done and tested -- what is
+   missing is the way a player *reaches* it. Intent: the heart is present in shrine loot
+   only while the god lives, so after DEICIDE no shrine holds one and exactly one heart
+   exists per world without ever choosing a shrine in advance. Needs a container (or a
+   breakable centre stone) in `ShrineFeature` plus a loot condition on chapter state.
+2. **More consequences.** The sun stopping is the first band. Still to come: the crater at
+   the site (`Deicide.markSite` is a stub), Warden statues waking, and the unraveling bands
+   already defined in data being applied.
 3. **The heart in loot**, and the deicide event: sky change, crater, statues wake. The
    core `ChapterState` exists and is tested; it needs a `SavedData` wrapper (codec-based
    in 26.2 — see `SavedDataType`) and the event that records `Milestone.DEICIDE`.

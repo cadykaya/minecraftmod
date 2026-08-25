@@ -32,7 +32,8 @@ public final class InterregnumCommand {
                             "chapter=" + data.chapter()
                                     + " band=" + data.band()
                                     + " dormant=" + data.mechanicsDormant()
-                                    + " letters=" + data.lettersDelivered()), false);
+                                    + " letters=" + data.lettersDelivered()
+                                    + " killer=" + (data.killer() == null ? "none" : data.killer())), false);
                     return 1;
                 }));
 
@@ -47,7 +48,12 @@ public final class InterregnumCommand {
             record = record.then(Commands.literal(m.name().toLowerCase(java.util.Locale.ROOT))
                     .executes(ctx -> {
                         ChapterSavedData data = ChapterSavedData.get(ctx.getSource().getServer());
-                        boolean isNew = data.record(m);
+                        // DEICIDE is not just a milestone -- it has consequences, and
+                        // they live in exactly one place so this path and the pickup
+                        // path can never drift apart.
+                        boolean isNew = (m == Milestone.DEICIDE)
+                                ? Deicide.commit(ctx.getSource().getServer(), null)
+                                : data.record(m);
                         ctx.getSource().sendSuccess(() -> Component.literal(
                                 (isNew ? "recorded " : "already recorded ") + m.name()
                                         + "; chapter=" + data.chapter()), true);

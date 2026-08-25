@@ -12,6 +12,9 @@ import com.cadykaya.interregnum.core.chapter.ChapterState;
 import com.cadykaya.interregnum.core.chapter.Chapter;
 import com.cadykaya.interregnum.core.chapter.Milestone;
 
+import java.util.Optional;
+import java.util.UUID;
+
 /**
  * The interregnum's progress, persisted with the world.
  *
@@ -34,9 +37,16 @@ public final class ChapterSavedData extends SavedData {
      * milestones justify), so reusing it means the persistence format is tested by
      * tests that need no game to run.
      */
-    private static final Codec<ChapterSavedData> CODEC = Codec.STRING.xmap(
-            s -> new ChapterSavedData(ChapterState.deserialize(s)),
-            d -> d.state.serialize());
+    private static final Codec<ChapterSavedData> CODEC = com.mojang.serialization.codecs.RecordCodecBuilder.create(
+            i -> i.group(
+                    Codec.STRING.fieldOf("state").forGetter(d -> d.state.serialize()),
+                    Codec.STRING.optionalFieldOf("killer").forGetter(
+                            d -> Optional.ofNullable(d.killer).map(UUID::toString))
+            ).apply(i, (s, k) -> {
+                ChapterSavedData d = new ChapterSavedData(ChapterState.deserialize(s));
+                d.killer = k.map(UUID::fromString).orElse(null);
+                return d;
+            }));
 
     // VERIFY: DataFixTypes has no general-purpose member; LEVEL is the conventional
     // choice for mod saved data. Revisit if a datafixer ever complains.
@@ -44,6 +54,7 @@ public final class ChapterSavedData extends SavedData {
             ID, () -> new ChapterSavedData(new ChapterState()), CODEC, DataFixTypes.LEVEL);
 
     private final ChapterState state;
+    private UUID killer;
 
     private ChapterSavedData(ChapterState state) {
         this.state = state;
@@ -71,6 +82,16 @@ public final class ChapterSavedData extends SavedData {
 
     public boolean has(Milestone m) {
         return state.has(m);
+    }
+
+    /** The First Theoclast: whoever took the heart. Null if a command did it. */
+    public UUID killer() {
+        return killer;
+    }
+
+    void setKiller(UUID uuid) {
+        this.killer = uuid;
+        setDirty();
     }
 
     /**
