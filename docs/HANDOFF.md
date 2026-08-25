@@ -28,6 +28,18 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 13 documents, see [`INDEX.md`](INDEX.md) |
 
+### Worldgen works
+
+Shrines generate. `ShrineFeature` builds a 5x5 court with a carved centre stone, corner
+steles, and missing paving for age; it refuses uneven ground rather than terracing it, and
+it scans for the surface rather than reading a worldgen heightmap so it can also be run with
+`/place` (LESSONS #11). Configured feature, placed feature and the biome modifier are all
+**generated** by `runServerData`; the modifier targets the `#minecraft:is_overworld` **tag**,
+never a biome list.
+
+`tools/worldgen_check.sh` places a shrine in a live flat world and asserts what it built.
+Verified failing two ways -- a wrong assertion, and a deliberately broken feature.
+
 ### Verifying against a live server
 
 `tools/server_smoke.sh` boots a dedicated server, and `COMMANDS` (newline-separated) runs
@@ -204,8 +216,10 @@ carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
 
 In order, all unblocked unless marked:
 
-1. **The shrine structure**, so steles and shrine stone actually appear in a world — a
-   jigsaw or NBT structure plus a placement. Until this exists, Chapter 0 has no presence.
+1. **Tune the shrine's rarity with a real encounter-rate probe.** `RarityFilter` is at
+   1-in-90 chunks, which is a guess, and `WORLDGEN.md` is explicit that "a structure nobody
+   finds is a structure you did not build". Decide the intended rate as a number -- minutes
+   of normal play to the first shrine -- and measure it with a fixed seed.
 3. **The heart in loot**, and the deicide event: sky change, crater, statues wake. The
    core `ChapterState` exists and is tested; it needs a `SavedData` wrapper (codec-based
    in 26.2 — see `SavedDataType`) and the event that records `Milestone.DEICIDE`.

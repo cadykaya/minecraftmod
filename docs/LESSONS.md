@@ -340,3 +340,42 @@ world.
 `minecraft` split into `mi` and `ecraft`. Same class as #9, second occurrence. Commands now
 go to `rcon.py` through a file and no shell touches them; the script is `#!/bin/bash` with
 `set -euo pipefail`.*
+
+---
+
+## 11. A feature that cannot be `/place`d cannot be verified
+
+*Found by the worldgen check on its first real run.*
+
+`ShrineFeature` located the ground with `level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, ...)`,
+which is what vanilla features do and which works perfectly during world generation. Invoked
+on an already-generated chunk with `/place feature`, it logged:
+
+```
+[Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: WORLD_SURFACE_WG 8 8
+```
+
+The `_WG` heightmaps exist only during the generation phase. So the feature worked in the
+one situation that is hardest to observe and errored in the only one that can be checked
+without a client.
+
+**The fix was not to special-case the test.** It was to stop depending on generation-phase
+state at all: the feature now scans downward for the topmost solid block, which is correct
+during generation *and* on a live chunk. `/place` becomes a first-class way to use the
+feature rather than a testing hack, and a future "re-seed the shrines" tool gets the same
+guarantee for free.
+
+> **Generalisation: if a thing can only run inside the one context you cannot inspect, that
+> is a design constraint, not a testing inconvenience.** Removing the constraint made the
+> code simpler and the behaviour identical.
+
+### The check also caught the author
+
+Rewriting `findSurface` changed what `floorY` meant -- it now returns the topmost *solid*
+block rather than the first air above it -- and the assertion coordinates were "fixed" by
++1 on a guess. Two of four markers vanished, and the two that still passed only passed by
+luck: a stele is 1 or 2 blocks tall, so both candidate heights matched. The coordinates are
+now written down with the reasoning beside them, and the check was verified twice over --
+once with a deliberately wrong assertion, once with a deliberately broken feature -- because
+a check that passes when the world is empty is the failure this project has now hit four
+times (#5, #7, #10, and nearly here).

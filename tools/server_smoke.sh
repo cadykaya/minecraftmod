@@ -24,7 +24,16 @@ rm -f run/world/session.lock
 # first CI run failed while passing locally: server.properties existed on the dev
 # machine because it had been created by hand once. A smoke test that inherits
 # state from the machine it was written on is not testing the shipped repository.
+# A FRESH world every run. The world directory persists otherwise, and a world
+# created by an earlier boot -- possibly before server.properties existed, and so
+# not flat at all -- silently invalidates every worldgen check made against it.
+# That is exactly how `place feature` came to "fail" at one coordinate and succeed
+# at another on supposedly identical flat terrain.
+# Set KEEP_WORLD=1 to reuse it when testing persistence across restarts.
 mkdir -p run
+if [ -z "${KEEP_WORLD:-}" ]; then
+    rm -rf run/world
+fi
 echo "eula=true" > run/eula.txt
 cat > run/server.properties <<'PROPS'
 # Written by tools/server_smoke.sh. Tuned for a fast, deterministic boot:

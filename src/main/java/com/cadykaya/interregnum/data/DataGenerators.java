@@ -1,5 +1,7 @@
 package com.cadykaya.interregnum.data;
 
+import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
@@ -11,7 +13,11 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import java.util.List;
 import java.util.Set;
 
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+
 import com.cadykaya.interregnum.Interregnum;
+import com.cadykaya.interregnum.worldgen.ModWorldgen;
 
 /**
  * Datagen entrypoint. Dev-time only -- this class never runs in a shipped game.
@@ -32,6 +38,14 @@ public final class DataGenerators {
     public static void gatherData(GatherDataEvent.Server event) {
         DataGenerator gen = event.getGenerator();
         PackOutput out = gen.getPackOutput();
+
+        // Worldgen: configured + placed features, emitted as datapack JSON.
+        RegistrySetBuilder worldgen = new RegistrySetBuilder()
+                .add(Registries.CONFIGURED_FEATURE, ModWorldgen::bootstrapConfigured)
+                .add(Registries.PLACED_FEATURE, ModWorldgen::bootstrapPlaced)
+                .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldgen::bootstrapBiomeModifiers);
+        gen.addProvider(true, new DatapackBuiltinEntriesProvider(
+                out, event.getLookupProvider(), worldgen, Set.of(Interregnum.MOD_ID)));
 
         gen.addProvider(true, new LootTableProvider(
                 out,

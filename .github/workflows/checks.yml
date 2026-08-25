@@ -78,3 +78,6 @@ jobs:
 
       - name: Boot a dedicated server and check its log
         run: ./tools/server_smoke.sh
+
+      - name: Place the shrine in a live world and verify what it built
+        run: ./tools/worldgen_check.sh
