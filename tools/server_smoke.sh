@@ -37,10 +37,7 @@ fi
 echo "eula=true" > run/eula.txt
 cat > run/server.properties <<'PROPS'
 # Written by tools/server_smoke.sh. Tuned for a fast, deterministic boot:
-# a flat world with a tiny view distance loads in a fraction of the time and
-# removes terrain generation as a source of run-to-run variation.
-level-type=minecraft\:flat
-level-seed=interregnum
+# a small view distance loads in a fraction of the time.
 max-players=1
 online-mode=false
 spawn-protection=0
@@ -55,6 +52,17 @@ rcon.port=25575
 rcon.password=interregnum
 broadcast-rcon-to-ops=true
 PROPS
+
+# level-type and level-seed go OUTSIDE the heredoc, because it is quoted
+# (<<'PROPS') and therefore expands nothing. An earlier version put ${LEVEL_TYPE}
+# inside it; the literal text was written to the file, so the shrine rate probe
+# ran against a flat world and reported 100% terrain acceptance -- true of a flat
+# world, meaningless anywhere else. Default stays flat: level ground makes every
+# other check deterministic. LEVEL_TYPE=minecraft:normal gets real terrain.
+{
+    printf 'level-type=%s\n' "${LEVEL_TYPE:-minecraft\\:flat}"
+    printf 'level-seed=%s\n' "${LEVEL_SEED:-interregnum}"
+} >> run/server.properties
 
 FIFO=$(mktemp -u)
 mkfifo "$FIFO"

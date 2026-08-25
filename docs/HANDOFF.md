@@ -40,6 +40,12 @@ never a biome list.
 `tools/worldgen_check.sh` places a shrine in a live flat world and asserts what it built.
 Verified failing two ways -- a wrong assertion, and a deliberately broken feature.
 
+`tools/shrine_rate_probe.sh` measures density on **real** terrain (`GRID=8` takes ~2 min).
+Measured: **45-46% of natural sites are level enough**, so with the rarity filter at 55 the
+real density is **one shrine per ~120 chunks, roughly six minutes of walking**. Re-run it
+after any change to `MAX_RELIEF` or the rarity filter -- they multiply. Whether six minutes
+reads as furniture or as litter is **[NEEDS PLAYTEST]**; only a person can say.
+
 ### Verifying against a live server
 
 `tools/server_smoke.sh` boots a dedicated server, and `COMMANDS` (newline-separated) runs
@@ -216,10 +222,12 @@ carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
 
 In order, all unblocked unless marked:
 
-1. **Tune the shrine's rarity with a real encounter-rate probe.** `RarityFilter` is at
-   1-in-90 chunks, which is a guess, and `WORLDGEN.md` is explicit that "a structure nobody
-   finds is a structure you did not build". Decide the intended rate as a number -- minutes
-   of normal play to the first shrine -- and measure it with a fixed seed.
+1. **The heart in a shrine, and the deicide event.** The shrine now has a carved centre
+   stone waiting for it. Needs: a loot/placement rule putting the heart in *some* shrines,
+   a `SavedData` wrapper for the tested core `ChapterState` (codec-based in 26.2 --
+   see `SavedDataType`), and the event that records `Milestone.DEICIDE` and fires the
+   server-wide consequences. This is the emotional core of Chapter 0 and everything for it
+   now exists except the wiring.
 3. **The heart in loot**, and the deicide event: sky change, crater, statues wake. The
    core `ChapterState` exists and is tested; it needs a `SavedData` wrapper (codec-based
    in 26.2 — see `SavedDataType`) and the event that records `Milestone.DEICIDE`.

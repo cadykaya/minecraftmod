@@ -379,3 +379,46 @@ now written down with the reasoning beside them, and the check was verified twic
 once with a deliberately wrong assertion, once with a deliberately broken feature -- because
 a check that passes when the world is empty is the failure this project has now hit four
 times (#5, #7, #10, and nearly here).
+
+---
+
+## 12. A quoted heredoc expands nothing, and the probe reported 100%
+
+*Found within a minute of writing the shrine rate probe -- which is the only reason
+it did not become a number in a design document.*
+
+The shrine's real density depends on two things multiplied: a rarity filter (known by
+construction) and how much natural terrain `ShrineFeature` refuses as too uneven (never
+measured). The probe was built to measure the second, which meant `server_smoke.sh` had to
+be able to boot a **real** world instead of its usual flat one.
+
+`${LEVEL_TYPE}` was added inside the `server.properties` heredoc. The heredoc is
+`<<'PROPS'` — **quoted, so nothing in it is ever expanded** — and the literal text went
+into the file. The server kept booting flat, and the probe answered:
+
+```
+acceptance: 100%
+=> one shrine per 90 chunks
+=> roughly 4 minutes of walking to the first one
+```
+
+Every one of those numbers is true of a flat world and meaningless anywhere else. The
+output was clean, plausible, and precisely the kind of thing that ends up quoted in a
+design doc six weeks later.
+
+**What caught it** was not the number looking wrong — 100% looks *good*. It was checking
+the instrument: `grep level-type run/server.properties` after the edit, before trusting
+anything it produced. On real terrain the answer is **46%**, which changes the design
+conclusion completely (and incidentally validates `MAX_RELIEF=2` as selective rather than
+crippling).
+
+> **This is DOWNTIME's "a new bench is the least trustworthy thing in the repository",
+> arriving on schedule.** Every measurement tool in this session has been wrong on its
+> first run. The habit that works is boring: after wiring a bench, make it report the thing
+> it depends on, and read that before reading its results.
+
+*Two related fixes went in with it. The probe now reads the rarity value out of the
+generated JSON instead of keeping its own copy — a probe holding a second copy of the number
+it is measuring against will report the old answer forever after that number changes. And
+`MAX_RELIEF` and the rarity filter multiply, so the code says in writing that changing
+either one silently moves the density and the probe must be re-run.*

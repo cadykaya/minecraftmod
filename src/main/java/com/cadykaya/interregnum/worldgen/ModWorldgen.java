@@ -68,13 +68,25 @@ public final class ModWorldgen {
         // first so the rest never runs on a chunk that was never a candidate
         // (docs/WORLDGEN.md). RarityFilter(N) means "one chunk in N tries".
         //
-        // 1-in-90 is a starting number, not a tuned one: shrines must be a landmark
-        // a player stumbles on, not scenery. It needs the encounter-rate probe
-        // WORLDGEN.md asks for before it can be called right.
+        // MEASURED, not guessed. tools/shrine_rate_probe.sh attempts a placement at
+        // every chunk centre in a grid of real terrain and counts the answers:
+        // **46% of natural sites are level enough** for MAX_RELIEF=2 (which also
+        // says that check is selective rather than crippling). Real density is
+        // therefore rarity / 0.46.
+        //
+        // Target: a shrine roughly every 120 chunks -- about six minutes of walking
+        // -- because these are Chapter 0 FURNITURE. A player has to pass enough of
+        // them that they stop looking, so that the one with a heart in it reads as
+        // "another shrine" right up until it does not. 120 x 0.46 = 55.
+        //
+        // Re-run the probe after any change to MAX_RELIEF: that check and this
+        // number multiply, and moving one silently moves the density.
+        // Still [NEEDS PLAYTEST]: only a person can say whether six minutes feels
+        // like furniture or like litter.
         ctx.register(SHRINE_PLACED, new PlacedFeature(
                 features.getOrThrow(SHRINE_CONFIGURED),
                 List.<PlacementModifier>of(
-                        RarityFilter.onAverageOnceEvery(90),
+                        RarityFilter.onAverageOnceEvery(55),
                         InSquarePlacement.spread(),
                         HeightRangePlacement.of(UniformHeight.of(
                                 VerticalAnchor.absolute(-64), VerticalAnchor.absolute(320))),

@@ -298,3 +298,26 @@ coordinates placed in one spot and refused in another. `server_smoke.sh` now del
 
 `tools/worldgen_check.sh` is in CI and was verified failing on a wrong assertion and on a
 broken feature.
+
+---
+
+## Heartbeat tick 3 -- how often is a shrine
+
+Shrine density was a guess (1 rarity attempt per 90 chunks) and `WORLDGEN.md` is blunt that
+"a structure nobody finds is a structure you did not build". The unknown was never the
+rarity filter; it was how much natural terrain `ShrineFeature` refuses as too uneven, which
+multiplies against it. `tools/shrine_rate_probe.sh` now measures that directly by attempting
+a placement at every chunk centre of a real-terrain grid.
+
+Its first run reported **100% acceptance** -- because `${LEVEL_TYPE}` had been added inside
+a *quoted* heredoc, which expands nothing, so the server kept booting flat. Caught by
+checking the instrument (grep the properties file) rather than by the number looking wrong;
+100% looks fine. LESSONS #12.
+
+Real answer: **45-46% acceptance**, which also validates `MAX_RELIEF=2` as selective rather
+than crippling. Rarity retuned 90 -> 55 for a target of one shrine per ~120 chunks, about
+six minutes of walking -- these are Chapter 0 furniture, and a player has to pass enough of
+them to stop looking, so that the one with a heart in it reads as "another shrine" right up
+until it does not. Whether six minutes is right is [NEEDS PLAYTEST].
+
+The probe reads the rarity out of the generated JSON rather than keeping its own copy.
