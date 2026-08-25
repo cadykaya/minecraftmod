@@ -1152,3 +1152,57 @@ failure and swallowed the explanation.
 
 Every dump in talk_check now ends in `|| true`. A failure path must not contain
 anything that can fail.
+
+---
+
+## The same unit, one question changed
+
+A Warden conducts a census of the living before the death and takes statements about it
+afterwards. Same mob, same manner. What moves is what the procedure is FOR, and that
+pairing is the reason the second scene works at all: a player who met a Warden in
+Chapter 0 meets the identical procedure afterwards, and the only thing that has changed
+is the question.
+
+warden_interrogation is named directly in WORLD.md -- "Warden interrogations after the
+death (where were you when--)" -- and the locked rule sitting beside it is what shaped
+every line of it: enforcement targets SITES, never a single player, no player is the
+system's butt.
+
+That rule is what makes the scene. It cannot be an accusation, so it is a canvass. The
+unit is taking the same statement from every living thing in the world, in the same
+order, and says so unprompted because it is required to: "This unit asks every party
+the same questions in the same order. It is not an accusation. Nothing about you has
+been marked."
+
+Which means the player who did it is asked routinely, and cleared routinely, by
+somebody methodically working a list that cannot be finished. "Three hundred and eleven
+statements outstanding. Four hundred and twelve were taken yesterday. The figure does
+not fall."
+
+Dramatic irony like shrine_keeper_intact, but where the keeper was content this one is
+grieving, and the grief is never the punchline. The unit expresses everything it has as
+procedure, because procedure is what it has instead of mourning: "This unit is required
+to say that your cooperation has been noted. This unit would like to say something else
+and is not authorised to."
+
+Two things I checked rather than assumed.
+
+HANDOFF said first Warden contact recording WARDEN_CONTACT was "reachable only by
+command". Stale -- both mobs have had mobInteract for several passes and Conversations
+records the milestone on being addressed. What is NOT stale is the gap behind it:
+nothing creates a Warden, so band 2 is still unreachable by playing. That is now marked
+as the single biggest functional gap, and it is blocked on the owner because the
+mechanism (a woken statue summoning one) is new scope.
+
+And I nearly invented lore. A line in the declined-help node ran "There are four of us.
+There were nine hundred." -- which is a specific claim about the Warden population that
+WORLD.md does not make. Cut. It reads flatter now and the flatness is the grief: "This
+unit is authorised. This unit will continue."
+
+Scene selection reads the world's chapter data rather than a flag on the mob, so a
+Warden standing in a field since before the deicide answers the same as one that walked
+up afterwards. openingScene is the shared pattern now, and `talk scene <entity>` works
+for any mob that has one -- a headless server can never reach mobInteract, so without
+it an NPC's choice of opening is observable only by playing.
+
+Watched failing: with the unit never noticing the god died, the check says exactly that.

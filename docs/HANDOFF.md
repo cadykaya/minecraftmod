@@ -31,6 +31,34 @@ asserted against a running world rather than against its own source.
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
+### The same unit, one question changed
+
+A Warden conducts a **census of the living** before the death and **takes statements
+about it** afterwards. Same mob, same manner; what moves is what the procedure is for,
+and the pairing is the reason the second scene works at all — a player who met a
+Warden in Chapter 0 meets the identical procedure afterwards.
+
+`warden_interrogation` is named directly in [`WORLD.md`](WORLD.md) ("Warden
+interrogations after the death"), and the locked rule beside it is what shapes every
+line: **enforcement targets sites, never a single player.** So it is a canvass, not an
+accusation, and the unit says so unprompted because it is required to. Which means the
+player who did it is asked routinely, and cleared routinely, by somebody working
+through a list that cannot be finished — *"Three hundred and eleven statements
+outstanding. Four hundred and twelve were taken yesterday. The figure does not fall."*
+
+Dramatic irony like `shrine_keeper_intact`, but where the keeper was content this one
+is grieving, and per the dread covenant the grief is never the punchline and the unit
+never quips. It says everything it has as procedure, because procedure is what it has
+instead of mourning: *"This unit is required to say that your cooperation has been
+noted. This unit would like to say something else and is not authorised to."*
+
+Scene selection reads the world's chapter data, not a flag on the mob, so a Warden
+that has stood in a field since before the deicide answers the same as one that walked
+up afterwards. `openingScene` is now the shared pattern for "an NPC whose opening
+depends on what has happened" — the shrine-keeper already used it, and
+`interregnum talk scene <entity>` asks any of them the question a right-click asks,
+because a headless server can never reach `mobInteract`.
+
 ### The keeper knows what the village thinks
 
 The villages are the second institution to act on standing, and the keeper is the
@@ -719,20 +747,21 @@ In order, all unblocked unless marked:
    the ones that need design rather than typing: block-for-block conversion is the wrong
    grammar for "the ways are open" and "geography frays at the edges". Band 3 probably
    is not a conversion table at all. **Do not fill them in just because the format fits.**
-2. **Put Wardens in the world.** The entity exists and nothing creates one. The obvious
-   move — and the reason the statues were never consumed — is that a **woken statue is
-   what summons them**: the statue is the sensor, the Warden is the response, and
-   statue density becomes a thing players can read and act on. That is new scope, so
-   it is a proposal under "Open questions" rather than something to build.
-   Unambiguously in scope meanwhile: **first Warden contact records
-   `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
-   currently reachable only by command.
-3. **More scenes.** Two institutions now change what a player sees -- the Wardenate
-   in `warden_intake`, the villages in `shrine_keeper` -- and the machinery has the
-   range it was missing, so the shortage from here is content rather than plumbing.
-   The four gods have regard lines but no scenes at all; `dream_audience` is the only
-   place any of them speaks. **Bands 3 and 4 and the statue-summons-Warden proposal
-   remain the owner's call.**
+2. **Put Wardens in the world.** The entity exists, has two scenes, records
+   `WARDEN_CONTACT` on being addressed, and **nothing creates one** — so band 2 is
+   still unreachable by playing, and that is now the single biggest functional gap in
+   the mod. The obvious move — and the reason the statues were never consumed — is
+   that a **woken statue is what summons them**: the statue is the sensor, the Warden
+   is the response, and statue density becomes something players can read and act on.
+   That is new scope, so it is a proposal under "Open questions" and **needs the
+   owner's answer before anything else here can be finished by playing.**
+3. **More scenes.** Five exist now (`warden_intake`, `warden_interrogation`,
+   `shrine_keeper`, `shrine_keeper_intact`, `dream_audience`) and the machinery has
+   the range it was missing, so the shortage from here is content rather than
+   plumbing. The four gods have regard lines but no scenes; `dream_audience` is the
+   only place any of them speaks, and reaching one properly needs **the ferry**, which
+   is locked design with no code behind it yet. **Bands 3 and 4 and the
+   statue-summons-Warden proposal remain the owner's call.**
 4. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
    everything it would render is already proven server-side. Chat works meanwhile.

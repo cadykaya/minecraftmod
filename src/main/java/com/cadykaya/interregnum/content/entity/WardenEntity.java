@@ -122,6 +122,10 @@ public class WardenEntity extends PathfinderMob {
     }
 
     /** The scene a Warden opens with. Datapack-defined; this only names it. */
+    public static final net.minecraft.resources.Identifier INTERROGATION =
+            net.minecraft.resources.Identifier.fromNamespaceAndPath(
+                    com.cadykaya.interregnum.Interregnum.MOD_ID, "warden_interrogation");
+
     public static final net.minecraft.resources.Identifier INTAKE =
             net.minecraft.resources.Identifier.fromNamespaceAndPath(
                     com.cadykaya.interregnum.Interregnum.MOD_ID, "warden_intake");
@@ -138,8 +142,36 @@ public class WardenEntity extends PathfinderMob {
             net.minecraft.world.entity.player.Player player,
             net.minecraft.world.InteractionHand hand) {
         if (player instanceof net.minecraft.server.level.ServerPlayer initiator) {
-            Conversations.address(initiator, this, INTAKE);
+            Conversations.address(initiator, this, openingScene(initiator.level().getServer()));
         }
         return net.minecraft.world.InteractionResult.SUCCESS;
+    }
+
+    /**
+     * Which scene this unit opens with.
+     *
+     * The same mob, the same manner, one question changed. Before the death it is
+     * conducting a census of the living; after it, it is taking statements about the
+     * moment the count fell. The pair is the point -- a player who met a Warden in
+     * Chapter 0 meets the identical procedure afterwards, and the only thing that has
+     * moved is what the procedure is FOR.
+     *
+     * Read from the world's chapter data rather than from anything on the entity, so
+     * a Warden that has been standing in a field since before the deicide answers the
+     * same as one that walked up afterwards. A per-mob flag would make it a question
+     * of which Warden you happened to meet.
+     *
+     * The shrine-keeper picks its scene the same way (from whether its box has been
+     * opened). Both are `openingScene`, deliberately: it is the pattern for "an NPC
+     * whose opening depends on what has happened", and the next one should be too.
+     */
+    public net.minecraft.resources.Identifier openingScene(
+            net.minecraft.server.MinecraftServer server) {
+        if (server == null) {
+            return INTAKE;                  // no world to ask; the census is the default
+        }
+        return com.cadykaya.interregnum.system.ChapterSavedData.get(server)
+                .has(com.cadykaya.interregnum.core.chapter.Milestone.DEICIDE)
+                        ? INTERROGATION : INTAKE;
     }
 }

@@ -160,15 +160,29 @@ public final class InterregnumCommand {
                 .then(Commands.literal("scene")
                         .then(Commands.argument("who", EntityArgument.entity())
                                 .executes(ctx -> {
+                                    // Asks the same question a right-click asks, for
+                                    // every mob that answers it. A headless server can
+                                    // never reach `mobInteract`, so without this the
+                                    // choice an NPC makes about how to open is only
+                                    // observable by playing -- which is to say, not
+                                    // observable at all from CI.
                                     var e = EntityArgument.getEntity(ctx, "who");
-                                    if (!(e instanceof com.cadykaya.interregnum.content.entity
-                                            .ShrineKeeperEntity keeper)) {
+                                    net.minecraft.resources.Identifier scene = null;
+                                    if (e instanceof com.cadykaya.interregnum.content.entity
+                                            .ShrineKeeperEntity keeper) {
+                                        scene = keeper.openingScene();
+                                    } else if (e instanceof com.cadykaya.interregnum.content
+                                            .entity.WardenEntity warden) {
+                                        scene = warden.openingScene(ctx.getSource().getServer());
+                                    }
+                                    if (scene == null) {
                                         ctx.getSource().sendSuccess(() -> Component.literal(
-                                                "scene=none reason=not a shrine-keeper"), false);
+                                                "scene=none reason=nothing to say"), false);
                                         return 0;
                                     }
+                                    final var chosen = scene;
                                     ctx.getSource().sendSuccess(() -> Component.literal(
-                                            "scene=" + keeper.openingScene()), false);
+                                            "scene=" + chosen), false);
                                     return 1;
                                 })))
                 .then(Commands.literal("status")
@@ -283,15 +297,29 @@ public final class InterregnumCommand {
                 .then(Commands.literal("scene")
                         .then(Commands.argument("who", EntityArgument.entity())
                                 .executes(ctx -> {
+                                    // Asks the same question a right-click asks, for
+                                    // every mob that answers it. A headless server can
+                                    // never reach `mobInteract`, so without this the
+                                    // choice an NPC makes about how to open is only
+                                    // observable by playing -- which is to say, not
+                                    // observable at all from CI.
                                     var e = EntityArgument.getEntity(ctx, "who");
-                                    if (!(e instanceof com.cadykaya.interregnum.content.entity
-                                            .ShrineKeeperEntity keeper)) {
+                                    net.minecraft.resources.Identifier scene = null;
+                                    if (e instanceof com.cadykaya.interregnum.content.entity
+                                            .ShrineKeeperEntity keeper) {
+                                        scene = keeper.openingScene();
+                                    } else if (e instanceof com.cadykaya.interregnum.content
+                                            .entity.WardenEntity warden) {
+                                        scene = warden.openingScene(ctx.getSource().getServer());
+                                    }
+                                    if (scene == null) {
                                         ctx.getSource().sendSuccess(() -> Component.literal(
-                                                "scene=none reason=not a shrine-keeper"), false);
+                                                "scene=none reason=nothing to say"), false);
                                         return 0;
                                     }
+                                    final var chosen = scene;
                                     ctx.getSource().sendSuccess(() -> Component.literal(
-                                            "scene=" + keeper.openingScene()), false);
+                                            "scene=" + chosen), false);
                                     return 1;
                                 })))
                 .then(Commands.literal("status").executes(ctx -> {

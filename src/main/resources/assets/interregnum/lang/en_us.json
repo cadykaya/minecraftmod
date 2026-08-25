@@ -168,5 +168,22 @@
   "interregnum.dlg.warden_intake.open.filed": "This unit is conducting a census of the living. Attendance was nine hundred and forty-one. Attendance is now nine hundred and forty.\n\nYour designation appears in three prior returns. State your presence.",
   "interregnum.dlg.warden_intake.open.known": "This unit is conducting a census of the living. Attendance was nine hundred and forty-one. Attendance is now nine hundred and forty.\n\nYour returns have been accepted without amendment. State your presence.",
   "interregnum.dlg.keeper.ledger.known_of": "The offering box is short. Fourteen units of account.\n\nYour party is in the register already, under remarks, in another keeper's hand. I have not read it closely. I am required to reconcile before the quarter closes, and I would rather do that than the other thing.",
-  "interregnum.dlg.keeper.ledger.welcome": "Oh -- it's you. Good.\n\nThe offering box is short. Fourteen units of account, which in the old measure is a loaf, a candle, and something the register lists only as warmth. I am sorry to raise it with you of all people. I am required to reconcile before the quarter closes."
+  "interregnum.dlg.keeper.ledger.welcome": "Oh -- it's you. Good.\n\nThe offering box is short. Fourteen units of account, which in the old measure is a loaf, a candle, and something the register lists only as warmth. I am sorry to raise it with you of all people. I am required to reconcile before the quarter closes.",
+  "interregnum.dlg.warden_interrogation.canvass": "This unit is taking statements. The count is not in dispute. The timing is.\n\nAttendance fell by one at a moment this unit cannot fix, and the register requires a moment. Where were you.",
+  "interregnum.dlg.warden_interrogation.canvass.again": "This unit is taking statements. Your party has given one before. This unit will ask the same questions in the same order, because that is how they are asked.\n\nAttendance fell by one at a moment this unit cannot fix. Where were you.",
+  "interregnum.dlg.warden_interrogation.canvass.consistent": "This unit is taking statements. Your party's previous returns were consistent. That is recorded and it is not a finding.\n\nAttendance fell by one at a moment this unit cannot fix. Where were you.",
+  "interregnum.dlg.warden_interrogation.canvass.at_shrine": "We were at a shrine.",
+  "interregnum.dlg.warden_interrogation.canvass.elsewhere": "Nowhere near anything.",
+  "interregnum.dlg.warden_interrogation.canvass.what_happened": "What is it you're actually asking?",
+  "interregnum.dlg.warden_interrogation.canvass.offer_help": "Do you want help taking the rest of them?",
+  "interregnum.dlg.warden_interrogation.explains": "The overworld's authority has ceased. This unit is not authorised to characterise it further.\n\nThis unit is authorised to take statements. It is taking them. Where were you.",
+  "interregnum.dlg.warden_interrogation.explains.then_shrine": "At a shrine.",
+  "interregnum.dlg.warden_interrogation.explains.then_else": "Elsewhere.",
+  "interregnum.dlg.warden_interrogation.shrine_noted": "Recorded. Which shrine.\n\nThis unit asks every party the same questions in the same order. It is not an accusation. Nothing about you has been marked.",
+  "interregnum.dlg.warden_interrogation.shrine_noted.name_it": "We'll tell you which one.",
+  "interregnum.dlg.warden_interrogation.shrine_noted.decline": "We'd rather not say.",
+  "interregnum.dlg.warden_interrogation.noted": "Recorded. This unit will return if the register requires it.\n\nThree hundred and eleven statements outstanding. Four hundred and twelve were taken yesterday. The figure does not fall.",
+  "interregnum.dlg.warden_interrogation.filed": "Filed.\n\nThis unit is required to say that your cooperation has been noted. This unit would like to say something else and is not authorised to.",
+  "interregnum.dlg.warden_interrogation.filed_unsigned": "Unrecorded, then. That is permitted.\n\nThe register has a column for parties who decline. It has not been used before. This unit will use it correctly.",
+  "interregnum.dlg.warden_interrogation.offer_declined": "No. Statements must be taken by an authorised unit.\n\nThis unit is authorised. This unit will continue."
 }

@@ -41,7 +41,9 @@ H=55555555-5555-4555-8555-555555555555
 COMMANDS="forceload add -32 -32 31 31
 wait 5
 summon interregnum:warden 8 -60 8
+interregnum talk scene $WARDEN
 execute positioned 0 -60 0 run interregnum record deicide
+interregnum talk scene $WARDEN
 interregnum status
 interregnum talk start $SCENE kaya+p2+p3 $WARDEN
 interregnum status
@@ -220,6 +222,26 @@ n_courtesy=$(grep -c 'Write it however it balances' /tmp/tc.txt || true)
 n_truth=$(grep -c 'There is nothing on the other end of that slot' /tmp/tc.txt || true)
 [ "$n_truth" -ge 2 ] \
     || fail "the resented party has no way through the admit node -- gating removed content, not a courtesy"
+
+# --- the same unit, one question changed ----------------------------------
+#
+# A Warden conducts a census of the living before the death and takes statements
+# about it afterwards. Same mob, same manner; what moves is what the procedure is
+# FOR, and that pairing is the reason the interrogation scene works at all.
+#
+# `talk scene` asks the question a right-click asks. A headless server can never
+# reach mobInteract, so without it an NPC's choice of opening is observable only by
+# playing -- which is to say, not observable from CI.
+want /tmp/tc.txt 'scene=interregnum:warden_intake' \
+    "a Warden did not open with the census before the god died"
+want /tmp/tc.txt 'scene=interregnum:warden_interrogation' \
+    "a Warden still opens with the census of the living after the death it is investigating"
+
+# Order matters and counting does not prove it: one of each, and the census FIRST.
+# Two scene lines that happened to be the same would satisfy two greps.
+first_scene=$(grep -oE 'scene=interregnum:warden_(intake|interrogation)' /tmp/tc.txt | head -1)
+[ "$first_scene" = "scene=interregnum:warden_intake" ] \
+    || fail "the Warden's first answer was $first_scene, so the pair is the wrong way round"
 
 # --- refusals are answers, not crashes --------------------------------------
 want /tmp/tc.txt 'talk=refused reason=no option nonsense on node open' \
