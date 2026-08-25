@@ -96,3 +96,6 @@ jobs:
 
       - name: Every Warden statue opens its eyes
         run: ./tools/statue_check.sh
+
+      - name: The world remembers what people built
+        run: ./tools/claim_check.sh

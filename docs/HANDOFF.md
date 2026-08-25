@@ -28,6 +28,31 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 13 documents, see [`INDEX.md`](INDEX.md) |
 
+### The world remembers what people built
+
+Minecraft does not record who placed a block, and the unraveling needs to know: the crater
+can get away with a tag whitelist because it fires once at one spot, but the unraveling
+runs forever over a whole world and would eventually eat somebody's cobblestone wall on the
+grounds that cobblestone is natural.
+
+`PlacedBlocks` is a chunk attachment holding chunk-relative positions packed one per int
+(x and z are 4 bits, y is 9). Past **4096 placements the chunk saturates**: the set is
+dropped and the whole chunk counts as claimed. That bounds memory and degrades in the safe
+direction — it protects more, never less — and it is the right answer anyway, because a
+chunk somebody has put four thousand blocks into is theirs.
+
+`Claims` is the single place anything asks, and it **fails closed**: an unloaded chunk
+answers "claimed". Breaking a block forgets its position, or mining through your own wall
+would leave permanent invisible holes the unraveling could never touch.
+
+`/interregnum claim at|record|forget` are operator tools, not test hooks: a world that
+existed before this mod was installed is full of builds the tracker never saw, and an
+admin needs a way to say "this is ours". They are also what makes the tracker testable
+without a player.
+
+`tools/claim_check.sh` proves per-position claims, survival across a restart, and
+saturation; mutation-verified all three.
+
 ### The statues open their eyes
 
 `warden_statue` is a decorative block for the whole of Chapter 0 -- players build around
@@ -301,11 +326,10 @@ carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
 In order, all unblocked unless marked:
 
 1. **Apply the unraveling bands.** `data/interregnum/unraveling/bands.json` defines what
-   band 1 and 2 do and nothing reads it yet. Needs a random-tick handler gated on chapter
-   band, and — the hard part — the player-placed-block guarantee. The crater gets away with
-   a tag whitelist because it fires once at one spot; the unraveling runs forever over a
-   whole world, so it likely needs real placement tracking (a chunk attachment fed by
-   `BlockEvent.EntityPlaceEvent`). **Design that before writing it.**
+   bands 1 and 2 do and nothing reads it yet. The hard prerequisite — placement tracking —
+   **is now done**, so what remains is a random-tick handler gated on chapter band that
+   consults `Claims.isClaimed` before touching anything, plus a `thin_places` scope (band 1
+   applies only near the crater and shrines).
 2. **Warden statue → living Warden.** The statues now wake, but they only *look* awake.
    Next is the entity: a patrolling figure that inspects, cites, and speaks in procedure --
    with `warden_intake`, the first written dialogue scene, already waiting for it. This is

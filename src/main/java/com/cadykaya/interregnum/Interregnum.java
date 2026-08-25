@@ -4,6 +4,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.ModContainer;
 
+import com.cadykaya.interregnum.registry.ModAttachments;
 import com.cadykaya.interregnum.registry.ModBlocks;
 import com.cadykaya.interregnum.registry.ModCreativeTabs;
 import com.cadykaya.interregnum.registry.ModFeatures;
@@ -20,6 +21,7 @@ public class Interregnum {
     public static final String MOD_ID = "interregnum";
 
     public Interregnum(IEventBus modBus, ModContainer container) {
+        ModAttachments.register(modBus);
         ModBlocks.register(modBus);
         ModItems.register(modBus);
         ModCreativeTabs.register(modBus);

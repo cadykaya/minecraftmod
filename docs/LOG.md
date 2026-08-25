@@ -456,3 +456,42 @@ that make it meaningful.
 Art notes: the statue's first pass drew its visor at a fixed width, overflowing the head
 into the empty margin, and read as a box with ears. Marks are clipped to the silhouette now
 -- paint that leaves the silhouette IS the silhouette being wrong.
+
+---
+
+## Heartbeat tick 9 -- the world remembers what people built
+
+The prerequisite for the unraveling, designed before it was written as promised.
+
+Minecraft does not record who placed a block. The crater gets away with a tag whitelist
+because it fires once at one spot; the unraveling runs forever over a whole world and would
+eventually take somebody's cobblestone wall on the grounds that cobblestone is natural.
+
+`PlacedBlocks` is a chunk attachment of chunk-relative positions, one int each (x and z are
+4 bits, y is 9 -- a BlockPos long would cost twice the memory for information the
+attachment's own chunk already implies). Past 4096 placements the chunk **saturates**: the
+set is dropped and the whole chunk counts as claimed. Memory is bounded, the failure
+direction is safe -- it protects more, never less -- and it is the honest answer anyway,
+because a chunk with four thousand placed blocks in it is somebody's.
+
+Breaking a block forgets its position, or mining through your own wall would leave permanent
+invisible holes the unraveling could never touch. But a saturated chunk stays saturated:
+once a place is somebody's, digging a hole does not make it wilderness again.
+
+`Claims` fails CLOSED -- an unloaded chunk answers "claimed", because the unraveling has no
+business touching ground nobody is looking at, and the cost of being wrong that way is a
+block that does not decay rather than a block a person made and cannot get back.
+
+`/interregnum claim at|record|forget` are operator tools rather than test hooks: any world
+predating the mod is full of untracked builds and an admin needs to say "this is ours".
+They also make the tracker testable without a player, which is why the event handler stays
+three lines.
+
+Two more API corrections: `BlockEvent.BreakEvent` is gone (it is
+`net.neoforged.neoforge.event.level.block.BreakBlockEvent`, its own package), and
+`ChunkAccess.setUnsaved(boolean)` is now `markUnsaved()`.
+
+Mutation-verified three ways: no serialisation fails the restart, no cap fails saturation,
+and a forget that un-saturates fails by name. The check's own last assertion was blind
+first -- it read the smoke test's epilogue instead of the command reply, and failed on
+correct behaviour.

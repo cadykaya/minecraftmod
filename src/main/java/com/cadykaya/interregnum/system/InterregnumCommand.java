@@ -2,6 +2,9 @@ package com.cadykaya.interregnum.system;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -10,6 +13,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 import com.cadykaya.interregnum.Interregnum;
 import com.cadykaya.interregnum.core.chapter.Milestone;
+import com.cadykaya.interregnum.system.claim.Claims;
 
 /**
  * `/interregnum` -- read and drive the world's progress.
@@ -22,6 +26,27 @@ import com.cadykaya.interregnum.core.chapter.Milestone;
 @EventBusSubscriber(modid = Interregnum.MOD_ID)
 public final class InterregnumCommand {
     private InterregnumCommand() {}
+
+    /** Claim or release every block between two corners. */
+    private static int region(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
+                              boolean claim) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        BlockPos a = BlockPosArgument.getLoadedBlockPos(ctx, "from");
+        BlockPos b = BlockPosArgument.getLoadedBlockPos(ctx, "to");
+        ServerLevel level = ctx.getSource().getLevel();
+        int n = 0;
+        for (BlockPos pos : BlockPos.betweenClosed(a, b)) {
+            if (claim) {
+                Claims.record(level, pos);
+            } else {
+                Claims.forget(level, pos);
+            }
+            n++;
+        }
+        final int total = n;
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                (claim ? "claimed " : "released ") + total + " position(s)"), true);
+        return total;
+    }
 
     @SubscribeEvent
     public static void register(RegisterCommandsEvent event) {
@@ -44,6 +69,36 @@ public final class InterregnumCommand {
         // remembered.
         LiteralArgumentBuilder<CommandSourceStack> record = Commands.literal("record")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS));
+        // The claim system: read it, and edit it.
+        //
+        // `record`/`forget` are not test hooks. Blocks placed before this mod was
+        // installed are invisible to the tracker, so any existing world has builds
+        // it does not know about -- an operator needs a way to say "this is ours".
+        // They also happen to be the only way to exercise the tracker on a headless
+        // server, which is why the event handler can stay three lines long.
+        root = root.then(Commands.literal("claim")
+                .then(Commands.literal("at")
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                    ServerLevel level = ctx.getSource().getLevel();
+                                    boolean claimed = Claims.isClaimed(level, pos);
+                                    int count = Claims.count(level, pos);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "claimed=" + claimed + " chunkPlacements=" + count), false);
+                                    return 1;
+                                })))
+                .then(Commands.literal("record")
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .then(Commands.argument("from", BlockPosArgument.blockPos())
+                                .then(Commands.argument("to", BlockPosArgument.blockPos())
+                                        .executes(ctx -> region(ctx, true)))))
+                .then(Commands.literal("forget")
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .then(Commands.argument("from", BlockPosArgument.blockPos())
+                                .then(Commands.argument("to", BlockPosArgument.blockPos())
+                                        .executes(ctx -> region(ctx, false))))));
+
         for (Milestone m : Milestone.values()) {
             record = record.then(Commands.literal(m.name().toLowerCase(java.util.Locale.ROOT))
                     .executes(ctx -> {
