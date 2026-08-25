@@ -31,6 +31,29 @@ asserted against a running world rather than against its own source.
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
+### The advancement that must not speak
+
+`WORLD.md` locks two things that collide: the advancement at the moment of death is
+called **Deicide**, and *the mod never announces who did it*.
+
+Minecraft broadcasts advancements to chat by default. Shipped with that flag, the mod
+would print **"&lt;player&gt; has made the advancement [Deicide]"** to everybody on the
+server at the exact instant the design says nobody is told — the loudest possible
+violation of its central beat, delivered by a boolean nobody looked at.
+
+So `announce_to_chat` is false and `hidden` is true: the killer gets a toast, alone,
+and the tree does not show anyone else that killing the god is a thing that can be
+done. **That flag is the whole feature**, and `tools/advancement_check.py` fails the
+build if it ever flips.
+
+The criterion is `minecraft:impossible` and `Deicide.commit` awards it directly, so the
+condition lives with the rest of the death's consequences. The check also compares the
+criterion name in Java against the one in the JSON — two copies of one string, and if
+they disagree the award silently does nothing.
+
+The description does the same job as everything else at that moment: *"The box was
+addressed to the holder. It did not say which one."*
+
 ### Where enforcement reaches
 
 **A woken statue posts a Warden.** This was the last thing standing between the mod and

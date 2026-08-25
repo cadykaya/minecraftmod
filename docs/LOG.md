@@ -1309,3 +1309,41 @@ whole-entity dump now.
 
 Both assertions watched failing: statues breeding (two Wardens across two sweeps), and
 an unwoken statue posting before the god was dead.
+
+---
+
+## The advancement that must not speak
+
+The status survey turned up that the mod has no advancements at all -- including the
+one WORLD.md marks [LOCKED]: "The advancement at the moment of death: Deicide." So it
+exists now, and it turned out to be a better increment than its size suggests, because
+of what it collides with.
+
+WORLD.md locks a second thing about that moment: the mod never announces who did it.
+There is simply a player online who has gone quiet.
+
+Minecraft broadcasts advancements to chat by default. Shipped with the default flag,
+the mod would have printed "<player> has made the advancement [Deicide]" to every
+person on the server at the exact instant the design says nobody is told. The loudest
+possible violation of the mod's central beat, delivered by a boolean nobody looked at,
+in a feature that otherwise looks like housekeeping.
+
+So announce_to_chat is false and hidden is true -- the killer gets a toast, alone, and
+the tree does not advertise to everyone else that killing the god is a thing that can
+be done. That flag IS the feature, and advancement_check.py fails the build if it flips.
+
+Three other things the same file can drift on, all now checked: the criterion name
+(Java awards by string, JSON declares by string -- two copies of one name, and if they
+disagree the award silently does nothing and returns false), the advancement id, and
+the title and description keys, which render raw if absent.
+
+What is NOT checked, stated plainly: the award itself. It needs a real player and a
+headless server has none -- the same wall mobInteract sits behind. What is checkable is
+that everything the award depends on is correct and agrees with itself, and that is
+what the check does.
+
+Watched failing four ways: it announces to chat, the criterion names drift apart, the
+advancement is not generated at all, and it stops being hidden.
+
+Generated rather than hand-written, so the staleness check covers it -- and because a
+hand-edited JSON is exactly where that flag would quietly come back.

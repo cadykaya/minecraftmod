@@ -185,5 +185,7 @@
   "interregnum.dlg.warden_interrogation.noted": "Recorded. This unit will return if the register requires it.\n\nThree hundred and eleven statements outstanding. Four hundred and twelve were taken yesterday. The figure does not fall.",
   "interregnum.dlg.warden_interrogation.filed": "Filed.\n\nThis unit is required to say that your cooperation has been noted. This unit would like to say something else and is not authorised to.",
   "interregnum.dlg.warden_interrogation.filed_unsigned": "Unrecorded, then. That is permitted.\n\nThe register has a column for parties who decline. It has not been used before. This unit will use it correctly.",
-  "interregnum.dlg.warden_interrogation.offer_declined": "No. Statements must be taken by an authorised unit.\n\nThis unit is authorised. This unit will continue."
+  "interregnum.dlg.warden_interrogation.offer_declined": "No. Statements must be taken by an authorised unit.\n\nThis unit is authorised. This unit will continue.",
+  "advancements.interregnum.deicide.title": "Deicide",
+  "advancements.interregnum.deicide.description": "The box was addressed to the holder. It did not say which one."
 }

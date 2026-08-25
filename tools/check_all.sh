@@ -22,6 +22,9 @@ python3 tools/registry_check.py
 echo "== regard lines =="
 python3 tools/regard_lines_check.py
 
+echo "== advancement =="
+python3 tools/advancement_check.py
+
 echo "== unraveling =="
 python3 tools/unraveling_check.py
 

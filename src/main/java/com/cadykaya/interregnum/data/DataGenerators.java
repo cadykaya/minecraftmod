@@ -56,5 +56,12 @@ public final class DataGenerators {
                         new LootTableProvider.SubProviderEntry(
                                 registries -> new ModChestLoot(), LootContextParamSets.CHEST)),
                 event.getLookupProvider()));
+
+        // The one advancement. Generated rather than hand-written so the
+        // staleness check covers it like everything else -- and because the flag
+        // that keeps it out of chat is the entire feature, and a hand-edited JSON
+        // is exactly where that flag would quietly come back.
+        gen.addProvider(true, new net.minecraft.data.advancements.AdvancementProvider(
+                out, event.getLookupProvider(), List.of(new ModAdvancements())));
     }
 }

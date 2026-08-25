@@ -80,6 +80,31 @@ public final class Deicide {
             });
         }
 
+        // "The advancement at the moment of death: Deicide." (WORLD.md, LOCKED.)
+        //
+        // Awarded here rather than by a JSON predicate so it sits with the rest of
+        // the death's consequences instead of being split across two files. It is
+        // hidden and never announced to chat -- see ModAdvancements, where that flag
+        // is the whole feature.
+        //
+        // Null-checked rather than assumed: the advancement comes from a datapack,
+        // and a datapack can be replaced. A missing one must not take down the
+        // deicide, which has already happened by this point.
+        if (killer != null) {
+            ServerPlayer online = server.getPlayerList().getPlayer(killer);
+            if (online != null) {
+                var holder = server.getAdvancements().get(
+                        com.cadykaya.interregnum.data.ModAdvancements.DEICIDE);
+                if (holder != null) {
+                    online.getAdvancements().award(holder,
+                            com.cadykaya.interregnum.data.ModAdvancements.CRITERION);
+                } else {
+                    LOG.warn("No {} advancement to award; a datapack has replaced or "
+                            + "removed it.", com.cadykaya.interregnum.data.ModAdvancements.DEICIDE);
+                }
+            }
+        }
+
         // The sun stops.
         //
         // The day cycle was never the sky's; it was the god's, and with nobody left
