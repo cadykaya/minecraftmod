@@ -69,6 +69,7 @@ home=$(grep -m1 -oE 'Shrine-Keeper has the following entity data: \[I; [^]]*\]' 
 radius=$(grep -m1 -oE 'Shrine-Keeper has the following entity data: [0-9-]+' /tmp/wg_smoke_out.txt || true)
 python3 tools/keeper_pos_check.py "$pos" "$home" "$radius" 8 8 -60 5 || {
     echo "--- keeper replies ---"; grep -E 'Shrine-Keeper' /tmp/wg_smoke_out.txt || true
+    echo "--- placement log ---"; grep -E 'could not seat|Placed' "$LOG" /tmp/wg_smoke_out.txt || true
     echo "FAIL: the keeper is not tethered to the shrine"; exit 1; }
 
 # --- which scene the keeper opens with -------------------------------------

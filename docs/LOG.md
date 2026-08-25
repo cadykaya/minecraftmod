@@ -902,9 +902,21 @@ first attempt -- because the keeper had a stroll goal, RCON commands arrive seco
 apart, the server ticks throughout, and by the time anything asked, the keeper had
 walked out of range and looked away.
 
-The interesting part is that the two halves needed different fixes.
+My first explanation was that the keeper had wandered. It was wrong, and I said it
+before testing it: a probe that placed a shrine and queried the keeper 120 commands
+later found it at exactly its spawn coordinate, unmoved. The cause of the CI failure
+is still unknown.
 
-The POSITION was a design bug, not a test bug. A shrine-keeper who wanders off leaves
+What the episode actually produced is better than the explanation would have been. The
+check could not say WHY the property was missing, and now it can -- it dumps every
+keeper reply and the placement log on failure. And chasing it turned up an ignored
+boolean: `addFreshEntity` answers false when the level declines an entity, which would
+leave a shrine with no keeper and nothing in any log to say so. That return is checked
+now.
+
+The two halves still needed different treatment.
+
+The POSITION assertion was replaced by a tether assertion. A shrine-keeper who wanders off leaves
 a player standing at a shrine with a scene and nobody to have it with. They are
 tethered now, and the check asserts the tether -- which is time-invariant -- rather
 than the position, which is merely a consequence of it. CI did not find a bad test

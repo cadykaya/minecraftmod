@@ -38,6 +38,8 @@ import net.minecraft.world.entity.EntitySpawnReason;
  * a later "regenerate shrines" tool would be exactly where it gets broken.
  */
 public class ShrineFeature extends Feature<NoneFeatureConfiguration> {
+    private static final org.slf4j.Logger LOG = com.mojang.logging.LogUtils.getLogger();
+
     /** Half-width of the paving. 2 gives a 5x5 court, which reads at a distance
      *  without dominating a hillside. */
     private static final int RADIUS = 2;
@@ -220,7 +222,16 @@ public class ShrineFeature extends Feature<NoneFeatureConfiguration> {
             // they exist to attend -- and, being persistent, never come back.
             keeper.setHomeTo(new BlockPos(cx, floorY + 1, cz), ShrineKeeperEntity.TETHER);
             keeper.setPersistenceRequired();
-            level.addFreshEntity(keeper);
+            // The return value is NOT decorative. `addFreshEntity` answers false when
+            // the level declines the entity -- most plausibly because the chunk is
+            // not in a state to accept one at this instant during generation -- and
+            // ignoring it produces a shrine with no keeper, silently, with nothing
+            // in any log to say so. That is the exact shape of failure this project
+            // keeps finding, so it gets a line.
+            if (!level.addFreshEntity(keeper)) {
+                LOG.warn("The shrine at {},{} could not seat its keeper: the level "
+                        + "refused the entity at {}.", cx, cz, stand);
+            }
             return;
         }
     }

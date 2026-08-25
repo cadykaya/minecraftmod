@@ -736,18 +736,26 @@ test for flakiness. The runner failed on the first:
 FAIL: the shrine placed but is missing: E_KEEPER_ATTENDS
 ```
 
-Neither assertion was wrong. The **mob** was: it had a stroll goal, RCON commands
-arrive seconds apart, the server ticks the entire time, and by the time anything
-asked, the keeper had walked out of range and turned to look at something else.
-Locally the timing happened to catch it before it moved.
+My first explanation was that the keeper had wandered: it has a stroll goal, RCON
+commands arrive seconds apart, and the server ticks throughout. **That explanation was
+wrong, and I stated it before testing it.** A probe that placed a shrine and then
+queried the keeper's position 120 commands later found it at exactly its spawn
+coordinate, unmoved. Whatever happened on the runner, drift was not it.
+
+What is actually true is weaker and more useful: **the check asserted a property of a
+live mob and could not say why the property was absent.** The cause is still unknown
+as of writing. What changed is that the check can now answer the question -- it dumps
+every keeper reply and the placement log on failure -- and that the two assertions
+were replaced by ones that do not depend on when you looked.
 
 Two different fixes, and the interesting part is that they are different.
 
-**The position was a design bug.** A shrine-keeper who wanders off leaves a player
-standing at a shrine with a scene and nobody to have it with. They are now tethered
-(`setHomeTo`) to the court, and the check asserts **the tether**, which is
-time-invariant, rather than the position, which is a consequence of it. CI did not
-find a bad test here; it found a bad mob, and the test was right to complain.
+**The position assertion was replaced by a tether assertion.** A shrine-keeper who
+wanders off would leave a player standing at a shrine with a scene and nobody to have
+it with, so they are now tethered (`setHomeTo`) to the court regardless -- and the
+check asserts **the tether**, which is time-invariant, rather than the position, which
+is merely a consequence of it. The tether is good design whether or not it was the
+bug.
 
 **The facing could not be asserted at all.** A mob's yaw is set once at placement and
 then overwritten by whatever it looks at next, so there is no later moment at which
@@ -766,3 +774,11 @@ Corollary, and the reason this cost a red build rather than being caught here: *
 flaky check can be perfectly reproducible on one machine.** Running it twice locally
 proved nothing, because both runs had the same timing. The disagreement between two
 *environments* is the signal; two runs in one environment is not.
+
+Second corollary, paid for in this same hour: **a diagnosis stated before it is tested
+is a guess wearing a conclusion's clothes.** I had a mechanism that explained the
+symptom perfectly, said so, and only afterwards ran the probe that refuted it. The
+useful output of the episode was not the explanation; it was noticing that a live-mob
+assertion had no way to report *why* it failed, and fixing that. Along the way it also
+turned up an ignored boolean: `addFreshEntity` returns false when the level declines
+an entity, and a shrine with no keeper had no line anywhere saying so.
