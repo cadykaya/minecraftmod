@@ -59,8 +59,17 @@ quietly taught the opposite. Charging somebody for a creeper's work is the kind 
 unfairness that teaches people never to walk near an NPC again, so the check proves
 a death by no player's hand costs nobody.
 
-**Still missing: anything that places one.** Both mobs exist and can be summoned;
-worldgen does not put a keeper at a shrine yet.
+**Every shrine has one**, placed at worldgen, standing beside the offering box and
+facing it. The spot is chosen rather than fixed -- the court has missing paving by
+design, so the first candidate tile with solid footing and two blocks of headroom
+wins, and the shrine gets nobody if none of them do. A keeper standing in a wall is
+worse than a shrine with no keeper.
+
+**Rough edge, flagged rather than hidden:** the ledger scene opens with "the offering
+box is short", which presumes the box has been looted. Talk to a keeper at an
+untouched shrine and the line still works (offerings stopped coming) but the
+"It was us. We took it." reply becomes a strange lie. A pre-loot variant of the
+opening node would sharpen it.
 
 ### The Haunt begins
 
@@ -572,11 +581,10 @@ In order, all unblocked unless marked:
    Unambiguously in scope meanwhile: **first Warden contact records
    `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
    currently reachable only by command.
-3. **Place a keeper at each shrine.** Both scenes are now reachable *if you can find
-   somebody to talk to*, and nothing puts a keeper anywhere. `ShrineFeature` already
-   builds the shrine and knows where its offering box is; spawning one keeper beside
-   it at worldgen is the obvious move, and `tools/shrine_rate_probe.sh` already
-   measures how often that happens.
+3. **A pre-loot line for the keeper.** See the rough edge under "The shrine-keeper,
+   in person": the ledger scene presumes the box has been opened. Either a second
+   opening node chosen on whether the shrine's chest has been looted, or a rewrite of
+   the first line that carries both readings.
 4. **Let a player feel the regard.** It is recorded, persisted and invisible.
    Deliberately no meter -- but a *band change* is a relationship event and is worth
    surfacing as text with no number ("The Wardenate has noticed you."). That needs a

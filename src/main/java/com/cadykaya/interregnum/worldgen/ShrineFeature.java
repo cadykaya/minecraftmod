@@ -17,6 +17,9 @@ import net.minecraft.world.level.block.ChestBlock;
 import com.cadykaya.interregnum.data.ModChestLoot;
 
 import com.cadykaya.interregnum.registry.ModBlocks;
+import com.cadykaya.interregnum.registry.ModEntities;
+import com.cadykaya.interregnum.content.entity.ShrineKeeperEntity;
+import net.minecraft.world.entity.EntitySpawnReason;
 
 /**
  * A wayside shrine: a small paved square with a stele at each corner and one
@@ -165,6 +168,57 @@ public class ShrineFeature extends Feature<NoneFeatureConfiguration> {
                 .setValue(ChestBlock.FACING, Direction.Plane.HORIZONTAL.getRandomDirection(rand)));
         RandomizableContainer.setBlockEntityLootTable(level, rand, boxPos, ModChestLoot.SHRINE);
 
+        placeKeeper(level, rand, cx, cz, floorY);
+
         return placedAnything;
+    }
+
+    /**
+     * Somebody to tend it.
+     *
+     * One keeper per shrine, from worldgen, because `WORLD.md` has villagers tending
+     * shrines as ordinary Chapter 0 life -- they are scenery a player walks past for
+     * hours, exactly like the Warden statues, and exactly like the statues that is
+     * what makes the moment everything changes land.
+     *
+     * The spot is chosen rather than fixed: the court has missing paving by design,
+     * so the first candidate tile with solid footing and two blocks of headroom wins
+     * and the shrine gets nobody if none of them do. A keeper standing in a wall or
+     * hovering over a cave mouth is worse than a shrine with no keeper.
+     *
+     * They face the offering box, because that is what they are here for and it is
+     * the first thing that tells a player these two things go together.
+     */
+    private static void placeKeeper(WorldGenLevel level, RandomSource rand,
+                                    int cx, int cz, int floorY) {
+        // Edges before corners: beside the box reads as attending it, while a corner
+        // reads as loitering.
+        int[][] spots = {{1, 0}, {-1, 0}, {0, 1}, {0, -1},
+                         {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
+        for (int[] d : spots) {
+            BlockPos stand = new BlockPos(cx + d[0], floorY + 1, cz + d[1]);
+            if (!level.getBlockState(stand.below()).isSolid()
+                    || !level.getBlockState(stand).isAir()
+                    || !level.getBlockState(stand.above()).isAir()) {
+                continue;
+            }
+            ShrineKeeperEntity keeper = ModEntities.SHRINE_KEEPER.get()
+                    .create(level.getLevel(), EntitySpawnReason.STRUCTURE);
+            if (keeper == null) {
+                return;
+            }
+            // Facing the box. Minecraft's yaw is the NEGATED atan2 of the offset
+            // (yaw 0 is +z, 90 is -x), and the offset here points away from the
+            // centre, so both negations are needed and they do not cancel. Getting
+            // it wrong put the keeper with their back to the thing they are here
+            // for, which is the sort of error that only ever shows up in a
+            // screenshot. (`moveTo` is `snapTo` in 26.2; the BlockPos overload
+            // bottom-centres for you.)
+            float facing = (float) -Math.toDegrees(Math.atan2(-d[0], -d[1]));
+            keeper.snapTo(stand, facing, 0.0F);
+            keeper.setPersistenceRequired();
+            level.addFreshEntity(keeper);
+            return;
+        }
     }
 }

@@ -818,3 +818,37 @@ quietly taught the opposite lesson, that the only thing anybody is ever judged o
 dialogue. A death by no player's hand costs nobody, and the check proves that half
 rather than the half it cannot reach: with no players on a headless server, the murder
 charge itself is unverifiable here, and the fairness guarantee is the part that is.
+
+## Somebody is at the shrine
+
+Every shrine gets a keeper now, placed at worldgen, standing beside the offering box
+and facing it.
+
+The spot is chosen rather than fixed. The court has missing paving by design -- that
+is what makes it read as old -- so the placement walks candidate tiles, edges before
+corners, and takes the first with solid footing and two blocks of headroom. If none
+qualify the shrine gets nobody, because a keeper standing inside a stele or hovering
+over a cave mouth is worse than a shrine with nobody at it.
+
+Two API notes, both read from the sources rather than remembered: `Entity#moveTo` is
+`snapTo` in 26.2, and there is a `BlockPos` overload that bottom-centres for you.
+
+And one bug that only a live run would ever have shown. The first version had the
+keeper standing correctly and **facing away from the box** -- Minecraft's yaw is the
+negated atan2 of the offset, the offset here already points away from the centre, and
+the two negations do not cancel. Nothing about that is visible in the source, in a
+compile, or in any assertion about existence. It is the sort of thing you only ever
+find in a screenshot, so it now has an assertion instead: the check computes the
+keeper's look vector from the reported yaw and requires it to point at the box.
+
+The check that caught it also caught the tool that nearly ate it. Inlining the Python
+parsing as a heredoc inside `worldgen_check.sh` closed the OUTER heredoc early -- the
+one feeding commands to the server -- and silently corrupted the file, with the only
+symptom being a Python syntax error about an unterminated string and a permission
+error on a path that had become a command. Nested heredocs sharing a terminator have
+no useful error. The parsing lives in `tools/keeper_pos_check.py` now.
+
+Flagged rather than hidden: the ledger scene opens with "the offering box is short",
+which presumes the box has been looted. At an untouched shrine the line still works --
+offerings stopped coming -- but the "It was us. We took it." reply becomes a strange
+lie. HANDOFF has it as the next content item.
