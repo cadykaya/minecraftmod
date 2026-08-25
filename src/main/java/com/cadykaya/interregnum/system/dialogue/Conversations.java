@@ -19,6 +19,7 @@ import com.cadykaya.interregnum.core.dialogue.Resolution;
 import com.cadykaya.interregnum.system.ChapterSavedData;
 import com.cadykaya.interregnum.system.RegardSavedData;
 import com.cadykaya.interregnum.core.regard.RegardEffects;
+import com.cadykaya.interregnum.system.regard.RegardNotices;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,26 +125,42 @@ public final class Conversations {
      * decided -- lives in {@link com.cadykaya.interregnum.core.regard.RegardEffects}
      * where it is tested without a game. This is the seam that hands it the states.
      *
-     * Nothing is announced to the player. There is no karma bar and no "+5 Villages"
-     * (docs/WORLD.md): you find out what an institution thinks of you from how it
-     * treats you, which is the only version of this that is not a meter wearing a
-     * relationship's clothes.
+     * No number is ever announced. There is no karma bar and no "+5 Villages"
+     * (docs/WORLD.md) -- but there IS a line when somebody's opinion of you crosses
+     * into a different band, because a system that is recorded, persisted and utterly
+     * invisible is one a player cannot know exists. {@link RegardNotices} draws that
+     * distinction; most conversations move regard without crossing anything and say
+     * nothing at all, which is the correct outcome and the reason this is safe.
+     *
+     * Every participant is snapshotted before the effects run, not one at a time
+     * afterwards: a table resolves everyone at once, and a snapshot taken after the
+     * fact is of a state that has already moved.
      */
     private static void record(MinecraftServer server, Resolution r) {
         RegardSavedData regard = RegardSavedData.get(server);
-        var applied = RegardEffects.apply(r, id -> {
-            UUID uuid;
+        List<UUID> players = new ArrayList<>();
+        for (String id : r.stances().keySet()) {
             try {
-                uuid = UUID.fromString(id);
+                players.add(UUID.fromString(id));
             } catch (IllegalArgumentException e) {
-                return null;               // not a player; nothing keeps their record
+                // not a player; nothing keeps their record and nothing to tell them
             }
-            return regard.of(server, uuid);
-        });
-        if (!applied.isEmpty()) {
-            regard.touch();
-            LOG.info("Regard moved for {} participant(s): {}", applied.size(), applied);
         }
+        RegardNotices.around(server, players, () -> {
+            var applied = RegardEffects.apply(r, id -> {
+                UUID uuid;
+                try {
+                    uuid = UUID.fromString(id);
+                } catch (IllegalArgumentException e) {
+                    return null;           // not a player; nothing keeps their record
+                }
+                return regard.of(server, uuid);
+            });
+            if (!applied.isEmpty()) {
+                regard.touch();
+                LOG.info("Regard moved for {} participant(s): {}", applied.size(), applied);
+            }
+        });
     }
 
     /** Show every participant where the table stands. */

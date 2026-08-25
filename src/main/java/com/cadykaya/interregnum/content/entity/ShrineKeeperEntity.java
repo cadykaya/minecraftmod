@@ -1,6 +1,7 @@
 package com.cadykaya.interregnum.content.entity;
 
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -23,6 +24,7 @@ import net.minecraft.world.level.Level;
 import com.cadykaya.interregnum.Interregnum;
 import com.cadykaya.interregnum.core.regard.Institution;
 import com.cadykaya.interregnum.system.RegardSavedData;
+import com.cadykaya.interregnum.system.regard.RegardNotices;
 import com.cadykaya.interregnum.system.dialogue.Conversations;
 
 /**
@@ -171,10 +173,16 @@ public class ShrineKeeperEntity extends PathfinderMob {
     public void die(DamageSource cause) {
         if (level() instanceof ServerLevel server
                 && cause.getEntity() instanceof ServerPlayer killer) {
-            RegardSavedData regard = RegardSavedData.get(server.getServer());
-            regard.of(server.getServer(), killer.getUUID())
-                    .adjust(Institution.VILLAGES, MURDER_COST);
-            regard.touch();
+            MinecraftServer mc = server.getServer();
+            RegardSavedData regard = RegardSavedData.get(mc);
+            // Through RegardNotices, so that a murder which drops the player into a
+            // worse standing with the villages actually says so. -25 is large enough
+            // to cross a band from almost anywhere, which is the intent: this is the
+            // one deed in the mod a player can do casually and be told about.
+            RegardNotices.around(mc, killer.getUUID(), () -> {
+                regard.of(mc, killer.getUUID()).adjust(Institution.VILLAGES, MURDER_COST);
+                regard.touch();
+            });
         }
         super.die(cause);
     }

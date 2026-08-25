@@ -155,6 +155,7 @@ public final class SelfTest {
         facingChecks();
         chapterChecks();
         regardChecks();
+        crossingChecks();
         effectChecks();
         System.out.println("SelfTest: " + passed + " checks passed");
     }
@@ -333,5 +334,90 @@ public final class SelfTest {
         q.recordDeicide(Institution.ANCHORITE);
         check(q.value(Institution.WARDENATE) == -60,
               "a second deicide is more evidence, not a different crime");
+    }
+
+    /**
+     * The only regard event a player is ever told about.
+     *
+     * Everything here is about the difference between a change and a CROSSING. Regard
+     * moves constantly and almost none of it is news; what a player hears is that
+     * somebody's opinion of them moved into a different band, with no number attached.
+     */
+    static void crossingChecks() {
+        var p = new RegardState(false);
+        var before = Standings.snapshot(p);
+
+        // Movement inside a band is not an event. This is the load-bearing case: get
+        // it wrong and every conversation ends in a burst of notifications, which is
+        // a karma bar with extra steps.
+        p.adjust(Institution.VILLAGES, 5);
+        check(Standings.since(before, p).isEmpty(),
+              "moving without crossing a band is not news");
+
+        p.adjust(Institution.VILLAGES, 20);          // 0 -> 25, WARY -> KNOWN
+        var rose = Standings.since(before, p);
+        check(rose.size() == 1, "crossing a band is exactly one event");
+        check(rose.get(0).institution() == Institution.VILLAGES, "attributed to the right one");
+        check(rose.get(0).from() == Standing.WARY && rose.get(0).to() == Standing.KNOWN,
+              "and carries both sides of the line it crossed");
+        check(rose.get(0).rose(), "the direction is part of the event");
+
+        // Two steps in one go is ONE crossing, not two. A player who goes from WARY
+        // to TRUSTED has not been told twice; they have been told once, correctly.
+        var q = new RegardState(false);
+        var q0 = Standings.snapshot(q);
+        q.adjust(Institution.WARDENATE, 60);
+        var leapt = Standings.since(q0, q);
+        check(leapt.size() == 1, "skipping a band is still one crossing");
+        check(leapt.get(0).from() == Standing.WARY && leapt.get(0).to() == Standing.TRUSTED,
+              "reported from where they were to where they are");
+
+        // Falling reads differently, and the type says so rather than the reader
+        // having to work it out from two ordinals.
+        var f = new RegardState(false);
+        f.adjust(Institution.VILLAGES, 50);
+        var f0 = Standings.snapshot(f);
+        f.adjust(Institution.VILLAGES, -60);
+        var fell = Standings.since(f0, f);
+        check(fell.size() == 1 && !fell.get(0).rose(), "a fall is a crossing that did not rise");
+
+        // Order is the declaration order of Institution, not a map's iteration order,
+        // because these become lines a player reads in sequence (LESSONS #19).
+        var m = new RegardState(false);
+        var m0 = Standings.snapshot(m);
+        m.adjust(Institution.VILLAGES, 30);
+        m.adjust(Institution.WARDENATE, 30);
+        var many = Standings.since(m0, m);
+        check(many.size() == 2, "two institutions changing their minds is two events");
+        check(many.get(0).institution() == Institution.WARDENATE
+              && many.get(1).institution() == Institution.VILLAGES,
+              "reported in Institution declaration order, not a map's");
+
+        // A non-killer's ghost regard cannot move, so it can never be news.
+        var b = new RegardState(false);
+        var b0 = Standings.snapshot(b);
+        b.adjust(Institution.THE_GHOST, 90);
+        check(Standings.since(b0, b).isEmpty(), "the ghost says nothing to someone who did not kill it");
+
+        // A ceiling that bites mid-fall still reports where the player actually
+        // landed -- reporting the requested band would promise a change that the
+        // ceiling refused.
+        var c = new RegardState(true);
+        c.adjust(Institution.VERDANT, 80);
+        var c0 = Standings.snapshot(c);
+        c.recordDeicide(Institution.ANCHORITE);
+        var scars = Standings.since(c0, c);
+        check(scars.stream().anyMatch(x -> x.institution() == Institution.VERDANT
+                    && x.from() == Standing.BELOVED && !x.rose()),
+              "a deicide is heard as a fall by every god who learns of it");
+
+        // A crossing that did not cross is a message saying nothing happened.
+        boolean threw = false;
+        try {
+            new BandChange(Institution.VILLAGES, Standing.KNOWN, Standing.KNOWN);
+        } catch (IllegalArgumentException e) {
+            threw = true;
+        }
+        check(threw, "a band change that changes no band is refused");
     }
 }

@@ -28,7 +28,44 @@ asserted against a running world rather than against its own source.
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
 | Live-world checks | **15**, every one mutation-verified, all in CI |
+| Regard | recorded, persisted, and now **audible** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
+
+### Somebody changed their mind about you
+
+Regard was recorded, persisted, and completely invisible: no way for a player to
+learn the system existed short of reading the source. It now speaks, and the rule it
+keeps is narrower than "no feedback".
+
+**The ban is on the NUMBER, not on the news.** What surfaces is a band *crossing* --
+`core/regard/Standings` computes it, and most changes are not one. A conversation
+that moves four institutions a little says nothing at all, which is correct: nobody's
+opinion of you changed, it just moved. `regard_check.sh` asserts both halves, and the
+quiet one is the load-bearing assertion: two players who moved regard without
+crossing anything must hear nothing, or every conversation ends in a burst of
+notifications and the meter is back with a thesaurus on.
+
+**Seventy lines**, one per (institution, band, direction) a player can actually reach
+-- you cannot rise into the bottom band or fall out of the top one. Each institution
+speaks through its own domain, because that is the only characterisation available
+without a scene: the Verdant's regard is whether paths close behind you, the
+Anchorite's is whether what you set down stays there, the Hearth-Turner's is how fast
+your gear ages, and **the Quiet One's is that you cannot tell** -- every one of its
+lines is about the impossibility of reading a silence. `tools/regard_lines_check.py`
+enforces coverage from the Java enums (add an `Institution` and it fails until the
+lines exist) and **fails on any digit in any regard line**.
+
+At a deicide the killer hears one line each from four gods at once. That is how the
+mod says *you killed a god* without saying it. **The ghost stays silent**, which is
+the design and not an omission: `recordDeicide` deliberately does not floor its own
+victim, because the dead god's opinion of its killer is the one relationship still
+open and the back half of the mod is spent on it. The check asserts that silence.
+
+Two guards worth keeping: notices are wrapped in a `try`/`catch` because a line of
+chat must never be able to half-finish a deicide (found by mutation -- a throw in the
+crossing logic escaped through `Deicide.commit` after it had set the killer), and
+`regard_keys_check.py` proves the keys a **running server** emits resolve, so the
+static check and `RegardNotices.key()` cannot silently drift apart.
 
 ### The shrine-keeper, in person
 
@@ -607,23 +644,16 @@ In order, all unblocked unless marked:
    Unambiguously in scope meanwhile: **first Warden contact records
    `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
    currently reachable only by command.
-3. **Let a player feel the regard.** It is recorded, persisted, and invisible. No
-   meter -- but a *band change* is a relationship event worth surfacing as text with
-   no number ("The Wardenate has noticed you."), and institutions should start
-   *acting* on standing: options gated on it, and a Warden's opening line depending
-   on your file. That last one needs a condition type beyond `required_tags`.
-4. **Let a player feel the regard.** It is recorded, persisted and invisible.
-   Deliberately no meter -- but a *band change* is a relationship event and is worth
-   surfacing as text with no number ("The Wardenate has noticed you."). That needs a
-   line per institution per crossing, and a hook where `RegardEffects` reports what
-   it applied. Institutions should also begin to *act* on it: option gating by
-   standing, and a Warden's opening line depending on your file.
-5. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
+3. **Institutions should ACT on standing.** Half of "let a player feel the regard" is
+   done -- a band crossing now says so, in text with no number (see below). The other
+   half is the world behaving differently once it has an opinion: dialogue options
+   gated on standing, and a Warden's opening line depending on your file. That needs
+   **a dialogue condition type beyond `required_tags`** -- a standing threshold per
+   institution -- which is the concrete next piece of work here.
+4. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
    everything it would render is already proven server-side. Chat works meanwhile.
-5. **More dialogue scenes** (shrine-keeper, first dream-audience) and the client screen.
-   The engine, the loader and the first scene are done and verified end to end.
-6. **Clear remaining `VERIFY:` markers** in MODELS.md, DATAGEN.md, WORLDGEN.md against the
+5. **Clear remaining `VERIFY:` markers** in MODELS.md, DATAGEN.md, WORLDGEN.md against the
    sources jar, exactly as PLATFORM.md's were.
 
 ## Standing warning

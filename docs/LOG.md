@@ -972,3 +972,57 @@ early would have reported a Warden that failed to survive a restart -- the loude
 possible wrong answer.
 
 LESSONS #22: an API that accepts your write has not promised anyone can read it.
+
+---
+
+## Somebody changed their mind about you
+
+Regard has been recorded and persisted for several passes and was, until now,
+completely invisible: no way for a player to learn the system existed short of
+reading the source. HANDOFF called this "let a player feel the regard" and it sat
+behind a rule that is easy to over-read. `WORLD.md` bans the karma bar. That is a ban
+on the NUMBER, not on the news.
+
+So the event is a band CROSSING, and most changes are not one. `core/regard/Standings`
+computes it against a snapshot rather than by subtracting deltas -- two effects of -20
+each are one crossing, not two, and reconstruction would report the second from a
+baseline that never existed. A snapshot is a fact; arithmetic on deltas is a guess.
+
+The load-bearing assertion is the quiet one. Two players in run 1 of regard_check move
+regard by -4, +5, +2 and +3 and cross nothing, so they hear nothing. If that ever
+starts firing, every conversation ends in a burst of notifications and the meter is
+back wearing a thesaurus.
+
+Seventy lines, one per (institution, band, direction) a player can reach -- you cannot
+rise into the bottom band or fall out of the top. Each institution speaks through its
+own domain, because that is the only characterisation available without a scene: the
+Verdant's regard is whether paths close behind you, the Anchorite's is whether what
+you set down stays there, the Hearth-Turner's is how fast your gear ages. The Quiet
+One's is that you cannot tell, and every one of its ten lines is about the
+impossibility of reading a silence.
+
+At a deicide the killer hears one line each from four gods at once, which is how the
+mod says "you killed a god" without saying it. The ghost says nothing, and that is the
+design: recordDeicide deliberately does not floor its own victim, because the dead
+god's opinion of its killer is the one relationship still open. I wrote that assertion
+backwards first -- expecting the ghost to bottom out with everyone else -- and the
+check failed. The assertion was wrong, not the code. It now asserts the silence.
+
+Three things the verification turned up that reading would not have:
+
+A mutation that announced every movement CRASHED rather than failing an assertion,
+because BandChange refuses a change that changes nothing. Caught, but for the wrong
+reason (LESSONS #18), so it verified nothing about the assertion under test. Two more
+mutations were also caught by the wrong assertion before one isolated it: announcing a
+fabricated crossing to everybody, which moves no value and changes no printed band.
+
+That first crash was also a real bug. It threw out of the middle of Deicide.commit,
+which had already recorded the milestone and set the killer and had not yet stopped
+the sun. A god half-killed because a line of chat could not be composed is far worse
+than a missing line of chat, so the notice dispatch is wrapped: the change stands, the
+message is lost, and the error is loud.
+
+And two checks that look like one are not. regard_lines_check proves the lang file
+covers every crossing -- against a key rule it writes out itself, in Python, a second
+copy of what the Java does. regard_keys_check reads the keys a RUNNING server emitted
+and requires each to resolve. Only the pair of them can catch the two copies drifting.

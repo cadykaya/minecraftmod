@@ -56,6 +56,58 @@ want /tmp/rc1.txt 'THE_GHOST=none' \
 want /tmp/rc1.txt 'regard=none reason=not a player id' \
     "a record was invented for something that is not a player"
 
+# --- what the player is actually TOLD -------------------------------------------
+#
+# There is no karma bar, and there is also no silence: a band CROSSING is a
+# relationship event and gets one line of text with no number in it. The distinction
+# is the whole design, and both halves of it are asserted here because only one of
+# them is obvious.
+#
+# The quiet half first. A and B both moved regard in that conversation -- -4, +5,
+# +2, +3 -- and none of it crossed a band, so neither of them hears anything at all.
+# If this ever starts firing, every conversation ends in a burst of notifications and
+# the mod has grown the meter it exists to avoid. This is the assertion that keeps
+# band notices from becoming a karma bar with a thesaurus.
+for who in "$A" "$B"; do
+    if grep -q "Regard crossing for $who" /tmp/regard1.log; then
+        grep "Regard crossing for $who" /tmp/regard1.log
+        fail "regard moved without crossing a band and the player was told about it anyway"
+    fi
+done
+
+# The loud half. A deicide moves several institutions across bands at once, and the
+# killer hears one line per institution -- which is how the mod says "you killed a
+# god" without ever saying it: several people who have never spoken to you make up
+# their minds in the same moment.
+want /tmp/regard1.log "Regard crossing for $K: WARDENATE WARY -> RESENTED" \
+    "the Wardenate crossed a band over a deicide and said nothing"
+for god in VERDANT ANCHORITE HEARTH_TURNER QUIET_ONE; do
+    want /tmp/regard1.log "Regard crossing for $K: $god WARY -> RESENTED" \
+        "$god learned what the killer is and did not register an opinion"
+done
+
+# And the one that stays silent, which is the point rather than an omission. The
+# deicide floors and caps every god who HEARS about it; the god who was killed is
+# deliberately left where it was, because its opinion of its killer is the single
+# relationship still open and the whole back half of the mod is spent on it
+# (RegardState.recordDeicide, and the comment in Deicide). So at the moment of its
+# death the ghost says nothing -- every other god in the world has an opinion and
+# the only one with standing to judge you has not formed one yet.
+#
+# This assertion was originally written the other way round, expecting the ghost to
+# bottom out with everyone else. It failed, and it was the assertion that was wrong.
+if grep -q "Regard crossing for $K: THE_GHOST" /tmp/regard1.log; then
+    grep "Regard crossing for $K: THE_GHOST" /tmp/regard1.log
+    fail "the ghost passed judgement on its own killer at the moment of dying -- that relationship is supposed to be the one still open"
+fi
+
+# And every key that a live server emitted actually resolves. regard_lines_check.py
+# proves the lang file is complete against a rule it writes out itself; this proves
+# the RUNNING CODE builds the same keys, which two copies of a naming rule stop doing
+# the moment one of them is edited.
+python3 tools/regard_keys_check.py /tmp/regard1.log \
+    || fail "a crossing was announced with a key that has no line behind it"
+
 echo "2/2 the scar, and whether it survives the night"
 # The gods write the killer off and cap them there. The Wardenate takes a flat hit.
 # The VILLAGES do not move -- WORLD.md's four voices has them whispering *saint*,

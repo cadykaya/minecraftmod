@@ -95,6 +95,24 @@ MUTATIONS = [
     ("regard: adjust reports the requested delta, not the applied one",
      f"{MAIN}/regard/RegardState.java",
      "return after - before;", "return delta;"),
+
+    # The crossing guards. Each of these is a way the band notices turn back into
+    # the karma bar they exist to avoid, and none of them would raise an exception
+    # or look wrong in a log -- they would just quietly tell the player the wrong
+    # thing, which is why they are here rather than trusted by reading.
+    ("crossing: every movement is reported, not just the ones that cross",
+     f"{MAIN}/regard/Standings.java",
+     "if (was != null && was != now) {", "if (was != null) {"),
+    ("crossing: a fall is reported as a rise",
+     f"{MAIN}/regard/BandChange.java",
+     "return to.ordinal() > from.ordinal();", "return true;"),
+    ("crossing: an event that crossed nothing is allowed through",
+     f"{MAIN}/regard/BandChange.java",
+     "if (from == to) {", "if (false) {"),
+    ("crossing: institutions are reported in whatever order a map iterates",
+     f"{MAIN}/regard/Standings.java",
+     "for (Institution i : Institution.values()) {\n            Standing was = before.get(i);",
+     "for (Institution i : before.keySet().stream()\n                .sorted(java.util.Comparator.comparing(Enum::name)).toList()) {\n            Standing was = before.get(i);"),
 ]
 
 

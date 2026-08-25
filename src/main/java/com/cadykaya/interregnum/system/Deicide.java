@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import java.util.UUID;
 
 import com.cadykaya.interregnum.core.chapter.Milestone;
+import com.cadykaya.interregnum.system.regard.RegardNotices;
 
 /**
  * The moment the overworld's god dies.
@@ -64,11 +65,19 @@ public final class Deicide {
         // does NOT floor it: you destroyed it, and its opinion of you is the one
         // relationship still open. The villages are left alone for the same kind of
         // reason, and both are argued in RegardState.
+        //
+        // The killer hears about it from the gods, one line each, with no number and
+        // no explanation of what they did. That is the whole point of routing it
+        // through RegardNotices: the mod still never says "you killed a god" -- it
+        // says that several people who have never spoken to you have made up their
+        // minds, all at once, and lets the player put that together.
         if (killer != null) {
             RegardSavedData regard = RegardSavedData.get(server);
-            regard.of(server, killer).recordDeicide(
-                    com.cadykaya.interregnum.core.regard.Institution.THE_GHOST);
-            regard.touch();
+            RegardNotices.around(server, killer, () -> {
+                regard.of(server, killer).recordDeicide(
+                        com.cadykaya.interregnum.core.regard.Institution.THE_GHOST);
+                regard.touch();
+            });
         }
 
         // The sun stops.
