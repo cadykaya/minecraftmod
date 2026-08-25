@@ -74,7 +74,7 @@ public final class ConversationView {
         out.add(Component.empty()
                 .append(Component.translatable("interregnum.speaker." + node.speaker()).withStyle(SPEAKER))
                 .append(Component.literal("  ").withStyle(LINE))
-                .append(Component.translatable(node.textKey()).withStyle(LINE)));
+                .append(Component.translatable(node.textFor(regard)).withStyle(LINE)));
 
         for (DialogueOption option : node.options()) {
             if (!option.visibleTo(tags, regard)) {

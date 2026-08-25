@@ -158,6 +158,7 @@ public final class SelfTest {
         regardChecks();
         crossingChecks();
         standingGateChecks();
+        textVariantChecks();
         effectChecks();
         System.out.println("SelfTest: " + passed + " checks passed");
     }
@@ -336,6 +337,68 @@ public final class SelfTest {
         q.recordDeicide(Institution.ANCHORITE);
         check(q.value(Institution.WARDENATE) == -60,
               "a second deicide is more evidence, not a different crime");
+    }
+
+    /**
+     * The same beat, worded differently for somebody with a file.
+     *
+     * A node, not a scene: three copies of a conversation differing by one line would
+     * drift, so the variants hang off the node and everything underneath is shared.
+     */
+    static void textVariantChecks() {
+        var filed = new TextVariant("d.filed",
+                new StandingGate(Map.of(), Map.of(Institution.WARDENATE, Standing.RESENTED)));
+        var known = new TextVariant("d.known",
+                new StandingGate(Map.of(Institution.WARDENATE, Standing.TRUSTED), Map.of()));
+        var node = new DialogueNode("open", "warden", "d.base", ResolutionRule.INITIATOR,
+                List.of(new DialogueOption("a", "d.a", DialogueGraph.END, List.of())),
+                List.of(filed, known));
+
+        var fresh = new RegardState(false);
+        check(node.textFor(fresh).equals("d.base"),
+              "somebody nobody has an opinion about reads the ordinary line");
+
+        var resented = new RegardState(false);
+        resented.adjust(Institution.WARDENATE, -40);
+        check(node.textFor(resented).equals("d.filed"), "a file being open changes the line");
+
+        var trusted = new RegardState(false);
+        trusted.adjust(Institution.WARDENATE, 50);
+        check(node.textFor(trusted).equals("d.known"), "so does a clean record");
+
+        // The node is otherwise untouched: this is a rewording, not a fork. If any of
+        // these moved, three standings would mean three conversations to maintain.
+        check(node.options().size() == 1 && node.rule() == ResolutionRule.INITIATOR,
+              "a variant changes the line and nothing else about the node");
+
+        // A node with no variants is exactly what it always was, including for a
+        // caller with no regard to hand.
+        var plain = new DialogueNode("p", "warden", "d.p", ResolutionRule.INITIATOR, List.of());
+        check(plain.textFor(trusted).equals("d.p") && plain.textFor(null).equals("d.p"),
+              "a node with no variants always reads its own line");
+
+        // FIRST match wins, in the author's order. Both of these admit a BELOVED
+        // player; the earlier one is the answer, and an implementation that scored
+        // "most specific" would have to invent a comparison that does not exist.
+        var first = new TextVariant("d.first",
+                new StandingGate(Map.of(Institution.WARDENATE, Standing.KNOWN), Map.of()));
+        var second = new TextVariant("d.second",
+                new StandingGate(Map.of(Institution.WARDENATE, Standing.TRUSTED), Map.of()));
+        var ordered = new DialogueNode("o", "warden", "d.base", ResolutionRule.INITIATOR,
+                List.of(), List.of(first, second));
+        check(ordered.textFor(trusted).equals("d.first"),
+              "the first matching variant wins, not the narrowest");
+
+        // A variant with no condition would match everybody, shadowing the node's own
+        // line and every variant after it. An author who wants that should edit the
+        // node, so the engine refuses to load it.
+        boolean threw = false;
+        try {
+            new TextVariant("d.always", StandingGate.OPEN);
+        } catch (IllegalArgumentException e) {
+            threw = true;
+        }
+        check(threw, "a variant with no standing condition is refused");
     }
 
     /**

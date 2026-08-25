@@ -31,6 +31,41 @@ asserted against a running world rather than against its own source.
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
+### How they greet you
+
+The other half of the same idea, and less machinery than it looks like. A node can
+carry alternative wordings, chosen by standing:
+
+```json
+"text_variants": [
+  { "text_key": "...open.filed", "standing_at_most":  { "WARDENATE": "RESENTED" } },
+  { "text_key": "...open.known", "standing_at_least": { "WARDENATE": "TRUSTED" } }
+]
+```
+
+**A node, not a scene.** Same id, same rule, same replies underneath -- only the
+sentence changes. Three copies of a conversation differing by one line would drift.
+The node's own `text_key` is what everybody else reads; there is no "default variant",
+and a variant with no condition is **refused at load**, because it would silently
+shadow the node's line and every variant after it.
+
+**Whose standing, at a table of three: the viewer's.** Two players can read different
+words for the same beat. That is not a desync -- the option list has worked that way
+since the gates landed, so a Warden already offers you a reply it does not offer your
+friend. Resolving the line against the initiator instead would make the text and the
+replies disagree about whose file is open, which is worse than either rule alone.
+
+The Warden's census now opens three ways: *"Your designation appears in three prior
+returns"* for a party it has filed, *"Your returns have been accepted without
+amendment"* for one it trusts, and the plain line for everybody else. Procedure
+throughout — the unit never warms up and never threatens; what changes is how much of
+the file it reads out before asking the same question.
+
+`dialogue_check.py` was **blind to all of this when it landed** — a variant with a
+misspelt key passed, and would have rendered as a raw key to exactly the players the
+variant was written for. It now validates variant keys, unconditional variants, and
+the institution/band names in every gate, option gates included.
+
 ### What they will and will not say to you
 
 The first thing in the mod that **reads** regard rather than writing it. Until this,
@@ -675,13 +710,12 @@ In order, all unblocked unless marked:
    Unambiguously in scope meanwhile: **first Warden contact records
    `Milestone.WARDEN_CONTACT`**, which is what moves the world to band 2 and is
    currently reachable only by command.
-3. **A speaker's OPENING LINE by standing.** Options are gated on standing now
-   (`standing_at_least` / `standing_at_most`, see below), which was the piece needing
-   a condition type beyond `required_tags`. What is still missing is the other half
-   of the same idea: a Warden that *opens differently* depending on your file. The
-   shrine-keeper already picks between two scenes (`openingScene()`), so the pattern
-   exists -- it wants generalising into scene selection by standing rather than being
-   re-implemented per entity.
+3. **More scenes, now that scenes can do something.** Standing gates options AND
+   rewords lines (see below), so the dialogue system has the expressive range it was
+   missing and the shortage is content rather than machinery. The Wardenate is the
+   only institution whose regard currently changes anything a player sees; the
+   villages are the obvious next one, and shrine-keeper scenes are the place for it.
+   **Bands 3 and 4 and the statue-summons-Warden proposal remain the owner's call.**
 4. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
    everything it would render is already proven server-side. Chat works meanwhile.

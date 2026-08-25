@@ -164,5 +164,7 @@
   "interregnum.regard.the_ghost.resented.fall": "The dreams have begun to repeat one moment, and it is not one you chose.",
   "interregnum.regard.the_ghost.hated.fall": "There is nothing left to hear from that direction, and the silence has weight.",
   "interregnum.dlg.warden_intake.open.attest_for_absent": "We're present. And we'll answer for the ones who aren't.",
-  "interregnum.dlg.warden_intake.open.already_filed": "Before you ask. Yes. It's us."
+  "interregnum.dlg.warden_intake.open.already_filed": "Before you ask. Yes. It's us.",
+  "interregnum.dlg.warden_intake.open.filed": "This unit is conducting a census of the living. Attendance was nine hundred and forty-one. Attendance is now nine hundred and forty.\n\nYour designation appears in three prior returns. State your presence.",
+  "interregnum.dlg.warden_intake.open.known": "This unit is conducting a census of the living. Attendance was nine hundred and forty-one. Attendance is now nine hundred and forty.\n\nYour returns have been accepted without amendment. State your presence."
 }

@@ -1070,3 +1070,43 @@ exist yet. It is routed through RegardNotices like every other mover, so it cann
 become a back door that changes somebody's standing without telling them.
 
 Four new mutations, 28 now, all caught. Self-test 82 -> 99.
+
+---
+
+## How they greet you
+
+"A Warden's opening line depending on your file" was the oldest item on the regard
+list and it wanted much less machinery than it looked like.
+
+The temptation is scene selection: pick a whole different conversation per standing.
+That means maintaining three copies of a scene that differ by one sentence, and they
+drift. So the variants hang off the NODE. Same id, same rule, same replies underneath,
+and only the line changes. The node's own text_key is what everybody else reads.
+
+A variant with no condition is refused at load. It would match everyone, silently
+shadowing both the node's line and every variant after it, and an author who wants
+that should edit the node. First match wins in the author's order rather than
+"narrowest wins", because narrowest has no definition for two gates naming different
+institutions.
+
+The question worth recording is whose standing decides, at a table of three. The
+answer is the viewer's, so two players can read different words for the same beat.
+That sounds like a desync and is not: the option list has worked exactly that way
+since the gates landed, so a Warden already offers you a reply it does not offer your
+friend. Resolving the line against the initiator instead would make the text and the
+replies disagree about whose file is open, which is worse than either rule on its own.
+
+The Warden's census opens three ways now, and stays procedure throughout. It does not
+warm up and it does not threaten; what changes is how much of the file it reads out
+before asking the same question.
+
+The finding of the pass: dialogue_check was BLIND to the feature I had just shipped.
+A variant with a misspelt text_key passed clean, and would have rendered as a raw key
+to precisely the players the variant was written for -- the ones with a history, who
+are the least likely to be a first playtester. I only learned that by breaking a key
+on purpose and watching the check say OK. It now validates variant keys, unconditional
+variants, and the institution and band names in every gate, option gates included --
+which had ALSO gone in unchecked one commit earlier, where a misspelt band does not
+fail the load but decodes to an absent gate and shows content nobody had earned.
+
+Three new mutations, 31 now, all caught. Self-test 99 -> 106.

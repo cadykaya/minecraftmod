@@ -129,6 +129,32 @@ MUTATIONS = [
      "return institution != Institution.THE_GHOST || state.isKiller();",
      "return true;"),
 
+    # Text variants. Failure here is a player being addressed as a stranger by an
+    # institution that has a file on them -- quiet, plausible, and invisible to
+    # anyone who has not played far enough to have a file.
+    ("variant: the node's line ignores who is reading it",
+     f"{MAIN}/dialogue/DialogueNode.java",
+     "return TextVariant.choose(textVariants, regard, textKey);",
+     "return textKey;"),
+    ("variant: the last match wins instead of the first",
+     f"{MAIN}/dialogue/TextVariant.java",
+     "        for (TextVariant v : variants) {\n"
+     "            if (v.gate().admits(regard)) {\n"
+     "                return v.textKey();\n"
+     "            }\n"
+     "        }\n"
+     "        return fallback;",
+     "        String found = fallback;\n"
+     "        for (TextVariant v : variants) {\n"
+     "            if (v.gate().admits(regard)) {\n"
+     "                found = v.textKey();\n"
+     "            }\n"
+     "        }\n"
+     "        return found;"),
+    ("variant: an unconditional variant is allowed to shadow the node",
+     f"{MAIN}/dialogue/TextVariant.java",
+     "        if (gate.isOpen()) {", "        if (false) {"),
+
     ("crossing: institutions are reported in whatever order a map iterates",
      f"{MAIN}/regard/Standings.java",
      "for (Institution i : Institution.values()) {\n            Standing was = before.get(i);",

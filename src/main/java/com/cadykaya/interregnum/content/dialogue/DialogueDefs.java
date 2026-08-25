@@ -11,6 +11,7 @@ import com.cadykaya.interregnum.core.dialogue.DialogueNode;
 import com.cadykaya.interregnum.core.dialogue.DialogueOption;
 import com.cadykaya.interregnum.core.dialogue.ResolutionRule;
 import com.cadykaya.interregnum.core.dialogue.StandingGate;
+import com.cadykaya.interregnum.core.dialogue.TextVariant;
 import com.cadykaya.interregnum.core.regard.Institution;
 import com.cadykaya.interregnum.core.regard.Standing;
 
@@ -91,21 +92,40 @@ public final class DialogueDefs {
         }
     }
 
+    /** One alternative wording of a node's line, for a player with a given file. */
+    public record VariantDef(String textKey, Map<Institution, Standing> atLeast,
+                             Map<Institution, Standing> atMost) {
+        public static final Codec<VariantDef> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.STRING.fieldOf("text_key").forGetter(VariantDef::textKey),
+                STANDINGS.optionalFieldOf("standing_at_least", Map.of())
+                        .forGetter(VariantDef::atLeast),
+                STANDINGS.optionalFieldOf("standing_at_most", Map.of())
+                        .forGetter(VariantDef::atMost)
+        ).apply(i, VariantDef::new));
+
+        TextVariant toVariant() {
+            return new TextVariant(textKey, new StandingGate(atLeast, atMost));
+        }
+    }
+
     public record NodeDef(String id, String speaker, String textKey, String rule,
-                          List<OptionDef> options) {
+                          List<OptionDef> options, List<VariantDef> textVariants) {
         public static final Codec<NodeDef> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.STRING.fieldOf("id").forGetter(NodeDef::id),
                 Codec.STRING.fieldOf("speaker").forGetter(NodeDef::speaker),
                 Codec.STRING.fieldOf("text_key").forGetter(NodeDef::textKey),
                 Codec.STRING.fieldOf("rule").forGetter(NodeDef::rule),
                 OptionDef.CODEC.listOf().optionalFieldOf("options", List.of())
-                        .forGetter(NodeDef::options)
+                        .forGetter(NodeDef::options),
+                VariantDef.CODEC.listOf().optionalFieldOf("text_variants", List.of())
+                        .forGetter(NodeDef::textVariants)
         ).apply(i, NodeDef::new));
 
         DialogueNode toNode() {
             return new DialogueNode(id, speaker, textKey,
                     ResolutionRule.valueOf(rule),
-                    options.stream().map(OptionDef::toOption).toList());
+                    options.stream().map(OptionDef::toOption).toList(),
+                    textVariants.stream().map(VariantDef::toVariant).toList());
         }
     }
 

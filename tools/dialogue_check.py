@@ -17,6 +17,11 @@ RULES = {"INITIATOR", "VOTE", "ROLL", "UNANIMOUS"}
 # outright, so the whole scene disappears rather than one effect going quiet.
 INSTITUTIONS = {"WARDENATE", "VILLAGES", "VERDANT", "ANCHORITE",
                 "HEARTH_TURNER", "QUIET_ONE", "THE_GHOST"}
+# Kept in step with core's Standing enum, and for a sharper reason than the above: a
+# misspelt band does not fail the load, it decodes to an ABSENT gate, and an option
+# nobody was supposed to see yet appears for everyone. That is the one bug a
+# playtester cannot report, because it looks exactly like the game working.
+STANDINGS = {"HATED", "RESENTED", "WARY", "KNOWN", "TRUSTED", "BELOVED"}
 END = "$end"
 fails = []
 
@@ -34,11 +39,48 @@ def check_file(path, lang):
             fails.append(f"{name}/{n['id']}: unknown rule {n.get('rule')!r}")
         if n.get("text_key") not in lang:
             fails.append(f"{name}/{n['id']}: text_key not in en_us.json: {n.get('text_key')}")
+        # Alternative wordings for a player an institution has a file on. These were
+        # invisible to this check when they landed: a variant with a misspelt key
+        # passed, and would have rendered as the raw key to exactly the players the
+        # variant was written for -- the ones with a history, who are the least likely
+        # to be a first playtester.
+        for v in n.get("text_variants", []):
+            where = f"{name}/{n['id']}/variant"
+            if v.get("text_key") not in lang:
+                fails.append(f"{where}: text_key not in en_us.json: {v.get('text_key')}")
+            gates = {k: v.get(k, {}) for k in ("standing_at_least", "standing_at_most")}
+            if not any(gates.values()):
+                # An unconditional variant always wins, silently shadowing the node's
+                # own line and every variant after it. The engine refuses this at
+                # construction; saying so here names the file instead of the stack.
+                fails.append(f"{where} {v.get('text_key')}: no standing condition, "
+                             f"so it would always win -- put it in the node's text_key")
+            for field, gate in gates.items():
+                if not isinstance(gate, dict):
+                    fails.append(f"{where}: {field} must be an object")
+                    continue
+                for inst, band in gate.items():
+                    if inst not in INSTITUTIONS:
+                        fails.append(f"{where}: unknown institution {inst!r}")
+                    if band not in STANDINGS:
+                        fails.append(f"{where}: unknown standing {band!r}")
         for o in n.get("options", []):
             if o.get("target") != END and o.get("target") not in byid:
                 fails.append(f"{name}/{n['id']}/{o.get('id')}: dangling target {o.get('target')!r}")
             if o.get("text_key") not in lang:
                 fails.append(f"{name}/{n['id']}/{o.get('id')}: text_key not in en_us.json")
+            for field in ("standing_at_least", "standing_at_most"):
+                gate = o.get(field, {})
+                if not isinstance(gate, dict):
+                    fails.append(f"{name}/{n['id']}/{o.get('id')}: {field} must be an object")
+                    continue
+                for inst, band in gate.items():
+                    if inst not in INSTITUTIONS:
+                        fails.append(f"{name}/{n['id']}/{o.get('id')}: "
+                                     f"unknown institution {inst!r} in {field}")
+                    if band not in STANDINGS:
+                        fails.append(f"{name}/{n['id']}/{o.get('id')}: "
+                                     f"unknown standing {band!r} in {field}")
             where = f"{name}/{n['id']}/{o.get('id')}"
             regard = o.get("regard", {})
             if not isinstance(regard, dict):

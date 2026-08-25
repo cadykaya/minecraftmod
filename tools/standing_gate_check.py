@@ -33,6 +33,13 @@ RESENT_ONLY = "Before you ask. Yes. It's us."
 # happily against three EMPTY renders (docs/LESSONS.md #5, #7, #10).
 ALWAYS = "We're here. We're present."
 
+# The SPEAKER's line, which changes for the same reason the replies do. Asserted
+# alongside them rather than in its own check because the interesting property is
+# that the two agree: a unit that offers you the resented reply and greets you as a
+# stranger is worse than one that does neither.
+TRUST_LINE = "Your returns have been accepted without amendment."
+RESENT_LINE = "Your designation appears in three prior returns."
+
 
 def main():
     if len(sys.argv) != 2 or not os.path.exists(sys.argv[1]):
@@ -61,11 +68,11 @@ def main():
         lines[marks[1] + 1:],
     ]
 
-    # (label, must contain, must not contain)
+    # (label, must contain, must not contain) -- replies AND the speaker's line
     expect = [
-        ("WARY (default)", [], [TRUST_ONLY, RESENT_ONLY]),
-        ("TRUSTED", [TRUST_ONLY], [RESENT_ONLY]),
-        ("RESENTED", [RESENT_ONLY], [TRUST_ONLY]),
+        ("WARY (default)", [], [TRUST_ONLY, RESENT_ONLY, TRUST_LINE, RESENT_LINE]),
+        ("TRUSTED", [TRUST_ONLY, TRUST_LINE], [RESENT_ONLY, RESENT_LINE]),
+        ("RESENTED", [RESENT_ONLY, RESENT_LINE], [TRUST_ONLY, TRUST_LINE]),
     ]
 
     bad = []
@@ -88,7 +95,7 @@ def main():
             print(f"  {b}")
         return 1
 
-    print("  the same node offers three different sets of replies at three standings")
+    print("  the same node greets three ways and offers three sets of replies")
     return 0
 
 

@@ -45,6 +45,21 @@
             "class/theoclast"
           ]
         }
+      ],
+      "_variant_comment": "The same beat, to somebody the unit has a file on. Not a different scene -- same node, same census, same replies underneath -- because three copies of a conversation differing by one line would drift. First match wins, so the resented wording is listed first; the node's own text_key is what everybody else reads. Whose standing: the VIEWER's, the same rule the option gates already use, so the line and the replies agree about whose file is open.",
+      "text_variants": [
+        {
+          "text_key": "interregnum.dlg.warden_intake.open.filed",
+          "standing_at_most": {
+            "WARDENATE": "RESENTED"
+          }
+        },
+        {
+          "text_key": "interregnum.dlg.warden_intake.open.known",
+          "standing_at_least": {
+            "WARDENATE": "TRUSTED"
+          }
+        }
       ]
     },
     {
