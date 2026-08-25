@@ -66,9 +66,32 @@ to path unless the mob is `onGround`, and a freshly-spawned mob is not, because 
 tick *before* movement in the same `aiStep`. The first call of every posting could only
 fail, and the discarded failure cost a ten-second timeout per corner.
 
-**Not built: inspect, cite, confiscate, escalate.** It walks. Shipping a patrol that
-silently also filed citations would make it impossible to tell which of the two was
-broken when one of them was.
+**At a corner it inspects: it files a return on the site it is standing in.** A census,
+not an accusation — see `SiteReturn`. The check asserts the part that can be wrong
+invisibly: not *that* a return was filed but that **the count answers to what is there**,
+because an always-zero counter and an empty world file identical returns. Site A's north
+corner has three claimed blocks beside it and files `built=3`; site B's has none and
+files `built=0`. Watched failing on the survey being stubbed to zero.
+
+The two units also filed at *identical relative offsets* from their own statues, which
+independently corroborates the keep-step assertion above.
+
+**Known gap, stated rather than papered over:** the goal files only on ARRIVAL, never on
+a leg it abandoned. Moving the filing to fire on abandonment too was tried as a mutation
+and `patrol_check.sh` stayed green — correctly, since on flat open ground no leg is ever
+abandoned, so the mutation is inert there. Pinning it needs a site with a walled-off
+corner, and the cheap versions of that fight the keep-step assertion. **The rule is in
+the code and it is not yet checked.**
+
+**Not built: cite, confiscate, escalate — and the blocker is design, not effort.** A
+citation needs an offence, and the mod does not have one it can find. The locked
+countermeasures (shielded casting rooms, forged dispensations) say what the Wardenate
+polices is *casting*, and magic does not exist yet. Of the two locked offences needing
+no magic, one is the sleep code and the other is **permitted airspace** (`WORLD.md`:
+*the height limit | permitted airspace*) — and the second is only findable once the
+unraveling has loosened the limit enough for anybody to break it. Picking a lower ceiling
+to make it findable today would be inventing a rule the world does not have. **Owner's
+call — see "Waiting on owner".**
 
 ### The Anchorite's world: unanchored things rise
 
@@ -930,7 +953,23 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
    retrieval scene would be one of the few places a player *wants* to talk to
    bureaucracy. Costs a room, an inventory, and a conversation. Not built.
 
-3. **Playtesting, and looking at the Warden.** This container has no game client, so two
+3. **What should a Warden be able to cite you for, before magic exists?** Patrol and
+   inspect are built; `cite` has nothing to accuse anybody of. WORLD.md's locked
+   countermeasures are all about *casting*, which does not exist yet. Two locked offences
+   need no magic:
+
+   * **the sleep code** — *phantoms punish sleeplessness | a citation for a sleep-code
+     violation*. Buildable today, and it has the right absurdity: the Wardenate is still
+     enforcing bedtime for a god that is not watching.
+   * **permitted airspace** — *the height limit | permitted airspace*. The better joke,
+     because the enforcement mechanism (the hard limit) died with the god while the
+     policy did not. But nothing currently raises the limit, so nobody can break it, and
+     choosing a lower licensed ceiling would be inventing a rule the world never had.
+
+   Either is a small build once chosen. Choosing is the owner's, because it decides what
+   the Wardenate is *for* in the stretch before magic. *No action needed until then;
+   patrol and inspect ship without it.*
+4. **Playtesting, and looking at the Warden.** This container has no game client, so two
    things about the model are unverifiable here and are not claimed: how it looks
    **animated**, and how it looks **lit**. `tools/entity_view.py` covers shape and paint;
    it cannot cover those. The render has been sent for review.

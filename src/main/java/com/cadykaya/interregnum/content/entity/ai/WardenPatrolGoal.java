@@ -33,11 +33,19 @@ import java.util.EnumSet;
  * as *this thing is not improvising, it is executing*, and only later as *and therefore
  * I can time it.*
  *
+ * <h2>What happens at a corner</h2>
+ *
+ * It stops, and it files a return on the site it is standing in — see
+ * {@link com.cadykaya.interregnum.system.warden.SiteReturn}, which explains at length
+ * why that return is a census and not an accusation. Filing happens on ARRIVAL, not on
+ * a leg being abandoned: a unit that could not reach a corner has not inspected it, and
+ * an institution that filed returns on places it never stood would be a different and
+ * much worse joke than the one the mod is making.
+ *
  * <h2>Deliberately not here</h2>
  *
- * It does not inspect anything, cite anything, or react to what it passes. It walks.
- * Those are the next verbs, and shipping a patrol that silently also filed citations
- * would make it impossible to tell which of the two was broken when one of them was.
+ * It does not cite, confiscate or escalate. A citation needs an offence and the mod does
+ * not yet have one it can find; the reasoning is in `SiteReturn`.
  */
 public class WardenPatrolGoal extends Goal {
 
@@ -187,6 +195,13 @@ public class WardenPatrolGoal extends Goal {
         boolean arrived = mob.position().closerThan(
                 new net.minecraft.world.phys.Vec3(target.getX() + 0.5, mob.getY(),
                                                   target.getZ() + 0.5), ARRIVED);
+        if (arrived && mob.level() instanceof net.minecraft.server.level.ServerLevel level) {
+            // On arrival only. See the class javadoc: a corner it could not reach is a
+            // corner it did not inspect.
+            com.cadykaya.interregnum.system.warden.SiteReturn.file(
+                    com.cadykaya.interregnum.system.warden.SiteReturn.survey(
+                            level, mob.blockPosition()));
+        }
         if (arrived || legTicks > LEG_TIMEOUT) {
             // Advance whether it arrived or gave up. A leg it cannot walk is still a
             // leg of the round -- the round does not stop because one corner is

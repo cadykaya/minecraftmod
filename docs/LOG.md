@@ -1617,3 +1617,58 @@ shortly if not, abandon the leg after a bounded number of refusals. That last cl
 handles, for free, the case this repo will actually meet in play: somebody walls off one
 corner of a Warden's beat because they have worked out where it goes. The round does not
 stop. Neither does anything else this institution does.
+
+## It counts, it files, it does not conclude
+
+WORLD.md gives the Wardens four verbs — *inspect, cite, confiscate, escalate* — and the
+tempting move after building the patrol was to do all four. It cannot be done honestly
+yet, and finding out why was most of the value of this pass.
+
+**A citation needs an offence, and the mod does not have one it can find.** The locked
+countermeasures — shielded casting rooms, forged dispensations — say plainly that what
+the Wardenate polices is *casting*, and magic does not exist. Of the two locked offences
+that need no magic, one is the sleep code and the other is **permitted airspace**
+(`the height limit | permitted airspace`) — and the second is only findable once the
+unraveling has loosened the limit enough for anybody to break it. Choosing a lower
+licensed ceiling to make it findable today would be inventing a rule the world never had.
+So `cite` is blocked on a design decision rather than on effort, and that is now written
+down where the next person will look instead of being rediscovered.
+
+What the unit can do without inventing anything turns out to be the thing it was already
+doing in the shipped dialogue: *"This unit is conducting a census of the living.
+Attendance was nine hundred and forty-one. Attendance is now nine hundred and forty."*
+
+So at each corner of its beat it files a return: where it stood, and how many blocks a
+player placed are standing there. It counts. It files. It does not conclude.
+
+The count comes from the same claim ledger the unraveling reads to know what not to eat —
+deliberate reuse, because a Warden whose idea of "somebody's work" differed from the
+apocalypse's would be a second definition of the same word. And a return of zero is filed
+exactly like any other: an institution that only reported when it found something would
+be one you could learn to read for signal, and the point of these returns is that they
+are indifferent.
+
+### The assertion that matters is not that it filed
+
+A survey that always returned zero would file returns forever and look exactly like a
+working one, because an empty site and a broken counter are indistinguishable from a
+single reading (LESSONS #15). So the check gives site A's north corner three claimed
+blocks and site B's none, and asserts both numbers appear. Watched failing with the
+survey stubbed to zero.
+
+An unplanned corroboration fell out of it. The two units filed at *identical relative
+offsets* from their own statues — `site=1 -60 -6` and `site=65 -60 -6` — which is the
+keep-step property showing up again in a completely different measurement that was not
+designed to test it.
+
+### A mutation that survived, and why that is not a check failing
+
+Moving the filing to fire on abandoned legs as well as arrivals — which would mean the
+institution filing returns on places it never stood — left the check green. That is
+correct rather than embarrassing: on flat open ground no leg is ever abandoned, so the
+mutation is behaviourally inert in this scenario. Pinning it needs a site with a corner
+walled off, and the cheap versions of that fight the keep-step assertion.
+
+The rule is in the code and it is not yet checked, and both the check header and HANDOFF
+now say so. A mutation surviving is information; the failure would have been quietly
+deleting the mutation and claiming the coverage.

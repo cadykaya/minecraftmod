@@ -25,8 +25,25 @@
 # (docs/LESSONS.md #19), which is the only reason it can be checked at all: no single
 # snapshot of one mob can tell "deliberate" from "lucky".
 #
-# NOT asserted, because it is not built: inspecting, citing, confiscating, escalating.
-# The Warden walks. That is this increment.
+# Also asserted: WHAT IT DOES AT A CORNER. The unit files a return on the site it is
+# standing in -- a census, not an accusation, for the reasons in SiteReturn. The
+# assertion that matters is not "a return was filed" but that **the count answers to
+# what is actually there**: a site with blocks a player placed files a higher number
+# than an empty one. A survey that always returned zero would file returns forever and
+# look exactly like a working one, because an empty site and a broken counter are
+# indistinguishable from a single reading (docs/LESSONS.md #15).
+#
+# NOT asserted, and this one is a real gap rather than an absence of feature: the goal
+# files a return only on ARRIVAL, never on a leg it gave up on, because an institution
+# that filed returns on places it never stood would be a different and much worse joke.
+# Moving the filing to fire on abandonment as well was tried as a mutation and this file
+# stayed green -- correctly, because on flat open ground no leg is ever abandoned, so
+# the mutation changes nothing here. Pinning it needs a site with a corner walled off,
+# and the cheap versions of that fight the keep-step assertion above. Recorded in
+# HANDOFF rather than papered over: the rule is in the code and it is not yet checked.
+#
+# NOT asserted, because it is not built: citing, confiscating, escalating. A citation
+# needs an offence and the mod does not have one it can find yet.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -51,6 +68,10 @@ kill @e[type=minecraft:marker]
 setblock 0 -60 0 interregnum:warden_statue[facing=north,woken=false] replace
 setblock 64 -60 0 interregnum:warden_statue[facing=north,woken=false] replace
 execute positioned 0 -60 0 run interregnum record deicide
+setblock 0 -59 -8 minecraft:oak_planks replace
+setblock 1 -59 -8 minecraft:oak_planks replace
+setblock 2 -59 -8 minecraft:oak_planks replace
+interregnum claim record 0 -59 -8 2 -59 -8
 interregnum warden post 0 -60 0
 interregnum warden post 64 -60 0
 execute if entity @e[type=interregnum:warden] run say WARDENS_EXIST
@@ -115,5 +136,23 @@ done
     grep -oE '[AB]_ON_RING_[0-9]' /tmp/patrol.log | sort || true
     fail "two Wardens posted in the same tick on identical ground disagreed in $disagree of 3 samples -- they are not walking the same route, so the route is not fixed"; }
 
+# --- 3. it files a return at each corner, and the return counts what is there ------
+# Site A's north corner has three player-placed blocks beside it and site B's has none.
+# Both units walk the same beat past the same relative corner, so any difference in the
+# numbers they file is a difference in the SITES -- which is the only thing that makes
+# this an assertion about surveying rather than about logging.
+filed=$(grep -c "RETURN FILED" /tmp/patrol.log || true)
+[ "$filed" -ge 2 ] || {
+    grep "RETURN FILED" /tmp/patrol.log || true
+    fail "only $filed return(s) filed across two Wardens and three samples -- the unit is walking without inspecting"; }
+
+built=$(grep -oE "RETURN FILED.*built=[0-9]+" /tmp/patrol.log | grep -oE "built=[0-9]+" | sort -u | tr "\n" " ")
+echo "$built" | grep -qE "built=[1-9]" || {
+    grep "RETURN FILED" /tmp/patrol.log | head -6 || true
+    fail "every return filed built=0, including the corner with three claimed blocks beside it -- the survey is not reading the ledger, and an always-zero counter is indistinguishable from an empty world"; }
+echo "$built" | grep -q "built=0" || {
+    grep "RETURN FILED" /tmp/patrol.log | head -6 || true
+    fail "no return filed built=0, so every site looks built -- the count is not answering to what is actually there"; }
+
 echo
-echo "OK: the Warden walks a fixed beat on its ring, and two of them keep step"
+echo "OK: the Warden walks a fixed beat, two of them keep step, and each files what it found"
