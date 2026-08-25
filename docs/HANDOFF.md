@@ -760,6 +760,15 @@ work flows to `claude/minecraft-mod-dev-rp0x8j` and PRs into `main`.
 
 ### Answered this session
 
+- **The god roster**: **four, and everyone calls them something different.** The
+  pantheon inherits the Theoclast's four-voices doctrine — the dead god's letters use pet
+  names (Rill, Ballast, Ash) that no other voice uses, and **the Quiet One has none**.
+- **The dead god's last letter**: **it is not a letter, it is a citation it issued
+  against itself** — and it is where the Wardens' procedural voice comes from.
+- **Bands 3 and 4**: decided; see item 1 above and `WORLD.md`.
+- **Can a Warden be killed**: **no, and the question is wrong.** You dissolve the
+  authority by breaking the statue — which the mod already implements. Violence does
+  nothing; paperwork works.
 - **The statue summons the Warden**: **yes, owner-approved and built.** A woken statue
   posts a Warden while somebody is there; the statue is permanent, the Warden stands
   down. Statue density is now a readable map of where enforcement reaches, and tearing
@@ -777,8 +786,9 @@ work flows to `claude/minecraft-mod-dev-rp0x8j` and PRs into `main`.
 
 ### Still open — [WORKSHOP] with the owner
 
-1. **God roster** — working set is four named gods + the dead one; final count and names.
-2. **The dead god's last letter** (the ending document) — co-write with owner, later.
+*(Nothing. The owner delegated the four remaining calls — the roster, the last letter,
+bands 3 and 4, and whether Wardens can be killed — and all four are decided and written
+into [`WORLD.md`](WORLD.md). Anything genuinely new still comes back here first.)*
 
 ### [NEEDS PLAYTEST] (cannot be settled by argument)
 
@@ -808,11 +818,13 @@ carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
 
 In order, all unblocked unless marked:
 
-1. **Bands 3 and 4.** Bands 1 (VIGIL) and 2 (ENFORCEMENT) exist and run. EXODUS and
-   ATTRITION are named in [`WORLD.md`](WORLD.md) and empty in `bands.json`, and they are
-   the ones that need design rather than typing: block-for-block conversion is the wrong
-   grammar for "the ways are open" and "geography frays at the edges". Band 3 probably
-   is not a conversion table at all. **Do not fill them in just because the format fits.**
+1. **Bands 3 and 4 — designed, now buildable.** The owner delegated the decision and
+   [`WORLD.md`](WORLD.md) now carries it. Neither is a conversion table. **Band 3
+   (EXODUS)** is the overworld leaking other gods' *law* in patches — reconnaissance for
+   the ferry. **Band 4 (ATTRITION)** is the world losing its *distinction*: biome detail
+   generalising where nobody tends, never touching player-placed blocks. Band 3 wants the
+   26.2 `attributes` map; band 4 wants a "when was this last tended" signal, for which
+   the chunk attachment used by placement tracking is the obvious home.
 2. **Wardens are in the world.** Done — a woken statue posts one, so `WARDEN_CONTACT`
    and band 2 are reachable by playing for the first time. What is left is behaviour:
    a posted Warden currently stands where it was put and can be talked to. It does not

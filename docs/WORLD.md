@@ -89,10 +89,53 @@ outside of, which is what makes crossing it later mean anything. Band 2 drops th
 and turns structural: grass to coarse dirt, stone to cobble, cobble to gravel, canopies
 thinning. The guarantee above is enforced by placement tracking, not by a block whitelist.
 
-**[WORKSHOP]** Bands 3 (EXODUS) and 4 (ATTRITION) are deliberately empty. "The ways are
-open" and "geography frays at the edges" are not block-for-block substitutions, and filling
-in the existing table because the format accepts it would be the Advent of Ascension
-mistake in miniature: more content, no meaning.
+**[LOCKED — owner delegated; decided here.]** Bands 3 and 4 were empty because
+"the ways are open" and "geography frays at the edges" are not block-for-block
+substitutions. They are not. **Neither of them is a conversion table at all**, and that
+was the thing blocking them.
+
+**Band 3 — EXODUS: the overworld starts leaking other gods' LAW.**
+
+Not their blocks. Their *rules*. The dead god's policy was what held the systems apart —
+the Isolation was a policy, not a wall — and with nobody enforcing it, patches of the
+overworld begin obeying somebody else's law. A hollow where nothing makes a sound. A
+slope where dropped things fall too slowly. A meadow where crops visibly move. A ruin
+where your tools age while you stand in it.
+
+Each patch is shaped like exactly one god, and it is **the same law you will meet in
+their world**. So band 3 is reconnaissance: the apocalypse is teaching you the
+curriculum. By the time the ferry's checklist tells you the Quiet One's crossing forbids
+note blocks, you have already stood in a silent hollow and worked out why.
+
+This is also why band 3 had to wait for a platform fact: 26.2 moved dimension rules into
+a namespaced `attributes` map (see [`WORLDGEN.md`](WORLDGEN.md)), so "this region obeys
+the Quiet One" is a set of declared attributes rather than a pile of special cases.
+
+**Band 4 — ATTRITION: the world forgets what it was.**
+
+Attrition is loss by repeated small subtraction, and what gets subtracted is
+**distinction**. Biome-specific detail reverts to its plainest equivalent. Your forest
+stops being a forest — not destroyed, *generalised*. Ores return to stone. Foliage goes
+to grass and then to nothing in particular. The world becomes a place rather than a
+particular place.
+
+That is what a dead god's world would actually do, because **biomes were its taxonomy**.
+Nobody is maintaining the categories any more.
+
+Two consequences fall straight out of it, which is how you know it is the right grammar:
+
+- **It frays where nobody tends.** Regions people visit and keep hold their definition.
+  This makes the "take the job" ending literal rather than thematic — holding the world
+  together shrine by shrine is exactly the counter-move, and anchor-rites are how you do
+  it. The apocalypse becomes a thing you can argue with.
+- **The Hearth-Turner is the obvious ally**, and it falls out of the fiction rather than
+  being assigned. A god whose law is keeping every past is the natural answer to a world
+  losing its own. Ash can tell you what a place *was*.
+
+**The LOCKED guarantee still holds and is enforced the same way.** Attrition never
+touches a player-placed block; the placement tracking that protects bands 1 and 2
+protects this one unchanged. It generalises the world's own terrain, never anyone's
+work.
 
 ---
 
@@ -107,18 +150,54 @@ system under one god):
 Each god's system expresses its law at every layer. Travel between systems is only by
 ferry; travel within a system is by its native portals.
 
-### The pantheon (roster **[WORKSHOP]** — four gods + depot-equivalent is the working count)
+### The pantheon — **four, and everyone calls them something different**
 
-| God | Law | Grief-shape | Sketch |
-|---|---|---|---|
-| **The Verdant** | growth | overgrowing | real-time growth, paths seal behind you; under-layer: the root-dark |
-| **The Anchorite** | weight | holding on | floating shatter-world, unanchored things rise; the dead god's closest friend |
-| **The Hearth-Turner** | time | keeping every past | centuries at the edges; your gear weathers, ruins mid-collapse |
-| **The Quiet One** | silence | never answering | nothing spawns, nothing sounds, hunger stops; **the one who never wrote back** |
+**[LOCKED — owner delegated the roster; decided here.]** The count stays at **four**.
+Adding a fifth god adds a world, a school, a letter and an ending branch, and buys
+nothing the fourth does not already buy. What the roster needed was not more gods.
+
+**The decision: the pantheon inherits the four-voices doctrine.** The Theoclast already
+has one true name and three institutional ones (`Theoclast` / `Usurper` / *saint* /
+`Executor`), and that table does more worldbuilding than any lore book could. The gods
+get the same treatment — and the payoff is that **the dead god's letters do not use the
+names you have been using all game.**
+
+| God | Law | In the letters | On Warden dockets | Villagers say |
+|---|---|---|---|---|
+| **The Verdant** | growth | **Rill** | `SUBJECT: GREEN AUTHORITY` | the Long Green |
+| **The Anchorite** | weight | **Ballast** | `SUBJECT: MASS AUTHORITY` | Old Heavy |
+| **The Hearth-Turner** | time | **Ash** | `SUBJECT: TEMPORAL AUTHORITY` | the Turning |
+| **The Quiet One** | silence | *(none)* | `SUBJECT: UNRESPONSIVE` | *they will not say it* |
+
+You spend a hundred hours calling it The Verdant. Then you open the mail you are
+carrying and it says **"Rill —"**, and you understand for the first time that you are
+holding a stranger's correspondence about people you have never met.
+
+**The Quiet One has no name in the letters, and that is the whole character.** Three
+letters open with a name. The fourth opens `To —`. Whether the dead god never got close
+enough to have one, or had one and struck it out, is never answered; the letter itself
+is the only evidence and it is ambiguous on purpose. "The one who never wrote back"
+stops being a fact about the Quiet One and becomes a question about the dead god.
+
+**The dead god's own name is nowhere.** No voice has one. The throne is vacant and so is
+the word for it — which is what an *interregnum* is.
 
 Each world's questline opens by **delivering that god's letter**. Their reaction to the
 news is their characterization. Identity AND relation come from the same structure: the
 pantheon is a family that stopped speaking.
+
+**The two undefined relationships, settled** (the Anchorite and the Quiet One were
+already locked):
+
+- **The Verdant / Rill — the one who covered.** During an older crisis it took over the
+  overworld's duties and never quite handed them back; the estrangement is professional
+  rather than personal, which is worse. Delivered its letter it is immediately
+  *defensive*: it assumes it is being blamed, before anyone has said anything.
+- **The Hearth-Turner / Ash — the one who kept every version of the argument.** A god
+  whose law is memory has never let a grievance become past tense. It holds the family's
+  entire falling-out, in order, and will show you. That makes it the exposition god, but
+  earned: it is not telling you because the plot needs it told, it is telling you because
+  it has never been able to stop.
 
 ---
 
@@ -239,6 +318,75 @@ they never destroy player builds. Citations read like parking tickets ([EXAMPLE 
 *UNLICENSED MIRACLE — third notice*). Countermeasures: shielded casting rooms, **forged
 dispensations** (craftable from researched paperwork), captured-and-reconsecrated Wardens.
 Enforcement targets *sites*, never a single player — no player is the system's butt.
+
+### Can a Warden be killed?
+
+**[LOCKED — owner delegated; decided here.] No. Not ever, by anyone, by any means.**
+And the interesting part is that this costs the player nothing, because **the question
+is wrong.**
+
+A Warden is not a monster with a health bar the design forgot to balance. It is a *unit
+on a post*. You do not kill it; you **dissolve the authority that put it there**. Break
+the woken statue and the posting ends — which is already how the mod works, so the
+answer was sitting in the codebase before the question was asked.
+
+That makes the whole enforcement layer legible in one gesture: **violence does nothing;
+paperwork works.** A player who swings at a Warden learns nothing happens and it is
+still looking at them. A player who works out that the statue in their garden is the
+thing *authorising* the Warden has understood the mod. It is the thesis in miniature,
+and it is the "absurd system you find out how it ticks and use to your advantage" the
+brief asked for — the exploit is administrative.
+
+**One beat, and it is the whole reason to write it this way.** A Warden whose statue is
+broken *while it is mid-statement* does not vanish. It finishes. It completes the
+statement it was taking, files it, and only then stands down — because there is no
+procedure for stopping in the middle of one. You cannot even interrupt them by removing
+their reason to exist.
+
+**[NEEDS PLAYTEST]** only whether "nothing happens" needs a stronger tell than nothing —
+a filed notice, a line of procedure — for players who read no reaction as a bug.
+
+---
+
+## The last letter
+
+**[LOCKED — owner delegated; decided here.]** The ending document, and it is **not a
+letter.**
+
+The dead god wrote four times and got no reply. The last thing it wrote, it could not
+address to any of them — so it addressed it to itself, in the only register it had:
+**a citation, issued against itself, in the exact format its own Wardens still use.**
+
+> `UNLICENSED MIRACLE — first notice.`
+> `Issued to: the holder.`
+> `Particulars: the undersigned has continued to turn the sun in the absence of`
+> `instruction, request, or acknowledgement, for a period the register declines to`
+> `state. The undersigned is aware this is not what the sun is for.`
+
+**This is where the Wardens come from.** They speak in procedure because *it* did. Every
+flat, filed, authorised line a unit has said to the player all game — *"this unit would
+like to say something else and is not authorised to"* — is inherited. They are not
+bureaucrats guarding a god; they are its children doing the only thing they ever saw it
+do with a feeling.
+
+Three things it has to be, and this shape is the only one that is all three:
+
+- **It cannot explain the plot.** A farewell that tells you what happened would make the
+  whole search retroactively pointless. A self-issued citation explains *nothing* and
+  reveals *everything*.
+- **It cannot be sentimental.** The dread covenant forbids the deicide moment being
+  comic and forbids the grief being a punchline. Procedure-as-grief is the register the
+  mod has used since the first Warden line; the last letter is that register's floor.
+- **It has to make all three endings honest.** You went looking for a successor and
+  found the previous holder's admission that it was never sure it was doing the job
+  right either. Install someone else, take the job yourself, or burn it — the letter
+  argues for none of them, and makes all three defensible. That is what an ending
+  document is for.
+
+**Where it is found:** not at a god. It is what you get *instead of* a fifth
+destination — filed, in the ferry's own desk, where the transcription clerk would have
+logged an outgoing item. It was never sent. It was never *sendable*. Someone filed it
+anyway, because there is a column for it.
 
 ---
 
