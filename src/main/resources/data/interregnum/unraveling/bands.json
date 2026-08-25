@@ -11,7 +11,13 @@
     "difficulty setting.",
     "",
     "Direction follows the palette's semantic law -- cool means held, warm means",
-    "spent -- so conversions run intact -> loosened -> dry, never the reverse."
+    "spent -- so conversions run intact -> loosened -> dry, never the reverse.",
+    "",
+    "A 'to' must be able to STAND where its 'from' stood. The runtime refuses to",
+    "place a block that cannot survive at the position, so a rule that ignores this",
+    "does not crash and does not warn -- it simply never fires, forever, and the",
+    "band looks implemented. (This is why leaves turn to air rather than to a dead",
+    "bush: a dead bush in a canopy has nothing under it.)"
   ],
   "bands": [
     {
@@ -35,7 +41,7 @@
         { "id": "grass_dries",    "from": "minecraft:grass_block", "to": "minecraft:coarse_dirt",      "chance": 0.06 },
         { "id": "stone_cracks",   "from": "minecraft:stone",       "to": "minecraft:cobblestone",      "chance": 0.05 },
         { "id": "cobble_loosens", "from": "minecraft:cobblestone", "to": "minecraft:gravel",           "chance": 0.02 },
-        { "id": "leaves_brown",   "from": "minecraft:oak_leaves",  "to": "minecraft:dead_bush",        "chance": 0.03 },
+        { "id": "canopy_thins",   "from": "minecraft:oak_leaves",  "to": "minecraft:air",              "chance": 0.03 },
         { "id": "moss_retreats",  "from": "minecraft:mossy_cobblestone", "to": "minecraft:cobblestone", "chance": 0.08 }
       ]
     }

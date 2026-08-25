@@ -526,3 +526,46 @@ Fixed by asserting the setup itself: the check now proves each statue exists and
 > exercised the easy path), and #14 (a passing test reporting a lie). Four different
 > disguises for one mistake: *believing an outcome without checking the conditions that
 > would make it meaningful.*
+
+---
+
+## 16. A check on the shape of data cannot tell you the data does anything
+
+*Found while writing the runtime that finally reads the unraveling table.*
+
+`tools/unraveling_check.py` is the strictest checker in this repository. It has six checks,
+every one of them verified by breaking something on purpose. It passed this rule:
+
+```json
+{ "id": "leaves_brown", "from": "minecraft:oak_leaves", "to": "minecraft:dead_bush", "chance": 0.03 }
+```
+
+Every field is well-formed. Both blocks exist. The chance is a real probability under the
+cap. Neither block is on the forbidden list. It reverses nothing. And it can never fire:
+a dead bush needs a supporting block under it, oak leaves are a canopy, and the replacement
+would pop off on the tick after it was placed. The rule was committed, it was green, and it
+was inert — the worst possible failure for a system like this, because a world where one
+band does nothing looks exactly like a world where that band has not reached you yet.
+
+The checker was not wrong. It was **checking a different question**: it validated the
+sentence, not whether the sentence describes something the game can do. No amount of
+strictness on the first question answers the second.
+
+Two things came out of it. The rule is now `oak_leaves -> air` ("the canopy thins"), which
+the game can actually perform. And the runtime refuses to place a state whose
+`canSurvive` is false at the position, so a future rule with this bug reports `UNSUPPORTED`
+by name instead of quietly doing nothing — with a datapack fixture in `unravel_check.sh`
+that proves that answer comes back, because a guard nothing exercises is not a guard.
+
+The same question, asked of the check suite rather than the data, found a second hole in
+the same hour. Every assertion about the unraveling reached it through `/interregnum
+unravel`, so a build where the tick handler was never subscribed would have passed all of
+them — the system would have been perfectly correct and never once have run. `/interregnum
+status` now reports `ticks=` and `passes=`, and deleting the `@SubscribeEvent` fails the
+check by name.
+
+> **The rule: for every check, ask what could be deleted while it still passed.** Whatever
+> that is, is not being checked — and "the whole feature" is a real answer more often than
+> it sounds. This is #3 (green tests are not a working feature) arriving from the data side
+> rather than the code side, and it is why `VERIFICATION.md` rule 2 says to assert on the
+> effect: the effect is the only thing that cannot be faked by a well-formed input.

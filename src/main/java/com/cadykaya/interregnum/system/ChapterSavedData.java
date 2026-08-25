@@ -41,10 +41,13 @@ public final class ChapterSavedData extends SavedData {
             i -> i.group(
                     Codec.STRING.fieldOf("state").forGetter(d -> d.state.serialize()),
                     Codec.STRING.optionalFieldOf("killer").forGetter(
-                            d -> Optional.ofNullable(d.killer).map(UUID::toString))
-            ).apply(i, (s, k) -> {
+                            d -> Optional.ofNullable(d.killer).map(UUID::toString)),
+                    net.minecraft.core.GlobalPos.CODEC.optionalFieldOf("site").forGetter(
+                            d -> Optional.ofNullable(d.site))
+            ).apply(i, (s, k, p) -> {
                 ChapterSavedData d = new ChapterSavedData(ChapterState.deserialize(s));
                 d.killer = k.map(UUID::fromString).orElse(null);
+                d.site = p.orElse(null);
                 return d;
             }));
 
@@ -55,6 +58,7 @@ public final class ChapterSavedData extends SavedData {
 
     private final ChapterState state;
     private UUID killer;
+    private net.minecraft.core.GlobalPos site;
 
     private ChapterSavedData(ChapterState state) {
         this.state = state;
@@ -105,6 +109,23 @@ public final class ChapterSavedData extends SavedData {
 
     void setKiller(UUID uuid) {
         this.killer = uuid;
+        setDirty();
+    }
+
+    /**
+     * Where it happened, or null if nowhere in particular.
+     *
+     * Worth persisting rather than recomputing: the crater is the world's one fixed
+     * landmark of the thing everyone is living through. The unraveling reads it to
+     * know where the thin places are, and it is the natural anchor for everything
+     * that comes later -- the ferry, the ghost, the Wardens' jurisdiction.
+     */
+    public net.minecraft.core.GlobalPos site() {
+        return site;
+    }
+
+    void setSite(net.minecraft.core.GlobalPos pos) {
+        this.site = pos;
         setDirty();
     }
 

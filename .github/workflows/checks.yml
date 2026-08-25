@@ -99,3 +99,6 @@ jobs:
 
       - name: The world remembers what people built
         run: ./tools/claim_check.sh
+
+      - name: The overworld spends itself, and stops where it must
+        run: ./tools/unravel_check.sh

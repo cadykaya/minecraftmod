@@ -83,6 +83,17 @@ uncertain, gravity hiccups at thin places) → geography fraying at the edges.
 the player's work. Visual weathering of builds at most, always reversible. The moment the
 apocalypse eats a player's house, the design has turned hateful and lost them.
 
+**[BUILT]** Bands 1 and 2. Band 1 is grass and flowers going over, and **only within sight
+of the crater or a shrine** — for one chapter the wrongness has an edge you can stand
+outside of, which is what makes crossing it later mean anything. Band 2 drops that boundary
+and turns structural: grass to coarse dirt, stone to cobble, cobble to gravel, canopies
+thinning. The guarantee above is enforced by placement tracking, not by a block whitelist.
+
+**[WORKSHOP]** Bands 3 (EXODUS) and 4 (ATTRITION) are deliberately empty. "The ways are
+open" and "geography frays at the edges" are not block-for-block substitutions, and filling
+in the existing table because the format accepts it would be the Advent of Ascension
+mistake in miniature: more content, no meaning.
+
 ---
 
 ## World-systems

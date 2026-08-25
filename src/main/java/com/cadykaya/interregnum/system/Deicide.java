@@ -73,6 +73,7 @@ public final class Deicide {
         }
 
         if (level != null && site != null) {
+            data.setSite(net.minecraft.core.GlobalPos.of(level.dimension(), site));
             formCrater(level, site);
         }
 

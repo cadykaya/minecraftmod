@@ -495,3 +495,48 @@ Mutation-verified three ways: no serialisation fails the restart, no cap fails s
 and a forget that un-saturates fails by name. The check's own last assertion was blind
 first -- it read the smoke test's epilogue instead of the command reply, and failed on
 correct behaviour.
+
+## The overworld begins to spend itself
+
+`bands.json` has existed since the first design pass and nothing read it. Now it does.
+
+The order of the gates is the design. Dormancy first, because Chapter 0 promising to change
+nothing is the whole reason the death lands. Then the band, then the scope, then **the
+claim** — deliberately before the probability roll, so a block somebody placed is never a
+candidate rather than merely usually spared. A guarantee that holds on average is not one.
+
+Every gate answers by name (`OUT_OF_SCOPE`, `CLAIMED`, `UNSUPPORTED`) rather than returning
+a bare false. This system's normal output is "nothing happened", thousands of times a
+minute, and the difference between working and broken is invisible from outside unless it
+can be asked why.
+
+Sampling is the surface column near players. That reads like a performance compromise and
+is not one: `Claims` fails closed on an unloaded chunk, so unloaded ground was never
+reachable, and the table's blocks are one layer thick — uniform sampling through the world
+would have hit grass and flowers so rarely that band 1 would have appeared to do nothing.
+
+`thin_places` is the crater (now persisted on the chapter data, where the ferry and the
+ghost will both want it) plus any chunk beside one holding shrine masonry. The shrine test
+reads section palettes rather than blocks, and `maybeHas` is honest about being a maybe: a
+section with a global palette answers yes to everything. That over-reports, which widens a
+gentle band slightly; under-reporting would have made band 1 invisible. Wrong in the safe
+direction, on purpose.
+
+Two holes found by asking what could be deleted while the checks still passed, both now
+[`LESSONS.md`](LESSONS.md) #16:
+
+* the committed table contained `oak_leaves -> dead_bush`, which is well-formed, passes all
+  six data checks, and can never fire — a dead bush cannot stand in a canopy. It is now
+  `-> air` ("the canopy thins"), and the runtime refuses any state whose `canSurvive` is
+  false, reporting `UNSUPPORTED` by name.
+* every assertion reached the system through a command, so an unsubscribed tick handler
+  would have passed all of them. `/interregnum status` now reports `ticks=`/`passes=`.
+
+`tools/unravel_check.sh` runs both halves against a live server, the second with a datapack
+that replaces the table — which verifies the override path and the support guard in one
+assertion, since the shipped rules would have answered differently. Seven mutations, seven
+caught: no claim check, no scope, no band gate, no dormancy check, no support check, and
+either handler unsubscribed.
+
+Bands 3 and 4 stay empty. "The ways are open" and "geography frays at the edges" are not
+block substitutions, and the table would happily accept a pile of them.

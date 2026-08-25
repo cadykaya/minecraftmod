@@ -21,12 +21,41 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 
 | | State |
 |---|---|
-| Gradle project | **not created** |
-| Java source | **none** |
-| Textures / models / data | **none** |
+| Gradle project | **building**, NeoForge 26.2.0.67 / Java 25 |
+| Java source | `core/` (pure, self-tested) + the game module |
+| Textures / models / data | Phase-1 set, all resolving in a live server |
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
-| Doc set | **complete** — 13 documents, see [`INDEX.md`](INDEX.md) |
+| Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
+| Live-world checks | **11**, every one mutation-verified, all in CI |
+
+### The overworld spends itself
+
+`bands.json` is finally read. `UnravelingLoader` turns it into a validated table (rejecting
+duplicate bands, self-conversions, a band mislabelled with the wrong chapter, and any rule
+that reverses another — the unraveling runs one way only), and `Unraveling` applies it.
+
+Five gates, in order, and each one is a named answer rather than a silent `false`, because
+"nothing happened" is the one thing this system says constantly and it has to be possible
+to ask why: `DORMANT` · `BAND_TOO_LOW` · `OUT_OF_SCOPE` · **`CLAIMED`** · `UNSUPPORTED`.
+
+- **It samples the surface column near players.** Not a shortcut. `Claims` answers
+  "claimed" for an unloaded chunk, so unloaded ground was never reachable anyway; and the
+  table's blocks (grass, flowers, leaves) are one layer thick, so uniform sampling would
+  essentially never hit them and band 1 would be invisible.
+- **`thin_places`** is "within 48 blocks of the crater, or in a chunk next to one holding
+  shrine masonry". The shrine test reads section *palettes*, not blocks, so the common
+  answer costs a few reference comparisons. The crater is now persisted on the chapter data
+  (`ChapterSavedData#site`) — the world's one fixed landmark, which the ferry and the ghost
+  will both want too.
+- **It never places a state that cannot stand there.** See [`LESSONS.md`](LESSONS.md) #16:
+  the shipped table had a rule that was well-formed, passed every data check, and could
+  never once have fired.
+- `/interregnum unravel at|sweep` answer for one block and measure a burst. `status` now
+  reports `ticks=`/`passes=` — the only witness that the level tick is connected at all.
+
+`tools/unravel_check.sh` proves all of it against a live server, including a datapack that
+replaces the table. Seven mutations, seven caught.
 
 ### The world remembers what people built
 
@@ -325,11 +354,11 @@ carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
 
 In order, all unblocked unless marked:
 
-1. **Apply the unraveling bands.** `data/interregnum/unraveling/bands.json` defines what
-   bands 1 and 2 do and nothing reads it yet. The hard prerequisite — placement tracking —
-   **is now done**, so what remains is a random-tick handler gated on chapter band that
-   consults `Claims.isClaimed` before touching anything, plus a `thin_places` scope (band 1
-   applies only near the crater and shrines).
+1. **Bands 3 and 4.** Bands 1 (VIGIL) and 2 (ENFORCEMENT) exist and run. EXODUS and
+   ATTRITION are named in [`WORLD.md`](WORLD.md) and empty in `bands.json`, and they are
+   the ones that need design rather than typing: block-for-block conversion is the wrong
+   grammar for "the ways are open" and "geography frays at the edges". Band 3 probably
+   is not a conversion table at all. **Do not fill them in just because the format fits.**
 2. **Warden statue → living Warden.** The statues now wake, but they only *look* awake.
    Next is the entity: a patrolling figure that inspects, cites, and speaks in procedure --
    with `warden_intake`, the first written dialogue scene, already waiting for it. This is

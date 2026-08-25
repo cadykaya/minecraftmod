@@ -14,6 +14,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import com.cadykaya.interregnum.Interregnum;
 import com.cadykaya.interregnum.core.chapter.Milestone;
 import com.cadykaya.interregnum.system.claim.Claims;
+import com.cadykaya.interregnum.system.unraveling.Unraveling;
 
 /**
  * `/interregnum` -- read and drive the world's progress.
@@ -58,7 +59,9 @@ public final class InterregnumCommand {
                                     + " band=" + data.band()
                                     + " dormant=" + data.mechanicsDormant()
                                     + " letters=" + data.lettersDelivered()
-                                    + " killer=" + (data.killer() == null ? "none" : data.killer())), false);
+                                    + " killer=" + (data.killer() == null ? "none" : data.killer())
+                                    + " ticks=" + Unraveling.ticksObserved()
+                                    + " passes=" + Unraveling.passesRun()), false);
                     return 1;
                 }));
 
@@ -98,6 +101,55 @@ public final class InterregnumCommand {
                         .then(Commands.argument("from", BlockPosArgument.blockPos())
                                 .then(Commands.argument("to", BlockPosArgument.blockPos())
                                         .executes(ctx -> region(ctx, false))))));
+
+        // The unraveling: ask what it would do, and make it do it.
+        //
+        // Not test hooks either, and for a sharper reason than the claim commands.
+        // The unraveling is probabilistic, world-wide, and invisible in the small:
+        // when a server owner says "it is eating my world" or "it is doing nothing",
+        // there is no way to settle it by looking. `at` answers for one block and
+        // names the gate that stopped it; `sweep` runs a measured burst and reports
+        // a rate. Both were needed to tune the numbers in bands.json in the first
+        // place -- see tools/unravel_rate_probe.sh.
+        root = root.then(Commands.literal("unravel")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("at")
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                    ServerLevel level = ctx.getSource().getLevel();
+                                    ChapterSavedData data =
+                                            ChapterSavedData.get(ctx.getSource().getServer());
+                                    // Certain: the operator asked what the rule does
+                                    // HERE, not what it does on average.
+                                    Unraveling.Decision d = Unraveling.apply(
+                                            level, pos, data, level.getRandom(), true);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "unravel=" + d.outcome()
+                                                    + " rule=" + d.rule()
+                                                    + " thin=" + Unraveling.isThinPlace(level, pos, data)
+                                                    + " now=" + net.minecraft.core.registries.BuiltInRegistries.BLOCK
+                                                            .getKey(level.getBlockState(pos).getBlock())), true);
+                                    return d.outcome() == Unraveling.Outcome.CONVERTED ? 1 : 0;
+                                })))
+                .then(Commands.literal("sweep")
+                        .then(Commands.argument("radius", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 128))
+                                .then(Commands.argument("samples", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 100000))
+                                        .executes(ctx -> {
+                                            ServerLevel level = ctx.getSource().getLevel();
+                                            ChapterSavedData data =
+                                                    ChapterSavedData.get(ctx.getSource().getServer());
+                                            int radius = com.mojang.brigadier.arguments.IntegerArgumentType
+                                                    .getInteger(ctx, "radius");
+                                            int samples = com.mojang.brigadier.arguments.IntegerArgumentType
+                                                    .getInteger(ctx, "samples");
+                                            int n = Unraveling.sampleAround(level,
+                                                    BlockPos.containing(ctx.getSource().getPosition()),
+                                                    data, level.getRandom(), radius, samples);
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "swept=" + samples + " converted=" + n), true);
+                                            return n;
+                                        })))));
 
         for (Milestone m : Milestone.values()) {
             record = record.then(Commands.literal(m.name().toLowerCase(java.util.Locale.ROOT))
