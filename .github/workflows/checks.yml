@@ -138,3 +138,6 @@ jobs:
 
       - name: The dead god's mail loads, and the fourth letter opens To --
         run: ./tools/mail_check.sh
+
+      - name: The overworld leaks another god's law, but only at the shrines
+        run: ./tools/exodus_check.sh

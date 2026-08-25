@@ -27,9 +27,62 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **21**, every one mutation-verified, all in CI |
+| Live-world checks | **22**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
+
+### The overworld starts leaking somebody else's law
+
+Band 3. `WORLD.md`, locked: *"Not their blocks. Their **rules**. The dead god's policy was
+what held the systems apart — the Isolation was a policy, not a wall — and with nobody
+enforcing it, patches of the overworld begin obeying somebody else's law."*
+
+The patches sit **on the shrines**, because the shrines are already the mod's map of
+where the dead god's attention was. The places its authority was strongest are where its
+absence shows first — and it makes the patches contiguous by construction, which a
+per-chunk roll would not. *"A hollow where nothing makes a sound"* is somewhere you stand
+in and walk out of, not confetti.
+
+Which god leaks at a given shrine is `Exodus.lawAt(chunkX, chunkZ)`: a pure function of
+where the shrine is, nothing stored, nothing rolled. Walk away from a silent hollow and
+come back next week and it is the same silent hollow. **A patch that changed god between
+visits would be weather**, and `WORLD.md` is explicit that band 3 is reconnaissance —
+*"the apocalypse is teaching you the curriculum"* — so it has to hold still long enough
+to be learned.
+
+It is a finalising integer hash rather than `(x + z) % 4`, and that is not fastidiousness:
+`(x + z) % 4` draws diagonal stripes, so a player walking one direction meets the same
+god over and over and three quarters of the curriculum never appears. The self-test
+asserts the decorrelation by **sampling a 41×41 grid and walking an anti-diagonal**
+rather than by trusting the comment above it.
+
+**The laws are not reimplemented.** A leak calls the same method the god's own dimension
+calls — `Verdant.grow` for the Verdant, `Hearth.age` for the Hearth-Turner. Not a copy,
+not a table tuned to feel similar. A curriculum that taught a slightly different lesson
+than the exam would be worse than no curriculum, and this way there is only one method to
+change.
+
+**Two of four leak, and the file says which.** Growth and ageing are per-chunk operations
+on blocks and so mean something applied to a patch of ground. The Anchorite's law is
+per-*entity* and the Quiet One's is per-*dimension* — bed rules, respawn anchors, ambient
+silence — and neither has a region-shaped form yet.
+
+Named rather than quietly omitted, because both are real gaps and the second is the one
+`WORLD.md` actually promises. **The Anchorite's** needs the handler to ask whether a
+falling entity is standing in a leak instead of which dimension it is in — a different
+shape, a self-contained increment, buildable. **The Quiet One's** *"hollow where nothing
+makes a sound"* needs client-side audio suppression over a region, which this container
+cannot verify at all, so it would ship on the strength of a comment. Neither is blocked
+on the owner; both are simply not built.
+
+`tools/exodus_check.sh` builds eight shrines two chunks apart, asks the **server** which
+god each one leaks (never recomputing the hash — that would be a restatement of the
+implementation, and it would agree with a broken one), and then measures what actually
+grows at each. The load-bearing assertion is the boundary: the worst Verdant shrine must
+out-green the best non-Verdant one by a margin. It also proves nothing leaks at band 0,
+that one position reports one god twice running, and that a loaded position five chunks
+from any shrine leaks nothing at all — which is what makes it a *patch* rather than a
+switch.
 
 ### A Warden walks a beat
 

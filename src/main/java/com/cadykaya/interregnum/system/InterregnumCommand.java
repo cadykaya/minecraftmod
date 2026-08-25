@@ -15,6 +15,7 @@ import com.cadykaya.interregnum.Interregnum;
 import com.cadykaya.interregnum.core.chapter.Milestone;
 import com.cadykaya.interregnum.system.claim.Claims;
 import com.cadykaya.interregnum.system.unraveling.Unraveling;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.commands.arguments.EntityArgument;
 import com.cadykaya.interregnum.core.dialogue.Resolution;
@@ -572,6 +573,44 @@ public final class InterregnumCommand {
                                             "posted=" + n), true);
                                     return n;
                                 }))));
+
+        // Band 3, from the console. Asking "what leaks here" needs a position and a
+        // world; a player would just walk there and notice, which a headless server
+        // cannot do.
+        root = root.then(Commands.literal("exodus")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("at")
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                    var level = ctx.getSource().getLevel();
+                                    var data = com.cadykaya.interregnum.system.ChapterSavedData
+                                            .get(ctx.getSource().getServer());
+                                    String law = com.cadykaya.interregnum.system.exodus.Leaks
+                                            .describe(level, pos, data);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "exodus=" + law + " band=" + data.band()), false);
+                                    return law.equals("none") ? 0 : 1;
+                                })))
+                // Which god WOULD leak at a chunk, asked of the pure function with no
+                // shrine and no band involved. The seam exists so a check can FIND a
+                // chunk that draws a particular law instead of predicting the hash --
+                // a check that recomputed `lawAt` would be a restatement of the code
+                // rather than a test of it.
+                .then(Commands.literal("law")
+                        .then(Commands.argument("cx", IntegerArgumentType.integer())
+                                .then(Commands.argument("cz", IntegerArgumentType.integer())
+                                        .executes(ctx -> {
+                                            int cx = IntegerArgumentType.getInteger(ctx, "cx");
+                                            int cz = IntegerArgumentType.getInteger(ctx, "cz");
+                                            var law = com.cadykaya.interregnum.core.exodus.Exodus
+                                                    .lawAt(cx, cz);
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "exodus-law " + cx + " " + cz + " = "
+                                                            + law.name().toLowerCase(
+                                                                    java.util.Locale.ROOT)), false);
+                                            return 1;
+                                        })))));
 
         // The mail, from the console. A letter is a thing a player reads, and a headless
         // server has nobody to read it -- the same seam as `warden post` and `ferry`.

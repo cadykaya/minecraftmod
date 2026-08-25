@@ -1007,7 +1007,7 @@ crossing. `grep -q` cannot tell the two apart. It found the dock's line, every t
 no matter what happened to the boat. The keel was genuinely being deleted mid-move and
 the check had no way to notice.
 
-This is not the same mistake as [#15](#15-a-check-that-cannot-fail-is-a-comment)
+This is not the same mistake as [#15](#15-assert-the-setup-or-the-test-proves-whatever-absence-implies)
 (a check whose subject never varies). Every ingredient here varies; the check was
 written *because* it varies. The failure is that the log is append-only and `grep` is
 position-blind, so an assertion of the form "X is still true afterwards" is
@@ -1029,7 +1029,7 @@ execute if block 22 -60 20 interregnum:ferry_keel run say NUDGE_KEEL_INTACT
 > measuring history, not outcome -- count the occurrences, or assert something the
 > earlier state could not have produced.
 
-The general shape is [#18](#18-a-mutation-that-crashes-has-not-tested-the-assertion)
+The general shape is [#18](#18-a-mutation-caught-for-the-wrong-reason-leaves-the-check-unverified)
 again from a new angle: a mutation is the only thing that tells you which of these two
 kinds of check you wrote, and it is worth the compile every single time. This one had
 been green, reviewed, and believed for a whole run before a deliberate break exposed
@@ -1127,8 +1127,141 @@ grep -qE '"interregnum:letter": "(Rill|Ballast|Ash)"' /tmp/ml.txt
 > when it is wrong the test does not fail — it stops testing, silently, while continuing
 > to print OK.
 
-This is [#15](#15-a-check-that-cannot-fail-is-a-comment) reached by a new route, and it
+This is [#15](#15-assert-the-setup-or-the-test-proves-whatever-absence-implies) reached by a new route, and it
 shares a moral with [#24](#24-if-the-expected-string-already-appears-earlier-in-the-log-the-assertion-is-a-no-op):
 both are assertions that could not fail, and in both cases the surrounding check was
 green and looked thorough. The difference here is that a *neighbouring* assertion was
 doing the work, which is the most comfortable way for a dead check to hide.
+
+## 27. I wrote the lesson, then walked into it one increment later
+
+`tools/verdant_check.sh` carries this, in its own comments, in as many words:
+
+> Not "the overworld converted nothing": at eight times the rate over 25 seconds the
+> overworld genuinely converts a few, and **a check demanding zero at home would be flaky
+> by construction**.
+
+Two increments later I wrote `tools/exodus_check.sh`, which measures grass spreading in
+the overworld at eight shrines, and asserted:
+
+```bash
+[ "$other_grew" -eq 0 ] || fail "... grew anyway ..."
+```
+
+It failed on its first run. The two Verdant shrines greened 7 of 8; the six others
+greened 0, 0, 0, 0, 1 and 2. That is not a failure — it is a **textbook pass** with a
+clean boundary, rejected by a threshold that had no business being a threshold.
+
+### Why the lesson did not transfer
+
+Not because I had forgotten it. Because in the new check the number *looked* categorical.
+`turning_check.sh`, written between the two, is legitimately absolute — **nothing in
+vanilla turns stone into cobblestone**, so any conversion at home is a leak, and that
+check asserts zero and is right to. So "this law's control is zero" was a live and
+correct pattern in my head, sitting one file away from a law where it is false.
+
+The distinguishing question is not about the check. It is about the **mechanism**:
+
+> Does vanilla already do this thing on its own?
+>
+> * **No** (stone → cobble, a block rising, a dimension's bed rule) → the control is
+>   zero, and asserting it is the strongest thing you can write.
+> * **Yes** (grass spreading, crops growing, mobs pathing) → the control is *whatever
+>   vanilla's rate happens to be*, you do not get to pick it, and the only honest
+>   assertion is a **comparison**.
+
+The mod's law and vanilla's law were running on the same block type, and I attributed the
+whole signal to the mod.
+
+### What it should have been, and is
+
+Not a threshold at zero, and also not a threshold anywhere else — a slower runner ticks
+less in the same wall-clock window and drags *both* numbers down together:
+
+```bash
+# the worst Verdant shrine must out-green the best non-Verdant one, by a margin
+[ "$verdant_min" -gt $((other_max + 2)) ] || fail "..."
+```
+
+Sixteen targets per shrine rather than eight, for the same reason the Verdant's check
+uses thirty-two: halving the relative variance is free and a coin-flip assertion is not.
+Measured after the fix: **10 and 11** of 16 at the Verdant shrines, **0–3** at the other
+six. The boundary was always there; the assertion just could not see it.
+
+> **The rule: before asserting a control is zero, ask whether vanilla performs the
+> mechanism under test.** "Nothing should happen here" is a claim about *vanilla's*
+> behaviour, not about the mod's, and the mod's source cannot tell you whether it is true.
+
+Related: [#2](#2-a-confounded-test-is-a-false-instrument) is the same family — a
+measurement that could not separate the mod from the engine underneath it.
+
+## 28. Three times is not a slip, it is a missing check
+
+```bash
+fail "`interregnum turning age` aged a block in the OVERWORLD -- ..."
+```
+
+Backticks inside a **double-quoted** bash string are command substitution. Bash runs
+`interregnum turning age`, prints `command not found`, and delivers the failure message
+with its own subject cut out of it — on the failure path, so at the exact moment somebody
+needs to read it.
+
+I wrote this bug in `turning_check.sh`, fixed it, wrote it again in `mail_check.sh`, fixed
+it, and wrote it a third time in `exodus_check.sh` — where the mutation run surfaced it,
+which is the only reason it did not ship. Each time I was quoting an identifier the way I
+quote identifiers in markdown all day. Each time the line read as correct.
+
+At three, the honest conclusion is that the reviewer (me) cannot see this class of defect
+by looking, and the fix is not more care. It is `tools/failpath_check.py`, which flags
+**any backtick on a non-comment line in any `tools/*.sh`** — blunt on purpose, because
+this repository substitutes with `$(...)` everywhere and had zero legitimate backticks
+outside a comment when the check was written, so the narrow rule and the blunt rule
+accept exactly the same set of files. A rule that tried to parse bash quoting would be a
+small bash parser, and a small bash parser is a thing that can fail on the failure path.
+
+It carries a second assertion from the same family: a script that calls `fail` must
+define it. An undefined `fail` is exit 127 under `set -e` — a red build with **no
+message at all**, which is a check being right and mute.
+
+> **The rule: the third occurrence of a defect is a request for a check, not for more
+> attention.** Two is a coincidence. Three is evidence that your eyes do not catch it,
+> and evidence about the reviewer is evidence about what has to be automated.
+
+Both of its assertions were watched failing before it was trusted, per
+[#18](#18-a-mutation-caught-for-the-wrong-reason-leaves-the-check-unverified).
+
+## 29. `git checkout --` on a tracked file is not an undo, it is a discard
+
+Mid-way through verifying `tools/doclink_check.py` I appended two deliberately dead links
+to `docs/LESSONS.md`, confirmed the check caught both, and then reached for the obvious
+cleanup:
+
+```bash
+git checkout -- docs/LESSONS.md
+```
+
+That file had **eighty uncommitted lines** in it — lessons 27 and 28, written minutes
+earlier, plus five anchor fixes. `git checkout --` does not undo my last edit. It restores
+the file from the index, and everything since is gone with no reflog entry, no stash, and
+no confirmation prompt.
+
+The specific trap is that the command is *usually* safe, because the file I am reverting
+is usually one I only just touched. Here the file was doing double duty: the thing I was
+editing and the thing I was testing against. Two minutes of work, and the only reason it
+was recoverable is that I could still see the text.
+
+The habit that replaces it costs nothing: **when the scratch edit is an append, undo it as
+an append.**
+
+```bash
+cp docs/LESSONS.md /tmp/lessons.bak   # or:
+head -n -2 docs/LESSONS.md > tmp && mv tmp docs/LESSONS.md
+```
+
+Better still, do not scratch-edit a real file at all — `tools/doclink_check.py` would have
+been verified just as well against a throwaway file in the scratchpad, which is where the
+next one goes.
+
+> **The rule: never restore a tracked file from git to undo an edit you have not
+> committed.** The blast radius of `git checkout --` is the whole file's uncommitted
+> history, not your last change, and the two are indistinguishable from the command line.

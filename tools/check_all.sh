@@ -22,6 +22,9 @@ python3 tools/registry_check.py
 echo "== ci claims =="
 python3 tools/ci_claims_check.py
 
+echo "== failure paths =="
+python3 tools/failpath_check.py
+
 echo "== dimension laws =="
 python3 tools/dimension_check.py
 
@@ -86,19 +89,7 @@ else
 fi
 
 echo "== doc links =="
-python3 - <<'EOF'
-import os, re, sys
-bad = 0
-for root, _, fs in os.walk('docs'):
-    for f in fs:
-        if f.endswith('.md'):
-            p = os.path.join(root, f)
-            for m in re.finditer(r'\]\(([^)#]+?\.md)(?:#[^)]*)?\)', open(p).read()):
-                t = os.path.normpath(os.path.join(root, m.group(1)))
-                if not os.path.exists(t):
-                    print('BROKEN', p, '->', m.group(1)); bad += 1
-sys.exit(1 if bad else 0)
-EOF
+python3 tools/doclink_check.py
 
 echo
 echo "ALL CHECKS PASSED"

@@ -2033,3 +2033,92 @@ three of these four cannot be cleared that way — one needs a client, one needs
 nobody has written, one is permanent policy. Saying so is the difference between a
 to-do list and a list of things that will sit there forever making the to-do list look
 longer than it is.
+
+## The overworld starts leaking somebody else's law
+
+Band 3. `WORLD.md`: *"Not their blocks. Their **rules**. The dead god's policy was what
+held the systems apart — the Isolation was a policy, not a wall — and with nobody
+enforcing it, patches of the overworld begin obeying somebody else's law."*
+
+Three decisions, and each of them was the interesting part of an otherwise ordinary
+feature.
+
+**The patches sit on the shrines.** The obvious implementation is a per-chunk roll, and it
+is wrong for a reason that has nothing to do with performance: it scatters single chunks
+of foreign law across the map, and *"a hollow where nothing makes a sound"* is a place you
+stand in and walk out of, not confetti. Anchoring on the shrines makes the patches
+contiguous by construction — and says the thing the band is about, because the shrines are
+already the mod's map of where the dead god's attention was. **The places its authority
+was strongest are where its absence shows first.**
+
+**The god at a shrine never changes.** `Exodus.lawAt(chunkX, chunkZ)` is a pure function
+of the coordinates: nothing stored, nothing rolled, no state to migrate. Walk away from a
+silent hollow and come back next week and it is the same silent hollow. That is not tidy
+engineering, it is the feature — `WORLD.md` makes band 3 reconnaissance, *"the apocalypse
+is teaching you the curriculum"*, and a patch that changed god between visits would teach
+nothing. It would be weather.
+
+The hash is a finalising integer mix rather than `(x + z) % 4`, which draws diagonal
+stripes: a player walking one direction would meet the same god over and over and three
+quarters of the curriculum would never appear. The self-test asserts the decorrelation by
+sampling a 41×41 grid and walking an anti-diagonal — and getting *that* assertion right
+took two attempts, because the first one walked `x == z`, where `(x + z) % 4` evaluates
+`2x mod 4` and alternates, so the check I had written to catch the striping bug agreed
+with it.
+
+**The laws are not reimplemented.** A leak calls `Verdant.grow` and `Hearth.age` — the
+same methods the gods' own dimensions call. A curriculum that taught a slightly different
+lesson than the exam would be worse than no curriculum, and this way there is exactly one
+method to change. Two of four leak; the Anchorite's law is per-entity and the Quiet One's
+is per-dimension, and both are named as gaps in `HANDOFF.md` rather than half-built.
+
+### The check was wrong, and the mod was right
+
+`tools/exodus_check.sh` failed on its first complete run, and the failure was mine.
+
+It asserted that a shrine leaking a *non*-block-level law greened **zero** of its targets.
+The run came back with the two Verdant shrines at 7 of 8 and the six others at 0, 0, 0, 0,
+1 and 2 — which is a clean pass with an unambiguous boundary, rejected by a threshold that
+had no business being one. Grass spreads in the overworld. `verdant_check.sh`, two
+increments earlier, measures exactly that and says in its own comments that *"a check
+demanding zero at home would be flaky by construction."*
+
+I had written the lesson and then walked into it, and the reason is worth more than the
+fix: `turning_check.sh` sits between the two and is *legitimately* absolute, because
+nothing in vanilla turns stone into cobblestone. "This law's control is zero" was a live
+and correct pattern one file away from a law where it is false. The distinguishing
+question is not about the check at all — it is whether **vanilla already performs the
+mechanism under test**. Recorded as [`LESSONS.md`](LESSONS.md) #27.
+
+The assertion is now a comparison: the worst Verdant shrine must out-green the best
+non-Verdant one by a margin, with sixteen targets per shrine instead of eight to halve the
+relative variance. Measured green: **10 and 11** of 16 at the Verdant shrines, **0–3** at
+the other six. Watched failing first, against a build where `Leaks.apply` called
+`Verdant.grow` for every law.
+
+### Two checks that came out of getting this wrong
+
+That mutation run also surfaced, for the **third** time, a backtick inside a
+double-quoted `fail` message — which bash runs as a command, so the diagnostic arrives
+with its own subject cut out of it, on the failure path, at the moment somebody needs to
+read it. Twice is a coincidence. Three times is evidence that I cannot see this class of
+defect by looking, and evidence about the reviewer is evidence about what has to be
+automated. `tools/failpath_check.py` now flags any backtick outside a comment in any
+`tools/*.sh`, plus a script that calls `fail` without defining it — which under `set -e`
+is a red build carrying no message at all.
+
+And while writing the cross-references for those lessons I found that `docs/LESSONS.md`
+already contained **five** dead ones. Headings had been rewritten over the months; the
+`#anchor` links pointing at them had not. They still rendered, still looked like
+citations, and landed the reader at the top of a two-thousand-line file. The doc-link
+check validated only the file half of a link and was green throughout. It is now
+`tools/doclink_check.py` and checks the fragment too — verified by being written against
+the rot it then found, which is the best kind of first run a check can have.
+
+### And one entry in the ledger of my own mistakes
+
+Cleaning up after testing that new check, I ran `git checkout -- docs/LESSONS.md` to drop
+two deliberately-dead links I had appended — discarding eighty uncommitted lines of
+lessons written minutes earlier. `git checkout --` is not an undo; it is a restore from
+the index, and its blast radius is the file's entire uncommitted history. Recoverable only
+because the text was still on screen. [`LESSONS.md`](LESSONS.md) #29, written twice.

@@ -145,6 +145,23 @@ MUTATIONS = [
      "        flipped.putAll(blocks);\n"
      "        blocks = Collections.unmodifiableMap(flipped);"),
 
+    # Band 3, the exodus. Which god leaks where is a pure function of coordinates, and
+    # both of its failure modes are silent: a hash that favours one god hides three of
+    # them, and a striping hash gives a player walking one direction the same law
+    # forever. Either way the band looks implemented and teaches a quarter of what it
+    # was for.
+    ("exodus: one god leaks everywhere and the other three nowhere",
+     f"{MAIN}/exodus/Exodus.java",
+     "        return LAWS[Math.floorMod(h, LAWS.length)];",
+     "        return LAWS[0];"),
+    ("exodus: the leak is striped, so a walk meets one law forever",
+     f"{MAIN}/exodus/Exodus.java",
+     "        int h = chunkX * 0x9E3779B9 ^ chunkZ * 0x85EBCA6B;",
+     "        int h = chunkX + chunkZ; if (true) return LAWS[Math.floorMod(h, LAWS.length)];"),
+    ("exodus: the overworld leaks before band 3",
+     f"{MAIN}/exodus/Exodus.java",
+     "        return band >= BAND;", "        return true;"),
+
     # The dead god's mail. The invariant here is about a SET -- three letters open with
     # a name, the fourth opens `To --` -- so nothing about an individual letter can
     # catch it going. If it goes, the mid-game's best reveal quietly stops being one and

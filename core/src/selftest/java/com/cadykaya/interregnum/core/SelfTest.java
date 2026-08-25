@@ -693,5 +693,48 @@ public final class SelfTest {
             threw = true;
         }
         check(threw, "a post where every letter is named is refused for the same reason");
+
+        // -- band 3: which god leaks where -------------------------------------
+        check(com.cadykaya.interregnum.core.exodus.Exodus.leaking(3),
+              "the overworld leaks at band 3");
+        check(!com.cadykaya.interregnum.core.exodus.Exodus.leaking(2),
+              "and not before, so a band-2 world is still only losing its own structure");
+
+        // A patch that changed god between visits would be weather, not a place to
+        // learn a law in.
+        var first = com.cadykaya.interregnum.core.exodus.Exodus.lawAt(37, -12);
+        check(com.cadykaya.interregnum.core.exodus.Exodus.lawAt(37, -12) == first,
+              "a shrine's leak never changes its mind");
+
+        // THE assertion. A hash that always returned one god would make three of them
+        // invisible and nothing else in the mod would fail -- the band would look
+        // implemented and teach a quarter of the curriculum. Sampled, because the
+        // property is about the distribution and not about any single coordinate.
+        var seen = new java.util.HashSet<com.cadykaya.interregnum.core.exodus.Exodus.Law>();
+        for (int x = -20; x <= 20; x++) {
+            for (int z = -20; z <= 20; z++) {
+                seen.add(com.cadykaya.interregnum.core.exodus.Exodus.lawAt(x, z));
+            }
+        }
+        check(seen.size() == com.cadykaya.interregnum.core.exodus.Exodus.Law.values().length,
+              "every god leaks somewhere: a hash favouring one would hide three of them "
+              + "and nothing else would notice");
+
+        // The ANTI-diagonal, and getting this wrong once is why the comment is here.
+        //
+        // The cheap hash somebody reaches for when simplifying this is `(x + z) % 4`,
+        // and its defect is stripes: it is CONSTANT wherever x + z is constant. A first
+        // version of this check walked x == z instead, where `(x + z) % 4` evaluates
+        // 2x mod 4 and alternates -- so it varied, the assertion passed, and the
+        // mutation went straight through. Walking the line x + z == k is the only one
+        // that sees the stripe.
+        var alongStripe = new java.util.HashSet<com.cadykaya.interregnum.core.exodus.Exodus.Law>();
+        for (int x = -20; x <= 20; x++) {
+            alongStripe.add(com.cadykaya.interregnum.core.exodus.Exodus.lawAt(x, 7 - x));
+        }
+        check(alongStripe.size() > 1,
+              "the law varies along x + z == k, so the hash is not (x + z) % 4 wearing a "
+              + "disguise -- that one paints diagonal stripes, and a player crossing them "
+              + "meets one god's law for as long as they walk");
     }
 }
