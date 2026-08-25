@@ -9,7 +9,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+
+import com.cadykaya.interregnum.content.entity.ai.WardenPatrolGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -146,7 +147,12 @@ public class WardenEntity extends PathfinderMob {
         // 16 blocks, and a probability of 1.0: it does not glance, it looks. Vanilla
         // mobs use ~6-8 blocks and 0.02, which reads as an animal noticing you.
         goalSelector.addGoal(1, new LookAtPlayerGoal(this, Player.class, 16.0F, 1.0F));
-        goalSelector.addGoal(2, new WaterAvoidingRandomStrollGoal(this, 0.6));
+        // The beat, not a stroll. A random walk is what a sheep does; see
+        // WardenPatrolGoal for why the difference is the whole character. An UNPOSTED
+        // Warden -- placed by a command or by a player in creative -- has no home and
+        // so no beat, and simply stands, which is also correct: nothing has told it
+        // where to be.
+        goalSelector.addGoal(2, new WardenPatrolGoal(this, 0.6));
         goalSelector.addGoal(3, new RandomLookAroundGoal(this));
     }
 

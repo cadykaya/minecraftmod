@@ -126,3 +126,6 @@ jobs:
 
       - name: In the Anchorite's world, unanchored things rise
         run: ./tools/anchorite_check.sh
+
+      - name: A Warden walks a fixed beat, and two of them keep step
+        run: ./tools/patrol_check.sh

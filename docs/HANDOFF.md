@@ -27,9 +27,48 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **17**, every one mutation-verified, all in CI |
+| Live-world checks | **18**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
+
+### A Warden walks a beat
+
+The Warden used `WaterAvoidingRandomStrollGoal` — the goal a sheep uses. It looks fine
+for ten seconds and it is wrong for the reason the mod exists: a random walk is an
+**animal foraging**, and a Warden is a **unit on a post**. What separates them is not
+speed or path or animation. It is that the unit does the same thing in the same order.
+
+`WardenPatrolGoal` walks four points on a ring of 8 around its statue, always in the
+same order, always starting from the same leg, pausing two seconds at each. A player who
+watches for two minutes can say where it will be next.
+
+**That predictability is the feature, not a shortcut.** WORLD.md locks the thesis that
+violence does nothing and the exploit a player finds is *administrative* — and an
+enforcement system you can plan around is a prerequisite for that. A Warden that
+wandered unpredictably makes the only answer "wait and hope". A Warden with a beat makes
+the answer *"it is at the north point for four seconds every circuit"*, which is
+something a person can use. It arrives first as **this thing is not improvising, it is
+executing**, and only later as *and therefore I can time it*.
+
+An unposted Warden has no home and so no beat, and simply stands — which is also
+correct: nothing has told it where to be.
+
+`tools/patrol_check.sh` asserts the property that is actually hard to fake. **Two
+Wardens posted in the same tick on identical flat ground stay in step**, because both
+execute the same fixed route from the same leg; two strolling mobs draw from the level's
+shared random and diverge within seconds. Plus: the Warden is out on its ring rather
+than sitting in the middle of its tether, counted across samples rather than caught once.
+Watched failing on the leg order being randomised, and on the sheep goal being put back.
+
+**It found a real bug on its first run** — see [`LESSONS.md`](LESSONS.md) #25. `moveTo`
+returns whether a path was accepted, and I discarded it. `GroundPathNavigation` refuses
+to path unless the mob is `onGround`, and a freshly-spawned mob is not, because goals
+tick *before* movement in the same `aiStep`. The first call of every posting could only
+fail, and the discarded failure cost a ten-second timeout per corner.
+
+**Not built: inspect, cite, confiscate, escalate.** It walks. Shipping a patrol that
+silently also filed citations would make it impossible to tell which of the two was
+broken when one of them was.
 
 ### The Anchorite's world: unanchored things rise
 

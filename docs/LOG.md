@@ -1551,3 +1551,69 @@ costs the whole inventory, unrecoverably, with the items visibly leaving. That i
 the best scene in the mod or the reason nobody goes back, it is nowhere in WORLD.md, and
 inventing it here would be new scope arriving disguised as a detail. Flagged for the
 owner; the restrained version ships.
+
+## A beat, not a walk
+
+The Warden had been using `WaterAvoidingRandomStrollGoal` since it first took the field.
+It is the goal a sheep uses. It looks fine for ten seconds, and it is wrong for the
+reason the whole mod exists.
+
+A random walk is an **animal foraging**. A Warden is a **unit on a post**. What separates
+those two is not speed, or path shape, or animation. It is that the unit does the same
+thing in the same order — and once that is true, everything else about the character
+follows for free.
+
+`WardenPatrolGoal` walks four points on a ring of 8 around its statue, in a fixed order,
+starting from the same leg, standing still for two seconds at each. Four points rather
+than eight because at that radius eight legs keep it moving nearly all the time, and a
+unit that never stops reads as agitated; the standing still is most of what makes it look
+like it is *checking* something rather than travelling.
+
+### Predictability is the feature
+
+WORLD.md locks the thesis that violence does nothing and the exploit a player finds is
+administrative. An enforcement system you can plan around is a *prerequisite* for that.
+A Warden that wandered unpredictably makes the only viable answer "wait and hope"; a
+Warden with a beat makes the answer "it is at the north point for four seconds every
+circuit", which is a thing a person can use.
+
+And the same fact does double duty tonally, because of the order it arrives in. First it
+reads as *this thing is not improvising, it is executing.* Only later does it read as
+*and therefore I can time it.*
+
+### The check tests the property that is hard to fake
+
+"Does it move" is worthless — a strolling mob moves. The assertion that actually pins
+down *deliberate* is a relationship between two observations (LESSONS #19): **two Wardens
+posted in the same tick on identical flat ground stay in step**, because both execute the
+same fixed route from the same leg. Two strolling mobs draw from the level's shared
+random and diverge within seconds. Backed by a weaker but independent one: the Warden is
+out on its ring rather than in the middle of its tether, counted across samples rather
+than caught once, because one sample at the edge is a strolling mob having a good minute.
+
+Watched failing on the leg order being randomised — which turns the beat back into a
+wander with waypoints — and on the sheep goal being restored.
+
+### And it found a real bug on its first run
+
+The Warden did not move at all. Two wrong theories went first, and the thing that
+settled it was running the **control**: I put the old stroll goal back and it did not
+move under that either, which immediately said "not a regression you just wrote" and
+halved the search space.
+
+The probe that finished it printed one line: `moveTo ok=false onGround=false ... path=null`.
+`GroundPathNavigation` refuses to build a path unless the mob is `onGround`, and a mob
+that has just been spawned is not — goals tick **before** movement inside the same
+`aiStep`, so the first `moveTo` of every posting could only fail. One tick later it would
+have worked.
+
+`moveTo` returns a boolean saying exactly that, and I had thrown it away. The goal marked
+the leg started and then waited out a 200-tick timeout before trying anything else: ten
+seconds of a unit standing at its post doing nothing, once per corner. Indistinguishable
+from a patrol that does not work, and it was one. Written up as LESSONS #25.
+
+The fix branches on the answer — keep the target only if the path was accepted, retry
+shortly if not, abandon the leg after a bounded number of refusals. That last clause
+handles, for free, the case this repo will actually meet in play: somebody walls off one
+corner of a Warden's beat because they have worked out where it goes. The round does not
+stop. Neither does anything else this institution does.

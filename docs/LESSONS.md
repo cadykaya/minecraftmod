@@ -1034,3 +1034,51 @@ again from a new angle: a mutation is the only thing that tells you which of the
 kinds of check you wrote, and it is worth the compile every single time. This one had
 been green, reviewed, and believed for a whole run before a deliberate break exposed
 it.
+
+---
+
+## 25. A method that returns whether it worked was not asking rhetorically
+
+The Warden's new patrol goal asked its navigation to walk to the next point on its beat:
+
+```java
+mob.getNavigation().moveTo(target.getX() + 0.5, target.getY(), target.getZ() + 0.5, speed);
+```
+
+It compiled, it ran, the goal ticked, the target was correct — and the Warden stood
+perfectly still at its statue.
+
+Two wrong theories went first, and the order matters. I suspected the new goal, then I
+suspected the goal *selector*. Both were wrong, and the thing that settled it was
+running the **control**: I put the old `WaterAvoidingRandomStrollGoal` back and the
+Warden did not move under that either. Whatever this was, it was not a regression I had
+just written — which immediately halved the search space. When a new thing does not
+work, check whether the old thing did.
+
+The probe that finished it printed one line:
+
+```
+PROBE moveTo ok=false onGround=false pos=(1.5, -60.0, 0.5) target=BlockPos{0,-60,-8} path=null
+```
+
+`GroundPathNavigation` refuses to build a path unless the mob is `onGround`. A mob that
+has just been spawned is not on the ground *yet*: goals tick **before** movement inside
+the same `aiStep`, so on a posted Warden's very first tick the call can only fail. One
+tick later it would have succeeded.
+
+`moveTo` returns a boolean saying exactly that, and I had thrown it away. Because the
+failure was discarded, the goal marked the leg as started, then sat waiting out a
+200-tick timeout before trying anything else. Ten seconds of a unit standing at its post
+doing nothing, once per corner, which is indistinguishable from a patrol that does not
+work — and was one.
+
+> **The rule: when an engine method returns a status, the status is the API telling you
+> about a case you have not thought of.** Discarding it does not remove the case; it
+> removes your only notification of it. Treat an ignored return value as an unhandled
+> branch, because that is what it is.
+
+The fix is not "call it twice". It is to branch on the answer: keep the target only if
+the path was accepted, retry shortly if it was not, and abandon the leg after a bounded
+number of refusals — which also, for free, handles the case this repo will actually meet
+in play, where somebody walls off one corner of a Warden's beat because they have worked
+out where it goes.
