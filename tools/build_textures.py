@@ -449,41 +449,54 @@ def ferry_keel_side(seed=41):
 
     Wood, because the ferry is a THING SOMEBODY BUILT and wood is the only family
     in the palette a player reads as carpentry rather than as ruin. Warm, per the
-    semantic law -- spent, worked, handled. The god's masonry is cool and held; this
-    is the opposite kind of object and it must not look like shrine furniture.
+    semantic law -- spent, worked, handled.
 
-    Two brass straps hold it together, and each one is TWO pixels: a wood-0 shadow
-    followed by a brass-2 highlight. Brass alone did not work. The brass ramp and
-    the wood ramp are both warm browns a step apart in L*, so three bare brass
-    columns over a busy grain dissolved into noise in the contact sheet -- the
-    bands were in the file and absent from the block. Metal on wood reads by the
-    dark seam where it is seated, not by its own colour.
+    **The straps run ALONG the beam, not around it, and that is the third attempt.**
 
-    The grain was quieted to match: long horizontal streaks only, because the beam
-    runs along the hull. Vertical variation would read as planking, and planking is
-    the deck, not the keel.
+    Attempt one: three bare brass columns. They dissolved -- the brass and wood ramps
+    are both warm browns a step apart in L*, so metal on wood reads by the dark seam
+    where it is seated, not by its own colour.
+
+    Attempt two: two columns, each a wood-0 shadow plus a brass-2 highlight. The flat
+    contact sheet looked right and the BLOCK did not, which is the whole reason
+    `tools/blockview.py` now exists. Assembled, the two visible faces each carried
+    vertical banding, the bands met at the corner, and the eye read box-with-banding:
+    a CRATE. A crate is cargo. A keel is the opposite of cargo, and this file had a
+    comment swearing to avoid exactly that outcome while producing it.
+
+    The fix is not subtler banding, it is banding on a different axis. A keel is a
+    long member; its ironwork lies along its length. Horizontal straps do not meet
+    their neighbour at the vertical corner, so the cube reads as a beam with fittings
+    rather than a container with edges -- and the top face's ring, which is the
+    block's only affordance, stops competing with three vertical lines pointing at it.
     """
     img = Image(SIZE, SIZE)
     for y in range(SIZE):
         for x in range(SIZE):
+            # Grain along the beam. Runs of 4 keep it reading as LENGTH; at width 2
+            # it was speckle.
             step = 1
-            # Runs of 4 keep the grain reading as LENGTH. At width 2 it was speckle.
             if h2(x // 4, y, seed) < 0.22:
                 step = 2
             elif h2(x // 4, y, seed + 7) < 0.14:
                 step = 0
             img.set(x, y, pal("wood", step) + (255,))
-    # Two straps, at 3 and 10. Uneven gaps (7 and 9 counting the wrap) so they do
-    # not tile into a rhythm; two rather than three because at 16px a third strap
-    # left no beam between them to strap.
-    for bx in (3, 10):
-        for y in range(SIZE):
-            img.set(bx, y, pal("wood", 0) + (255,))          # seated in shadow
-            img.set(bx + 1, y, pal("brass", 2) + (255,))     # the strap itself
-        # Rivets: two per strap, and only on the strap. Brass 0 against brass 2 is
-        # the largest separation the family has.
-        for ry in (4, 11):
-            img.set(bx + 1, ry, pal("brass", 0) + (255,))
+    # ONE strap, low and off-centre. Two evenly-spaced hoops read as a barrel in the
+    # cube view -- they wrap the corner continuously and the eye follows them round,
+    # which is a container again by another route. A single band low on the face has
+    # no partner to pair with, so it reads as a fitting seated on a beam rather than
+    # as one of a set binding something hollow.
+    for x in range(SIZE):
+        img.set(x, 11, pal("wood", 0) + (255,))          # the seam it sits in
+        img.set(x, 12, pal("brass", 2) + (255,))
+    for rx in (3, 12):
+        img.set(rx, 12, pal("brass", 0) + (255,))        # rivets, the only non-line
+    # A chamfer along the top edge only. Vertical asymmetry is what stops a cube
+    # reading as a box: a box looks the same whichever way up it is, and a beam with
+    # a worn upper arris does not.
+    for x in range(SIZE):
+        if h2(x, 0, seed + 5) < 0.7:
+            img.set(x, 0, pal("wood", 2) + (255,))
     return img
 
 
