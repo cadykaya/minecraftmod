@@ -247,3 +247,45 @@ identical everywhere.
 Reproduced locally first, exactly as `docs/VERIFICATION.md` requires for a CI fix: `rm -rf
 run/` reproduced the identical failure, the fix was applied, and the same clean state then
 passed.
+
+---
+
+## 9. The gate itself printed ALL CHECKS PASSED while broken
+
+*Learned while making the staleness check's error message accurate.*
+
+`tools/check_all.sh` began `#!/bin/sh` with `set -e`. A `comm -13 <(...) <(...)` added to
+it is a **bashism**; under dash it produced
+
+```
+./tools/check_all.sh: 42: Syntax error: "(" unexpected
+```
+
+and then the script **kept going and printed `ALL CHECKS PASSED`.** The single gate that
+every commit and every heartbeat tick depends on had silently stopped running one of its
+stages while reporting success.
+
+Fixed by switching to `#!/bin/bash` with **`set -euo pipefail`**, and verified by planting
+a bogus command in the middle of the script: it now exits 127 at that line instead of
+sailing past it.
+
+> **A gate that can silently stop checking is worse than no gate**, because it converts
+> "nobody is checking" into "checking says it is fine" — the same conversion as the false
+> commit message in #4 and the confounded test in #2.
+
+### And the reason the edit was needed at all
+
+`git diff --exit-code` conflates two different situations: *committed generated output is
+stale* and *you have uncommitted work in those paths*. It was reporting the second as the
+first, which is a check crying wolf — and a check people learn to ignore has already
+failed. The staleness stage now snapshots what was dirty **before** regenerating and blames
+only files that regeneration itself changed. Verified all four ways: clean tree, uncommitted
+work (passes, says so), genuinely stale committed art (fails, names the file), and an
+internal error (fails loudly).
+
+### Footnote: do not verify a script by resetting the repo it lives in
+
+The first attempt at this fix silently vanished, because the test for the stale-art case
+used `git reset --hard HEAD~1` to undo a simulated commit — which reverted
+`tools/check_all.sh` along with it. The next run tested the *old* file and its results were
+meaningless. Destructive verification now happens in a scratch clone.
