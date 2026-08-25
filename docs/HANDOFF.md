@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **18**, every one mutation-verified, all in CI |
+| Live-world checks | **19**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
@@ -92,6 +92,55 @@ no magic, one is the sleep code and the other is **permitted airspace** (`WORLD.
 unraveling has loosened the limit enough for anybody to break it. Picking a lower ceiling
 to make it findable today would be inventing a rule the world does not have. **Owner's
 call — see "Waiting on owner".**
+
+### The Verdant's world: everything grows, and that is the hazard
+
+`interregnum:green_authority` — the third god-world surface.
+
+**Locked, and it says hazard.** `WORLD.md` on the Verdancy school: *"and in the
+Verdant's own world, accelerating growth is a **hazard**."* Fast growth as a convenience
+is a farming mod; as a hazard it is a place where you cannot keep ground clear and the
+path you cut closes behind you. The mechanism is identical — what makes it a hazard is
+that it applies to everything, everywhere, and not to the things you wanted.
+
+Implemented as **more random ticks**, not a list of growable blocks: vanilla already
+grows things this way, so every crop, sapling, vine, moss and mushroom is covered
+without naming any, and so is anything a future version adds. Eight times the overworld
+rate, stated as a multiple on purpose so it can be described honestly against a player's
+hundred hours of intuition.
+
+**Score so far: two gods cost code, one cost data.** Silence was entirely 26.2
+attributes. Weight and growth have no attribute at all.
+
+**The bed is the third different answer**, and `dimension_check.py` now holds all three
+apart: the Quiet One declines to react, the Anchorite detonates, the Verdant lets you
+sleep and will not hold your spawn — *"the one who covered"*, which took over the
+overworld's duties in an older crisis and never quite handed them back. It will cover
+you for a night. It will not take responsibility for you.
+
+**The claim promise here is narrow, and the wide version would be a lie.** `Verdant.grow`
+never applies its extra ticks to a block somebody placed. It is *not* "a block you placed
+can never change here" — vanilla grows things by ticking a **source** which reaches to a
+neighbour (grass spreads by ticking the grass, not the dirt), so an unclaimed grass block
+can still turn claimed dirt beside it, and no check on the ticked position prevents that.
+What vanilla's ordinary spread reaches is what it reaches at home. **Not covered by a
+live check**, because over any CI-length window the difference is statistical rather than
+categorical.
+
+`tools/verdant_check.sh` compares **thirty-two targets in each world over the same
+window**. Two findings shaped it:
+
+* A single target block is unobservable. Random ticking picks uniformly from a 16³
+  section, so one block is hit about once per eight seconds even at 8×; the first draft
+  failed while the law underneath worked perfectly, and a probe showed the handler
+  happily ticking grass at the terrain surface while the two test blocks sat at y=100
+  being missed.
+* The margin is measured, not chosen. Four runs at sixteen targets gave 8–12 versus 1–4
+  — real but uncomfortably close at the extremes — so the sample was doubled.
+* **A mutation survived and forced a second assertion.** Removing the dimension check so
+  the law fired in *every* level gave 25 there and 21 at home: still "more here than
+  there", and a catastrophe. The overworld count is the diagnostic, so it is now asserted
+  directly with a ceiling.
 
 ### The Anchorite's world: unanchored things rise
 

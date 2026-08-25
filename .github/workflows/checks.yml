@@ -129,3 +129,6 @@ jobs:
 
       - name: A Warden walks a fixed beat, and two of them keep step
         run: ./tools/patrol_check.sh
+
+      - name: The Verdant's world grows faster than the overworld
+        run: ./tools/verdant_check.sh

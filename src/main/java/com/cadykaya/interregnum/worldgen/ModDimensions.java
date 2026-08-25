@@ -117,6 +117,18 @@ public final class ModDimensions {
     public static final ResourceKey<net.minecraft.world.level.Level> MASS_AUTHORITY =
             ResourceKey.create(Registries.DIMENSION, MASS_AUTHORITY_STEM.identifier());
 
+    /** The Verdant's surface. Docket header again, not the god's name. */
+    public static final ResourceKey<DimensionType> GREEN_AUTHORITY_TYPE =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "green_authority"));
+
+    public static final ResourceKey<LevelStem> GREEN_AUTHORITY_STEM =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "green_authority"));
+
+    public static final ResourceKey<net.minecraft.world.level.Level> GREEN_AUTHORITY =
+            ResourceKey.create(Registries.DIMENSION, GREEN_AUTHORITY_STEM.identifier());
+
     /**
      * Deliberately unlike the overworld's -64..320.
      *
@@ -176,6 +188,39 @@ public final class ModDimensions {
                 unmoored(),
                 HolderSet.empty(),
                 Optional.empty()));
+
+        // The Verdant's world. Its law is also code -- growth has no attribute either
+        // -- and lives in com.cadykaya.interregnum.system.verdant.Verdant.
+        ctx.register(GREEN_AUTHORITY_TYPE, new DimensionType(
+                false, true, false, false, 1.0,
+                MIN_Y, HEIGHT, HEIGHT,
+                blocks.getOrThrow(BlockTags.INFINIBURN_OVERWORLD),
+                0.0F,
+                new DimensionType.MonsterSettings(ConstantInt.of(0), 0),
+                DimensionType.Skybox.OVERWORLD,
+                CardinalLighting.Type.DEFAULT,
+                covered(),
+                HolderSet.empty(),
+                Optional.empty()));
+    }
+
+    /**
+     * You may sleep here. You may not stay.
+     *
+     * The third answer to a bed, and all three are different on purpose. The Quiet One
+     * declines to react; the Anchorite detonates; the Verdant lets you lie down and
+     * refuses to hold your spawn. That is `WORLD.md`'s **"the one who covered"** exactly
+     * -- during an older crisis it took over the overworld's duties and never quite
+     * handed them back, and the estrangement is professional rather than personal. It
+     * will cover you for a night. It will not take responsibility for you.
+     */
+    private static EnvironmentAttributeMap covered() {
+        return EnvironmentAttributeMap.builder()
+                .set(EnvironmentAttributes.BED_RULE,
+                        new BedRule(BedRule.Rule.WHEN_DARK, BedRule.Rule.NEVER, false,
+                                Optional.empty()))
+                .set(EnvironmentAttributes.RESPAWN_ANCHOR_WORKS, false)
+                .build();
     }
 
     /**
@@ -228,6 +273,16 @@ public final class ModDimensions {
                 types.getOrThrow(MASS_AUTHORITY_TYPE),
                 new NoiseBasedChunkGenerator(
                         new FixedBiomeSource(biomes.getOrThrow(quietBiome())),
+                        noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
+
+        // The one place a vanilla biome is chosen for what it DOES carry rather than
+        // for what it does not: the Verdant's law is growth, and a world where things
+        // grow needs things that can. Still a placeholder in the same sense as the
+        // others -- the terrain is not designed.
+        ctx.register(GREEN_AUTHORITY_STEM, new LevelStem(
+                types.getOrThrow(GREEN_AUTHORITY_TYPE),
+                new NoiseBasedChunkGenerator(
+                        new FixedBiomeSource(biomes.getOrThrow(net.minecraft.world.level.biome.Biomes.PLAINS)),
                         noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
     }
 

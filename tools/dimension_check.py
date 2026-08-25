@@ -1,9 +1,11 @@
 """The god-worlds' laws are still the laws.
 
-Two worlds so far, and the most valuable thing this file does is hold them APART.
-Both refuse a bed. The Quiet One declines to react at all; the Anchorite detonates.
-That single boolean is most of the difference between two gods, it costs nothing to
-get wrong in a refactor, and no test that looked at one dimension alone would notice.
+Three worlds so far, and the most valuable thing this file does is hold them APART.
+All three have an opinion about a bed and all three opinions are different: the Quiet
+One declines to react at all, the Anchorite detonates, the Verdant lets you sleep and
+refuses to hold your spawn. Two booleans and an enum carry most of the difference
+between three gods, they cost nothing to lose in a refactor, and no test looking at one
+dimension alone would notice them converging.
 
 `tools/crossing_check.sh` proves the Quiet One's world is a separate place with its
 own floor. It cannot prove the thing that makes the place worth crossing to, because
@@ -112,7 +114,30 @@ def mass_authority(dt, a):
 
 
 law("unresponsive", unresponsive)
+def green_authority(dt, a):
+    """The Verdant's answer to a bed is the THIRD different one, and that is the point.
+    The Quiet One declines to react; the Anchorite detonates; the Verdant lets you lie
+    down and will not hold your spawn. WORLD.md: "the one who covered" -- during an older
+    crisis it took over the overworld's duties and never quite handed them back, and the
+    estrangement is professional rather than personal. It will cover you for a night. It
+    will not take responsibility for you."""
+    bed = a.get("minecraft:gameplay/bed_rule")
+    yield ("`bed_rule` is absent, so this world inherits the overworld's",
+           bed is not None)
+    if bed is not None:
+        yield ("you cannot sleep here. The Verdant covers; it does not refuse",
+               bed.get("can_sleep") == "when_dark")
+        yield ("a bed sets spawn here -- this world would take responsibility for you, "
+               "which is the one thing the one who covered will not do",
+               bed.get("can_set_spawn") == "never")
+        yield ("the bed explodes. That is the Anchorite's answer, not this one",
+               bed.get("explodes", False) is False)
+    yield ("a respawn anchor works here",
+           a.get("minecraft:gameplay/respawn_anchor_works") is False)
+
+
 law("mass_authority", mass_authority)
+law("green_authority", green_authority)
 
 if fails:
     print()
@@ -121,4 +146,4 @@ if fails:
     print(f"\nFAIL: {len(fails)} law violation(s)")
     sys.exit(1)
 
-print("\nOK: nobody answers in the Quiet One's world; nothing holds still in the Anchorite's")
+print("\nOK: nobody answers, nothing holds still, and nothing takes responsibility for you")

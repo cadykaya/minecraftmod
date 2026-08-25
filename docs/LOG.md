@@ -1672,3 +1672,67 @@ walled off, and the cheap versions of that fight the keep-step assertion.
 The rule is in the code and it is not yet checked, and both the check header and HANDOFF
 now say so. A mutation surviving is information; the failure would have been quietly
 deleting the mutation and claiming the coverage.
+
+## Everything grows, and that is the hazard
+
+Third god-world. `WORLD.md` had already done the design work, in one clause of the
+Verdancy school entry: *"and in the Verdant's own world, accelerating growth is a
+**hazard**."*
+
+That word is the brief. Fast growth as a convenience is a farming mod. Fast growth as a
+hazard is a place where you cannot keep ground clear, where the path you cut closes
+behind you, and where standing still is a decision. The mechanism for both is identical;
+what makes it a hazard is that it applies to everything, everywhere, and not to the
+things you wanted.
+
+Implemented as **more random ticks** rather than a list of growable blocks. Vanilla
+already grows things that way, so every crop, sapling, vine, moss and mushroom is covered
+without naming one, and so is whatever Mojang ships next. A hand-written list would be
+out of date the first time they added a plant.
+
+Two gods now cost code and one cost data. Silence was entirely 26.2 attributes; weight
+and growth have no attribute at all. That is worth recording because it is the second
+time an estimate based on the Quiet One would have been wrong.
+
+### The promise had to be narrowed before it was shipped
+
+The first version of the claim check carried a comment saying player-placed blocks are
+not touched. That is false, and the falseness was in the same commit that added the
+protection.
+
+Random ticking grows things by ticking a **source** which then reaches to a neighbour:
+grass spreads by ticking the *grass*, not the dirt. So skipping claimed positions stops
+the mod accelerating a block you placed — and does nothing about an unclaimed grass block
+turning claimed dirt beside it. No check on the ticked position can.
+
+The honest promise is the narrow one: **everything the mod itself accelerates, it
+accelerates only on the world's own blocks.** What vanilla's ordinary spread reaches is
+what it reaches at home, and a dirt block turning to grass beside grass is Minecraft
+rather than the apocalypse. Writing the wide version into a javadoc and shipping the
+narrow one is how a guarantee becomes a lie without anybody lying.
+
+### Three things the check taught, in order
+
+**A single target block is unobservable.** The first draft planted one crop in each world
+and failed — while the law underneath it was working perfectly. Random ticking picks
+uniformly out of a 16³ section, so one specific block is hit roughly once every eight
+seconds even at eight times the rate. The probe that settled it showed the handler
+cheerfully ticking grass at the terrain surface while the two test blocks sat at y=100
+being missed. The fix is a *row* of targets, counted, rather than one block asked a
+yes/no question.
+
+**The margin is measured, not chosen.** Four runs at sixteen targets gave the Verdant
+8–12 and the overworld 1–4. A real gap, but close enough at the extremes to be
+uncomfortable, so the sample was doubled to halve the relative variance: 18–24 versus
+0–4. The assertion is a comparison rather than a threshold on purpose, because a slower
+CI runner ticks less in the same wall-clock window and lowers both counts together.
+
+**And a mutation survived, which forced a second assertion.** Removing the dimension
+check — so the Verdant's law fires in *every* level — gave 25 there and 21 at home. That
+still satisfies "more here than there", and it is a catastrophe: one god's law applied to
+the entire game, including the overworld a hundred hours of somebody's building sits in.
+The overworld count was sitting right there in the output being ignored. It is now
+asserted directly, with a ceiling set at double the worst measured run.
+
+That is the second time this session a mutation surviving has been worth more than a
+mutation dying. The failure would have been deleting it and claiming the coverage.
