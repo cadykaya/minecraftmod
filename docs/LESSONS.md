@@ -146,3 +146,72 @@ surviving mutation fails the build and names itself.
 *Footnote, and it is the third instance of the same pattern: the first version of that
 shell loop was itself broken — bash heredoc escaping mangled the `javac` line — which is
 precisely why the harness became a real program with a real exit code (see #4).*
+
+---
+
+## 6. Minecraft 26.2 needs Java 25, and every source says 21
+
+*Learned the moment the first real Gradle build ran.*
+
+`PLATFORM.md` said **Java 21**, sourced from a web search that stated NeoForge "officially
+supports JDK 21." That was true for the entire 1.21 line, and the search result was not
+lying — it was **a version behind**, which is the more dangerous failure because it reads
+as authoritative.
+
+The real toolchain settled it in one error:
+
+```
+Cannot find a Java installation ... matching: {languageVersion=25, ...}
+```
+
+MDG requests Java 25 for Minecraft 26.2 and will not build without it. Fixed by applying
+the **foojay resolver** in `settings.gradle` so Gradle downloads the JDK itself.
+
+This is the second time (see #3) that a confidently-remembered platform fact about this
+project was one version stale. Both times the answer was in a registry that takes ten
+seconds to query. **The `VERIFY:` markers exist for exactly this, and the moment a real
+toolchain exists they should be cleared against it rather than left to age.**
+
+*Other facts corrected in the same pass, all by asking the source instead of remembering:
+ModDevGradle is 2.0.144 (search said 2.0.141), Parchment has no 26.2 build at all (so the
+mapping line was removed rather than pinned to something that does not exist), and the
+resource/data pack formats are 88 and 107 (a guessed 90 was rejected by the game).*
+
+---
+
+## 7. Killing the server leaves a lock, and the next run's silence looks like success
+
+*Learned immediately after fixing `pack.mcmeta`, while trying to prove the fix worked.*
+
+The first server boot was stopped with `pkill`, which killed the JVM but left
+`run/world/session.lock` behind. The next boot died on that lock **before loading a single
+mod** — and the check that was supposed to confirm the fix reported:
+
+```
+=== pack metadata warning still present? ===
+0
+(0 = fixed)
+```
+
+Zero, because the server never got far enough to read pack metadata. The check could not
+see the thing it was asking about. **That is LESSONS #5 for the third time in one session**,
+which is why the fix was to stop writing this in ad-hoc shell and build
+`tools/server_smoke.sh`: it shuts the server down cleanly through stdin (`stop`), clears the
+lock, and **fails loudly if the server never finished loading** instead of silently finding
+nothing.
+
+### The corollary: a filter widened until it is green cannot fail
+
+The smoke test's first log filter was a line-based grep with an ignore list. It ignored the
+*header* of the Mojang-auth exception and then flagged that same exception's `Caused by:`
+lines, which carry no package name and so look unattributable. The tempting fix — add
+`Caused by` to the ignore list — would have blinded the check to every real stack trace the
+mod will ever throw.
+
+`tools/server_log_check.py` instead groups the log into **records** (a timestamped line and
+everything beneath it) and attributes each record as a unit, with a written reason per
+ignore entry. Verified both directions: the real log passes, and an injected
+`[interregnum/ERROR]` record fails it.
+
+*Grouping by stack shape was tried first and was also wrong — a gson "See https://..."
+advice line in the middle of a stack split one exception into two.*

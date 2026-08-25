@@ -38,3 +38,37 @@ jobs:
       # core mutation check, generated-asset staleness, doc links.
       - name: Run all checks
         run: ./tools/check_all.sh
+
+  # The fast job above needs no Minecraft. This one does: it builds the mod jar
+  # against real NeoForge and boots a dedicated server to prove the mod actually
+  # LOADS. A jar that compiles is not a mod that works -- registration on the wrong
+  # bus, a bad pack.mcmeta, or a missing model all compile perfectly.
+  game:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Cache Gradle and the Minecraft artifacts
+        uses: actions/cache@v4
+        with:
+          # neoformruntime holds the decompiled/recompiled Minecraft; without it
+          # every run pays several minutes to rebuild it from scratch.
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.gradle/jdks
+          key: gradle-${{ runner.os }}-${{ hashFiles('gradle.properties', 'build.gradle', 'settings.gradle') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Build the mod
+        run: gradle --no-daemon --console=plain build
+
+      - name: Boot a dedicated server and check its log
+        run: ./tools/server_smoke.sh

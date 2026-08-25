@@ -15,7 +15,7 @@
 |---|---|
 | **Game** | Minecraft: Java Edition **26.2** ("Chaos Cubed", released June 2026) |
 | **Loader** | **NeoForge** 26.2.x |
-| **Java** | **JDK 21** |
+| **Java** | **JDK 25** |
 | **Build** | Gradle with **ModDevGradle** (MDG) 2.0.x |
 
 The owner's instruction was "whatever version you think is best, same with mod loader," so
@@ -91,9 +91,22 @@ Minecraft `1.21.11` — which is the same idea one scheme earlier.)
 
 ## Toolchain
 
-**Java 21.** NeoForge officially supports JDK 21. Not 17, not 25 — the game and loader are
-compiled against 21 and a mismatched toolchain produces class-file-version errors that read
-as unrelated failures.
+**Java 25.** Verified against the real toolchain, not a search result: MDG's
+`createMinecraftArtifacts` requests `languageVersion=25` for Minecraft 26.2 and fails
+outright without it.
+
+> **This document previously said Java 21, and was wrong.** Every pre-2026 source says 21,
+> because 21 was correct for the entire 1.21 line. The version-scheme change came with a
+> Java bump. See `docs/LESSONS.md` #6 — it is the second time a confidently-remembered
+> platform fact about this project turned out to be a version behind.
+
+This image ships JDK 21, so `settings.gradle` applies the **foojay resolver** and Gradle
+downloads a JDK 25 toolchain on demand. Without it the build fails with
+*"Cannot find a Java installation ... matching {languageVersion=25}"*.
+
+`core/` still compiles under 21 (`tools/check_all.sh` uses the system `javac` directly) —
+it is loader-independent and deliberately stays on the lower baseline so the fast offline
+checks need no toolchain download.
 
 **ModDevGradle (MDG), not NeoGradle.** MDG 2.0.x is the modern plugin and the one to use
 for a new project; NeoGradle (7.1.x) is the older path, still maintained, mostly of
@@ -105,22 +118,29 @@ interest to projects migrating. Both were current as of mid-2026.
 NeoForge version index at setup time. Do not paste a build number out of this document and
 assume it exists.
 
-```properties
-# toolchain
-neogradle.subsystems.parchment.minecraftVersion=26.2
-minecraft_version=26.2
-neo_version=26.2.<CHECK>          # e.g. 26.2.0.x -- look it up, do not guess
-neo_version_range=[26.2,)
-loader_version_range=[4,)
+All values below are **verified against the real registries**, not remembered:
 
-# mod
+```properties
+minecraft_version=26.2
+neo_version=26.2.0.67       # confirmed <latest> AND <release> on maven.neoforged.net
 mod_id=interregnum
 mod_name=INTERREGNUM
-mod_license=<TBD -- owner's call before any public release>
 mod_version=0.1.0
+mod_license=MIT
 mod_group_id=com.cadykaya.interregnum
 mod_authors=cadykaya
 ```
+
+| Thing | Value | How it was verified |
+|---|---|---|
+| Minecraft | `26.2` | boots; `Done (0.28s)` on a dedicated server |
+| NeoForge | `26.2.0.67` | `<latest>`/`<release>` in maven-metadata; pom returns 200 |
+| ModDevGradle | `2.0.144` | `<latest>` on the NeoForged maven (a search said 2.0.141) |
+| Java | `25` | MDG demands `languageVersion=25`; build fails without it |
+| Gradle | `8.14.3` | shipped in this image; works |
+| Parchment | **none** | `parchment-26.2` does not exist on maven.parchmentmc.org yet |
+| resource pack format | `88` | `SharedConstants.RESOURCE_PACK_FORMAT_MAJOR` |
+| data pack format | `107` | `SharedConstants.DATA_PACK_FORMAT_MAJOR` |
 
 **`mod_id` is effectively permanent, and it is decided: `interregnum`.** It is the
 namespace on every resource location, every texture path, every registry key, every

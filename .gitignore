@@ -21,3 +21,7 @@ __pycache__/
 # texture review renders -- regenerate with tools/texview.py, never commit
 # (except the worked example in docs/img, which is deliberately tracked)
 *_view.png
+
+# gradle/MDG run artifacts
+run/
+!run/.gitkeep
