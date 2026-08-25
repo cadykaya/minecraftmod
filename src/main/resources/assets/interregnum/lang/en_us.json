@@ -18,5 +18,7 @@
   "block.interregnum.shrine_stone": "Shrine Stone",
   "block.interregnum.shrine_stone_carved": "Carved Shrine Stone",
   "item.interregnum.god_heart": "A Warm Gold Thing",
-  "item.interregnum.clast": "Clast"
+  "item.interregnum.clast": "Clast",
+  "itemGroup.interregnum.main": "INTERREGNUM",
+  "block.interregnum.warning_stele": "Warning Stele"
 }

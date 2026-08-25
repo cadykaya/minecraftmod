@@ -176,21 +176,20 @@ carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
 
 In order, all unblocked unless marked:
 
-1. **More Chapter-0/1 content that needs no toolchain:** stele texture + god-script
-   variants, Warden statue/entity texture concepts, more dialogue scenes (shrine-keeper;
-   the first dream-audience), unraveling band 1 block-conversion table (data), shrine
-   structure layout sketch (as a plan for the structure NBT).
-2. **Core-side logic that is loader-independent:** chapter state machine, regard
-   (per-institution reputation) model, citation record model — each with a verified
-   self-test, wired into `check_all.sh`.
-3. **[BLOCKED on network allowlist]** Real Gradle game module, MDG, first compile; then
-   clear every `VERIFY:` marker against the NeoForge sources and write the registry
-   completeness test.
-4. **[BLOCKED on same]** Phase 1 vertical slice in Java: shrine structure + heart loot →
-   death event → statue wake → first unraveling band → clasts + Theoclast skeleton →
-   Warden patrols/citations. The art and data above all feed this.
-5. **Dialogue screen** (client) once the toolchain exists — the engine and first scene
-   are already done and tested.
+1. **Loot tables.** `registry_check.py` warns that all three blocks drop nothing when
+   mined. This needs datagen, which needs `DATAGEN.md`'s `VERIFY:` markers cleared against
+   the real provider API first. Highest-value next task: it is a real player-facing bug
+   today, and it unblocks every future block.
+2. **The shrine structure**, so steles and shrine stone actually appear in a world — a
+   jigsaw or NBT structure plus a placement. Until this exists, Chapter 0 has no presence.
+3. **The heart in loot**, and the deicide event: sky change, crater, statues wake. The
+   core `ChapterState` exists and is tested; it needs a `SavedData` wrapper (codec-based
+   in 26.2 — see `SavedDataType`) and the event that records `Milestone.DEICIDE`.
+4. **Warden statue → entity.** The biggest single art+code item in Phase 1.
+5. **More dialogue scenes** (shrine-keeper, first dream-audience) and the client screen.
+   The engine, the loader and the first scene are done and verified end to end.
+6. **Clear remaining `VERIFY:` markers** in MODELS.md, DATAGEN.md, WORLDGEN.md against the
+   sources jar, exactly as PLATFORM.md's were.
 
 ## Standing warning
 

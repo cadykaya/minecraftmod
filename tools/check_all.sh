@@ -11,6 +11,9 @@ python3 tools/palette_check.py --textures src/main/resources/assets
 echo "== dialogue =="
 python3 tools/dialogue_check.py
 
+echo "== registry =="
+python3 tools/registry_check.py
+
 echo "== unraveling =="
 python3 tools/unraveling_check.py
 

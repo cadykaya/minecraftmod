@@ -22,6 +22,7 @@ public final class ModCreativeTabs {
                     .displayItems((params, output) -> {
                         output.accept(ModBlocks.SHRINE_STONE.get());
                         output.accept(ModBlocks.SHRINE_STONE_CARVED.get());
+                        output.accept(ModBlocks.WARNING_STELE.get());
                         output.accept(ModItems.GOD_HEART.get());
                         output.accept(ModItems.CLAST.get());
                     })

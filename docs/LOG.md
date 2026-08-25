@@ -196,3 +196,26 @@ working feature", caught by a test instead of by a player.
 
 CI gained a `game` job that does all of this on every push, with the Minecraft artifacts
 cached.
+
+---
+
+## Phase 1d — steles, and the registry gate
+
+**Warning steles** exist as a real rotatable block: a dressed slab with a recessed panel
+carrying two columns of god-script. The script is drawn from a five-glyph stroke grammar
+rather than scattered pixels, so it reads as *writing* at play distance without any glyph
+being readable -- which is the whole job, since Chapter 0 players walk past these for hours
+reading them as ruin dressing. One column was tried first and read as a single scratch with
+a half-empty panel.
+
+**`tools/registry_check.py`** closes VERIFICATION.md's Tier 1 item 1. Every registered
+block resolves a blockstate, every model it names, every texture those models reference,
+and a translation key; block items resolve their block; missing loot tables are reported as
+warnings (nothing generates them yet, and a known-absent thing reported as a hard failure
+trains people to ignore the tool). Verified by breaking four things -- a missing lang key,
+a missing texture, a blockstate pointing at a missing model, and **the registration API
+being renamed so the check would go blind**. That last one matters most: six API facts have
+already churned under this project in one session.
+
+Loot tables are now the top of the queue -- three blocks currently drop nothing when mined,
+which is a real player-facing bug the new check surfaced immediately.

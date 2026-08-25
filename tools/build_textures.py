@@ -116,9 +116,87 @@ def clast(seed=9):
     return contour(img, pal("void", 0))
 
 
+def _script_column(img, x0, y0, height, seed, dim, bright):
+    """A vertical run of god-script glyphs in a 3px-wide channel.
+
+    Glyphs come from a fixed stroke grammar rather than scattered pixels, for the
+    reason in docs/ARTSTYLE.md section 5: marks placed by a hash mean nothing, and
+    at this size "means nothing" reads as dirt rather than as writing. Each glyph
+    occupies a 3x3 cell with a 1px gap, so a column is legible as *lines of text*
+    at play distance even though no glyph is readable.
+    """
+    grammar = [
+        [(0, 0), (1, 0), (0, 1), (0, 2)],          # hook
+        [(1, 0), (1, 1), (0, 2), (2, 2)],          # fork
+        [(0, 0), (2, 0), (1, 1), (1, 2)],          # spine
+        [(0, 1), (1, 1), (2, 1), (1, 2)],          # bar
+        [(0, 0), (1, 1), (2, 2)],                  # slash
+    ]
+    cell = 0
+    y = y0
+    while y + 3 <= y0 + height:
+        g = grammar[int(h2(cell, seed, 17) * len(grammar))]
+        # one accent stroke per glyph, so the column has rhythm instead of an even grey
+        accent = int(h2(cell, seed, 23) * len(g))
+        for k, (mx, my) in enumerate(g):
+            img.set(x0 + mx, y + my, (bright if k == accent else dim) + (255,))
+        cell += 1
+        y += 4
+
+
+def stele_side(seed=21):
+    """The warning stele's inscribed face.
+
+    Chapter 0 furniture: players walk past these for hours reading them as ruin
+    dressing. After the death the same text is the only instruction anyone left
+    behind, which is why the script is legible-as-writing from the start and never
+    explained.
+    """
+    img = Image(SIZE, SIZE)
+    for y in range(SIZE):
+        for x in range(SIZE):
+            # a plain dressed slab, darker than shrine ashlar: this is a marker, not
+            # masonry, and it should read as one object rather than as coursed blocks
+            step = 1
+            if x == 0 or x == SIZE - 1:
+                step = 0                                    # chamfered edges
+            elif y == 0 and h2(x, 0, seed) < 0.5:
+                step = 2                                    # top edge catches light
+            img.set(x, y, pal("stone", step) + (255,))
+    # recessed panel the script sits in: x 3..12, y 2..13
+    for y in range(2, SIZE - 2):
+        for x in range(3, SIZE - 3):
+            img.set(x, y, pal("stone", 0) + (255,))
+    # TWO columns, centred in the panel. One column read as a single scratch and
+    # left the panel visibly half-empty; two read as an inscription, which is the
+    # whole job -- the player must recognise it as WRITING without ever being able
+    # to read it. Columns are given different seeds so they are not twins.
+    _script_column(img, 4, 3, 11, seed, pal("void", 1), pal("void", 2))
+    _script_column(img, 9, 3, 11, seed + 31, pal("void", 1), pal("void", 2))
+    return img
+
+
+def stele_top(seed=21):
+    """The stele's crown: plain dressed stone, no script. Weathered at the rim."""
+    img = Image(SIZE, SIZE)
+    for y in range(SIZE):
+        for x in range(SIZE):
+            rim = min(x, y, SIZE - 1 - x, SIZE - 1 - y)
+            if rim == 0:
+                step = 0
+            elif rim == 1 and h2(x, y, seed + 4) < 0.5:
+                step = 2
+            else:
+                step = 1
+            img.set(x, y, pal("stone", step) + (255,))
+    return img
+
+
 ASSETS = {
     (BLOCK, "shrine_stone"): shrine_stone,
     (BLOCK, "shrine_stone_carved"): shrine_stone_carved,
+    (BLOCK, "stele_side"): stele_side,
+    (BLOCK, "stele_top"): stele_top,
     (ITEM, "god_heart"): god_heart,
     (ITEM, "clast"): clast,
 }

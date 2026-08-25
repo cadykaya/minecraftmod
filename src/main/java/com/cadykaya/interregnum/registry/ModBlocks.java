@@ -1,6 +1,8 @@
 package com.cadykaya.interregnum.registry;
 
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
@@ -40,6 +42,22 @@ public final class ModBlocks {
                     .strength(2.5F, 8.0F)
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.STONE));
+
+    /**
+     * The warning steles. Chapter 0 dressing that players read as ruin flavour for
+     * hours, and which after the death is the only instruction anyone left behind.
+     * A rotatable pillar so a builder can lay one on its side without it looking
+     * wrong -- and so a toppled one reads as toppled.
+     */
+    public static final DeferredBlock<Block> WARNING_STELE = BLOCKS.register(
+            "warning_stele",
+            key -> new RotatedPillarBlock(BlockBehaviour.Properties.of()
+                    .setId(net.minecraft.resources.ResourceKey.create(
+                            net.minecraft.core.registries.Registries.BLOCK, key))
+                    .mapColor(MapColor.COLOR_GRAY)
+                    .strength(3.0F, 9.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.STONE)));
 
     public static void register(IEventBus modBus) {
         BLOCKS.register(modBus);

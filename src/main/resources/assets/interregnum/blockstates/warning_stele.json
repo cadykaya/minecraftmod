@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "interregnum:block/warning_stele"
+    },
+    "axis=z": {
+      "model": "interregnum:block/warning_stele_horizontal",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "interregnum:block/warning_stele_horizontal",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

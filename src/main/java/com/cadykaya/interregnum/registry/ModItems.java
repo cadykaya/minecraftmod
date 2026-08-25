@@ -21,6 +21,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> SHRINE_STONE_CARVED =
             ITEMS.registerSimpleBlockItem(ModBlocks.SHRINE_STONE_CARVED);
 
+    public static final DeferredItem<BlockItem> WARNING_STELE =
+            ITEMS.registerSimpleBlockItem(ModBlocks.WARNING_STELE);
+
     /**
      * The heart. Deliberately named "A Warm Gold Thing" in en_us: in Chapter 0 the
      * player has no reason to know what it is, and the item telling them would give

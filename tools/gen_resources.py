@@ -12,6 +12,10 @@ ASSETS = os.path.join(REPO, "src/main/resources/assets/interregnum")
 
 CUBE_ALL_BLOCKS = ["shrine_stone", "shrine_stone_carved"]
 
+# name -> (side_texture, end_texture). Pillar-shaped blocks; the blockstate carries
+# the axis, which is why these get variants rather than a single model.
+COLUMN_BLOCKS = {"warning_stele": ("stele_side", "stele_top")}
+
 def w(path, obj):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as fh:
@@ -25,3 +29,16 @@ for name in CUBE_ALL_BLOCKS:
        "textures": {"all": f"interregnum:block/{name}"}})
     w(os.path.join(ASSETS, "blockstates", name + ".json"),
       {"variants": {"": {"model": f"interregnum:block/{name}"}}})
+
+for name, (side, end) in COLUMN_BLOCKS.items():
+    tex = {"side": f"interregnum:block/{side}", "end": f"interregnum:block/{end}"}
+    w(os.path.join(ASSETS, "models/block", name + ".json"),
+      {"parent": "minecraft:block/cube_column", "textures": tex})
+    w(os.path.join(ASSETS, "models/block", name + "_horizontal.json"),
+      {"parent": "minecraft:block/cube_column_horizontal", "textures": tex})
+    w(os.path.join(ASSETS, "blockstates", name + ".json"),
+      {"variants": {
+          "axis=y": {"model": f"interregnum:block/{name}"},
+          "axis=z": {"model": f"interregnum:block/{name}_horizontal", "x": 90},
+          "axis=x": {"model": f"interregnum:block/{name}_horizontal", "x": 90, "y": 90},
+      }})
