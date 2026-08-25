@@ -28,6 +28,17 @@ all of which are deliberately subject-agnostic and survive whatever the mod turn
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 13 documents, see [`INDEX.md`](INDEX.md) |
 
+### Chapter state persists
+
+`/interregnum status` reports the world's chapter; `/interregnum record <milestone>` (level
+2) advances it. State lives on the overworld's saved-data storage -- the interregnum is a
+fact about the world, not about a place in it -- and serialises through the same single
+string `ChapterState` already round-trips in the core self-test.
+
+`tools/persistence_check.sh` proves it across five server boots, including a mutation of
+**already-loaded** saved data, which is the only path where `setDirty()` matters
+(LESSONS #13). It has a fresh-world control, without which the other runs prove nothing.
+
 ### Worldgen works
 
 Shrines generate. `ShrineFeature` builds a 5x5 court with a carved centre stone, corner
@@ -222,12 +233,12 @@ carved, heart, clast) + block models/blockstates, Gradle scaffold for `core`.
 
 In order, all unblocked unless marked:
 
-1. **The heart in a shrine, and the deicide event.** The shrine now has a carved centre
-   stone waiting for it. Needs: a loot/placement rule putting the heart in *some* shrines,
-   a `SavedData` wrapper for the tested core `ChapterState` (codec-based in 26.2 --
-   see `SavedDataType`), and the event that records `Milestone.DEICIDE` and fires the
-   server-wide consequences. This is the emotional core of Chapter 0 and everything for it
-   now exists except the wiring.
+1. **The heart in a shrine, and the deicide event.** Chapter state now persists and
+   `/interregnum record deicide` already moves the world to VIGIL, so what remains is the
+   *fiction*: put the heart in shrine loot (present only while the god lives -- after
+   DEICIDE no shrine holds one, which is how exactly one heart exists per world without
+   choosing a shrine in advance), fire the consequences on pickup (sky, crater, statues
+   wake), and give the killer the Executor role. This is the emotional core of Chapter 0.
 3. **The heart in loot**, and the deicide event: sky change, crater, statues wake. The
    core `ChapterState` exists and is tested; it needs a `SavedData` wrapper (codec-based
    in 26.2 — see `SavedDataType`) and the event that records `Milestone.DEICIDE`.

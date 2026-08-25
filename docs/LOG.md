@@ -321,3 +321,25 @@ them to stop looking, so that the one with a heart in it reads as "another shrin
 until it does not. Whether six minutes is right is [NEEDS PLAYTEST].
 
 The probe reads the rarity out of the generated JSON rather than keeping its own copy.
+
+---
+
+## Heartbeat tick 4 -- the world remembers
+
+`ChapterSavedData` persists the tested core `ChapterState` on the overworld's storage,
+serialised through the same single string the core self-test already round-trips.
+`/interregnum status` reads it; `/interregnum record <milestone>` (level 2) advances it.
+Recording DEICIDE moves a world from DORMANT to VIGIL and it is still VIGIL after a restart.
+
+Two API corrections from the sources rather than memory: `SavedDataType` is a codec-based
+record, and `CommandSourceStack.hasPermission(int)` no longer exists -- permissions moved to
+a PermissionSet model, so the idiom is
+`.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))`.
+
+**The check was blind and mutation testing caught it.** Deleting `setDirty()` did not fail
+the first version, because `SavedDataStorage.set()` marks freshly-created data dirty -- so
+create-then-mutate-then-restart passes whatever the mod does, and only data LOADED from disk
+exposes the bug. The check now restarts, mutates the loaded data, and restarts again;
+deleting `setDirty()` now fails it by name. LESSONS #13.
+
+Both the worldgen check and the persistence check are in CI's game job.

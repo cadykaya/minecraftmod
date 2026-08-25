@@ -422,3 +422,46 @@ generated JSON instead of keeping its own copy — a probe holding a second copy
 it is measuring against will report the old answer forever after that number changes. And
 `MAX_RELIEF` and the rarity filter multiply, so the code says in writing that changing
 either one silently moves the density and the probe must be re-run.*
+
+---
+
+## 13. The dirty flag that was already set
+
+*Found by mutating `ChapterSavedData` after the persistence check had already passed.*
+
+`ChapterSavedData.record()` calls `setDirty()`, with a comment saying that forgetting it is
+the classic way saved data silently fails to persist. To check that the claim -- and the
+check -- were real, `setDirty()` was deleted.
+
+**The persistence check still passed.**
+
+The reason is in `SavedDataStorage`:
+
+```java
+public <T extends SavedData> void set(SavedDataType<T> type, T data) {
+    this.cache.put(type, Optional.of(data));
+    data.setDirty();                    // <- freshly CREATED data is already dirty
+}
+...
+this.cache.forEach((type, o) -> o.filter(SavedData::isDirty).ifPresent(...));  // saving does consult it
+```
+
+So data **created** in a session is dirty for that whole session and saves whatever the mod
+does. Data **loaded from disk** is clean. The original check only ever did
+create-then-mutate-then-restart, which is precisely the path where `setDirty()` does not
+matter — so it could not see the bug it was written to catch.
+
+Fixed by adding the path that matters: restart, mutate the now-LOADED data, restart again.
+With that, deleting `setDirty()` fails with *"a change made to LOADED saved data was lost on
+restart"*.
+
+> **The general shape, and it is the fourth time this session:** a check that only exercises
+> the easy path passes for the wrong reason. Mutation testing is the only thing that has
+> reliably found these — it found blind unit tests in #5, and here it found a blind
+> *integration* test. **Whatever the layer, break the thing on purpose before believing the
+> check.**
+
+*Footnote, and it is #4 arriving a third time: the shell line measuring this read
+`./tools/persistence_check.sh | tail -4; echo "exit=$?"` and printed `exit=0` while the
+script had plainly failed — `$?` was `tail`'s. The `FAIL:` line was the real evidence.
+Knowing a rule really does not exempt you from it.*
