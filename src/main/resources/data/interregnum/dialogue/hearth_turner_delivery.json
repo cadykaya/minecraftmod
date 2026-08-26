@@ -1,0 +1,202 @@
+{
+  "_comment": [
+    "Delivering the dead god's letter to the Hearth-Turner. The third god-questline opener.",
+    "",
+    "THE LOCKED SOURCE, again the letter itself, which shipped before this scene existed:",
+    "",
+    "  SUBJECT: TEMPORAL AUTHORITY -- request for a copy",
+    "  'You will have kept it. You keep all of them. I am asking for the version where I",
+    "   was wrong, and I am asking because I no longer have it and I have looked.'",
+    "  'Send it as it was filed. Do not correct it on my account. I am aware that asking",
+    "   you not to correct a record is its own kind of request.'",
+    "",
+    "WORLD.md: 'The Hearth-Turner / Ash -- the one who kept every version of the argument.",
+    "A god whose law is memory has never let a grievance become past tense. It holds the",
+    "family's entire falling-out, in order, and will show you. That makes it the exposition",
+    "god, but earned: it is not telling you because the plot needs it told, it is telling",
+    "you because it has never been able to stop.'",
+    "",
+    "SO THE EXPOSITION HAS TO BE SOMETHING THE PLAYER CAN TURN OFF, and that is the whole",
+    "design of this file. A god that cannot stop talking is only characterization if the",
+    "player is the one who has to stop it. Letting it run is generous and costs you time;",
+    "cutting it off is reasonable and costs you nothing you can see. Neither is punished.",
+    "The lore is available and never compulsory -- which is also the only honest way to",
+    "ship an exposition scene without it becoming a lore dump with dialogue options.",
+    "",
+    "THE BEAT IS THAT THE COPY IS ALREADY READY. It has been ready. Nobody ever asked, so",
+    "it was never sent, and the one who finally asked is dead -- so the request arrives at",
+    "a god who can fulfil it perfectly and has nowhere to send it.",
+    "",
+    "THE UNANIMOUS NODE IS ASKING IT TO HAND THE COPY OVER, and it is deliberately NOT the",
+    "same transgression as the other two scenes. The Verdant's is taking away a defence;",
+    "the Anchorite's is telling it the job is over. For a god whose entire law is that",
+    "nothing is ever finished and nothing is ever lost, the unthinkable thing is letting a",
+    "record LEAVE. Three gods, three different unbearable requests, and none of them is",
+    "'be sad about your relative'.",
+    "",
+    "THE NAME IS NOT IN THIS FILE. `tools/letters_check.py` asserts the three names appear",
+    "in their own letters and nowhere else in the shipped string table.",
+    "",
+    "Dread covenant: the grief is sincere throughout and never the punchline. The permitted",
+    "comedy is the SYSTEM -- a request for a copy, a filing reference, an office that can",
+    "produce any version of anything except the one where it is over.",
+    "",
+    "Regard: HEARTH_TURNER throughout, and the most generous route is worth +30 against the",
+    "post-deicide floor of -45. `dialogue_check.py` now refuses any scene whose best route",
+    "would pass the -10 ceiling, because `adjust` clamps and the tail of such a scene pays",
+    "a capped player nothing."
+  ],
+  "id": "hearth_turner_delivery",
+  "start": "already_have_it",
+  "nodes": [
+    {
+      "id": "already_have_it",
+      "speaker": "hearth_turner",
+      "text_key": "interregnum.dlg.hearth_turner_delivery.already_have_it",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "letter",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.already_have_it.letter",
+          "target": "which_version"
+        },
+        {
+          "id": "how",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.already_have_it.how",
+          "target": "which_version",
+          "regard": { "HEARTH_TURNER": 4 }
+        }
+      ]
+    },
+    {
+      "id": "which_version",
+      "speaker": "hearth_turner",
+      "text_key": "interregnum.dlg.hearth_turner_delivery.which_version",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "show_me",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.which_version.show_me",
+          "target": "showing",
+          "regard": { "HEARTH_TURNER": 5 }
+        },
+        {
+          "id": "skip",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.which_version.skip",
+          "target": "too_late"
+        }
+      ]
+    },
+    {
+      "id": "showing",
+      "speaker": "hearth_turner",
+      "text_key": "interregnum.dlg.hearth_turner_delivery.showing",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "keep_going",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.showing.keep_going",
+          "target": "the_wrong_one",
+          "regard": { "HEARTH_TURNER": 7 }
+        },
+        {
+          "id": "enough",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.showing.enough",
+          "target": "too_late"
+        }
+      ]
+    },
+    {
+      "id": "the_wrong_one",
+      "speaker": "hearth_turner",
+      "text_key": "interregnum.dlg.hearth_turner_delivery.the_wrong_one",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "onward",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.the_wrong_one.onward",
+          "target": "too_late"
+        }
+      ]
+    },
+    {
+      "id": "too_late",
+      "speaker": "hearth_turner",
+      "text_key": "interregnum.dlg.hearth_turner_delivery.too_late",
+      "rule": "UNANIMOUS",
+      "options": [
+        {
+          "id": "give_it",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.too_late.give_it",
+          "target": "handed",
+          "regard": { "HEARTH_TURNER": 9 }
+        },
+        {
+          "id": "leave_it",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.too_late.leave_it",
+          "target": "kept"
+        }
+      ]
+    },
+    {
+      "id": "handed",
+      "speaker": "hearth_turner",
+      "text_key": "interregnum.dlg.hearth_turner_delivery.handed",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "onward",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.handed.onward",
+          "target": "terms"
+        }
+      ]
+    },
+    {
+      "id": "kept",
+      "speaker": "hearth_turner",
+      "text_key": "interregnum.dlg.hearth_turner_delivery.kept",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "onward",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.kept.onward",
+          "target": "terms"
+        }
+      ]
+    },
+    {
+      "id": "terms",
+      "speaker": "hearth_turner",
+      "text_key": "interregnum.dlg.hearth_turner_delivery.terms",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "accept",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.terms.accept",
+          "target": "opened",
+          "regard": { "HEARTH_TURNER": 5 }
+        },
+        {
+          "id": "decline",
+          "text_key": "interregnum.dlg.hearth_turner_delivery.terms.decline",
+          "target": "closes",
+          "regard": { "HEARTH_TURNER": -6 }
+        }
+      ]
+    },
+    {
+      "id": "opened",
+      "speaker": "hearth_turner",
+      "text_key": "interregnum.dlg.hearth_turner_delivery.opened",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "closes",
+      "speaker": "hearth_turner",
+      "text_key": "interregnum.dlg.hearth_turner_delivery.closes",
+      "rule": "INITIATOR",
+      "options": []
+    }
+  ]
+}

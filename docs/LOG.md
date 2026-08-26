@@ -2491,3 +2491,42 @@ flattering direction, and the second time it told the owner that nothing was wai
 them while two decisions were. Rewritten against the tree, with every number counted, and
 `HANDOFF.md` now carries a note saying the description must be updated by hand whenever
 those counts move. That is a weaker mitigation than a check and it is labelled as one.
+
+## The third letter, and an exposition scene you can turn off
+
+The Hearth-Turner's delivery. Its letter is the sharpest of the four:
+
+> `SUBJECT: TEMPORAL AUTHORITY — request for a copy`
+>
+> *You will have kept it. You keep all of them. I am asking for the version where I was
+> wrong, and I am asking because I no longer have it and I have looked.*
+>
+> *Send it as it was filed. Do not correct it on my account. I am aware that asking you
+> not to correct a record is its own kind of request.*
+
+`WORLD.md` locks this god as *"the one who kept every version of the argument… the
+exposition god, but earned: it is not telling you because the plot needs it told, it is
+telling you because it has never been able to stop."*
+
+**That constraint is the whole design of the file.** A god who cannot stop talking is only
+characterisation if the player is the one who has to stop it — otherwise it is a lore dump
+wearing dialogue options. So the exposition branches are optional at every step: letting
+it run is generous and earns regard, cutting it off is reasonable and costs nothing you
+can see, and neither is punished. The falling-out is available and never compulsory.
+
+The beat is that **the copy is already held out when you arrive.** It has been ready for
+an age. Nobody ever asked. The one who finally asked is dead — so a request this god can
+fulfil perfectly has nowhere to go, and it has been treating that as a clerical problem
+because the other way of putting it is not available to it.
+
+The three UNANIMOUS nodes across the three scenes are deliberately different
+transgressions: take away the Verdant's defence, tell the Anchorite the job is over, ask
+the Hearth-Turner to let a record *leave*. For a god whose entire law is that nothing is
+ever finished and nothing is ever lost, handing something over is the unthinkable one.
+None of the three is "be sad about your relative", which is the version of this scene that
+writes itself and is worth nothing.
+
+Live: `VERDANT -45 → -16`, `ANCHORITE -45 → -15`, `HEARTH_TURNER -45 → -15`, each matching
+the static path arithmetic exactly. The Hearth-Turner's is the longest generous route in
+the mod — it runs through every optional beat rather than skipping any — which makes its
+scene the one most likely to wedge, and therefore the one worth walking end to end.

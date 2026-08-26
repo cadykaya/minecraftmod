@@ -96,9 +96,30 @@ reads gameTime — the arithmetic is covered in core, including both sides of th
 and the tick handler itself (it walks `level.players()` and a headless server has none, so
 the command seam runs — calling the *same* `Tending.tendAround`, not a copy).
 
-### Two gods' letters can be delivered
+### Three gods' letters can be delivered
 
-The Verdant's and the Anchorite's, and the pair is the point: **two openings, one
+The Verdant's, the Anchorite's and the Hearth-Turner's — and the set is the point:
+**three openings, three unbearable requests, one machinery.**
+
+The **Hearth-Turner** is locked as *"the one who kept every version of the argument…
+the exposition god, but earned: it is not telling you because the plot needs it told, it
+is telling you because it has never been able to stop."* Its letter asks for *"the version
+where I was wrong… because I no longer have it and I have looked,"* and asks not to have
+it corrected — knowing that asking a god of memory not to correct a record is its own kind
+of request.
+
+So the copy is already held out when you arrive. It has been ready for an age; nobody ever
+asked; and the one who finally asked is dead, so a request this god can fulfil perfectly
+has nowhere to go. **The exposition is something the player can turn off**, which is the
+only honest way to ship an exposition scene: letting it run is generous, cutting it off is
+reasonable, and neither is punished. A god that cannot stop talking is only
+characterisation if the player is the one who stops it.
+
+The three UNANIMOUS nodes are deliberately different transgressions — take away the
+Verdant's defence, tell the Anchorite the job is over, ask the Hearth-Turner to let a
+record *leave*. None of them is "be sad about your relative".
+
+The Verdant and the Anchorite are the pair that set the pattern: **two openings, one
 machinery.** The Verdant opens mid-argument, defending a coverage arrangement nobody
 mentioned. The Anchorite does not defend anything — it has been holding something for an
 age and asks *what the load is* before it asks who you are.
@@ -1554,7 +1575,7 @@ next to each, so the provenance travels with the decision.
    still missing, and it is blocked on the owner**: see "Waiting on owner" — a Warden
    needs something to accuse you of, and the locked countermeasures are all about
    casting, which does not exist yet.
-5. **More scenes.** Six exist (`warden_intake`, `warden_interrogation`, `shrine_keeper`,
+5. **More scenes.** Nine exist (`warden_intake`, `warden_interrogation`, `shrine_keeper`,
    `shrine_keeper_intact`, `dream_audience`) and the machinery now has the range it was
    missing, so the shortage from here is content rather than plumbing. The four gods have
    regard lines but no scenes; the roster decision gives each of them four names to be

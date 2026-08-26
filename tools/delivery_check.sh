@@ -39,6 +39,7 @@ fail() { echo "FAIL: $1"; exit 1; }
 
 SCENE=interregnum:verdant_delivery
 SCENE2=interregnum:anchorite_delivery
+SCENE3=interregnum:hearth_turner_delivery
 # UUID participants, because `interregnum regard` takes a player id and the whole point
 # of this file is reading the number back. Opaque string ids are fine for the table but
 # have no regard to inspect.
@@ -104,6 +105,31 @@ interregnum talk say $B accept
 interregnum talk say $C accept
 say AFTER_SCENE2
 interregnum talk status $A
+interregnum regard $A
+interregnum talk start $SCENE3 $A+$B+$C
+interregnum talk say $A how
+interregnum talk say $B how
+interregnum talk say $C how
+interregnum talk say $A show_me
+interregnum talk say $B show_me
+interregnum talk say $C show_me
+interregnum talk say $A keep_going
+interregnum talk say $B keep_going
+interregnum talk say $C keep_going
+interregnum talk say $A onward
+interregnum talk say $B onward
+interregnum talk say $C onward
+interregnum talk say $A give_it
+interregnum talk say $B give_it
+interregnum talk say $C give_it
+interregnum talk say $A onward
+interregnum talk say $B onward
+interregnum talk say $C onward
+interregnum talk say $A accept
+interregnum talk say $B accept
+interregnum talk say $C accept
+say AFTER_SCENE3
+interregnum talk status $A
 interregnum regard $A" \
     LOG=/tmp/delivery.log timeout 900 ./tools/server_smoke.sh > /tmp/dl.txt 2>&1 \
     || { tail -25 /tmp/dl.txt; fail "the run did not complete"; }
@@ -168,5 +194,27 @@ echo "  ANCHORITE: $a_before -> $a_after   (permanent cap $a_cap)"
 [ "$a_after" -lt "$a_cap" ] || \
     fail "the Anchorite finished at $a_after, at or past its permanent cap of $a_cap. dialogue_check.py computes the best route statically and refuses one that reaches the ceiling; if the live number gets there anyway, the two disagree and the static guard is not guarding what it thinks"
 
+# --- the third, and the one that is mostly exposition -----------------------
+# The Hearth-Turner is the exposition god, which makes its scene the one most likely to
+# wedge: the generous route runs through every optional beat rather than skipping them,
+# so if any of those nodes fails to resolve this is where it shows.
+after3=$(sed -n '/AFTER_SCENE3/,$p' /tmp/dl.txt | grep -oE 'talk=[a-z]+' | head -1 || true)
+[ "$after3" = "talk=none" ] || {
+    sed -n '/AFTER_SCENE3/,$p' /tmp/dl.txt | grep -E 'talk=' | head -4 || true
+    fail "the Hearth-Turner's table was still open after the last answer ('$after3') -- the longest generous path in the mod does not reach its ending"; }
+
+h_before=$(sed -n '/AFTER_SCENE2/,/AFTER_SCENE3/p' /tmp/dl.txt | grep -oE 'HEARTH_TURNER=[A-Z]+\(-?[0-9]+\)' | head -1 | grep -oE '\(-?[0-9]+\)' | tr -d '()')
+h_after=$(sed -n '/AFTER_SCENE3/,$p' /tmp/dl.txt | grep -oE 'HEARTH_TURNER=[A-Z]+\(-?[0-9]+\)' | head -1 | grep -oE '\(-?[0-9]+\)' | tr -d '()')
+h_cap=$(sed -n '/AFTER_SCENE3/,$p' /tmp/dl.txt | grep -oE 'HEARTH_TURNER=[A-Z]+\(-?[0-9]+\)cap-?[0-9]+' | head -1 | grep -oE 'cap-?[0-9]+$' | sed 's/cap//')
+[ -n "$h_before" ] && [ -n "$h_after" ] && [ -n "$h_cap" ] || {
+    grep -oE 'HEARTH_TURNER=[A-Za-z]+\(-?[0-9]+\)(cap-?[0-9]+)?' /tmp/dl.txt | head -4 || true
+    fail "could not read the Hearth-Turner's regard before and after its scene"; }
+
+echo "  HEARTH_TURNER: $h_before -> $h_after   (permanent cap $h_cap)"
+[ "$h_after" -gt "$h_before" ] || \
+    fail "the most generous path through the Hearth-Turner's scene left it at $h_after, no better than the $h_before it started at -- the choices in that scene are decoration"
+[ "$h_after" -lt "$h_cap" ] || \
+    fail "the Hearth-Turner finished at $h_after, at or past its permanent cap of $h_cap -- the static guard in dialogue_check.py and the running game disagree about what the best route is worth"
+
 echo
-echo "OK: two gods' letters can be delivered, both scenes play to their ends, and the most generous path through either still leaves a god that will not have you"
+printf "OK: three gods' letters can be delivered, every scene plays to its end, and the most\n    generous path through any of them still leaves a god that will not have you\n"
