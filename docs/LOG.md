@@ -3453,3 +3453,39 @@ a second visit, and removing `setUnlimitedLifetime` puts a clast on a 40-tick-an
 timer.
 
 193 self-test checks, 63 mutations, 37 live checks.
+
+---
+
+## More of the world to lose
+
+Nineteen conversions where there were nine.
+
+Bands 1 and 2 are the only part of this mod a player can reach today — everything past the
+deicide is behind one of the five questions in "Waiting on owner" — so the unraveling is
+where content is worth adding, and it was thin.
+
+Band 1 finishes its own chain. Cornflowers and daisies wilt like the poppies and dandelions
+already did, and a dead bush eventually crumbles to nothing. That last rule is the point:
+until now a thin place converged on a field of dead bushes and stopped, which reads as a
+state rather than a process. It goes to bare ground now, so a player who keeps coming back
+can see how far along it is.
+
+Band 2 loosens more rules. Birch and spruce canopies thin as oak did; andesite, diorite and
+granite crack to cobblestone and join the cobble-to-gravel chain; sandstone slumps to sand,
+which then falls — the first conversion in the table whose consequence is not the block it
+names. And dirt paths forget they were walked on, which is the one addition that takes away
+a human mark rather than a natural one, and is what band 2's locked "rule loosening" is
+really about.
+
+Every new id was confirmed by a live load — "Unraveling: 2 band(s), 19 conversion(s) in
+force" — rather than by reading the registry, and the oscillation guard was watched failing
+on a deliberate `sand -> sandstone`.
+
+### A stale number in a check, removed rather than updated
+
+`unravel_check.sh` asserted `"2 band(s), 9 conversion(s) in force"` with the nine typed into
+the shell script. Adding a conversion failed a correct build, which is the way round that
+gets a guard deleted rather than fixed. It counts the rules out of `bands.json` now — which
+is what the assertion always meant: everything in the file loaded, not "nine things loaded".
+
+193 self-test checks, 63 mutations, 37 live checks.

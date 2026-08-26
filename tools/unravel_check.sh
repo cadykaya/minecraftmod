@@ -84,9 +84,19 @@ ticks=$(grep -oE 'ticks=[0-9]+' /tmp/u1.txt | head -1 | grep -oE '[0-9]+' || tru
 [ -n "$ticks" ] && [ "$ticks" -gt 0 ] \
     || fail "the level tick never reached the unraveling (ticks=${ticks:-absent}) -- the handler is not wired up"
 
-# The table is loaded, from the datapack, with everything in it.
-want /tmp/unravel1.log 'Unraveling: 2 band(s), 9 conversion(s) in force.' \
-    "the unraveling table did not load, or loaded the wrong number of rules"
+# The table is loaded, from the datapack, with EVERYTHING in it -- a loader that drops a
+# rule it cannot parse would otherwise be invisible, because the rules that did load still
+# work and the world still changes.
+#
+# The number is counted out of the data file rather than written here. It used to be typed
+# in, which made every added conversion a two-file edit and the check a second place for
+# the count to be wrong; a stale number here fails a correct build, which is the way round
+# that gets a guard deleted rather than fixed.
+BANDS=src/main/resources/data/interregnum/unraveling/bands.json
+rules=$(python3 -c "import json;d=json.load(open('$BANDS'));print(sum(len(b['conversions']) for b in d['bands']))")
+bands=$(python3 -c "import json;d=json.load(open('$BANDS'));print(len(d['bands']))")
+want /tmp/unravel1.log "Unraveling: $bands band(s), $rules conversion(s) in force." \
+    "the unraveling table did not load, or loaded fewer rules than $BANDS contains"
 
 # Band 1, in a thin place: it happens.
 want /tmp/u1.txt 'unravel=CONVERTED rule=grass_thins thin=true now=minecraft:air' \

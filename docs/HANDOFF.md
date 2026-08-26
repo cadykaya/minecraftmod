@@ -33,6 +33,38 @@ asserted against a running world rather than against its own source.
 | Magic | **four schools, eight spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 
+### More of the world to lose
+
+Nineteen conversions where there were nine. Bands 1 and 2 are the only part of this mod a
+player can reach today — everything past the deicide is behind one of the five questions in
+"Waiting on owner" — so the unraveling is where content is worth adding, and it was thin: a
+thin place took away four kinds of ground plant, and the overworld cracked five kinds of
+block.
+
+**Band 1 finishes its own chain.** Cornflowers and oxeye daisies wilt like the poppies and
+dandelions already did, and **a dead bush eventually crumbles to nothing.** That last one is
+the point: until now a thin place converged on a field of dead bushes and stopped, which
+reads as a state rather than a process. Now it goes all the way to bare ground, and a player
+who keeps coming back can see how far along it is.
+
+**Band 2 loosens more rules.** Birch and spruce canopies thin as oak already did; andesite,
+diorite and granite crack to cobblestone and join the existing cobble-to-gravel chain;
+sandstone slumps to sand, which then falls, which is the first conversion in the table whose
+consequence is not the block it names. And **dirt paths forget they were walked on** — the
+one addition that takes away a human mark rather than a natural one, which is what band 2's
+locked *"rule loosening"* is really about.
+
+All of it is inside the standing guarantees, and `unraveling_check.py` enforces them: every
+`from` is a naturally-generated vanilla block, nothing player-built appears on either side,
+no rule reverses another, and every chance stays in the range the existing table already
+used. The oscillation guard was watched failing on a deliberate `sand → sandstone`.
+
+**A stale number in a check, removed rather than updated.** `unravel_check.sh` asserted
+`"2 band(s), 9 conversion(s) in force"` with the nine typed into the shell script, so adding
+a conversion failed a correct build — which is the way round that gets a guard deleted
+rather than fixed. It counts the rules out of `bands.json` now, which is what the assertion
+always meant: *everything in the file loaded*.
+
 ### The god shatters
 
 `WORLD.md`, locked: *"The god's power enters its killer. An ordinary Minecraft body cannot

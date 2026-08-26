@@ -26,10 +26,48 @@
       "note": "Barely there, and only near the crater and the shrines. The world has not understood yet.",
       "scope": "thin_places",
       "conversions": [
-        { "id": "grass_thins",   "from": "minecraft:short_grass", "to": "minecraft:air",       "chance": 0.30 },
-        { "id": "flowers_wilt",  "from": "minecraft:dandelion",   "to": "minecraft:dead_bush", "chance": 0.25 },
-        { "id": "poppies_wilt",  "from": "minecraft:poppy",       "to": "minecraft:dead_bush", "chance": 0.25 },
-        { "id": "ferns_wilt",    "from": "minecraft:fern",        "to": "minecraft:dead_bush", "chance": 0.20 }
+        {
+          "id": "grass_thins",
+          "from": "minecraft:short_grass",
+          "to": "minecraft:air",
+          "chance": 0.3
+        },
+        {
+          "id": "flowers_wilt",
+          "from": "minecraft:dandelion",
+          "to": "minecraft:dead_bush",
+          "chance": 0.25
+        },
+        {
+          "id": "poppies_wilt",
+          "from": "minecraft:poppy",
+          "to": "minecraft:dead_bush",
+          "chance": 0.25
+        },
+        {
+          "id": "ferns_wilt",
+          "from": "minecraft:fern",
+          "to": "minecraft:dead_bush",
+          "chance": 0.2
+        },
+        {
+          "id": "cornflowers_wilt",
+          "from": "minecraft:cornflower",
+          "to": "minecraft:dead_bush",
+          "chance": 0.25
+        },
+        {
+          "id": "daisies_wilt",
+          "from": "minecraft:oxeye_daisy",
+          "to": "minecraft:dead_bush",
+          "chance": 0.25
+        },
+        {
+          "id": "dead_bush_crumbles",
+          "from": "minecraft:dead_bush",
+          "to": "minecraft:air",
+          "chance": 0.12
+        }
       ]
     },
     {
@@ -38,11 +76,78 @@
       "note": "Everywhere now, and structural: what was bound begins to let go.",
       "scope": "overworld",
       "conversions": [
-        { "id": "grass_dries",    "from": "minecraft:grass_block", "to": "minecraft:coarse_dirt",      "chance": 0.06 },
-        { "id": "stone_cracks",   "from": "minecraft:stone",       "to": "minecraft:cobblestone",      "chance": 0.05 },
-        { "id": "cobble_loosens", "from": "minecraft:cobblestone", "to": "minecraft:gravel",           "chance": 0.02 },
-        { "id": "canopy_thins",   "from": "minecraft:oak_leaves",  "to": "minecraft:air",              "chance": 0.03 },
-        { "id": "moss_retreats",  "from": "minecraft:mossy_cobblestone", "to": "minecraft:cobblestone", "chance": 0.08 }
+        {
+          "id": "grass_dries",
+          "from": "minecraft:grass_block",
+          "to": "minecraft:coarse_dirt",
+          "chance": 0.06
+        },
+        {
+          "id": "stone_cracks",
+          "from": "minecraft:stone",
+          "to": "minecraft:cobblestone",
+          "chance": 0.05
+        },
+        {
+          "id": "cobble_loosens",
+          "from": "minecraft:cobblestone",
+          "to": "minecraft:gravel",
+          "chance": 0.02
+        },
+        {
+          "id": "canopy_thins",
+          "from": "minecraft:oak_leaves",
+          "to": "minecraft:air",
+          "chance": 0.03
+        },
+        {
+          "id": "moss_retreats",
+          "from": "minecraft:mossy_cobblestone",
+          "to": "minecraft:cobblestone",
+          "chance": 0.08
+        },
+        {
+          "id": "birch_canopy_thins",
+          "from": "minecraft:birch_leaves",
+          "to": "minecraft:air",
+          "chance": 0.03
+        },
+        {
+          "id": "spruce_canopy_thins",
+          "from": "minecraft:spruce_leaves",
+          "to": "minecraft:air",
+          "chance": 0.03
+        },
+        {
+          "id": "paths_forget",
+          "from": "minecraft:dirt_path",
+          "to": "minecraft:dirt",
+          "chance": 0.05
+        },
+        {
+          "id": "andesite_cracks",
+          "from": "minecraft:andesite",
+          "to": "minecraft:cobblestone",
+          "chance": 0.04
+        },
+        {
+          "id": "diorite_cracks",
+          "from": "minecraft:diorite",
+          "to": "minecraft:cobblestone",
+          "chance": 0.04
+        },
+        {
+          "id": "granite_cracks",
+          "from": "minecraft:granite",
+          "to": "minecraft:cobblestone",
+          "chance": 0.04
+        },
+        {
+          "id": "sandstone_slumps",
+          "from": "minecraft:sandstone",
+          "to": "minecraft:sand",
+          "chance": 0.02
+        }
       ]
     }
   ]
