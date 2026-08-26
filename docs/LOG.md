@@ -2734,3 +2734,70 @@ it would prove nothing about the rule.
 Core: 157 self-test checks, 50 mutations. The three new ones are the directions that would
 be silent — everybody can cast untaught, one lesson opens all four schools, and casting at
 home is free.
+
+## A second spell, and the school system stops being one special case
+
+***Lighten*** — the Anchorite's. `WORLD.md`: *"shared low-gravity zone, **mobs float
+too**."* Those last three words are the spell. It is not a buff you put on yourself; it is
+a piece of the world briefly obeying the Anchorite's law, and everything inside it is
+subject — you, the skeleton chasing you, the gravel over your head.
+
+That is what satisfies the locked doctrine that a spell's *"combat use falls out of its
+world use, never the reverse"*, and it is the clearest case in the kit: **you cannot aim
+Lighten at anybody.** You can only change the rules where they happen to be standing.
+
+**It is the god's own law, borrowed.** The zone does not implement floating — it makes
+`Anchorite.lift` apply where it otherwise would not. There are now three callers and one
+law:
+
+- the Mass Authority, where it is simply how things are;
+- a band-3 patch of overworld that has forgotten whose it is;
+- a person who has learned how to ask.
+
+That progression is the school system's entire argument. You meet the law as a **place**,
+meet it again as a **wrongness** leaking into your own world, and the third time **you are
+the one doing it**. It is only the same law because it is the same method, which is why
+all three are clauses on one handler rather than three handlers that would drift.
+
+### Two spells, two shapes, on purpose
+
+*Weather* changes a block and is finished. *Lighten* opens a **zone** — a cube with an
+edge and a lifetime — and having both is what makes the school system a system rather than
+one hardcoded case. The parts they share are exactly the two rules every spell has: you
+must have been taught it, and at home it costs. Everything else about them is different.
+
+The zone is a cube by Chebyshev distance, matching every other region in this mod, because
+a player has to be able to find where it **ends** — stepping out is how you learn it has an
+edge, and therefore that it is a rule rather than the world breaking. A sphere's edge is
+not findable by walking.
+
+Zones are held in memory and do not survive a restart, which is a decision rather than an
+omission: a spell whose effect outlived the server could strand somebody inside a
+low-gravity field cast by a player who has since left, with no way to know what it is or
+when it ends. Everything permanent here is persisted; half a minute of altered physics is
+deliberately not. They are also cleared on shutdown, because a static map outlives a world
+in a development run and a leftover zone would apply to the next world at coordinates that
+mean something else.
+
+### The check that had to look like another check
+
+`lighten_check.sh` is deliberately shaped like `anchorite_check.sh` — same sand, same
+floor, same probes, including the two that tell *rising* apart from *deleted* and from
+*gravity switched off rather than reversed*. The claim being made is that the outcome is
+**identical** to the god's own world, so the check that proves it should be too.
+
+Its control is twenty blocks away in the same world on the same tick: outside the zone,
+sand still falls. Without that, "the sand inside did not land" is also satisfied by sand
+that never spawned and by a chunk that never loaded — and the mutation that gives the zone
+no edge at all is caught by exactly that control, reporting that gravity had stopped
+working everywhere.
+
+One self-inflicted bug worth keeping. The untaught assertion looked for
+`opened=false refused=unlearned` as one adjacent string, which the output never contains —
+`frayed=0` sits between them. It failed loudly against behaviour that was correct, which is
+`LESSONS.md` #26 in its cheapest possible form: a positive assertion about text that was
+right there in the output, guessed at instead of read.
+
+164 self-test checks, 52 mutations. The two new core guards are the ones that fail
+silently: a zone with no edge looks like the spell working from inside it, and one that
+never lapses looks like it working for longer than you were watching.

@@ -740,6 +740,40 @@ public final class SelfTest {
         attrition();
         marking();
         grimoires();
+        zones();
+    }
+
+    /**
+     * A zone has an edge and a lifetime. Both are the difference between a spell and a
+     * terrain feature, and both fail silently: a zone with no edge looks like the spell
+     * working from inside it, and one that never lapses looks like it working for longer
+     * than you were watching.
+     */
+    static void zones() {
+        var z = com.cadykaya.interregnum.core.magic.Lighten.zoneAt(0, 64, 0, 1000);
+
+        check(z.covers(0, 64, 0), "the point it was cast at is inside");
+        int r = com.cadykaya.interregnum.core.magic.Lighten.RADIUS;
+        check(z.covers(r, 64 + r, -r),
+              "the far corner is inside -- Chebyshev, so the region is a cube and its "
+              + "edge is something a player can find by walking");
+        check(!z.covers(r + 1, 64, 0),
+              "one block past the edge is OUTSIDE. A zone with no edge is not a spell, "
+              + "it is weather -- and from inside it the two look identical, which is "
+              + "why nothing else would catch this");
+
+        check(!z.expired(1000), "it is in force the moment it is cast");
+        long ends = 1000 + com.cadykaya.interregnum.core.magic.Lighten.DURATION_TICKS;
+        check(!z.expired(ends),
+              "it is still in force on the exact tick it expires -- 'expires at' reading "
+              + "as 'expired at' loses the last tick to an off-by-one that only ever "
+              + "shows up as the spell feeling a moment short");
+        check(z.expired(ends + 1), "and lapsed the tick after");
+
+        check(com.cadykaya.interregnum.core.magic.Lighten.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.WEIGHT,
+              "Lighten belongs to the Anchorite's school, so learning the Turning does "
+              + "not hand you the Anchorite's verbs");
     }
 
     /**

@@ -206,6 +206,14 @@ MUTATIONS = [
      f"{MAIN}/magic/Casting.java",
      "        return inTheOverworld;", "        return false;"),
 
+    ("magic: a Lighten zone has no edge, so it is weather rather than a spell",
+     f"{MAIN}/magic/Zone.java",
+     "        return Math.abs(px - x) <= radius\n                && Math.abs(py - y) <= radius\n                && Math.abs(pz - z) <= radius;",
+     "        return true;"),
+    ("magic: a zone never lapses, so half a minute of physics becomes terrain",
+     f"{MAIN}/magic/Zone.java",
+     "        return nowTick > expiresAtTick;", "        return false;"),
+
     # The dead god's mail. The invariant here is about a SET -- three letters open with
     # a name, the fourth opens `To --` -- so nothing about an individual letter can
     # catch it going. If it goes, the mid-game's best reveal quietly stops being one and

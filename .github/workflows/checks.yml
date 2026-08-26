@@ -150,3 +150,6 @@ jobs:
 
       - name: The first spell works, and costs the overworld what it does not cost a god's world
         run: ./tools/casting_check.sh
+
+      - name: A second school's spell makes a patch of world obey another god's law
+        run: ./tools/lighten_check.sh

@@ -217,7 +217,8 @@
       "text_key": "interregnum.dlg.anchorite_delivery.opened",
       "rule": "INITIATOR",
       "options": [],
-      "milestone": "LETTER_DELIVERED"
+      "milestone": "LETTER_DELIVERED",
+      "teaches": "WEIGHT"
     },
     {
       "id": "closes",

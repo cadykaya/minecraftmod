@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **25**, every one mutation-verified, all in CI |
+| Live-world checks | **26**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
@@ -95,6 +95,31 @@ being *crossed* (no CI run waits that out, and `/time add` moves dayTime while t
 reads gameTime — the arithmetic is covered in core, including both sides of the boundary),
 and the tick handler itself (it walks `level.players()` and a headless server has none, so
 the command seam runs — calling the *same* `Tending.tendAround`, not a copy).
+
+### A second spell, and the school system stops being one special case
+
+***Lighten*** — the Anchorite's. `WORLD.md`: *"shared low-gravity zone, **mobs float
+too**."* Those last three words are the spell. It is not a buff you put on yourself; it is
+a piece of the world briefly obeying the Anchorite's law, and everything inside is subject
+— you, the skeleton chasing you, the gravel over your head. That is what satisfies the
+locked doctrine that a spell's *"combat use falls out of its world use, never the
+reverse"*: **you cannot aim Lighten at anybody**, only change the rules where they stand.
+
+**It is the god's own law, borrowed.** The zone does not implement floating — it makes
+`Anchorite.lift` apply where it otherwise would not. There are now three callers and one
+law: the Mass Authority, a band-3 patch of overworld that has forgotten whose it is, and a
+person who has learned how to ask. **That progression is the school system's whole
+argument** — you meet the law as a place, meet it again as a wrongness leaking into your
+own world, and the third time you are the one doing it.
+
+Two shapes now exist and they are deliberately different kinds. *Weather* changes a block
+and is done. *Lighten* opens a **zone**: a cube with an edge you can walk out of (the same
+reasoning that gives band 3's leaks one) and a lifetime of half a minute. Zones are held
+in memory and do not survive a restart — a spell whose effect outlived the server could
+strand somebody inside a field cast by a player who has since left.
+
+The Anchorite's delivery scene teaches Weight, so two of the four questlines now open onto
+their school.
 
 ### Magic is learned in its god's world, and only there
 

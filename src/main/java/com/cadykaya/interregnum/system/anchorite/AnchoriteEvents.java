@@ -2,6 +2,7 @@ package com.cadykaya.interregnum.system.anchorite;
 
 import com.cadykaya.interregnum.core.exodus.Exodus;
 import com.cadykaya.interregnum.system.exodus.Leaks;
+import com.cadykaya.interregnum.system.magic.Zones;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -44,8 +45,20 @@ public final class AnchoriteEvents {
         // The god's own world, or a patch of the overworld obeying it. `Anchorite.lift`
         // either way: the whole claim of band 3 is that the patch runs the same law, and
         // it can only be the same law if it is the same method.
+        // Three ways to be under the Anchorite's law, and ONE method that applies it.
+        //
+        //   * the god's own world, where it is simply how things are;
+        //   * a band-3 patch of overworld that has forgotten whose it is;
+        //   * a Lighten zone -- somebody who learned how to ask.
+        //
+        // That progression is the school system's argument: you meet the law as a place,
+        // meet it again as a wrongness leaking into your own world, and the third time
+        // you are the one doing it. It is only the same law because it is the same
+        // `Anchorite.lift`, which is why all three are clauses here rather than three
+        // handlers that would drift.
         if (Anchorite.holds(entity)
-                || Leaks.leaks(level, entity.blockPosition(), Exodus.Law.ANCHORITE)) {
+                || Leaks.leaks(level, entity.blockPosition(), Exodus.Law.ANCHORITE)
+                || Zones.covering(level, entity.blockPosition())) {
             Anchorite.lift(entity);
         }
     }
