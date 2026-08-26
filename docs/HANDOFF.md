@@ -30,6 +30,8 @@ asserted against a running world rather than against its own source.
 | Live-world checks | **28**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
+| Magic | **four schools, one spell each**, learned in their gods' worlds; command-only for now |
+| Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 
 ### Band 4: the world forgets what it was
 
@@ -1645,10 +1647,14 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
 
    I have not picked one because the choice is the story, not the plumbing. *No action
    needed until then; the letters and the item ship without it.*
-4. **What should a Warden be able to cite you for, before magic exists?** Patrol and
-   inspect are built; `cite` has nothing to accuse anybody of. WORLD.md's locked
-   countermeasures are all about *casting*, which does not exist yet. Two locked offences
-   need no magic:
+4. **What should a Warden be able to cite you for?** — and **this question has changed
+   since it was written.** It used to end "before magic exists", on the grounds that
+   WORLD.md's locked countermeasures are all about *casting* and casting did not exist.
+   **It does now**: four schools, and an overworld ban with a real cost behind it. So the
+   original locked answer is available, and the two magic-free offences below are
+   alternatives rather than the only options.
+
+   Two locked offences need no magic:
 
    * **the sleep code** — *phantoms punish sleeplessness | a citation for a sleep-code
      violation*. Buildable today, and it has the right absurdity: the Wardenate is still
@@ -1659,8 +1665,25 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
      choosing a lower licensed ceiling would be inventing a rule the world never had.
 
    Either is a small build once chosen. Choosing is the owner's, because it decides what
-   the Wardenate is *for* in the stretch before magic. *No action needed until then;
-   patrol and inspect ship without it.*
+   the Wardenate is *for*. *No action needed until then; patrol and inspect ship without
+   it.*
+
+5. **How does a player cast a spell?** Four spells exist and none can be triggered in
+   play — the command is the only way in. `WORLD.md` locks what a spell *is* (*"every
+   spell is a world-verb"*) and is silent on the affordance, which makes it a mechanic
+   under the standing rule and therefore proposed rather than picked.
+
+   Three that fit what already exists:
+
+   * a **focus item** per school, given when the god teaches you — the lesson gets a
+     physical receipt, and losing it means something;
+   * a **spoken word** in chat, which suits a mod whose entire register is procedure and
+     correspondence, and whose Wardens would then have something legible to cite;
+   * **nothing held at all** — you know it, so you do it, targeting from where you look.
+
+   The first is the most conventional, the second is the most *this mod*, the third is
+   the least work. Nothing is blocked behind this: the spells are built and verified
+   either way, and an operator can already cast them.
 5. **Playtesting, and looking at the Warden.** This container has no game client, so two
    things about the model are unverifiable here and are not claimed: how it looks
    **animated**, and how it looks **lit**. `tools/entity_view.py` covers shape and paint;
@@ -1757,7 +1780,7 @@ Done this pass: the ferry (capture, four destination laws, the `ferry_keel` bloc
 are locked in [`WORLD.md`](WORLD.md) with `[LOCKED — owner delegated; decided here.]`
 next to each, so the provenance travels with the decision.
 
-**Two things on this list ARE waiting on the owner** — see "Waiting on owner" below.
+**Three things on this list ARE waiting on the owner** — see "Waiting on owner" below.
 Everything else is unblocked. In order:
 
 1. **The systems, not just the surfaces.** *(Top item, and the largest thing unbuilt —
@@ -1784,18 +1807,29 @@ Everything else is unblocked. In order:
    missing and it waits on the owner**: a Warden needs something to accuse you of, and the
    locked countermeasures are all about casting, which does not exist yet.
 
-4. ~~**The delivery scenes.**~~ **All four built**, and reaching an accepting ending now
-   records `LETTER_DELIVERED` — which it did not until recently, so all four could be
-   delivered and the world would not move. Chapters 3–5 gate on that count.
+4. ~~**The delivery scenes.**~~ **All four built**, recording `LETTER_DELIVERED` and
+   teaching their god's school. Chapters 3–5 gate on that count.
 
-   **What scenes are actually short of now** is the *middle* of each questline. Every god
-   has an opening and none has a second beat: delivering the letter opens a conversation
-   that promises more and there is nothing behind it yet.
+5. ~~**Magic.**~~ **Four schools exist, one spell each**, all learned in their gods'
+   worlds and all costing the overworld what they do not cost a living god's. *Weather*
+   changes a block, *Lighten* encloses a region, *Bridgeroot* creates one, *Hush* forbids
+   — four different kinds of verb, which is what shows the school system is a system
+   rather than one mechanism with four names.
 
-5. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
+   **Two things it is short of, one of them the owner's:**
+
+   * **No way to cast in play.** Every spell is reachable only by command. `WORLD.md`
+     locks what spells *are* and says nothing about the affordance that triggers one —
+     item, key, gesture, spoken word — and that is a mechanic rather than a detail. See
+     "Waiting on owner".
+   * **One spell per school.** `WORLD.md` names three more in each kit and says plainly
+     that *"full kits are design-phase work"*. Unblocked, and the cheapest content left:
+     the machinery each would need is already built and proven.
+
+6. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
    everything it would render is already proven server-side. Chat works meanwhile.
-6. **`VERIFY:` markers — the API-specific ones are cleared.** ARCHITECTURE.md's three
+7. **`VERIFY:` markers — the API-specific ones are cleared.** ARCHITECTURE.md's three
    (registration, capabilities → data attachments, payload/handler registration),
    DATAGEN.md's item-model row and TEXTURING.md's paths are now **VERIFIED against
    26.2.0.67** — most of them by shapes this repo compiles and CI boots a server on.

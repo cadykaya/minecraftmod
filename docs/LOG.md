@@ -2900,3 +2900,33 @@ pass every other assertion in the file while being the worst possible outcome.
 173 self-test checks, 55 mutations. The new core guard is four spells belonging to four
 different schools: two sharing one would make a single lesson hand out another god's verbs,
 and there would be no reason left for four journeys.
+
+## Six increments in, the docs described a mod without magic in it
+
+A consolidation pass rather than a feature, and it is worth one because the pace of the
+last stretch outran the thing a fresh session reads first.
+
+`HANDOFF.md`'s roadmap still listed the questline middles as the gap scenes were short of
+— which was true when it was written and stopped being true two increments later, when
+each god's delivery scene started teaching its school. It also had no row for magic in the
+state table at all, and told a reader that two things waited on the owner when there were
+about to be three.
+
+**One question changed rather than closed, which is the interesting one.** "What should a
+Warden be able to cite you for, **before magic exists**?" was written when WORLD.md's
+locked countermeasures were all about casting and casting did not exist. It does now: four
+schools, and an overworld ban with a real cost behind it. So the original locked answer is
+available, and the two magic-free offences — the sleep code, permitted airspace — went from
+being the only options to being alternatives. The question is still the owner's; it just
+got wider, and a question whose *shape* has changed is worse left standing than one that is
+simply unanswered, because the reader assumes it still means what it says.
+
+**And one new question, which I walked past four times.** Four spells exist and none of
+them can be cast in play — the command is the only way in. `WORLD.md` locks what a spell
+*is* and says nothing about the affordance that triggers one, which makes it a mechanic
+under the standing rule and therefore the owner's. Three candidates are written up: a focus
+item per school given when the god teaches you, a spoken word in chat, or nothing held at
+all. Nothing is blocked behind the answer — the spells are built and verified either way —
+but shipping four spells and never mentioning that they are unreachable would have been the
+same defect as the letters that recorded no milestone, caught earlier this session: a
+feature complete in every respect except the one that connects it to a player.
