@@ -1073,6 +1073,23 @@ public final class InterregnumCommand {
         // the world, and counting entities cannot tell an unclaimed one from one a player
         // has picked up -- while the number that matters is how many the world has GIVEN
         // UP, which is the finite thing WORLD.md locks.
+        // The same notice the block hands back. A right-click cannot be driven from a
+        // headless server, so this is how the steles' text is reachable by a check --
+        // the arrangement FerryDocket and LetterPage already use.
+        root = root.then(Commands.literal("stele")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("read")
+                        .then(Commands.argument("at", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos at = BlockPosArgument.getLoadedBlockPos(ctx, "at");
+                                    var lines = com.cadykaya.interregnum.system.stele
+                                            .SteleReading.of(ctx.getSource().getLevel(), at);
+                                    for (Component line : lines) {
+                                        ctx.getSource().sendSuccess(() -> line, false);
+                                    }
+                                    return lines.size();
+                                }))));
+
         root = root.then(Commands.literal("clasts")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .executes(ctx -> {

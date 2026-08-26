@@ -739,6 +739,7 @@ public final class SelfTest {
 
         attrition();
         marking();
+        steles();
         clasts();
         grimoires();
         zones();
@@ -953,6 +954,73 @@ public final class SelfTest {
      * negotiation", and finite is the whole mechanic, so the arithmetic that enforces it
      * is worth more assertions than its four lines suggest.
      */
+    /**
+     * The steles. Their inscriptions are a pure function of position, so the properties
+     * worth asserting are the ones a hash gets wrong: stability, spread, and behaviour
+     * west of zero.
+     */
+    static void steles() {
+        var S = com.cadykaya.interregnum.core.stele.Steles.class;
+        int count = com.cadykaya.interregnum.core.stele.Steles.COUNT;
+        check(count > 1, "there is more than one inscription, or every stele in the world "
+              + "is the same notice and reading a second one teaches nothing");
+
+        // Stable. The whole reason the choice is a function of position rather than a
+        // roll: a stele you read yesterday says the same thing today.
+        check(com.cadykaya.interregnum.core.stele.Steles.inscriptionAt(12, 64, -37)
+                      == com.cadykaya.interregnum.core.stele.Steles.inscriptionAt(12, 64, -37),
+              "one stele reads the same twice. A stele whose text moved would make the "
+              + "ruin a slot machine and every quotation of it a lie");
+
+        // IN RANGE EVERYWHERE, including west and north of the origin. floorMod rather
+        // than %: a negative hash under % indexes backwards off the end of the list, and
+        // it works perfectly in every world anybody tests near spawn.
+        //
+        // ONE assertion over the whole sweep rather than one per position. A `check` in
+        // the body would be honest and would also add eight thousand to the number this
+        // file reports, and a count that a loop can inflate stops being a signal about
+        // how much is actually guarded.
+        String outOfRange = null;
+        for (int x = -2000; x <= 2000 && outOfRange == null; x += 37) {
+            for (int z = -2000; z <= 2000; z += 53) {
+                int i = com.cadykaya.interregnum.core.stele.Steles.inscriptionAt(x, 64, z);
+                if (i < 0 || i >= count) {
+                    outOfRange = "(" + x + ", 64, " + z + ") is index " + i;
+                    break;
+                }
+            }
+        }
+        check(outOfRange == null,
+              "an inscription index is outside the " + count + " that exist: " + outOfRange
+              + ". floorMod rather than % is the whole of this: a negative hash under % "
+              + "indexes backwards off the end of the list, and it works perfectly in "
+              + "every world anybody tests near spawn");
+
+        // And it uses all of them. A hash that technically varies but lands on two of
+        // five would leave three notices nobody ever reads, which is a content bug that
+        // no crash and no check would otherwise report.
+        var seen = new java.util.HashSet<Integer>();
+        for (int x = -500; x <= 500; x += 7) {
+            for (int z = -500; z <= 500; z += 11) {
+                seen.add(com.cadykaya.interregnum.core.stele.Steles.inscriptionAt(x, 64, z));
+            }
+        }
+        check(seen.size() == count,
+              "only " + seen.size() + " of " + count + " inscriptions appear anywhere in a "
+              + "thousand blocks square. The rest are written, shipped, and unreachable");
+
+        // The light. The keeper says "if you have the light for it", so the rule has to
+        // exist and has to bite somewhere a player will actually be.
+        check(!com.cadykaya.interregnum.core.stele.Steles.legible(0),
+              "a stele in the dark cannot be read, which is what the shrine-keeper says");
+        check(com.cadykaya.interregnum.core.stele.Steles.legible(15),
+              "a stele in daylight can be read");
+        check(com.cadykaya.interregnum.core.stele.Steles.READING_LIGHT > 0
+              && com.cadykaya.interregnum.core.stele.Steles.READING_LIGHT < 15,
+              "the reading light is a threshold a player can be on both sides of. At 0 the "
+              + "keeper's line is decoration; at 15 only noon outdoors would do");
+    }
+
     static void clasts() {
         int total = com.cadykaya.interregnum.core.clast.Clasts.TOTAL;
         check(total > 0, "there is at least one clast, or the class cannot exist at all");

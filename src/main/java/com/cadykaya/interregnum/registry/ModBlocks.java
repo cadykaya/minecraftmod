@@ -53,7 +53,8 @@ public final class ModBlocks {
      */
     public static final DeferredBlock<Block> WARNING_STELE = BLOCKS.register(
             "warning_stele",
-            key -> new RotatedPillarBlock(BlockBehaviour.Properties.of()
+            key -> new com.cadykaya.interregnum.content.block.WarningSteleBlock(
+                    BlockBehaviour.Properties.of()
                     .setId(net.minecraft.resources.ResourceKey.create(
                             net.minecraft.core.registries.Registries.BLOCK, key))
                     .mapColor(MapColor.COLOR_GRAY)

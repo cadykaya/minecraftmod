@@ -150,6 +150,9 @@ jobs:
       - name: The god shatters into a finite number of pieces, and no shrine pays twice
         run: ./tools/clast_check.sh
 
+      - name: A warning stele says something, the same thing twice, and nothing in the dark
+        run: ./tools/stele_check.sh
+
       - name: In the Anchorite's world, unanchored things rise
         run: ./tools/anchorite_check.sh
 

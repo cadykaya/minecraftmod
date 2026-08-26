@@ -3576,3 +3576,51 @@ meant to be unheard until the letter is opened* — written in the one place a f
 would be standing when they broke it. Restored from git. `LESSONS.md` #39.
 
 193 self-test checks, 63 mutations, 37 live checks.
+
+---
+
+## The steles say something
+
+The block, the texture and the model have existed since the chapter-0 art pass. There was
+no text on any of them anywhere — and the shrine-keeper has been telling players for just
+as long that *"the steles are readable if you have the light for it; most people don't
+bother, and I have never held it against anybody."* A shipped line of dialogue describing a
+rule nothing implements is worse than a missing feature: it is the mod lying in its own
+voice.
+
+Five notices, each the Wardenate explaining a rule that is about to stop being true: the
+four locked vanilla-rules-as-policy entries, and one saying what to do if any of them ever
+fails. That fifth is what `WORLD.md` means by *"after the death, the only instruction anyone
+left behind"* — written by somebody who did not believe they were writing it.
+
+Not one word changes at the deicide. `WORLD.md`'s locked comedy list names *"steles that
+re-read differently"*, and text that swapped at the death would throw the joke away: what
+re-reads differently is the reader.
+
+Which notice stands where is a pure function of the coordinates — band 3's idiom — so a
+stele reads the same tomorrow, two steles in a ruin can differ, and none of it costs a
+block state. `floorMod`, not `%`, because a negative hash under `%` indexes backwards off
+the end of the list and works perfectly in every world anybody tests near spawn.
+
+The light rule exists because the keeper says it does. Seven: outdoors in daylight is
+always enough, a buried stele is not. It gets sharper after the death, with nobody left to
+turn the sun.
+
+### The bug no amount of reading would have found
+
+The first version asked for the light AT the stele. A stele is an opaque block, and the
+inside of an opaque block is dark in every world there has ever been — so a stele in open
+daylight reported itself unreadable and one buried in stone reported itself fine. Wrong
+everywhere, and wrong in a way that reads as a rule rather than a bug. Found by probing a
+live server before writing a single assertion; it takes the brightest of the six
+neighbours now.
+
+And one flake found and removed: the buried stele read out perfectly on one run, because
+the check asked before the engine had finished propagating light into the new stone. It
+waits now — three seconds for a five-block cube is a bounded computation with enormous
+margin, not a threshold on a random variable.
+
+Watched failing on both mutations that matter: the light read at the stele (0 of 6 lit
+steles readable) and the position hash collapsed to a constant (six steles, one notice).
+
+200 self-test checks, 66 mutations, 38 live checks.

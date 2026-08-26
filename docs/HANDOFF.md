@@ -27,11 +27,61 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **37**, every one mutation-verified, all in CI |
+| Live-world checks | **38**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, eight spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
+
+### The steles say something
+
+The block, its texture and its model have existed since the chapter-0 art pass. There was
+**no text on any of them anywhere** — and the shrine-keeper has been telling players for
+just as long that *"the steles are readable if you have the light for it; most people don't
+bother, and I have never held it against anybody."* A shipped line of dialogue describing a
+rule nothing implements is worse than a missing feature: it is the mod lying in its own
+voice.
+
+**Five notices, and every one is the Wardenate explaining a rule that is about to stop
+being true.** Four are the locked vanilla-rules-as-policy entries — permitted airspace, the
+sleep code, incineration at dawn, the world's floor — and the fifth says what to do if any
+of them ever fails. `WORLD.md` calls the steles *"chapter 0 dressing that players read as
+ruin flavour for hours, and which after the death is the only instruction anyone left
+behind."* The fifth notice is that instruction, written by somebody who did not believe
+they were writing it.
+
+**Not one word changes at the deicide, and that is the joke.** `WORLD.md`'s locked comedy
+list names *"steles that re-read differently"*. Text that swapped at the death would throw
+that away: what re-reads differently is **the reader**. So an inscription is a constant and
+nothing in `Steles` takes a chapter.
+
+**Which notice stands where is a pure function of the coordinates** — band 3's idiom, *"a
+hollow you walk out of is the same hollow next week"*. A stele you read yesterday says the
+same thing today, two steles in one ruin can differ, and none of it costs a block state or
+a saved field. `floorMod`, not `%`: a negative hash under `%` indexes backwards off the end
+of the list, and works perfectly in every world anybody tests near spawn.
+
+**And the light rule exists because the keeper says it does.** Seven: outdoors in the day
+is always enough, a lit room is enough, a ruin at night or a buried stele is not. It gets
+sharper after the death, with nobody left to turn the sun — a world whose god died at night
+has steles it can no longer read.
+
+**The bug the probe caught, which no amount of reading would have.** The first version
+asked for the light *at the stele*. A stele is an opaque block and the inside of an opaque
+block is dark in every world there has ever been — so a stele in open daylight reported
+itself unreadable, and one buried in stone reported itself fine. Wrong everywhere, and
+wrong in a way that reads as a rule rather than a bug. It takes the brightest of the six
+neighbours now, which is also the honest question: *is there light on this thing anywhere.*
+
+`stele_check.sh` asserts a lit stele reads out its notice **and its body** (a header with
+nothing under it passes every count), that one stele reads the same twice, that six steles
+do not all say one thing, and that an unlit one says it cannot be made out. Watched failing
+on the light-at-the-stele bug (0 of 6 readable) and on a hash collapsed to a constant.
+
+**One flake found and removed:** the buried stele read out perfectly on one run, because
+the check asked before the engine had finished propagating light into the new stone. It
+waits now — three seconds for a five-block cube is a bounded computation with enormous
+margin rather than a threshold on a random variable.
 
 ### A letter that can be opened
 

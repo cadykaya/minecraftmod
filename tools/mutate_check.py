@@ -252,6 +252,22 @@ MUTATIONS = [
      f"{MAIN}/magic/Wildgrowth.java",
      "    public static final int RADIUS = 3;",
      "    public static final int RADIUS = 9;"),
+    # The steles. Their inscription is a pure function of position, so the two ways it
+    # can be wrong are "the same stele moves" and "every stele is the same" -- and both
+    # are silent: the world still reads out a notice either way.
+    ("steles: every stele in the world carries the same notice",
+     f"{MAIN}/stele/Steles.java",
+     "        return Math.floorMod(h, COUNT);",
+     "        return 0;"),
+    ("steles: a negative coordinate indexes backwards off the end of the notice list",
+     f"{MAIN}/stele/Steles.java",
+     "        return Math.floorMod(h, COUNT);",
+     "        return h % COUNT;"),
+    ("steles: the light rule is a threshold nobody can be on the wrong side of",
+     f"{MAIN}/stele/Steles.java",
+     "    public static final int READING_LIGHT = 7;",
+     "    public static final int READING_LIGHT = 0;"),
+
     # Clasts. The count IS the mechanic -- WORLD.md locks "clasts are finite; the class
     # is a server negotiation" -- so the arithmetic that caps it gets the same treatment
     # as a block table.

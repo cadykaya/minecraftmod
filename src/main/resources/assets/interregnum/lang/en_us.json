@@ -321,5 +321,12 @@
   "interregnum.ferry.destination.verdant": "THE GREEN AUTHORITY",
   "interregnum.ferry.destination.hearth_turner": "THE TEMPORAL AUTHORITY",
   "interregnum.letter.unmarked": "The seal is intact and the docket line is blank. Whoever filed this did not record which one it was.",
-  "interregnum.letter.missing": "This is docketed %s. There is no such item in the register."
+  "interregnum.letter.missing": "This is docketed %s. There is no such item in the register.",
+  "interregnum.stele.dark": "The band of script is there under your hand and there is not the light to make it out.",
+  "interregnum.stele.header": "WARNING STELE — posted under standing instruction",
+  "interregnum.stele.0": "Persons finding themselves beyond the permitted airspace are reminded that the limit is not a guideline and does not require enforcement to hold. Descend. No form is required.",
+  "interregnum.stele.1": "Sleep is scheduled. Persistent failure to observe the schedule is a matter for the Wardenate and is corrected without notice. Nobody is exempt and nobody has ever asked to be.",
+  "interregnum.stele.2": "Light is provided at dawn to persons who require it and withdrawn from persons who do not. Do not stand in the open at that hour and expect to be treated as a person who requires it.",
+  "interregnum.stele.3": "The floor of the world is fixed. Attempts to pass below it are recorded as attempts and no further action follows, the limit having already answered.",
+  "interregnum.stele.4": "In the event that the above ceases to hold: apply to the nearest shrine. The office is attended daily. Do not attempt to hold the line yourself; you are not licensed and the paperwork is considerable."
 }
