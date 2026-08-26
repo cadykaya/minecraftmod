@@ -41,6 +41,18 @@ def _milestones():
 
 
 MILESTONES = _milestones()
+
+
+def _schools():
+    """Derived from core's School enum, for the same reason MILESTONES is."""
+    src = os.path.join(REPO, "core/src/main/java/com/cadykaya/interregnum/core/magic/"
+                             "School.java")
+    body = open(src).read()
+    body = body[body.index("enum School"):]
+    return set(re.findall(r"^\s{4}([A-Z][A-Z_]*),?\s*$", body, re.M))
+
+
+SCHOOLS = _schools()
 END = "$end"
 fails = []
 
@@ -62,6 +74,16 @@ def check_file(path, lang):
                          f"The runtime decodes these through core's enum and rejects the "
                          f"whole file, so a typo here does not mark the world late -- it "
                          f"deletes the scene.")
+        if "teaches" in n and n["teaches"] not in SCHOOLS:
+            fails.append(f"{name}/{n['id']}: unknown school {n.get('teaches')!r}. The "
+                         f"runtime decodes these through core's enum and rejects the "
+                         f"whole file, so a typo deletes the scene rather than teaching "
+                         f"the wrong thing.")
+        if "teaches" in n and n.get("options"):
+            fails.append(f"{name}/{n['id']}: teaches {n['teaches']} but is not terminal. "
+                         f"Being taught is a fact about where the conversation ARRIVED; "
+                         f"a node the players can still walk out of would teach them on "
+                         f"the way past.")
         if "milestone" in n and n.get("options"):
             fails.append(f"{name}/{n['id']}: marks {n['milestone']} but is not terminal. "
                          f"A milestone is a fact about the conversation having ARRIVED "
@@ -252,7 +274,9 @@ def main():
     drop, cap = deicide_numbers()
     print(f"OK: {n} dialogue file(s) valid, all keys resolve, "
           f"{effects} option(s) carry consequences; no scene offers a god more than "
-          f"the {cap} ceiling a deicide leaves")
+          f"the {cap} ceiling a deicide leaves; "
+          f"{sum(1 for _, d in scenes for nd in d.get('nodes', []) if 'teaches' in nd)} "
+          f"node(s) teach a school")
     return 0
 
 if __name__ == "__main__":

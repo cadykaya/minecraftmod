@@ -191,6 +191,21 @@ MUTATIONS = [
      f"{MAIN}/dialogue/DialogueNode.java",
      "        return milestone != null;", "        return true;"),
 
+    # Schools are learned in their worlds, so nothing is known by default. If an
+    # untaught caster could cast, the reason to cross would be gone and every spell in
+    # the mod would ship already in everybody's hands -- and nothing would look broken.
+    ("magic: everybody can cast everything without being taught",
+     f"{MAIN}/magic/Casting.java",
+     "        return grimoire != null && grimoire.knows(school);",
+     "        return true;"),
+    ("magic: learning one school teaches all four",
+     f"{MAIN}/magic/Grimoire.java",
+     "    public boolean knows(School school) {\n        return known.contains(school);",
+     "    public boolean knows(School school) {\n        if (!known.isEmpty()) return true;\n        return known.contains(school);"),
+    ("magic: casting is free at home, so the Wardens are wrong",
+     f"{MAIN}/magic/Casting.java",
+     "        return inTheOverworld;", "        return false;"),
+
     # The dead god's mail. The invariant here is about a SET -- three letters open with
     # a name, the fourth opens `To --` -- so nothing about an individual letter can
     # catch it going. If it goes, the mid-game's best reveal quietly stops being one and

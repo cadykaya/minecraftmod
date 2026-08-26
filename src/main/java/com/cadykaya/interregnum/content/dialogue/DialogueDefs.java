@@ -112,7 +112,7 @@ public final class DialogueDefs {
 
     public record NodeDef(String id, String speaker, String textKey, String rule,
                           List<OptionDef> options, List<VariantDef> textVariants,
-                          Optional<String> milestone) {
+                          Optional<String> milestone, Optional<String> teaches) {
         public static final Codec<NodeDef> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.STRING.fieldOf("id").forGetter(NodeDef::id),
                 Codec.STRING.fieldOf("speaker").forGetter(NodeDef::speaker),
@@ -127,7 +127,8 @@ public final class DialogueDefs {
                 // records nothing, and a scene that silently records nothing is the
                 // worst available outcome -- the world simply never advances and
                 // nobody finds out for a hundred hours.
-                Codec.STRING.optionalFieldOf("milestone").forGetter(NodeDef::milestone)
+                Codec.STRING.optionalFieldOf("milestone").forGetter(NodeDef::milestone),
+                Codec.STRING.optionalFieldOf("teaches").forGetter(NodeDef::teaches)
         ).apply(i, NodeDef::new));
 
         DialogueNode toNode() {
@@ -136,7 +137,9 @@ public final class DialogueDefs {
                     options.stream().map(OptionDef::toOption).toList(),
                     textVariants.stream().map(VariantDef::toVariant).toList(),
                     milestone.map(m -> Milestone.valueOf(
-                            m.toUpperCase(java.util.Locale.ROOT))).orElse(null));
+                            m.toUpperCase(java.util.Locale.ROOT))).orElse(null),
+                    teaches.map(t -> com.cadykaya.interregnum.core.magic.School.valueOf(
+                            t.toUpperCase(java.util.Locale.ROOT))).orElse(null));
         }
     }
 

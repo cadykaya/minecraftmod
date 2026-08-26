@@ -17,6 +17,7 @@ import com.cadykaya.interregnum.core.dialogue.DialogueGraph;
 import com.cadykaya.interregnum.core.dialogue.DialogueNode;
 import com.cadykaya.interregnum.core.dialogue.Resolution;
 import com.cadykaya.interregnum.system.ChapterSavedData;
+import com.cadykaya.interregnum.system.magic.GrimoireSavedData;
 import com.cadykaya.interregnum.system.RegardSavedData;
 import com.cadykaya.interregnum.core.regard.RegardEffects;
 import com.cadykaya.interregnum.core.regard.RegardState;
@@ -334,6 +335,7 @@ public final class Conversations {
         Resolution r = table.conversation.resolve(table.roll);
         record(server, r);
         mark(server, table);
+        teach(server, table);
         pushStances(server, table, r);
         push(server, table);                   // the next beat -- or the last line
         if (table.conversation.ended()) {
@@ -369,6 +371,36 @@ public final class Conversations {
         data.record(node.milestone());
         LOG.info("A conversation marked {}: chapter is now {} (band {})",
                 node.milestone(), data.chapter(), data.band());
+    }
+
+    /**
+     * Some beats teach.
+     *
+     * EVERYONE at the table learns, not only the initiator, and that is the design rather
+     * than convenience: the table is the mod's answer to the pseudo-main-character, and a
+     * god that taught one of four people standing in front of it would hand the group a
+     * protagonist. It also matches how the scene reads — the god is talking to the room.
+     */
+    private static void teach(MinecraftServer server, Table table) {
+        var node = table.conversation.current();
+        if (node == null || !node.teachesSomething()) {
+            return;
+        }
+        GrimoireSavedData store = GrimoireSavedData.get(server);
+        int taught = 0;
+        for (String p : table.conversation.participants()) {
+            try {
+                if (store.of(java.util.UUID.fromString(p)).learn(node.teaches())) {
+                    taught++;
+                }
+            } catch (IllegalArgumentException e) {
+                // not a player; nothing keeps their record and nothing to teach
+            }
+        }
+        if (taught > 0) {
+            store.touch();
+            LOG.info("A conversation taught {} to {} listener(s)", node.teaches(), taught);
+        }
     }
 
     /**

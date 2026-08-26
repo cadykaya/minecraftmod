@@ -61,9 +61,12 @@ C=33333333-3333-4333-8333-333333333333
 COMMANDS="forceload add -16 -16 15 15
 wait 3
 execute positioned 0 -60 0 run interregnum record deicide $A
+setblock 8 100 8 minecraft:stone replace
 say BEFORE_SCENE
 interregnum status
 interregnum regard $A
+interregnum cast weather $A 8 100 8
+execute if block 8 100 8 minecraft:stone run say UNTAUGHT_BEFORE
 interregnum talk start $SCENE $A+$B+$C
 interregnum talk say $A letter
 interregnum talk say $B letter
@@ -158,7 +161,9 @@ interregnum talk say $C come_back
 say AFTER_SCENE4
 interregnum talk status $A
 interregnum regard $A
-interregnum status" \
+interregnum status
+interregnum cast weather $A 8 100 8
+execute if block 8 100 8 minecraft:cobblestone run say TAUGHT_AFTER" \
     LOG=/tmp/delivery.log timeout 900 ./tools/server_smoke.sh > /tmp/dl.txt 2>&1 \
     || { tail -25 /tmp/dl.txt; fail "the run did not complete"; }
 
@@ -292,5 +297,23 @@ echo "  letters delivered: $letters_before -> $letters_after"
 [ "$letters_after" = "4" ] || \
     fail "four delivery scenes were played to their accepting endings and the world records $letters_after letter(s) delivered. The milestone is what Chapter gates the back half of the game on, so a scene that does not record it is a questline opener that opens nothing -- and every other assertion in this file passes while it is broken"
 
+# --- and the Hearth-Turner taught them its school ---------------------------
+# WORLD.md locks schools as "learned in their worlds", and a conversation is how a god
+# does the teaching. The same caster is asked to cast the same spell on the same block
+# before any scene and after all four; the difference is what the Hearth-Turner's
+# accepting ending did, and it is the only thing between the two attempts.
+#
+# EVERYONE at the table learns, not only the initiator. A god that taught one of four
+# people standing in front of it would hand the group a protagonist, which is the thing
+# the table exists to prevent.
+grep -q 'UNTAUGHT_BEFORE' /tmp/delivery.log || \
+    fail "the stone was already aged before any scene ran, or was never placed -- the before-and-after has no before"
+grep -q 'cast=weather became=unlearned' /tmp/dl.txt || {
+    grep -oE 'cast=weather [a-z=:_ 0-9]+' /tmp/dl.txt | head -3 || true
+    fail "a caster who had met nobody could already cast Weather. Schools are supposed to be learned in their worlds; if the spell works untaught then delivering the letters teaches nothing anybody needed"; }
+grep -q 'TAUGHT_AFTER' /tmp/delivery.log || {
+    grep -oE 'cast=weather [a-z=:_ 0-9]+' /tmp/dl.txt | head -3 || true
+    fail "after the Hearth-Turner's scene reached its accepting ending, the same caster still could not cast Weather. The scene is where the Turning is taught -- without it the school is reachable only by an operator command and the questline middle opens onto nothing"; }
+
 echo
-printf "OK: all four gods' letters can be delivered, every scene plays to its end, the most\n    generous path through any of them still leaves a god that will not have you, the one\n    that never answers still forms an opinion, and the world counts every delivery\n"
+printf "OK: all four gods' letters can be delivered, every scene plays to its end, the most\n    generous path through any of them still leaves a god that will not have you, the one\n    that never answers still forms an opinion, the world counts every delivery, and the\n    Hearth-Turner teaches the school it is the god of\n"

@@ -1,6 +1,7 @@
 package com.cadykaya.interregnum.core.dialogue;
 
 import com.cadykaya.interregnum.core.chapter.Milestone;
+import com.cadykaya.interregnum.core.magic.School;
 import com.cadykaya.interregnum.core.regard.RegardState;
 
 import java.util.List;
@@ -32,7 +33,8 @@ import java.util.Objects;
  */
 public record DialogueNode(String id, String speaker, String textKey,
                            ResolutionRule rule, List<DialogueOption> options,
-                           List<TextVariant> textVariants, Milestone milestone) {
+                           List<TextVariant> textVariants, Milestone milestone,
+                           School teaches) {
     public DialogueNode {
         Objects.requireNonNull(id);
         Objects.requireNonNull(speaker);
@@ -46,18 +48,37 @@ public record DialogueNode(String id, String speaker, String textKey,
     public DialogueNode(String id, String speaker, String textKey,
                         ResolutionRule rule, List<DialogueOption> options,
                         List<TextVariant> textVariants) {
-        this(id, speaker, textKey, rule, options, textVariants, null);
+        this(id, speaker, textKey, rule, options, textVariants, null, null);
+    }
+
+    /** A node that marks the world but teaches nothing. */
+    public DialogueNode(String id, String speaker, String textKey,
+                        ResolutionRule rule, List<DialogueOption> options,
+                        List<TextVariant> textVariants, Milestone milestone) {
+        this(id, speaker, textKey, rule, options, textVariants, milestone, null);
     }
 
     /** A node whose line is the same for everybody. Most nodes are this. */
     public DialogueNode(String id, String speaker, String textKey,
                         ResolutionRule rule, List<DialogueOption> options) {
-        this(id, speaker, textKey, rule, options, List.of(), null);
+        this(id, speaker, textKey, rule, options, List.of(), null, null);
     }
 
     /** Does arriving here record something permanent about the world? */
     public boolean marks() {
         return milestone != null;
+    }
+
+    /**
+     * Does arriving here teach the listeners a school?
+     *
+     * `WORLD.md` locks schools as *"learned in their worlds"*, and a conversation is how
+     * a god does the teaching. Like {@link #milestone} this hangs on the NODE rather than
+     * on an option, for the same reason: being taught is a fact about where the
+     * conversation ARRIVED, not about which sentence somebody picked on the way.
+     */
+    public boolean teachesSomething() {
+        return teaches != null;
     }
 
     public boolean terminal() {

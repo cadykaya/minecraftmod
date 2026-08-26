@@ -2684,3 +2684,53 @@ How a player learns it. The command is the seam, as it is for `unravel at` and
 `turning age`. `WORLD.md`'s *"schools, one per god, learned in their worlds"* is the next
 increment — and it is exactly what the questline middles have been short of, so the two
 gaps close together.
+
+## Magic is learned in its god's world, and only there
+
+`WORLD.md` locks schools as *"learned in their worlds"*, and the last three words are the
+whole progression. They are now enforced: **nothing is known by default**, and an untaught
+caster is refused outright. The reason to recommission the ferry is not a stat bonus — the
+verbs themselves are over there.
+
+A per-player `Grimoire` persists with the world, following `RegardSavedData` exactly and
+stored on the overworld for the same reason regard is: what somebody knows is a fact about
+them, not about where they happen to be standing. A player who learns the Turning in the
+Hearth-Turner's world still knows it at home, which is the entire premise of the overworld
+ban being a *choice* rather than a wall.
+
+It only ever grows, and there is no method to unlearn. A school is something you
+understand about how the world works; the Wardenate can make casting a citable offence and
+a god can refuse to teach you the rest, but neither reaches into your head. The
+consequences of casting are enforced where casting happens.
+
+**A scene does the teaching**, through a `teaches` field on a node — the same shape as
+last increment's `milestone`, and on the node for the same reason: being taught is a fact
+about where the conversation *arrived*, not about which sentence somebody picked. The
+Hearth-Turner's accepting ending teaches the Turning, so delivering its letter now opens
+onto something rather than promising and stopping.
+
+**Everyone at the table learns.** Not only the initiator, and that is design rather than
+convenience: the table is this mod's answer to the pseudo-main-character, and a god that
+taught one of four people standing in front of it would hand the group a protagonist.
+
+### The before-and-after that makes it evidence
+
+`delivery_check.sh` asks the same caster to cast the same spell on the same block twice —
+once before any scene has run, once after all four. Before: `unlearned`. After:
+cobblestone. The only thing between the two attempts is the conversation, which is what
+makes the pair evidence rather than two separate observations.
+
+`casting_check.sh` gained the matching negative: it casts once before teaching anybody and
+expects the refusal, because without it every successful cast further down would be
+measuring a default rather than a rule.
+
+Two small decisions worth keeping. The refusal reports **`unlearned`** rather than falling
+through to "that block had no rule" — a caster who has never been taught should be told
+that, since the two answers point at different things to do next. And the cast command
+takes a **caster** rather than firing anonymously from the console: a seam that could cast
+with nobody behind it would be a seam that skipped the prerequisite, and the check driving
+it would prove nothing about the rule.
+
+Core: 157 self-test checks, 50 mutations. The three new ones are the directions that would
+be silent — everybody can cast untaught, one lesson opens all four schools, and casting at
+home is free.

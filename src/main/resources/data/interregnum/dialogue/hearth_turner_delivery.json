@@ -202,7 +202,8 @@
       "text_key": "interregnum.dlg.hearth_turner_delivery.opened",
       "rule": "INITIATOR",
       "options": [],
-      "milestone": "LETTER_DELIVERED"
+      "milestone": "LETTER_DELIVERED",
+      "teaches": "TURNING"
     },
     {
       "id": "closes",

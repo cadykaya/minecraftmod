@@ -739,6 +739,57 @@ public final class SelfTest {
 
         attrition();
         marking();
+        grimoires();
+    }
+
+    /**
+     * Nothing is known by default, and knowledge only ever grows. The first is the whole
+     * progression -- if an untaught player could cast, crossing would buy nothing.
+     */
+    static void grimoires() {
+        var g = new com.cadykaya.interregnum.core.magic.Grimoire();
+        check(g.empty() && !g.knows(com.cadykaya.interregnum.core.magic.School.TURNING),
+              "a new grimoire knows nothing. WORLD.md locks schools as learned in their "
+              + "worlds; a default-known school would make the journey buy nothing");
+        check(!com.cadykaya.interregnum.core.magic.Casting.permitted(
+                      g, com.cadykaya.interregnum.core.magic.School.TURNING),
+              "casting is refused to somebody who has not been taught");
+        check(!com.cadykaya.interregnum.core.magic.Casting.permitted(
+                      null, com.cadykaya.interregnum.core.magic.School.TURNING),
+              "a caster with no record at all is refused rather than waved through -- "
+              + "fails closed, like every other gate in this mod");
+
+        check(g.learn(com.cadykaya.interregnum.core.magic.School.TURNING),
+              "learning something new reports that it was new");
+        check(!g.learn(com.cadykaya.interregnum.core.magic.School.TURNING),
+              "learning it twice reports that it was not, so a scene replayed does not "
+              + "read as a second teaching");
+        check(com.cadykaya.interregnum.core.magic.Casting.permitted(
+                      g, com.cadykaya.interregnum.core.magic.School.TURNING),
+              "casting is permitted once taught");
+        check(!g.knows(com.cadykaya.interregnum.core.magic.School.SILENCE),
+              "learning one school teaches only that one -- four gods, four journeys, "
+              + "and a single lesson must not open all of them");
+
+        // Round-trips by NAME, so reordering the enum cannot silently reassign what
+        // somebody knows. An ordinal format would survive the reorder and be wrong.
+        var back = com.cadykaya.interregnum.core.magic.Grimoire.deserialize(g.serialize());
+        check(back.knows(com.cadykaya.interregnum.core.magic.School.TURNING)
+              && back.size() == 1,
+              "a grimoire survives being written and read back");
+        var junk = com.cadykaya.interregnum.core.magic.Grimoire.deserialize(
+                java.util.List.of("turning", "a_school_that_was_removed"));
+        check(junk.knows(com.cadykaya.interregnum.core.magic.School.TURNING)
+              && junk.size() == 1,
+              "a name that no longer exists is dropped rather than thrown -- a school "
+              + "removed in a later version must not cost somebody their save");
+
+        // The overworld ban, stated where casting is described.
+        check(com.cadykaya.interregnum.core.magic.Casting.drawsOnTheCorpse(true)
+              && !com.cadykaya.interregnum.core.magic.Casting.drawsOnTheCorpse(false),
+              "casting draws on the corpse at home and not in a living god's world. That "
+              + "asymmetry is the whole economics of the mid-game: the ban forces travel "
+              + "by law AND by cost");
     }
 
     /**

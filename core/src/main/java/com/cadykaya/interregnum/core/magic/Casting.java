@@ -44,6 +44,18 @@ public final class Casting {
     }
 
     /**
+     * May this person cast this school's spells at all?
+     *
+     * `WORLD.md` locks schools as *"learned in their worlds"*, so the answer is no until
+     * somebody has been taught — and the check belongs here, in the one class that
+     * describes what casting costs and requires, rather than inside each spell. A spell
+     * that enforced its own prerequisite would be a spell that could forget to.
+     */
+    public static boolean permitted(Grimoire grimoire, School school) {
+        return grimoire != null && grimoire.knows(school);
+    }
+
+    /**
      * How far the fraying reaches from a cast, in blocks.
      *
      * Close. `WORLD.md` says casting frays *"its surroundings"*, and the word is doing

@@ -22,14 +22,19 @@
 # runs on its clock -- WORLD.md's locked reuse, "one mechanism; a school and an
 # apocalypse". The check proves the promise survived the reuse.
 #
-# NOT asserted: how a player LEARNS the spell. There is no learning path yet -- the
-# command is the seam, the way `unravel at` and `turning age` are -- and WORLD.md's
-# "schools, one per god, learned in their worlds" is the next increment. Stated rather
-# than quietly omitted.
+# AND NOTHING IS KNOWN BY DEFAULT. WORLD.md locks schools as "learned in their worlds",
+# so an untaught caster cannot cast at all -- which is what makes crossing worth the
+# trouble: the verbs themselves are over there, not a stat bonus. This check casts once
+# BEFORE anybody has been taught and expects it refused, which is also the only way to be
+# sure the successful casts below are evidence of a rule rather than of a default.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 fail() { echo "FAIL: $1"; exit 1; }
+
+# A caster. Casting is something somebody does, and what they have been taught decides
+# whether they can, so the command takes a player id the way `interregnum regard` does.
+WHO=77777777-7777-4777-8777-777777777777
 
 # The fraying is the unraveling spending the corpse, so it only has anything to spend
 # once the god is dead. A deicide first is not scene-setting, it is the precondition the
@@ -53,14 +58,18 @@ interregnum claim record 8 100 4 8 100 4
 execute if block 4 100 4 minecraft:stone run say SETUP_HOME
 execute in interregnum:temporal_authority if block 4 100 4 minecraft:stone run say SETUP_THERE
 execute if block 8 100 4 minecraft:stone run say SETUP_CLAIMED
+say CAST_UNLEARNED
+interregnum cast weather $WHO 4 100 4
+execute if block 4 100 4 minecraft:stone run say UNLEARNED_SPARED
+interregnum learn $WHO turning
 say CAST_HOME
-interregnum cast weather 4 100 4
+interregnum cast weather $WHO 4 100 4
 say CAST_THERE
-execute in interregnum:temporal_authority run interregnum cast weather 4 100 4
+execute in interregnum:temporal_authority run interregnum cast weather $WHO 4 100 4
 say CAST_CLAIMED
-interregnum cast weather 8 100 4
+interregnum cast weather $WHO 8 100 4
 say CAST_NOTHING
-interregnum cast weather 4 101 4
+interregnum cast weather $WHO 4 101 4
 execute if block 4 100 4 minecraft:cobblestone run say HOME_AGED
 execute in interregnum:temporal_authority if block 4 100 4 minecraft:cobblestone run say THERE_AGED
 execute if block 8 100 4 minecraft:stone run say CLAIMED_SPARED" \
@@ -74,6 +83,16 @@ frayed() { sed -n "/$1/,\$p" /tmp/cast.txt | grep -oE 'cast=weather became=[a-z:
 mark SETUP_HOME    || fail "no stone was placed in the overworld -- the control does not exist"
 mark SETUP_THERE   || fail "no stone was placed in interregnum:temporal_authority -- the comparison has one side"
 mark SETUP_CLAIMED || fail "the claimed stone was never placed, so sparing it proves nothing"
+
+# --- nothing is known by default --------------------------------------------
+# The load-bearing negative. If an untaught caster could cast, every success below would
+# be the default rather than the rule, and "learned in their worlds" would be flavour text
+# over a spell everybody already has.
+mark UNLEARNED_SPARED || \
+    fail "somebody who had never been taught the Turning cast Weather anyway. WORLD.md locks schools as learned in their worlds -- if casting works untaught, the reason to cross is gone and every other assertion in this file is measuring a default instead of a rule"
+grep -q 'cast=weather became=unlearned' /tmp/cast.txt || {
+    grep -oE 'cast=weather [a-z=:_ 0-9]+' /tmp/cast.txt | head -3 || true
+    fail "an untaught cast did not report itself refused for want of teaching -- a caster who has never learned should be told that, not told the block had no rule; those point at different things to do next"; }
 
 # --- the spell is a world-verb: it changes a block --------------------------
 mark HOME_AGED || {
@@ -114,4 +133,4 @@ echo "$miss" | grep -q 'became=nothing frayed=0' || \
     fail "a cast that changed nothing still cost something ('$miss') -- experimenting with a spell would fray the world, and a player learning what Weather does would be punished for finding out"
 
 echo
-echo "OK: the first spell ages a block, spares what a player built, and costs the overworld something it does not cost a living god's world"
+printf "OK: the first spell cannot be cast untaught, ages a block once it is, spares what a\n    player built, and costs the overworld something it does not cost a living god's world\n"

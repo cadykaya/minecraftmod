@@ -36,6 +36,23 @@ public final class InterregnumCommand {
     private InterregnumCommand() {}
 
     /** Claim or release every block between two corners. */
+    /**
+     * The grimoire of the player named by a string argument, or null if it is not an id.
+     *
+     * Shared by `cast` and `learn` so both agree about who somebody is. Returns the
+     * live object -- `learn` writes through it and marks the store dirty.
+     */
+    private static com.cadykaya.interregnum.core.magic.Grimoire grimoireOf(
+            com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx, String arg) {
+        try {
+            java.util.UUID id = java.util.UUID.fromString(StringArgumentType.getString(ctx, arg));
+            return com.cadykaya.interregnum.system.magic.GrimoireSavedData
+                    .get(ctx.getSource().getServer()).of(id);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
     private static int region(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
                               boolean claim) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         BlockPos a = BlockPosArgument.getLoadedBlockPos(ctx, "from");
@@ -655,20 +672,62 @@ public final class InterregnumCommand {
         // increment and is recorded in HANDOFF rather than guessed at.
         root = root.then(Commands.literal("cast")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                // A CASTER, not just a position. Casting is something somebody does,
+                // and what they have been taught decides whether they can -- so the
+                // command takes the same player id `interregnum regard` does rather than
+                // casting anonymously from the console. A seam that could cast with
+                // nobody behind it would be a seam that skipped the prerequisite, and
+                // then the check driving it would prove nothing about the rule.
                 .then(Commands.literal("weather")
-                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                        .executes(ctx -> {
+                                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                            var g = grimoireOf(ctx, "who");
+                                            var cast = com.cadykaya.interregnum.system.magic.Weather
+                                                    .cast(ctx.getSource().getLevel(), pos, g);
+                                            String became = cast.worked()
+                                                    ? net.minecraft.core.registries.BuiltInRegistries.BLOCK
+                                                            .getKey(cast.became().getBlock()).toString()
+                                                    : cast.refused();
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "cast=weather became=" + became
+                                                            + " frayed=" + cast.frayed()), false);
+                                            return cast.worked() ? 1 : 0;
+                                        })))));
+
+        // Teaching, the operator seam. In play a school is taught by a scene -- see the
+        // `teaches` field on a dialogue node -- and this is the same path with a
+        // different caller, the way `record deicide` is for the deicide.
+        root = root.then(Commands.literal("learn")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("who", StringArgumentType.string())
+                        .then(Commands.argument("school", StringArgumentType.string())
                                 .executes(ctx -> {
-                                    BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
-                                    var cast = com.cadykaya.interregnum.system.magic.Weather
-                                            .cast(ctx.getSource().getLevel(), pos);
-                                    String became = cast.worked()
-                                            ? net.minecraft.core.registries.BuiltInRegistries.BLOCK
-                                                    .getKey(cast.became().getBlock()).toString()
-                                            : "nothing";
+                                    String raw = StringArgumentType.getString(ctx, "school");
+                                    com.cadykaya.interregnum.core.magic.School school;
+                                    try {
+                                        school = com.cadykaya.interregnum.core.magic.School
+                                                .valueOf(raw.toUpperCase(java.util.Locale.ROOT));
+                                    } catch (IllegalArgumentException e) {
+                                        ctx.getSource().sendSuccess(() -> Component.literal(
+                                                "learn=no-such-school"), false);
+                                        return 0;
+                                    }
+                                    var g = grimoireOf(ctx, "who");
+                                    if (g == null) {
+                                        ctx.getSource().sendSuccess(() -> Component.literal(
+                                                "learn=not-a-player-id"), false);
+                                        return 0;
+                                    }
+                                    boolean fresh = g.learn(school);
+                                    com.cadykaya.interregnum.system.magic.GrimoireSavedData
+                                            .get(ctx.getSource().getServer()).touch();
                                     ctx.getSource().sendSuccess(() -> Component.literal(
-                                            "cast=weather became=" + became
-                                                    + " frayed=" + cast.frayed()), false);
-                                    return cast.worked() ? 1 : 0;
+                                            "learn=" + raw.toLowerCase(java.util.Locale.ROOT)
+                                                    + " new=" + fresh
+                                                    + " known=" + g.size()), false);
+                                    return 1;
                                 }))));
 
         root = root.then(Commands.literal("exodus")

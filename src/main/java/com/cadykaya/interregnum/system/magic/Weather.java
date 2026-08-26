@@ -1,6 +1,8 @@
 package com.cadykaya.interregnum.system.magic;
 
 import com.cadykaya.interregnum.core.magic.Casting;
+import com.cadykaya.interregnum.core.magic.Grimoire;
+import com.cadykaya.interregnum.core.magic.School;
 import com.cadykaya.interregnum.system.ChapterSavedData;
 import com.cadykaya.interregnum.system.hearth.Hearth;
 import com.cadykaya.interregnum.system.unraveling.Unraveling;
@@ -51,10 +53,14 @@ import net.minecraft.world.level.block.state.BlockState;
 public final class Weather {
     private Weather() {}
 
-    /** What one cast did: the new block state, and how many places it cost. */
-    public record Cast(BlockState became, int frayed) {
+    /** What one cast did: the new block state, how many places it cost, and why not. */
+    public record Cast(BlockState became, int frayed, String refused) {
         public boolean worked() {
             return became != null;
+        }
+
+        static Cast no(String why) {
+            return new Cast(null, 0, why);
         }
     }
 
@@ -63,10 +69,17 @@ public final class Weather {
      *
      * @param pos the block to age
      */
-    public static Cast cast(ServerLevel level, BlockPos pos) {
+    public static Cast cast(ServerLevel level, BlockPos pos, Grimoire grimoire) {
+        // Knowing comes first, and not merely for tidiness: a caster who has never been
+        // taught should be told they cannot do this, not told that the stone they aimed
+        // at happened to have no rule. Those are different answers and only one of them
+        // points at what to do next.
+        if (!Casting.permitted(grimoire, School.TURNING)) {
+            return Cast.no("unlearned");
+        }
         BlockState became = Hearth.step(level, pos);
         if (became == null) {
-            return new Cast(null, 0);        // nothing happened; nothing is owed
+            return Cast.no("nothing");       // nothing happened; nothing is owed
         }
         if (!Casting.drawsOnTheCorpse(level.dimension() == Level.OVERWORLD)) {
             // A living god replenishes what this spent.
@@ -76,11 +89,11 @@ public final class Weather {
             // anyway, because the rule is a fact about CASTING and belongs where casting
             // is described, in `core`, where it is stated once and testable without a
             // game. Two independent guards on the mod's economics is the right number.
-            return new Cast(became, 0);
+            return new Cast(became, 0, "");
         }
         ChapterSavedData data = ChapterSavedData.get(level.getServer());
         int frayed = Unraveling.frayAround(level, pos, data, level.getRandom(),
                 Casting.FRAY_RADIUS, Casting.FRAY_SAMPLES);
-        return new Cast(became, frayed);
+        return new Cast(became, frayed, "");
     }
 }

@@ -96,6 +96,34 @@ reads gameTime — the arithmetic is covered in core, including both sides of th
 and the tick handler itself (it walks `level.players()` and a headless server has none, so
 the command seam runs — calling the *same* `Tending.tendAround`, not a copy).
 
+### Magic is learned in its god's world, and only there
+
+`WORLD.md`, locked: *"Schools, one per god, **learned in their worlds**."* The last three
+words are the progression, and they are now enforced: **nothing is known by default.** An
+untaught caster is refused outright — so the reason to recommission the ferry is not a
+stat bonus, it is that the verbs themselves are over there.
+
+A per-player `Grimoire` persists with the world, alongside regard, on the overworld's
+storage — because what somebody knows is a fact about them, not about where they are
+standing. A player who learns the Turning in the Hearth-Turner's world still knows it at
+home, which is the entire premise of the overworld ban being a *choice* rather than a wall.
+
+**It only ever grows.** There is no unlearning and no method to do it. A school is
+something you understand about how the world works; the Wardenate can make casting a
+citable offence and a god can refuse to teach you the rest, but neither can reach into
+your head. The consequences are enforced where casting happens, not by confiscation.
+
+**A scene teaches it**, through a `teaches` field on a node — the same shape as
+`milestone`, and on the node for the same reason: being taught is a fact about where the
+conversation *arrived*. The Hearth-Turner's accepting ending teaches the Turning, so
+delivering its letter now opens onto something. **Everyone at the table learns**, not just
+the initiator: a god that taught one of four people standing in front of it would hand the
+group a protagonist, which is the thing the table exists to prevent.
+
+`delivery_check.sh` asks the same caster to cast the same spell on the same block before
+any scene and after all four. Before: `unlearned`. After: cobblestone. The only thing
+between the two attempts is the conversation.
+
 ### The first spell, and why the Wardens are right
 
 `WORLD.md` locks the doctrine — *"**Every spell is a world-verb.** No damage buttons with
