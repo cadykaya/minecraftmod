@@ -247,6 +247,19 @@ MUTATIONS = [
      "    public static long expiryAt(long nowTick) {\n        return nowTick + DURATION_TICKS;",
      "    public static long expiryAt(long nowTick) {\n        return nowTick;"),
 
+    # Loft is the Anchorite's THIRD, so the Lighten/Drop-forge pair guard above is
+    # untouched by this and every other Weight assertion still passes.
+    ("magic: the Anchorite's third spell is taught by the wrong god",
+     f"{MAIN}/magic/Loft.java",
+     "    public static final School SCHOOL = School.WEIGHT;",
+     "    public static final School SCHOOL = School.SILENCE;"),
+
+    # The cap's boundary. One block either way is a spell that carries a different amount
+    # than the number it documents, and no live check would ever be run at exactly the cap.
+    ("magic: a loft refuses a structure of exactly its own stated size",
+     f"{MAIN}/magic/Loft.java",
+     "        return blocks > MAX_BLOCKS;", "        return blocks >= MAX_BLOCKS;"),
+
     # The Anchorite's pair is the worse one: Lighten and Drop-forge are opposites, so
     # collapsing them onto one key produces a zone that lifts the weight it is waiting
     # for. Named separately from the Quiet One's because the assertion has to be about

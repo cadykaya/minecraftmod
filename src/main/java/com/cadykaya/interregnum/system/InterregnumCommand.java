@@ -416,6 +416,36 @@ public final class InterregnumCommand {
         return 1;
     }
 
+    /** `cast loft lift|place <who> <pos>`. See {@link LoftSpell}. */
+    private static int loft(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
+                            boolean lifting)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        String who = StringArgumentType.getString(ctx, "who");
+        java.util.UUID uuid;
+        try {
+            uuid = java.util.UUID.fromString(who);
+        } catch (IllegalArgumentException e) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "cast=loft refused=not a player id"), false);
+            return 0;
+        }
+        BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+        var level = ctx.getSource().getLevel();
+        var g = grimoireOf(ctx, "who");
+        var cast = lifting ? com.cadykaya.interregnum.system.magic.LoftSpell.lift(level, pos, uuid, g)
+                : com.cadykaya.interregnum.system.magic.LoftSpell.place(level, pos, uuid, g);
+        int carrying = com.cadykaya.interregnum.system.magic.Lofted
+                .get(ctx.getSource().getServer()).count();
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                "cast=loft " + (lifting ? "lift" : "place")
+                        + " ok=" + cast.ok()
+                        + " blocks=" + cast.blocks()
+                        + " frayed=" + cast.frayed()
+                        + " refused=" + cast.refusal()
+                        + " carrying=" + carrying), false);
+        return cast.ok() ? 1 : 0;
+    }
+
     private static int haunt(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
                             boolean force) {
         String who = StringArgumentType.getString(ctx, "who");
@@ -838,6 +868,20 @@ public final class InterregnumCommand {
                                                             + " refused=" + cast.refused()), false);
                                             return cast.opened() ? 1 : 0;
                                         })))));
+
+        // Loft is the only spell with two verbs, because carrying is the one thing in the
+        // kit that has a middle: you pick a structure up, you walk, you put it down.
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("loft")
+                        .then(Commands.literal("lift")
+                                .then(Commands.argument("who", StringArgumentType.string())
+                                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                                .executes(ctx -> loft(ctx, true)))))
+                        .then(Commands.literal("place")
+                                .then(Commands.argument("who", StringArgumentType.string())
+                                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                                .executes(ctx -> loft(ctx, false)))))));
 
         root = root.then(Commands.literal("cast")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))

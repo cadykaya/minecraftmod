@@ -994,6 +994,46 @@ public final class SelfTest {
               "and it reaches less far, because it has to be aimed. At a range where a "
               + "caster could not say which creature they meant, 'that one' stops being "
               + "what the spell does");
+
+        // LOFT. The Anchorite's third, so the same argument as Quell applies to its
+        // school: the Lighten/Drop-forge pair guard above passes untouched with this one
+        // taught by the wrong god, because that guard is about those two spells.
+        check(com.cadykaya.interregnum.core.magic.Loft.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.WEIGHT
+              && com.cadykaya.interregnum.core.magic.Spell.LOFT.school()
+                      == com.cadykaya.interregnum.core.magic.School.WEIGHT,
+              "Loft is the Anchorite's, in both places that say so. Weight is the school "
+              + "about what things weigh, and carrying a building is that sentence");
+
+        // "Small" is the locked word and the cap is the only thing that makes it mean
+        // anything, so the boundary is asserted on both sides. An off-by-one here is a
+        // spell that carries one more block than it says it does, forever, and nothing
+        // else in the mod would ever notice.
+        int cap = com.cadykaya.interregnum.core.magic.Loft.MAX_BLOCKS;
+        check(!com.cadykaya.interregnum.core.magic.Loft.tooLarge(cap),
+              "a structure of exactly the cap is carried. A cap that refuses its own "
+              + "stated size is a cap that is really one less, and the number in the "
+              + "documentation would be wrong rather than the code");
+        check(com.cadykaya.interregnum.core.magic.Loft.tooLarge(cap + 1),
+              "and one block more is refused");
+        check(!com.cadykaya.interregnum.core.magic.Loft.tooLarge(1) && cap > 1,
+              "a single block is carriable, and the cap is not one");
+
+        // Far below a ferry's hull, and the gap is the point rather than a side effect.
+        // At a hull's size this spell would be a ferry that needs no keel, no dock and no
+        // checklist -- and the crossing laws would become a thing a player could decline
+        // to use. The ferry's cap lives in the game module, so what is asserted here is
+        // the property that matters: this is a SMALL number, of the size somebody can
+        // picture, not a structure limit that happens to be generous.
+        check(cap <= 128,
+              "a loft is small enough to picture. The moment it can hold a building the "
+              + "size of a ferry's hull, it IS a ferry -- one with no keel, no dock and "
+              + "no checklist to teach anybody the world they are arriving in");
+        check(com.cadykaya.interregnum.core.magic.Loft.REACH
+                      < com.cadykaya.interregnum.core.magic.Lighten.RADIUS,
+              "and a caster stands at the thing they are picking up. This is the one "
+              + "spell that takes a specific building rather than a volume, so a reach "
+              + "wider than a room would make 'that one' unanswerable");
     }
 
     /**

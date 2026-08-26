@@ -27,10 +27,10 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **39**, every one mutation-verified, all in CI |
+| Live-world checks | **40**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
-| Magic | **four schools, nine spells**, learned in their gods' worlds; command-only for now |
+| Magic | **four schools, ten spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 
 ### The audit, made permanent
@@ -737,6 +737,44 @@ Mutation run: making the cancel never fire was caught.
 
 Nothing audible is claimed. Same wall as Hush — the Quiet One's most characteristic effects
 live on a client and this container has none.
+
+### The one spell with a middle
+
+***Loft*** — the Anchorite's third. `WORLD.md`: *"make a small structure weightless and
+carry it."* Carrying is picking a thing up, walking, and putting it down, so this is the
+only spell in the mod with **two casts**, and the distance is whatever the caster's own
+legs covered in between. There is no range on the setting down, and there should not be:
+the range IS the walk.
+
+**The capture is the ferry's, and that is why this was cheap.** `Ferry` solved *"how do you
+capture a boat without capturing the planet"* by walking only what a player PLACED, so a
+hull resting on the seabed lifts off it. A shed standing on a hillside is the same problem
+and takes the same answer. The walk is repeated rather than shared because the two differ
+in the one place that matters — a ferry's walk starts at a keel and admits it without a
+claim, since the keel is the consent; a loft has no keel, so the block the caster names
+must itself be something somebody built.
+
+**Three things it refuses, each for its own reason.** `MAX_BLOCKS` is 64 against the
+ferry's 4096, and the gap is the design: at a hull's size this would be a ferry that needs
+no keel, no dock and no checklist, and the crossing laws would become optional. A set-down
+into occupied space is refused whole rather than overwriting, because the ferry writes onto
+a pad it built and this lands wherever a player is standing. And **a load may only be set
+down in the world it was lifted from** — `WORLD.md` locks *"travel between systems is only
+by ferry"*, so a workshop walked through a portal would be a second way to do the one thing
+the ferry exists for.
+
+**Nothing expires.** Every other spell in the mod lapses and this one must not: a loft that
+ran out would drop a house wherever its owner happened to be standing. Weightless means it
+costs nothing to hold, so it costs nothing to hold — including across a restart, which is
+why `Lofted` is the first and only spell state saved with the world.
+
+That last property is also where the check was wrong on the first try, and the mistake was
+worth more than the spell. See [`LESSONS.md` #40](LESSONS.md#40-a-persistence-check-on-a-brand-new-world-tests-nothing):
+a two-run lift-restart-assert passed with `setDirty()` deleted, because `computeIfAbsent`
+marks a **newly created** instance dirty and a fresh world therefore saves whatever is put
+in it. `loft_check.sh` runs three servers — one to bring the file into being, one to lift
+into a store loaded from disk, one to find the shed still in hand — and the same mutation
+dies immediately.
 
 ### The ageing table runs backwards too
 
@@ -2394,7 +2432,7 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
    is not mine to choose, because it decides whether the class is a private act or a
    public one. *No action needed until then; the clasts scatter and persist without it.*
 
-5. **How does a player cast a spell?** Nine spells exist and none can be triggered in
+5. **How does a player cast a spell?** Ten spells exist and none can be triggered in
    play — the command is the only way in. `WORLD.md` locks what a spell *is* (*"every
    spell is a world-verb"*) and is silent on the affordance, which makes it a mechanic
    under the standing rule and therefore proposed rather than picked.
@@ -2502,11 +2540,10 @@ into [`WORLD.md`](WORLD.md). Anything genuinely new still comes back here first.
 
 **What do the six unnamed spells do?** `WORLD.md`'s school lists name twelve verbs and
 describe only six of them. The described ones are built — *Weather*, *Rewind*, *Lighten*,
-*Drop-forge*, *Bridgeroot*, *Wildgrowth*, *Hush*, *Still*, and now *Quell*, which the
-locked text pins down with *"a blaze that cannot ignite"*.
+*Drop-forge*, *Bridgeroot*, *Wildgrowth*, *Hush*, *Still*, *Quell* (*"a blaze that cannot
+ignite"*) and *Loft* (*"make a small structure weightless and carry it"*).
 
-*Loft* is described too — *"make a small structure weightless and carry it"* — and is
-unblocked; it is simply larger than a tick.
+*Loft* is built. That was the last one with a description.
 
 **Six are bare names with nothing attached: *Hedge*, *Graft*, *Moor*, *Held-breath*,
 *Ripen*, *Rot*.** Deciding what one of those does is designing a mechanic, not
@@ -2584,29 +2621,28 @@ Everything else is unblocked. In order:
 4. ~~**The delivery scenes.**~~ **All four built**, recording `LETTER_DELIVERED` and
    teaching their god's school. Chapters 3–5 gate on that count.
 
-5. ~~**Magic.**~~ **Four schools, nine spells**, all learned in their
+5. ~~**Magic.**~~ **Four schools, ten spells**, all learned in their
    gods' worlds and all costing the overworld what they do not cost a living god's.
    *Weather* changes a block and *Rewind* changes it back; *Lighten* encloses a region and
    *Drop-forge* makes one where impacts count; *Bridgeroot* creates blocks and
-   *Wildgrowth* hurries the ones already there; *Hush* forbids, *Still* holds, and *Quell*
-   takes one creature's throwing arm and lets it keep it wherever it goes. Nine different
-   verbs, which is what shows the school system is a system rather than one mechanism with
-   four names.
+   *Wildgrowth* hurries the ones already there; *Hush* forbids, *Still* holds, *Quell*
+   takes one creature's throwing arm and lets it keep it wherever it goes, and *Loft*
+   picks a small building up and carries it. Ten different verbs, which is what shows the
+   school system is a system rather than one mechanism with four names.
 
    **Two things it is short of, one of them the owner's:**
 
    * **No way to cast in play.** Every spell is reachable only by command. `WORLD.md`
      locks what spells *are* and says nothing about the affordance that triggers one —
      item, key, gesture, spoken word — and that is a mechanic rather than a detail. This
-     is now the single biggest gap in the mod: nine spells exist and a player cannot
+     is now the single biggest gap in the mod: ten spells exist and a player cannot
      reach any of them. See "Waiting on owner".
-   * **The rest of the kits.** `WORLD.md` names two more in each of three kits — *Hedge*,
-     *Graft*, *Loft*, *Moor*, *Held-breath*, *Ripen*, *Rot* — and says plainly that
-     *"full kits are design-phase work"*. **Quell is built**; of the seven left, only
-     *Loft* (*"make a small structure weightless and carry it"*) carries a description in
-     `WORLD.md` at all. **The other six are bare names, and what they DO is the owner's
-     call** — see "Proposed, needs the owner's yes". Building *Loft* is unblocked and is
-     the cheapest content left.
+   * **The rest of the kits.** **Every spell `WORLD.md` describes is now built.** What is
+     left is six bare names — *Hedge*, *Graft*, *Moor*, *Held-breath*, *Ripen*, *Rot* —
+     with nothing attached to any of them. **What they DO is the owner's call**, because
+     deciding is designing a mechanic rather than implementing one; sketches are in
+     "Proposed, needs the owner's yes". *"Full kits are design-phase work"* is the locked
+     line, and this is where the design phase needs the designer.
 
 6. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and

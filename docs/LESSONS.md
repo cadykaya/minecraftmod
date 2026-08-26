@@ -1776,3 +1776,61 @@ Related: [#29](#29-git-checkout----on-a-tracked-file-is-not-an-undo-it-is-a-disc
 there a careless restore destroyed uncommitted work, here a careless create destroyed
 committed work. Both were quiet, and both were about a command that does exactly what it
 says.
+
+---
+
+## 40. A persistence check on a brand-new world tests nothing
+
+`Lofted` is the first spell state in the mod that is saved with the world, and the reason
+is sharp: while a structure is being carried, its blocks are **not in the world**, so
+losing the store does not lose a spell effect — it loses somebody's building. So the check
+was built around that: lift a shed in one server run, restart with `KEEP_WORLD=1`, and
+assert the shed is still in hand.
+
+It passed. Then `setDirty()` was deleted from the store's `take()` — the single line the
+whole design rests on — and **it passed again.**
+
+### Why
+
+Minecraft writes only saved data that is marked dirty:
+
+```java
+this.cache.forEach((type, o) -> o.filter(SavedData::isDirty).ifPresent(...));
+```
+
+But `computeIfAbsent` on a world that has never had that file calls `set()`, and `set()`
+marks the newly created instance dirty:
+
+```java
+public <T extends SavedData> void set(SavedDataType<T> type, T data) {
+    this.cache.put(type, Optional.of(data));
+    data.setDirty();
+}
+```
+
+So on the **first** run against a fresh world, the object is dirty from the moment it
+exists, and everything put into it afterwards is written at shutdown no matter what the
+code does. The check was measuring a property of first-ever creation and calling it
+persistence.
+
+### What the check has to look like instead
+
+Three runs, not two. The store has to already exist on disk before a write to it is a real
+write:
+
+1. a run that only brings the file into being,
+2. a run that modifies the loaded store,
+3. a run that finds the modification still there.
+
+With that shape the same mutation dies immediately, and the failure message is the true
+one — *the shed was not still in hand after a restart*.
+
+> **The rule: to test that a write persists, the thing written to must have been loaded
+> from disk, not created this session.** A first-run save is free and proves nothing. This
+> generalises past `SavedData` to any store with a dirty flag, a write-back cache, or
+> lazy creation — the interesting bug is always in the *second* write, and a check that
+> never reaches one is measuring the constructor.
+
+Related: [#38](#38-one-instance-cannot-test-a-per-instance-property) is the same shape one
+level up — there one ferry could not exhibit a property that only exists between two, here
+one server run could not exhibit a property that only exists between two.

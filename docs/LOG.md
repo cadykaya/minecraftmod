@@ -3756,3 +3756,58 @@ move, which is the only type this spell needed, so nothing broke. It went into
 imports the path they remember.
 
 207 self-test checks, 68 mutations, 39 live checks, 20 fast-gate stages.
+
+---
+
+## The one spell with a middle
+
+*Loft*, the Anchorite's third, and the last spell `WORLD.md` describes. *"Make a small
+structure weightless and carry it."* Carrying is picking a thing up, walking, and putting
+it down, so this is the only spell in the kit with two casts — and the distance is whatever
+the caster's own legs covered in between. There is no range on the setting down: the range
+is the walk.
+
+The capture is the ferry's. `Ferry` already answered *"how do you capture a boat without
+capturing the planet"* by walking only what a player placed, and a shed on a hillside is
+the same problem. The walk is repeated rather than shared, because the two differ in the
+one place that matters: a ferry's walk starts at a keel and admits it without a claim,
+since the keel is the consent, and a loft has no keel.
+
+Three refusals, each earning its place. `MAX_BLOCKS` is 64 against a hull's 4096 — at a
+hull's size this would be a ferry with no keel, no dock and no checklist, and the crossing
+laws would become optional. A set-down into occupied space is refused whole. And a load may
+only be set down in the world it was lifted from, because *"travel between systems is only
+by ferry"* is locked and a workshop walked through a portal would be a second way to do the
+one thing the ferry exists for.
+
+Nothing expires. Every other spell lapses; a loft that lapsed would drop a house.
+
+### The check was wrong, and the mistake was worth more than the spell
+
+`Lofted` is the first spell state saved with the world, and the reason is that while a
+structure is held, its blocks are not in the world — losing the store loses somebody's
+building, not a spell effect. So the check lifted a shed in one server run, restarted with
+the world kept, and asserted the shed was still in hand. It passed.
+
+Then `setDirty()` was deleted from `take()` — the one line the whole design rests on — and
+it passed again.
+
+Minecraft writes only dirty saved data, but `computeIfAbsent` on a world that has never had
+that file calls `set()`, which marks the new instance dirty. On a fresh world the object is
+dirty from the moment it exists, so everything put into it afterwards is written at
+shutdown whatever the code does. The check was measuring first-ever creation and calling it
+persistence.
+
+The fix is three runs, not two: one to bring the file into being, one to lift into a store
+loaded from disk, one to find the shed still there. The same mutation now dies immediately,
+with the true message. `LESSONS.md` #40, and it generalises past `SavedData` to any store
+with a dirty flag or lazy creation — the interesting bug is always in the second write, and
+a check that never reaches one is measuring the constructor.
+
+### Every described spell is now built
+
+Ten spells, four schools. What is left of the kits is six bare names — *Hedge*, *Graft*,
+*Moor*, *Held-breath*, *Ripen*, *Rot* — with no description attached to any of them.
+Deciding what one of those does is designing a mechanic, so they wait on the owner.
+
+213 self-test checks, 70 mutations, 40 live checks, 20 fast-gate stages.

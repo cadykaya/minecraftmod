@@ -203,3 +203,6 @@ jobs:
 
       - name: A quelled blaze cannot ignite, wherever it goes; the one beside it still can
         run: ./tools/quell_check.sh
+
+      - name: A small building is picked up, survives a restart in hand, and is set down whole
+        run: ./tools/loft_check.sh
