@@ -2281,3 +2281,75 @@ ceiling at all: the cap assertion — the one the file exists for — had nothin
 failed on the "could not read the cap" branch rather than passing green, which is the
 difference between a check that is wrong and a check that lies. Naming the killer is what
 puts the ceiling in play.
+
+## The world can be held together by living in it
+
+Band 4's first half, and the half with the idea in it. `WORLD.md`: *"It frays where nobody
+tends. Regions people visit and keep hold their definition. This makes the 'take the job'
+ending literal rather than thematic — holding the world together shrine by shrine is
+exactly the counter-move. The apocalypse becomes a thing you can argue with."*
+
+Tending is simply **being somewhere**. No item, no ritual, no button. A chunk carries the
+game time anybody was last near it, and a player who lives in their base keeps their base
+without ever learning that the system exists — which is the right way for a counter-move
+to a slow apocalypse to work.
+
+### The contradiction that had to be resolved before anything could be built
+
+Band 4 cancels itself out if you take it at face value. Attrition must act where **nobody
+tends**. But like the unraveling it can only act on **loaded** ground, because placement
+tracking answers "claimed" for an unloaded chunk and so protects it absolutely — and
+loaded, in practice, means near a player. Those two leave nowhere in the world where
+anything can ever happen.
+
+The resolution is that the two distances are **different sizes**. Tending is intimate: two
+chunks, the ground you are standing on and can see the detail of. Loading reaches several
+times further. So the ring between them is ground that is present but unattended, and that
+ring is the only place attrition can act.
+
+That is not a workaround, it is the mechanic. A base you actually live in keeps its
+forest. The forest eight chunks out — loaded every day, walked through never — goes
+quietly generic, and one day you notice you cannot remember it being like that.
+
+**First sight counts as tending**, which is the other decision worth recording. Ground
+with no stamp is not ancient ground, it is ground nobody has looked at yet. If unstamped
+meant stale, a player exploring at band 4 would find fresh land that was already plain —
+which reads as broken worldgen, not as a world forgetting. Attrition has to be something
+you can watch happen to a place you knew.
+
+### A check that missed the one thing it was for
+
+`attrition_check.sh` exists to defend a single fact: tending must reach *less* far than
+loading. Widen one constant and band 4 is permanently inert, with nothing crashing and
+nothing logged.
+
+So it tends the chunk under you, reads a chunk four out, and asserts that one was not
+tended. Ground stamped this instant reads `0` ticks ago, so the assertion was
+`far_tended -gt 0`.
+
+**It let the mutation through.** With tending widened to twelve chunks both chunks are
+stamped in the same instant — but the two probes are separate RCON commands and can land
+one tick apart, so the far one read **1**. Green. Re-running caught it, which is worse
+than a clean miss: the check was not wrong, it was *flaky*, and a check that fails half
+the time gets read as an infrastructure problem rather than a real one.
+
+The fix is a comparison. The far chunk is stamped at chunk load and the near one at
+tending — about eighty ticks apart honestly, zero or one when mutated — so the assertion
+is that the gap is at least twenty. Verified against two consecutive mutation runs rather
+than one, because the defect being fixed was a coin flip.
+
+**This is the third time in one session**, and the surface details differed every time:
+"nothing grew here" where vanilla grows grass; a ceiling of 4 that a clean run hit at
+exactly 4; and now "more than zero ticks ago" where the clock ticks between two commands.
+Every one was a threshold sitting on the boundary of something that varies for reasons
+unrelated to the property under test. `LESSONS.md` #31 states the rule that covers all
+three: a threshold is a claim about variance, so do not write one until you have measured
+the variance — and if both populations can be measured in the same run, compare them and
+never pick a constant at all.
+
+### What is left of band 4
+
+The conversion table: what *generalised* actually means, block by block. Ores to stone,
+biome foliage to grass and then to nothing in particular. It is a third use of the
+`ConversionDef` machinery that the unraveling and the Turning already share, which makes
+it the cheapest large thing still on the list.

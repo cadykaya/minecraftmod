@@ -1325,3 +1325,61 @@ This is [#2](#2-a-confounded-test-is-a-false-instrument) with the confound being
 absence of the thing that makes a game a game, and
 [#15](#15-assert-the-setup-or-the-test-proves-whatever-absence-implies) with the unasserted
 setup being the passage of time.
+
+## 31. The same threshold mistake, three times in one night, from three directions
+
+`tools/attrition_check.sh` defends one fact: tending must reach a **shorter** distance
+than chunk loading does, because attrition can only act on loaded ground and if
+everything loaded were also tended there would be nowhere in the world it was ever
+allowed to touch. Widen one constant and band 4 becomes permanently inert — nothing
+crashes, nothing logs, the world simply never forgets anything.
+
+So the check tends the chunk under you, reads a chunk four out, and asserts it was not
+tended. Ground stamped this instant reads `0` ticks ago, so:
+
+```bash
+[ "$far_tended" -gt 0 ]
+```
+
+**It escaped the mutation.** Widening tending to twelve chunks stamps both chunks in the
+same instant — but the two probes are separate RCON commands and can land one tick apart,
+so the far one read **1**, and 1 is greater than 0. Green. The one defect the file exists
+to catch, walking straight through, on a coin flip.
+
+Re-running caught it, which is worse than a clean miss: the check is not wrong, it is
+*flaky*, and a flaky check that fails half the time reads as an infrastructure problem
+rather than a real one.
+
+The fix is a comparison, as it was the last two times. The far chunk is stamped at chunk
+load and the near one at tending — about eighty ticks apart honestly, zero or one when
+mutated:
+
+```bash
+gap=$((far_tended - home_tended))
+[ "$gap" -ge 20 ]
+```
+
+### What is actually going on, across all three
+
+This is the third time in one session, and the surface details were different every time:
+
+1. **[#27](#27-i-wrote-the-lesson-then-walked-into-it-one-increment-later)** — *"nothing
+   grew here"*, where vanilla grows grass on its own.
+2. A ceiling set at 4 of 16 that a clean run then hit at **exactly 4**.
+3. This one — *"more than zero ticks ago"*, where the clock ticks between two commands.
+
+Each time I reached for a threshold, and each time the threshold sat on the boundary of
+something that varies for reasons that have nothing to do with the property under test:
+vanilla's own behaviour, Poisson noise, the server's tick schedule. The number looked
+principled because I could name what it meant. What I could not name — because I never
+measured it — was the *spread*.
+
+> **The rule: a threshold is a claim about variance, so do not write one until you have
+> measured the variance.** If the two populations you are separating can be measured in
+> the same run, compare them and never pick a constant at all — a comparison is immune to
+> every source of drift that moves both sides together, which is most of them.
+
+The tell is specific and worth learning to feel: **if you can state what the number
+means but not how far the honest value ranges, you are guessing.** "Tended ground reads
+zero ticks ago" was a true sentence about an idealised world and a false one about a
+server that schedules commands.

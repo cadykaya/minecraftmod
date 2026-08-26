@@ -577,6 +577,47 @@ public final class InterregnumCommand {
         // Band 3, from the console. Asking "what leaks here" needs a position and a
         // world; a player would just walk there and notice, which a headless server
         // cannot do.
+        // Band 4's tending stamp, read and written.
+        //
+        // `tend` exists because a headless server has no players, and tending is defined
+        // as somebody being somewhere. Without it the only way to exercise the stamp
+        // would be to reimplement the tick handler inside a check, which would test the
+        // check. It is not a back door: it writes exactly what standing there writes.
+        root = root.then(Commands.literal("attrition")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("at")
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                    var level = ctx.getSource().getLevel();
+                                    var at = net.minecraft.world.level.ChunkPos.containing(pos);
+                                    var data = com.cadykaya.interregnum.system.ChapterSavedData
+                                            .get(ctx.getSource().getServer());
+                                    long since = com.cadykaya.interregnum.system.attrition.Tending
+                                            .sinceTended(level, at);
+                                    boolean stale = com.cadykaya.interregnum.system.attrition.Tending
+                                            .stale(level, at);
+                                    boolean fraying = com.cadykaya.interregnum.core.attrition
+                                            .Attrition.fraying(data.band());
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "attrition sinceTended=" + since + " stale=" + stale
+                                                    + " fraying=" + fraying
+                                                    + " band=" + data.band()), false);
+                                    return stale && fraying ? 1 : 0;
+                                })))
+                .then(Commands.literal("tend")
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                    var level = ctx.getSource().getLevel();
+                                    var at = net.minecraft.world.level.ChunkPos.containing(pos);
+                                    com.cadykaya.interregnum.system.attrition.Tending
+                                            .tendAround(level, at);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "attrition tended " + at.x() + " " + at.z()), false);
+                                    return 1;
+                                }))));
+
         root = root.then(Commands.literal("exodus")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("at")

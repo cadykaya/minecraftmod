@@ -162,6 +162,26 @@ MUTATIONS = [
      f"{MAIN}/exodus/Exodus.java",
      "        return band >= BAND;", "        return true;"),
 
+    # Band 4, attrition. Two of these three are the same defect wearing different
+    # clothes: band 4 can only act on ground that is loaded, so if tending ever reaches
+    # as far as loading does, there is nowhere left for it to act and the whole band is
+    # inert. Nothing crashes, nothing logs, and the world simply never forgets anything.
+    ("attrition: tending reaches as far as loading, so the band can never act anywhere",
+     f"{MAIN}/attrition/Attrition.java",
+     "    public static final int TEND_RADIUS_CHUNKS = 2;",
+     "    public static final int TEND_RADIUS_CHUNKS = 12;"),
+    ("attrition: everything is tended, so nothing ever frays",
+     f"{MAIN}/attrition/Attrition.java",
+     "        return Math.max(Math.abs(chunkDX), Math.abs(chunkDZ)) <= TEND_RADIUS_CHUNKS;",
+     "        return true;"),
+    ("attrition: ground goes stale the instant it is tended",
+     f"{MAIN}/attrition/Attrition.java",
+     "        return nowTick - lastTendedTick >= FRAY_AFTER_TICKS;",
+     "        return true;"),
+    ("attrition: the world forgets itself before band 4",
+     f"{MAIN}/attrition/Attrition.java",
+     "        return band >= BAND;", "        return true;"),
+
     # The dead god's mail. The invariant here is about a SET -- three letters open with
     # a name, the fourth opens `To --` -- so nothing about an individual letter can
     # catch it going. If it goes, the mid-game's best reveal quietly stops being one and

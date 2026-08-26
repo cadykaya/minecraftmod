@@ -144,3 +144,6 @@ jobs:
 
       - name: A god's letter can be delivered, and the scene still cannot buy forgiveness
         run: ./tools/delivery_check.sh
+
+      - name: Ground somebody tends keeps its definition; the fringe does not
+        run: ./tools/attrition_check.sh

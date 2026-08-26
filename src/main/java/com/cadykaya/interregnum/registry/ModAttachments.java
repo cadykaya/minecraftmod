@@ -7,6 +7,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import com.cadykaya.interregnum.Interregnum;
+import com.cadykaya.interregnum.system.attrition.Tended;
 import com.cadykaya.interregnum.system.claim.PlacedBlocks;
 
 public final class ModAttachments {
@@ -19,6 +20,14 @@ public final class ModAttachments {
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<PlacedBlocks>> PLACED_BLOCKS =
             ATTACHMENTS.register("placed_blocks",
                     () -> AttachmentType.serializable(PlacedBlocks::new).build());
+
+    /**
+     * When anybody was last near this chunk. Attached to chunks, saved with them.
+     * See {@link com.cadykaya.interregnum.system.attrition.Tended}.
+     */
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<Tended>> TENDED =
+            ATTACHMENTS.register("tended",
+                    () -> AttachmentType.serializable(Tended::new).build());
 
     public static void register(IEventBus modBus) {
         ATTACHMENTS.register(modBus);

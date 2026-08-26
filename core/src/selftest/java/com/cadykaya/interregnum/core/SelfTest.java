@@ -736,5 +736,54 @@ public final class SelfTest {
               "the law varies along x + z == k, so the hash is not (x + z) % 4 wearing a "
               + "disguise -- that one paints diagonal stripes, and a player crossing them "
               + "meets one god's law for as long as they walk");
+
+        attrition();
+    }
+
+    /**
+     * Band 4 decides WHERE the world forgets itself, and every assertion here is about
+     * the gap between two radii rather than about either one -- because that gap is the
+     * mechanic, and either number alone can be changed without it being visible.
+     */
+    static void attrition() {
+        check(!com.cadykaya.interregnum.core.attrition.Attrition.fraying(3),
+              "the world does not start forgetting itself before band 4 -- a band that "
+              + "fires early leaves the escalation with nothing left to escalate to");
+        check(com.cadykaya.interregnum.core.attrition.Attrition.fraying(4)
+              && com.cadykaya.interregnum.core.attrition.Attrition.fraying(5),
+              "band 4 and everything after it frays");
+
+        // Standing on it tends it; so does being a couple of chunks away. This is the
+        // half a player performs on purpose.
+        check(com.cadykaya.interregnum.core.attrition.Attrition.tends(0, 0),
+              "the chunk a player is standing in is tended, or the counter-move to the "
+              + "apocalypse is not available even to somebody doing it deliberately");
+        check(com.cadykaya.interregnum.core.attrition.Attrition.tends(2, -2),
+              "the corner of the tended square is tended -- Chebyshev, so the tended "
+              + "region is a square like every other chunk distance in the game");
+
+        // THE ASSERTION THAT MATTERS. Tending has to be strictly more intimate than
+        // loading, or band 4 cancels itself out: attrition can only touch loaded ground,
+        // and if everything loaded were also tended there would be nowhere it could ever
+        // act. A single number changed to "whatever the view distance is" would leave
+        // every other check here green and the band silently inert.
+        check(!com.cadykaya.interregnum.core.attrition.Attrition.tends(4, 0),
+              "ground four chunks away is NOT tended. It is still loaded, and that ring "
+              + "-- present but unattended -- is the only place attrition can ever act. "
+              + "If tending reached as far as loading, band 4 would be a no-op forever "
+              + "and nothing else in this file would notice");
+
+        long fray = com.cadykaya.interregnum.core.attrition.Attrition.FRAY_AFTER_TICKS;
+        check(!com.cadykaya.interregnum.core.attrition.Attrition.stale(1000, 1000),
+              "ground tended this instant is not stale");
+        check(!com.cadykaya.interregnum.core.attrition.Attrition.stale(1000, 1000 + fray - 1),
+              "ground is not stale one tick before its time -- an off-by-one here makes "
+              + "the whole threshold meaningless in the safe direction, which is the "
+              + "direction nobody investigates");
+        check(com.cadykaya.interregnum.core.attrition.Attrition.stale(1000, 1000 + fray),
+              "ground untended for the full span is stale");
+        check(com.cadykaya.interregnum.core.attrition.Attrition.stale(0, fray * 10),
+              "ground untended for a very long time is still stale -- staleness is a "
+              + "comparison, not a window that closes behind you");
     }
 }

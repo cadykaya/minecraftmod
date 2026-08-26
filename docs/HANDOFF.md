@@ -27,9 +27,44 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **23**, every one mutation-verified, all in CI |
+| Live-world checks | **24**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
+
+### The world can be held together by living in it
+
+Band 4's first half. `WORLD.md`: *"It frays where nobody tends. Regions people visit and
+keep hold their definition. This makes the 'take the job' ending literal rather than
+thematic — holding the world together shrine by shrine is exactly the counter-move. The
+apocalypse becomes a thing you can argue with."*
+
+**Tending is simply being somewhere.** No item, no ritual, no button. A chunk carries the
+game time anybody was last near it; a player who lives in their base keeps their base
+without ever learning the system exists.
+
+**The gap between two radii is the entire mechanic**, and it exists because band 4
+otherwise cancels itself out. Attrition can only act on *loaded* ground — placement
+tracking answers "claimed" for an unloaded chunk and so protects it absolutely — and
+loaded means near a player. But it must act where *nobody tends*. Taken naively those
+leave nowhere at all. The resolution: tending is intimate (two chunks) while loading
+reaches much further, so the ring between them is ground that is present but unattended.
+**The fringe of your world frays while its heart holds.** A base you live in keeps its
+forest; the forest eight chunks out — loaded every day, walked through never — goes
+quietly generic.
+
+**First sight counts as tending.** Ground with no stamp is not ancient ground, it is
+ground nobody has looked at yet, so chunk load stamps it. Without that, a player
+exploring at band 4 would find fresh land that was *already* plain, which reads as broken
+worldgen rather than as a world forgetting. Attrition has to be something you watch
+happen to a place you knew.
+
+`attrition_check.sh` proves the ring is real in a running world: after tending, the chunk
+under you reads 0 ticks and the chunk four out reads ~84, and both age. Two things it
+deliberately does **not** assert, stated rather than omitted: the twenty-minute threshold
+being *crossed* (no CI run waits that out, and `/time add` moves dayTime while the stamp
+reads gameTime — the arithmetic is covered in core, including both sides of the boundary),
+and the tick handler itself (it walks `level.players()` and a headless server has none, so
+the command seam runs — calling the *same* `Tending.tendAround`, not a copy).
 
 ### The first god's letter can be delivered
 
@@ -1431,18 +1466,26 @@ next to each, so the provenance travels with the decision.
 
    Also missing from every one of them: **terrain that is designed**. All four use
    vanilla noise with one fixed biome, and each file says so in its own javadoc.
-2. ~~**Band 3 — EXODUS.**~~ **Built.** Patches of overworld obeying another god's law,
+2. **Band 4 — ATTRITION: half built.** The *tending* signal exists — chunks carry when
+   anybody was last near them, tending is simply being somewhere, and
+   `attrition_check.sh` proves the ring of loaded-but-unattended ground is real. **The
+   conversion table is the unbuilt half**: what "generalised" actually means, block by
+   block. Ores to stone, biome foliage to grass to nothing in particular. It is a third
+   use of the `ConversionDef` machinery the unraveling and the Turning already share, so
+   it is the cheapest large thing left.
+
+3. ~~**Band 3 — EXODUS.**~~ **Built.** Patches of overworld obeying another god's law,
    anchored on the shrines. Three of the four laws leak; the Quiet One's needs
    client-side audio suppression this container cannot verify, and is named as a gap
    above rather than half-built. **Band 4 (ATTRITION) is the unbuilt half** and is
    unblocked: it wants a *"when was this last tended"* signal, for which the chunk
    attachment used by placement tracking is the obvious home.
-3. ~~**Warden behaviour.**~~ **Patrol and inspect are built** — `WardenPatrolGoal` walks a
+4. ~~**Warden behaviour.**~~ **Patrol and inspect are built** — `WardenPatrolGoal` walks a
    fixed four-point beat, and `SiteReturn` files what it finds. **`cite` is the one verb
    still missing, and it is blocked on the owner**: see "Waiting on owner" — a Warden
    needs something to accuse you of, and the locked countermeasures are all about
    casting, which does not exist yet.
-4. **More scenes.** Five exist (`warden_intake`, `warden_interrogation`, `shrine_keeper`,
+5. **More scenes.** Six exist (`warden_intake`, `warden_interrogation`, `shrine_keeper`,
    `shrine_keeper_intact`, `dream_audience`) and the machinery now has the range it was
    missing, so the shortage from here is content rather than plumbing. The four gods have
    regard lines but no scenes; the roster decision gives each of them four names to be
