@@ -46,6 +46,9 @@ python3 tools/unraveling_check.py
 echo "== crushing =="
 python3 tools/crushing_check.py
 
+echo "== biomes =="
+python3 tools/biome_check.py
+
 echo "== entity specs =="
 # Validates on import: no two box nets may overlap and none may run off the sheet.
 # Overlapping nets do not crash -- they render, wrongly, with one box wearing a

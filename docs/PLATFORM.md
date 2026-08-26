@@ -206,6 +206,7 @@ world that is not the one you asked for.
 | `ChunkPos#asLong` | `ChunkPos.pack(x, z)` | `LeakEvents`, and it is a record now — `x()`/`z()` |
 | `ServerPlayer#getServer()` | gone — take it off the level | the deicide handler |
 | `ItemStack.is(Item)` | takes a `Predicate<Holder<Item>>` | the heart pickup |
+| `BiomeSpecialEffects` fog/sky/water-fog/ambient-sound fields | **moved out of the biome** into `EnvironmentAttributes` — `SKY_COLOR`, `FOG_COLOR`, `WATER_FOG_COLOR`, `AMBIENT_SOUNDS`, `BACKGROUND_MUSIC`, set with `Biome.BiomeBuilder#setAttribute` | `ModBiomes`. The record still exists and still compiles, carrying **water and vegetation colours only** — so a biome ported from any pre-26 guide builds cleanly and has no sky |
 
 `tools/renames_check.py` enforces the shell half of this table on every push, because a
 dead gamerule name in a `COMMANDS` string is invisible until a check goes red for the

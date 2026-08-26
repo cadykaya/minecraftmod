@@ -25,3 +25,11 @@ __pycache__/
 # gradle/MDG run artifacts
 run/
 !run/.gitkeep
+
+# Datagen's hash cache. NOT committed, and that is a guard rather than tidiness.
+# HashCache skips writing a file whose newly-generated hash matches the cached one
+# WITHOUT looking at the file on disk -- so a hand-edited generated file that gets
+# committed survives every later `runServerData`, and the staleness gate reports clean.
+# See docs/LESSONS.md #37. CI deletes this directory before regenerating; keeping it out
+# of the repository is what makes that the only possible state.
+src/generated/resources/.cache/

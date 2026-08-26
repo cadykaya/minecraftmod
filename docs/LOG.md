@@ -3203,3 +3203,71 @@ Both halves watched failing after that: deleting the ledger gate fires `CLAIMED_
 and dropping `PUSHES` below one cane segment kills `CAST_GREW`.
 
 184 self-test checks, 61 mutations, 32 live checks.
+
+---
+
+## Four worlds that no longer look alike
+
+Three god-worlds generated `minecraft:the_void` and the Verdant's generated
+`minecraft:plains`, so the register's four distinct places were, on the ground, three
+identical grey rooms and one meadow carrying vanilla's whole mob spawn list. Each has a
+biome of its own now.
+
+The names use a split the mod already had. `WORLD.md` gives each world a SUBJECT line
+from the dead god's letters and a name people actually use; the dimension ids were the
+first set, so the biomes are the second — *the Long Green*, *Old Heavy*, *the Turning*.
+The Quiet One's cannot take that name because it does not have one, so its biome is
+`unanswered`: named for the silence rather than for whoever is being silent, which is the
+move the fourth letter makes when it opens `To —`.
+
+Every colour is a literal step off `assets/palette.json` and `biome_check.py` fails the
+build on any that is not. The palette system existed to stop art direction being decided
+one file at a time, and stopping it at textures was arbitrary — a sky is the one colour a
+player cannot look away from. The Quiet One's water is the colour of its stone; the
+Anchorite's world is the `metal` family, glossed in the palette as "cold, manufactured;
+holds its shape"; the Hearth-Turner's is `brass` in a late afternoon never allowed to
+become evening; the Verdant's is the brightest foliage step on the grass, the leaves and
+the sky at once, because a place with one colour left is a place something has gone wrong
+in.
+
+Nothing spawns in any of them, and only the Verdant's generates features. The shape of
+these worlds is still vanilla noise and `ModDimensions` still says so.
+
+**A 26.2 fact worth the row it got in PLATFORM.md:** `BiomeSpecialEffects` no longer
+carries fog, sky, water-fog or the ambient sound loops. Those moved into the same
+environment-attribute map the dimension types here already use, set with
+`Biome.BiomeBuilder#setAttribute`. The record still exists and still compiles with water
+and vegetation colours only — so a biome ported from a pre-26 guide builds cleanly and has
+no sky.
+
+`worlds_check.sh` asserts relationships, not facts: each world reports its own biome AND
+none of the other three (four passing probes would also pass if all four stems resolved to
+one biome), the overworld is none of them, and vegetation is counted over 1024 columns
+rather than probed at one. 244 plants in the Long Green, 0 in the Quiet One's. Watched
+failing by pointing two stems at the same biome.
+
+### The gate that regenerated nothing
+
+Found by accident: two generated biomes were hand-edited to watch a new check fail, and
+re-running datagen did not put them back.
+
+CI's rule for generated files is *regenerate everything, then `git diff --exit-code`*.
+That catches a source that changed without its output being regenerated, and it does not
+catch a generated file somebody edited by hand and committed — `HashCache` skips writing
+a file whose newly generated hash matches the cached one, without looking at the file on
+disk, and the cache was committed alongside the output.
+
+Proven rather than reasoned about. A `_hand_edited` key added to a committed loot table
+survived a green `runServerData` and the diff came back clean; with the cache deleted
+first, the same experiment came back dirty. The cache is gitignored now and CI removes it
+before regenerating. `LESSONS.md` #37.
+
+### And the check killed itself silently
+
+`worlds_check.sh` reads its plant counts out of the server's own `fill` reply. The first
+version looked for "Changed N blocks"; the server says "Successfully filled N block(s)".
+Under `set -o pipefail` the grep that matched nothing killed the script before any message
+it exists to print, so the check went red with **no output at all** — the third time
+LESSONS #23 has been paid for, and the first time it cost only a minute.
+
+184 self-test checks, 61 mutations, 33 live checks.

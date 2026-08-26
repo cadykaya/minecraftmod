@@ -45,6 +45,10 @@ public final class DataGenerators {
                 .add(Registries.CONFIGURED_FEATURE, ModWorldgen::bootstrapConfigured)
                 .add(Registries.PLACED_FEATURE, ModWorldgen::bootstrapPlaced)
                 .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldgen::bootstrapBiomeModifiers)
+                // BIOME before LEVEL_STEM, for the same reason DIMENSION_TYPE is: a
+                // stem resolves its biome through ctx.lookup, and a stem built first
+                // would look up a biome that does not exist yet.
+                .add(Registries.BIOME, com.cadykaya.interregnum.worldgen.ModBiomes::bootstrap)
                 // The god-worlds. DIMENSION_TYPE must be built before LEVEL_STEM in the
                 // same builder: the stem looks its type up through ctx.lookup, and a
                 // stem registered first would fail to resolve a type that does not

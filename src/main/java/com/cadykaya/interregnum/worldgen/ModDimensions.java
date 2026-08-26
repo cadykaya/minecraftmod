@@ -311,45 +311,43 @@ public final class ModDimensions {
         var noise = ctx.lookup(Registries.NOISE_SETTINGS);
         var biomes = ctx.lookup(Registries.BIOME);
 
-        // Placeholder terrain, stated as such in the class javadoc: vanilla noise, one
-        // biome, ground you can stand on. The law above is the part that is designed.
+        // Vanilla noise still -- the SHAPE of these worlds is not designed and the class
+        // javadoc says so.
+        //
+        // These used `the_void`, and the reason is worth keeping now that it is gone:
+        // every ordinary vanilla biome ships ambience, music and mob spawns that would
+        // have been doing scenic work nobody had designed, so the placeholder was chosen
+        // for what it did NOT carry. ModBiomes carries none of it either -- the same
+        // restraint, with a colour attached instead of nothing. What is designed now is the biome: one per god, each carrying
+        // that god's colour off the shared palette and nobody's mob spawns. See
+        // ModBiomes, and note that three of these used `the_void` and the Verdant's used
+        // `plains`, so until now the four worlds were visually identical grey stone and
+        // one meadow with vanilla's whole spawn list in it.
         ctx.register(UNRESPONSIVE_STEM, new LevelStem(
                 types.getOrThrow(UNRESPONSIVE_TYPE),
                 new NoiseBasedChunkGenerator(
-                        new FixedBiomeSource(biomes.getOrThrow(quietBiome())),
+                        new FixedBiomeSource(biomes.getOrThrow(ModBiomes.UNANSWERED)),
                         noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
 
         ctx.register(MASS_AUTHORITY_STEM, new LevelStem(
                 types.getOrThrow(MASS_AUTHORITY_TYPE),
                 new NoiseBasedChunkGenerator(
-                        new FixedBiomeSource(biomes.getOrThrow(quietBiome())),
+                        new FixedBiomeSource(biomes.getOrThrow(ModBiomes.OLD_HEAVY)),
                         noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
 
-        // The one place a vanilla biome is chosen for what it DOES carry rather than
-        // for what it does not: the Verdant's law is growth, and a world where things
-        // grow needs things that can. Still a placeholder in the same sense as the
-        // others -- the terrain is not designed.
+        // The only one of the four that generates anything at all, and it has to be: the
+        // Verdant's law is growth, and there is no point accelerating bare stone.
         ctx.register(GREEN_AUTHORITY_STEM, new LevelStem(
                 types.getOrThrow(GREEN_AUTHORITY_TYPE),
                 new NoiseBasedChunkGenerator(
-                        new FixedBiomeSource(biomes.getOrThrow(net.minecraft.world.level.biome.Biomes.PLAINS)),
+                        new FixedBiomeSource(biomes.getOrThrow(ModBiomes.LONG_GREEN)),
                         noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
 
         ctx.register(TEMPORAL_AUTHORITY_STEM, new LevelStem(
                 types.getOrThrow(TEMPORAL_AUTHORITY_TYPE),
                 new NoiseBasedChunkGenerator(
-                        new FixedBiomeSource(biomes.getOrThrow(quietBiome())),
+                        new FixedBiomeSource(biomes.getOrThrow(ModBiomes.THE_TURNING)),
                         noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
     }
 
-    /**
-     * The one biome, and it is chosen for what it does NOT carry.
-     *
-     * Every ordinary vanilla biome ships ambience, music and mob spawns that would be
-     * doing scenic work this world has not designed. `the_void` carries none of it, so
-     * nothing here is speaking on the Quiet One's behalf by accident.
-     */
-    private static ResourceKey<Biome> quietBiome() {
-        return Biomes.THE_VOID;
-    }
 }

@@ -1637,3 +1637,47 @@ the block tables. The second message names no culprit, because the check does no
 Related: [#31](#31-the-same-threshold-mistake-three-times-in-one-night-from-three-directions) is the
 same hazard from the other side — there the check was measuring variance, here it was
 *explaining* it.
+
+---
+
+## 37. Datagen's cache makes "regenerate and diff" blind to a hand-edited file
+
+*Found by accident, while hand-editing a generated biome to watch a new check fail.*
+
+`DATAGEN.md`'s rule is flat: **if it is JSON under `data/` or `assets/`, it is generated,
+not typed.** CI enforced it the obvious way — regenerate everything, then
+`git diff --exit-code`. That catches the common case (a source changed and the committed
+output was not regenerated) and it does not catch the case the rule is *named after*.
+
+Datagen's `HashCache` skips writing a file whose **newly generated** hash matches the
+cached one, without ever looking at the file on disk. The cache is a set of hashes
+committed alongside the output. So:
+
+1. somebody hand-edits a generated file and commits it;
+2. the cache still holds the hash of the correct output;
+3. the next run generates the correct output, hashes it, sees a match, and **writes
+   nothing**;
+4. `git diff` is clean, and the hand-edit ships.
+
+### Proven, not reasoned about
+
+A `"_hand_edited"` key was added to a committed loot table and staged (staging stands in
+for `HEAD` — on a fresh CI checkout the two are the same). `gradle runServerData` went
+green, the key was still in the file, and `git diff --exit-code` reported clean. With the
+cache deleted first, the same experiment came back dirty.
+
+The accident that surfaced it is worth keeping too: two generated biomes were hand-edited
+to watch a new check fail, and re-running datagen did not put them back. That was
+inconvenient for a minute and then it was a bug report.
+
+> **The rule: a cache that decides whether to write is not a check on what is written.**
+> Any guard of the form *regenerate, then compare* has to start from nothing, or it is
+> only checking the half of the problem the cache happens to notice.
+
+The fix is two lines and no new machinery: the cache directory is gitignored, and CI
+deletes it before regenerating. Every file is written every time, so the diff sees a
+hand-edit for exactly what it is.
+
+Related: [#15](#15-assert-the-setup-or-the-test-proves-whatever-absence-implies) — the
+same shape, one layer down. There the *setup* had silently not happened and the check read
+as if it had; here the *rewrite* silently does not happen and the gate reads as if it did.

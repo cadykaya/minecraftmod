@@ -27,11 +27,68 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **32**, every one mutation-verified, all in CI |
+| Live-world checks | **33**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, eight spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
+
+### Four worlds that no longer look alike
+
+Three of the god-worlds generated `minecraft:the_void` and the Verdant's generated
+`minecraft:plains`, so on the ground the register's four distinct places were three
+identical grey rooms and one meadow carrying vanilla's entire mob spawn list. Each now has
+a biome of its own.
+
+**The names are a split the mod already had.** `WORLD.md`'s register gives each world two:
+the SUBJECT line on the dead god's letters (`GREEN AUTHORITY`, `MASS AUTHORITY`,
+`TEMPORAL AUTHORITY`, `UNRESPONSIVE`) and what people actually call it (*the Long Green*,
+*Old Heavy*, *the Turning*). The dimension ids were already the first set; the biome ids are
+the second, so the debug screen shows the colloquial name and the ferry's paperwork shows
+the civil-service one. **The Quiet One's cannot take that name, because it does not have
+one** — its register column reads *"they will not say it"* — so its biome is `unanswered`,
+named for the silence rather than for whoever is being silent. The same move the fourth
+letter makes when it opens `To —`.
+
+**Every colour is a literal step off `assets/palette.json`**, and `biome_check.py` fails
+the build on any that is not. A sky is art direction; the palette system existed to stop art
+direction being decided one file at a time, and stopping it at textures was arbitrary. The
+Quiet One's water is the colour of its stone (nothing there is a different substance from
+anything else); the Anchorite's is the `metal` family, which the palette glosses as *"cold,
+manufactured; holds its shape"*; the Hearth-Turner's is `brass` in a late afternoon never
+allowed to become evening; and the Verdant's is the brightest foliage step on the grass,
+the leaves **and** the sky, because a place with one colour left is a place something has
+gone wrong in.
+
+**Nothing spawns in any of them**, which is a decision rather than an omission — three were
+already empty by accident of using `the_void`, and the Verdant's had inherited the plains
+spawn list. **Only the Verdant's generates features**, because accelerating bare stone is
+nothing.
+
+Still not designed: the *shape*. All four are vanilla overworld noise, and `ModDimensions`
+says so.
+
+**26.2 moved most of a biome's look out of the biome.** `BiomeSpecialEffects` now carries
+water and vegetation colours only; fog, sky, water-fog and the ambient sound loops are
+environment attributes, set through `Biome.BiomeBuilder#setAttribute`. The record still
+exists and still compiles, so a biome written from any pre-26 guide builds cleanly and has
+no sky. In [`PLATFORM.md`](PLATFORM.md#things-26x-renamed-and-where-each-one-bit).
+
+### The gate that regenerated nothing
+
+Found by accident here, and it had been open since datagen landed. CI's rule for generated
+files is *regenerate everything, then `git diff --exit-code`* — which catches a source that
+changed without its output being regenerated, and does **not** catch a generated file that
+somebody edited by hand and committed. `HashCache` skips writing a file whose newly
+generated hash matches the cached one without ever looking at the file on disk, and the
+cache was committed alongside the output.
+
+Proven rather than reasoned about: a `_hand_edited` key added to a committed loot table
+survived a green `runServerData`, and the diff came back clean. With the cache deleted
+first, the same experiment came back dirty.
+
+The cache directory is now gitignored and CI deletes it before regenerating, so every file
+is written every time. [`LESSONS.md` #37](LESSONS.md#37-datagens-cache-makes-regenerate-and-diff-blind-to-a-hand-edited-file).
 
 ### Everything here, at once
 

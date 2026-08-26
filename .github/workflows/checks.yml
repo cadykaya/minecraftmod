@@ -72,9 +72,20 @@ jobs:
 
       - name: Regenerate data and fail if the committed output is stale
         run: |
+          # The cache is DELETED first, and that is the whole guard rather than
+          # housekeeping. Datagen's HashCache skips writing a file whose newly
+          # generated hash matches the cached one without ever looking at the file on
+          # disk, so a hand-edited generated file that got committed would survive
+          # this step and the diff below would come back clean. Proven, not assumed:
+          # a `_hand_edited` key added to a loot table was still there after a green
+          # `runServerData`. See docs/LESSONS.md #37.
+          #
+          # With no cache every file is rewritten, so the diff sees a hand-edit for
+          # what it is. The directory is gitignored, so it cannot come back.
+          rm -rf src/generated/resources/.cache
           gradle --no-daemon --console=plain runServerData
           git diff --exit-code -- src/generated/resources \
-            || { echo "::error::Generated data is stale. Run 'gradle runServerData' and commit."; exit 1; }
+            || { echo "::error::Generated data is stale, or a generated file was edited by hand. Run 'gradle runServerData' and commit."; exit 1; }
 
       - name: Boot a dedicated server and check its log
         run: ./tools/server_smoke.sh
@@ -123,6 +134,9 @@ jobs:
 
       - name: The Quiet One's world is a separate place with its own floor
         run: ./tools/crossing_check.sh
+
+      - name: Four god-worlds, four biomes, and only one of them grows anything
+        run: ./tools/worlds_check.sh
 
       - name: In the Anchorite's world, unanchored things rise
         run: ./tools/anchorite_check.sh
