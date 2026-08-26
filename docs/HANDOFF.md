@@ -1776,13 +1776,19 @@ overturn them on grounds rather than taste.
 `docs/HANDOFF.md`'s counts are guarded on every push by `ci_claims_check.py`, which
 counts the workflow rather than trusting the table. **The pull request description carries
 the same numbers and nothing checks it**, because it does not live in the repository — and
-it has now gone stale twice, once at 48 commits and again at 67, both times in the
-flattering direction, and the second time it claimed nothing was waiting on the owner
-while two decisions were.
+it has now gone stale three times: at 48 commits and again at 67, both in the flattering
+direction, the second time claiming nothing was waiting on the owner while two decisions
+were; and again at 83, this time by simply falling behind — it still described four spells
+when there were eight, and 28 live checks when there were 32.
+
+The third one is the more instructive. A description that overclaims gets caught by anyone
+who reads the code; one that *underclaims* reads as modest and correct, and nobody looks.
 
 There is no fix available from CI. The mitigation is this note: **when the counts in the
 table above change, the PR description changes too**, by hand, and the "Waiting on you"
-section at the bottom of it is checked against "Waiting on owner" below.
+section at the bottom of it is checked against "Waiting on owner" below. The description
+now states the commit it was counted against, so the next reader can tell at a glance how
+far behind it is instead of having to diff it.
 
 ## The heartbeat
 
