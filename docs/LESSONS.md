@@ -1587,3 +1587,53 @@ caster may aim at one. Either alone is satisfiable by getting it uniformly wrong
 
 Related: [#5](#5-a-test-that-passes-either-way-is-not-a-test) is the same family from the
 other side — there the check could not fail, here it could not be right.
+
+---
+
+## 36. A probe that can fail two ways will blame the wrong one
+
+*Learned from a CI failure that said "the ferry took the world with it" about vanilla
+killing a lawn.*
+
+`ferry_check.sh` exists for one hazard: a capture that walks out of the hull through
+connected solid blocks and takes the seabed, then the mountain, then the world. Its
+guard was one probe:
+
+```
+execute if block 4 -61 4 minecraft:grass_block run say SEABED_LEFT_BEHIND
+```
+
+— and if that marker was missing, one message: *"the ground under the dock is gone — the
+ferry took the world with it."*
+
+The keel sits directly on that block. **An opaque block over a grass block is how vanilla
+kills grass**: on a random tick it becomes dirt, on its own, with the ferry nowhere near
+it. Over the few seconds the hull stands there that is roughly a one-in-thirty chance,
+and the file had been living on it since the day it was written. When it finally came up,
+CI reported that the ferry had eaten the planet.
+
+### Two problems, and only one of them is the flake
+
+The confound is the smaller half and has been met before ([#27](#27-i-wrote-the-lesson-then-walked-into-it-one-increment-later)):
+`gamerule random_tick_speed 0` removes it rather than tolerating it, and the claim becomes
+categorical — in *this* world nothing but the mod can change that block.
+
+The larger half is that **the probe could fail two ways and the message asserted which**.
+A capture leaves AIR — the check already knows that, ten lines up, where `ORIGIN_CLEARED`
+asserts exactly that about the hull's old position. Grass becoming dirt is not air. The
+single probe collapsed "the ferry took it" and "something else changed it" into one
+outcome and then confidently named the ferry, which is the one suspect it could have ruled
+out for free.
+
+Split, it is two probes and two messages: air says the ferry, anything-else says look at
+the block tables. The second message names no culprit, because the check does not know one.
+
+> **The rule: before writing a failure message, ask what ELSE could produce this exact
+> absence. If the answer is anything, the message may not name a cause — either add the
+> probe that tells them apart, or say only what was observed.** A message that names a
+> cause it cannot distinguish sends the next person to read the wrong file, and it will do
+> that on the day they are least able to argue with it.
+
+Related: [#31](#31-the-same-threshold-mistake-three-times-in-one-night-from-three-directions) is the
+same hazard from the other side — there the check was measuring variance, here it was
+*explaining* it.

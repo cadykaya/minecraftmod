@@ -33,6 +33,20 @@ asserted against a running world rather than against its own source.
 | Magic | **four schools, seven spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 
+### The ferry did not eat the planet
+
+A red CI run reported *"the ground under the dock is gone — the ferry took the world with
+it."* It had not. The keel sits directly on the seabed block `ferry_check.sh` watches, and
+an opaque block over a grass block is how **vanilla** kills grass — on a random tick, on
+its own. Roughly one run in thirty, and the file had been living on it since it was
+written. Reproduced with `random_tick_speed` at 400 before anything was changed.
+
+`gamerule random_tick_speed 0`, read back from the server, removes the confound; that is
+the third check to need it. The larger half is that **the probe could fail two ways and the
+message asserted which** — a capture leaves AIR, which the file already knew ten lines up.
+Two probes now: air names the ferry, anything else says look at the block tables and names
+nobody. [`LESSONS.md` #36](LESSONS.md#36-a-probe-that-can-fail-two-ways-will-blame-the-wrong-one).
+
 ### A spell that crushes nothing
 
 ***Drop-forge*** — the Anchorite's second. `WORLD.md`: *"**Weight** (Anchorite): … *Drop-forge*

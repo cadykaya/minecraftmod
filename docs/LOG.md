@@ -3124,3 +3124,33 @@ learned: the ledger gates the world, not the caster, so a drop-forge crushes a w
 caster built. Written from what the spell is for, not from what `Crush` does.
 
 181 self-test checks, 59 mutations, 31 live checks.
+
+---
+
+## The ferry did not eat the planet
+
+A red CI run on `391c1ba` reported *"the ground under the dock is gone — the ferry took the
+world with it."* It had not. The keel sits directly on the seabed block `ferry_check.sh`
+watches, and an opaque block over a grass block is how **vanilla** kills grass: on a random
+tick it becomes dirt, on its own. Over the few seconds the hull stands there that is around
+a one-in-thirty chance, and the file had been living on it since it was written.
+
+Reproduced rather than assumed: with `random_tick_speed` cranked to 400 the same run fails
+the same way every time, and the ferry is not involved.
+
+Two fixes, and only one of them is about the flake.
+
+`gamerule random_tick_speed 0` removes the confound rather than tolerating it — the third
+file to need it, after the exodus and attrition checks — and the gamerule is read back from
+the server, because a rejected one is silent apart from one log line.
+
+The larger half: **the probe could fail two ways and the message asserted which.** A
+capture leaves AIR; the check already knew that, ten lines above, where `ORIGIN_CLEARED`
+asserts it about the hull's old position. Grass becoming dirt is not air. Split into two
+probes: air names the ferry, anything else says look at the block tables and names no
+culprit, because the check cannot tell which one. `LESSONS.md` #36.
+
+Both new guards watched failing — a `setblock ... air` at the seabed produces the ferry
+message, and setting the gamerule to 3 produces the readback message.
+
+181 self-test checks, 59 mutations, 31 live checks.

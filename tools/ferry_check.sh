@@ -41,10 +41,25 @@ want() { grep -qF "$2" "$1" || { echo "--- looked for: $2"; grep -E 'ferry=' "$1
 # A flat world: the ground at y=-61 is NATURAL and nothing claims it, which is exactly
 # the surface the hull has to refuse to pick up.
 #
+# `random_tick_speed 0` FIRST, and it is load-bearing rather than tidiness. The keel sits
+# directly on top of the seabed block this check watches, and an opaque block over a
+# grass block is how vanilla kills grass: on a random tick it becomes dirt, all on its
+# own, with the ferry nowhere near it. That is roughly a one-in-thirty chance across the
+# few seconds the hull stands there -- so this file spent its whole life quietly
+# reporting "the ferry took the world with it" about a lawn dying, and eventually did.
+#
+# Zero removes the confound instead of tolerating it (docs/LESSONS.md #27), and with it
+# at zero the claim below is categorical: in THIS world nothing but the mod can change
+# that block, so if it changed, the mod changed it. The rule is queried straight back
+# because 26.x renamed the gamerule set to snake_case and a rejected gamerule is silent
+# apart from one line in a log nobody reads (docs/LESSONS.md #15).
+#
 # The hull is built with setblock and then CLAIMED by command, because setblock is not
 # a player placing a block and Claims only records real placements. `interregnum claim
 # record` is the same call the place handler makes.
-COMMANDS="forceload add -32 -32 31 31
+COMMANDS="gamerule random_tick_speed 0
+gamerule random_tick_speed
+forceload add -32 -32 31 31
 wait 3
 setblock 4 -60 4 interregnum:ferry_keel replace
 setblock 5 -60 4 minecraft:oak_planks replace
@@ -71,6 +86,7 @@ execute in interregnum:unresponsive if block 21 101 20 minecraft:chest run say F
 execute if block 4 -60 4 minecraft:air run say ORIGIN_CLEARED
 execute if block 20 100 20 interregnum:ferry_keel run say NEVER_LEFT_HOME
 execute if block 4 -61 4 minecraft:grass_block run say SEABED_LEFT_BEHIND
+execute if block 4 -61 4 minecraft:air run say SEABED_TAKEN
 execute in interregnum:unresponsive run interregnum ferry sail 20 100 20 quiet_one 22 100 20
 execute in interregnum:unresponsive run interregnum ferry manifest 22 100 20
 execute in interregnum:unresponsive if block 22 100 20 interregnum:ferry_keel run say NUDGE_KEEL_INTACT
@@ -112,6 +128,14 @@ want /tmp/fc.txt 'ferry-notice no_sound minecraft:note_block x1 [interregnum.fer
 want /tmp/fc.txt 'ferry=clear law=anchorite' \
     "a hull the Quiet One refused was also refused by the Anchorite -- the laws are not distinct"
 
+# --- the world this was measured in -----------------------------------------
+# Before anything that rests on it. A rejected gamerule is silent apart from one line in
+# a log nobody reads, and every claim about the seabed below is a claim about a world
+# where vanilla cannot be the one that changed it.
+grep -q 'random_tick_speed is currently set to: 0' /tmp/fc.txt || {
+    grep -iE 'random_tick_speed|gamerule' /tmp/fc.txt | head -4 || true
+    fail "vanilla's random ticking is not off in this world -- the gamerule was rejected or ignored, so the seabed under the keel can die to dirt on its own and this file will blame the ferry for it"; }
+
 # --- the crossing itself ----------------------------------------------------
 want /tmp/fc.txt 'ferry=sailed law=quiet_one to=interregnum:unresponsive total=5' \
     "the cleared hull did not sail, or did not sail to the world its law names"
@@ -128,10 +152,23 @@ for marker in KEEL_ARRIVED HULL_ARRIVED STERN_ARRIVED FURNITURE_ARRIVED ORIGIN_C
 done
 
 # --- AND IT LEFT THE PLANET WHERE IT WAS ------------------------------------
-# The single most important assertion in this file. A capture that took the ground
-# would have deleted the grass under the dock.
+# The single most important assertion in this file. A capture that ran through connected
+# solid blocks would have taken the seabed under the dock with the hull.
+#
+# TWO probes, not one, because the two ways this can go wrong want different people. A
+# capture LEAVES AIR -- that is what `ORIGIN_CLEARED` is, ten lines up -- so air here is
+# the ferry, and that is the bug this file exists for. Anything else is some other part
+# of the mod converting a block, and with `random_tick_speed` at 0 vanilla cannot be the
+# one that did it.
+#
+# One probe used to cover both, and it blamed the ferry for either. It spent a while
+# blaming the ferry for vanilla killing grass under the keel, which is neither.
+first=$(grep -c SEABED_TAKEN /tmp/ferry.log || true)
+if [ "$first" -gt 0 ]; then
+    fail "the ground under the dock is AIR -- the ferry took the world with it. The capture walked out of the hull through connected solid blocks into the seabed, which is the failure this whole file is built around"
+fi
 grep -q SEABED_LEFT_BEHIND /tmp/ferry.log || {
-    fail "the ground under the dock is gone -- the ferry took the world with it"; }
+    fail "the ground under the dock is neither the grass it was nor the air a capture leaves -- something in this mod converted it. The ferry is not the suspect: look at the block tables that run in the overworld"; }
 
 # --- a two-block nudge does not eat the hull --------------------------------
 # Origin and destination overlap. A move that clears and writes block-by-block
