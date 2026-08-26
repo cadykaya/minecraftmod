@@ -44,6 +44,8 @@ public enum Spell {
     DROP_FORGE(School.WEIGHT),
     /** The Verdant's: grow a span of real, persistent blocks. */
     BRIDGEROOT(School.VERDANCY),
+    /** The Verdant's: everything in a small volume lurches forward at once. */
+    WILDGROWTH(School.VERDANCY),
     /** The Quiet One's: a silence, in which nothing alerts and no fuse completes. */
     HUSH(School.SILENCE),
     /** The Quiet One's: things already in motion stop where they are. */

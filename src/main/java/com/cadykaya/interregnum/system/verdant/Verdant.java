@@ -108,6 +108,54 @@ public final class Verdant {
         }
     }
 
+    /**
+     * Push everything in a cube forward, hard, right now.
+     *
+     * The spell seam. {@link #grow} is a rate applied to a chunk on a clock; this is a
+     * fixed number of ticks applied to a volume because somebody asked. Every position
+     * gets exactly {@code pushes} attempts, in a fixed order, so one cast does the same
+     * thing as the next one — see {@code Wildgrowth.PUSHES}.
+     *
+     * @param sparePlacedBlocks whether to skip a block somebody put there. TRUE for a
+     *        spell, and that is not a contradiction of `LESSONS.md` #35: the ledger gates
+     *        what you did not AIM at, and a cube is full of things nobody aimed at. The
+     *        same rule already governs a cast's fraying, which has spared placed blocks
+     *        since the day it was written.
+     * @return how many positions ended up as a different block than they started.
+     */
+    public static int quicken(ServerLevel level, BlockPos centre, int radius, int pushes,
+                              boolean sparePlacedBlocks) {
+        int changed = 0;
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dy = -radius; dy <= radius; dy++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    pos.set(centre.getX() + dx, centre.getY() + dy, centre.getZ() + dz);
+                    if (sparePlacedBlocks && Claims.isClaimed(level, pos)) {
+                        continue;
+                    }
+                    BlockPos at = pos.immutable();
+                    BlockState before = level.getBlockState(at);
+                    for (int n = 0; n < pushes; n++) {
+                        BlockState state = level.getBlockState(at);
+                        // Asked every push rather than once: a block that grows into
+                        // something that also grows -- cane onto cane, moss onto moss --
+                        // must keep going, and a block that stopped being growable must
+                        // stop costing anything.
+                        if (!state.isRandomlyTicking()) {
+                            break;
+                        }
+                        state.randomTick(level, at, level.getRandom());
+                    }
+                    if (!level.getBlockState(at).equals(before)) {
+                        changed++;
+                    }
+                }
+            }
+        }
+        return changed;
+    }
+
     /** Whether this level is the Verdant's. */
     public static boolean holds(ServerLevel level) {
         return level.dimension() == ModDimensions.GREEN_AUTHORITY;

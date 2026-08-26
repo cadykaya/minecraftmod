@@ -248,6 +248,15 @@ MUTATIONS = [
      "    public static final long DURATION_TICKS = 20L * 60;",
      "    public static final long DURATION_TICKS = 20L * 15;"),
 
+    ("magic: a surge nobody can aim reaches further than the spell it is safe to stand in",
+     f"{MAIN}/magic/Wildgrowth.java",
+     "    public static final int RADIUS = 3;",
+     "    public static final int RADIUS = 9;"),
+    ("magic: one cast of Wildgrowth is worth less than one segment of sugar cane",
+     f"{MAIN}/magic/Wildgrowth.java",
+     "    public static final int PUSHES = 24;",
+     "    public static final int PUSHES = 8;"),
+
     # The dead god's mail. The invariant here is about a SET -- three letters open with
     # a name, the fourth opens `To --` -- so nothing about an individual letter can
     # catch it going. If it goes, the mid-game's best reveal quietly stops being one and

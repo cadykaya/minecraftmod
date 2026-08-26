@@ -168,3 +168,6 @@ jobs:
 
       - name: A dropped weight crushes what it lands on, and only where somebody asked it to
         run: ./tools/dropforge_check.sh
+
+      - name: A surge advances what grows where it lands, and spares what somebody planted
+        run: ./tools/wildgrowth_check.sh

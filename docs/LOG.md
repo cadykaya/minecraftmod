@@ -3154,3 +3154,52 @@ Both new guards watched failing — a `setblock ... air` at the seabed produces 
 message, and setting the gamerule to 3 produces the readback message.
 
 181 self-test checks, 59 mutations, 31 live checks.
+
+---
+
+## Everything here, at once
+
+***Wildgrowth*** — the Verdant's second, and the fourth caller of one law. It runs
+`Verdant.quicken`: the same acceleration the Verdant's world applies to every chunk it
+holds and band 3's leaks apply to a patch of overworld that has forgotten whose it is. You
+meet a god's law as a place, meet it again as a wrongness leaking into your own world, and
+then you are the one doing it — four times now.
+
+It accelerates and does not choose. `Verdant` refuses to keep a list of growable blocks;
+so does this. A cast asks the world to tick, hard, in a small volume, so every crop,
+sapling, vine, moss and mushroom is covered without being named. Which is why the locked
+word for this school is *hazard*: a surge you cannot aim at the wheat and away from the
+jungle closes the path behind you. In the Verdant's own world it is nearly pointless —
+everything already grows at eight times the rate you know — and also free, because a
+living god replenishes what casting spends. It costs most exactly where it does most.
+
+No probability anywhere: every position gets exactly `PUSHES` ticks in a fixed order.
+Twenty-four, calibrated against sugar cane, which advances one segment on exactly sixteen
+random ticks with no light check and no randomness. A cast worth less than one segment of
+cane is not worth a journey to another world.
+
+### The ledger gates what you did not aim at
+
+The sharper form of #35, forced by the first spell in the kit that sweeps a volume. "The
+ledger gates the world, not the caster" is right for a spell that names one block; said
+that flatly it hands an area spell a licence over other people's greenhouses.
+
+Not a new rule — what the code has always done, now written down. Weather and Rewind name
+one block and take it, your own wall included. Drop-forge changes the block your weight
+lands on, and you chose where to drop it. A cast's fraying sweeps a volume nobody pointed
+at and has spared placed blocks since the day it was written. Wildgrowth sweeps a volume,
+so: same answer.
+
+### The check failed on its own scenery first
+
+The cane stood on a single sand block in mid-air with a loose water source beside it. Sand
+falls. The column collapsed the tick after it was placed, all three canes broke, and the
+setup probe passed anyway because it ran before gravity did — so the file reported "the
+control cane is gone" about scenery it had built wrong. Dirt on a stone floor now, with
+the water sunk into the bed so the source cannot flow away from the block it has to be
+adjacent to.
+
+Both halves watched failing after that: deleting the ledger gate fires `CLAIMED_GREW`,
+and dropping `PUSHES` below one cane segment kills `CAST_GREW`.
+
+184 self-test checks, 61 mutations, 32 live checks.

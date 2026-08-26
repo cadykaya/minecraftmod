@@ -772,6 +772,23 @@ public final class InterregnumCommand {
 
         root = root.then(Commands.literal("cast")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("wildgrowth")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                        .executes(ctx -> {
+                                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                            var cast = com.cadykaya.interregnum.system.magic.WildgrowthSpell
+                                                    .cast(ctx.getSource().getLevel(), pos,
+                                                            grimoireOf(ctx, "who"));
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "cast=wildgrowth grew=" + cast.grew()
+                                                            + " frayed=" + cast.frayed()
+                                                            + " refused=" + cast.refused()), false);
+                                            return cast.worked() ? 1 : 0;
+                                        })))));
+
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("dropforge")
                         .then(Commands.argument("who", StringArgumentType.string())
                                 .then(Commands.argument("pos", BlockPosArgument.blockPos())

@@ -27,11 +27,66 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **31**, every one mutation-verified, all in CI |
+| Live-world checks | **32**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
-| Magic | **four schools, seven spells**, learned in their gods' worlds; command-only for now |
+| Magic | **four schools, eight spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
+
+### Everything here, at once
+
+***Wildgrowth*** — the Verdant's second. `WORLD.md`: *"Wildgrowth — and in the Verdant's own
+world, accelerating growth is a **hazard**."*
+
+**The fourth caller of one law.** It runs `Verdant.quicken`, which is the same acceleration
+the Verdant's world applies to every chunk it holds and the same one band 3's leaks apply to
+a patch of overworld that has forgotten whose it is. Meet a god's law as a place, meet it
+again as a wrongness leaking into your world, then be the one doing it — four times now.
+
+**It accelerates; it does not choose.** `Verdant` refuses to keep a list of growable blocks
+and so does this: a cast asks the world to tick, hard, in a small volume. Every crop,
+sapling, vine, moss and mushroom is covered without being named, and so is whatever the next
+game drop adds. Which is why the locked word is *hazard* — a surge you cannot aim at the
+wheat and away from the jungle closes the path behind you. In the Verdant's own world it is
+nearly pointless (everything already grows at eight times the rate you know) **and** free,
+because a living god replenishes what casting spends. The spell costs most exactly where it
+does most.
+
+**No probability anywhere.** Every position inside gets exactly `PUSHES` ticks in a fixed
+order, so a cast does the same thing twice. The three systems that grow a world on a clock
+use probability because a rate is what weather is; this is an act, and an act that varies is
+a gamble. `PUSHES = 24` is calibrated against the plainest counter in the game — sugar cane
+advances one segment on exactly sixteen random ticks — so one cast is plainly worth more
+than one segment and plainly less than a forest.
+
+### The ledger gates what you did not aim at
+
+The sharper form of [`LESSONS.md` #35](LESSONS.md#35-a-check-written-from-the-implementation-will-defend-the-bug),
+forced by the first spell in the kit that sweeps a volume. *"The ledger gates the world, not
+the caster"* is right for a spell that names one block; said that flatly it would hand an
+area spell a licence over other people's greenhouses.
+
+This is not a new rule — it is what the code has always done, now stated:
+
+| | aimed at | ledger |
+|---|---|---|
+| `Weather`, `Rewind` | one named block | **off** — your own wall included |
+| `Drop-forge` | the block your weight lands on | **off** — you chose where to drop it |
+| a cast's **fraying** | a volume nobody pointed at | **on**, since the day it was written |
+| `Wildgrowth` | a volume | **on** |
+
+So your neighbour's leaves do not decay because you wanted your wheat in early, and nothing
+about a spell aimed at one block has changed.
+
+**Verified, both halves watched failing.** Deleting the ledger gate fires `CLAIMED_GREW`;
+dropping `PUSHES` below one cane segment kills `CAST_GREW`. `random_tick_speed 0` — read
+back from the server — makes the control categorical rather than a margin: with vanilla's
+ticking off, the only thing in that world that can advance a cane is `Verdant.quicken`.
+
+**And the check's first run failed on its own scenery.** The cane stood on a single sand
+block in mid-air; sand falls, the column collapsed the tick after it was placed, and the
+setup probe passed because it ran before gravity did. Dirt on a stone floor now, with the
+water sunk into the bed so the source cannot flow away from the block it must be next to.
 
 ### The ferry did not eat the planet
 
@@ -1957,20 +2012,24 @@ Everything else is unblocked. In order:
 4. ~~**The delivery scenes.**~~ **All four built**, recording `LETTER_DELIVERED` and
    teaching their god's school. Chapters 3–5 gate on that count.
 
-5. ~~**Magic.**~~ **Four schools exist, one spell each**, all learned in their gods'
-   worlds and all costing the overworld what they do not cost a living god's. *Weather*
-   changes a block, *Lighten* encloses a region, *Bridgeroot* creates one, *Hush* forbids
-   — four different kinds of verb, which is what shows the school system is a system
-   rather than one mechanism with four names.
+5. ~~**Magic.**~~ **Four schools, eight spells, two per school**, all learned in their
+   gods' worlds and all costing the overworld what they do not cost a living god's.
+   *Weather* changes a block and *Rewind* changes it back; *Lighten* encloses a region and
+   *Drop-forge* makes one where impacts count; *Bridgeroot* creates blocks and
+   *Wildgrowth* hurries the ones already there; *Hush* forbids and *Still* holds. Eight
+   different verbs, which is what shows the school system is a system rather than one
+   mechanism with four names.
 
    **Two things it is short of, one of them the owner's:**
 
    * **No way to cast in play.** Every spell is reachable only by command. `WORLD.md`
      locks what spells *are* and says nothing about the affordance that triggers one —
-     item, key, gesture, spoken word — and that is a mechanic rather than a detail. See
-     "Waiting on owner".
-   * **One spell per school.** `WORLD.md` names three more in each kit and says plainly
-     that *"full kits are design-phase work"*. Unblocked, and the cheapest content left:
+     item, key, gesture, spoken word — and that is a mechanic rather than a detail. This
+     is now the single biggest gap in the mod: eight spells exist and a player cannot
+     reach any of them. See "Waiting on owner".
+   * **Two spells per school.** `WORLD.md` names two more in each kit — *Hedge*, *Graft*,
+     *Loft*, *Moor*, *Quell*, *Held-breath*, *Ripen*, *Rot* — and says plainly that
+     *"full kits are design-phase work"*. Unblocked, and still the cheapest content left:
      the machinery each would need is already built and proven.
 
 6. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat

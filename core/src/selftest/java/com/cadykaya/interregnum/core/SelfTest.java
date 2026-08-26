@@ -868,6 +868,28 @@ public final class SelfTest {
               "Drop-forge is the Anchorite's, so it is learned in the Anchorite's world "
               + "and nowhere else");
 
+        // A surge nobody can aim is kept small, and a Lighten is the comparison because
+        // a Lighten is the one that is SAFE to stand in. The wider a spell that applies
+        // to everything reaches, the less of its own blast a caster can hold in their
+        // head -- and the locked word for this school is `hazard`, which only means
+        // anything while the hazard is still a decision.
+        check(com.cadykaya.interregnum.core.magic.Wildgrowth.RADIUS
+                      < com.cadykaya.interregnum.core.magic.Lighten.RADIUS,
+              "Wildgrowth reaches no further than a low-gravity field. It cannot be "
+              + "aimed and everything inside it is subject, so a radius a caster cannot "
+              + "picture turns the hazard from a decision into an accident");
+        // Calibrated against the plainest counter in the game: sugar cane advances one
+        // segment on exactly sixteen random ticks. A cast worth less than one segment of
+        // cane is not worth a journey to another world to learn.
+        check(com.cadykaya.interregnum.core.magic.Wildgrowth.PUSHES > 16,
+              "one cast of Wildgrowth is worth more than one segment of sugar cane. "
+              + "Below that the school costs a crossing and buys less than standing "
+              + "still does");
+        check(com.cadykaya.interregnum.core.magic.Wildgrowth.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.VERDANCY,
+              "Wildgrowth is the Verdant's, so it is learned in the Verdant's world and "
+              + "nowhere else");
+
         check(com.cadykaya.interregnum.core.magic.Rewind.SCHOOL
                       == com.cadykaya.interregnum.core.magic.School.TURNING,
               "Rewind belongs to the Turning, the same school as Weather -- they are one "
