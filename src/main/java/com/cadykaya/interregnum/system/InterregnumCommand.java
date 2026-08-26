@@ -752,6 +752,24 @@ public final class InterregnumCommand {
                                             return cast.opened() ? 1 : 0;
                                         })))));
 
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("rewind")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                        .executes(ctx -> {
+                                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                            var cast = com.cadykaya.interregnum.system.magic.RewindSpell
+                                                    .cast(ctx.getSource().getLevel(), pos,
+                                                            grimoireOf(ctx, "who"));
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "cast=rewind became="
+                                                            + com.cadykaya.interregnum.system.magic
+                                                                    .RewindSpell.describe(cast)
+                                                            + " frayed=" + cast.frayed()), false);
+                                            return cast.worked() ? 1 : 0;
+                                        })))));
+
         // Teaching, the operator seam. In play a school is taught by a scene -- see the
         // `teaches` field on a dialogue node -- and this is the same path with a
         // different caller, the way `record deicide` is for the deicide.

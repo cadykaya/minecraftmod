@@ -6,8 +6,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.level.block.Block;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A set of one-step block conversions, keyed by the block they act on.
@@ -55,6 +57,20 @@ public final class StepTable {
     }
 
     private final Map<Block, ConversionDef> byFrom;
+    /**
+     * The reverse index, for reading a table backwards.
+     *
+     * A block whose value here is null has MORE THAN ONE past: two rules converge on it,
+     * so there is no single thing it used to be. The unraveling's table does exactly that
+     * — a dandelion and a poppy both become a dead bush — and asking what a dead bush
+     * used to be has no answer, only a choice.
+     *
+     * Null rather than "pick one" is the whole point. A table read backwards that guessed
+     * would un-age a dead bush into a poppy half the time and a dandelion the other half,
+     * and the god whose entire law is keeping every version would be the one making
+     * things up.
+     */
+    private final Map<Block, ConversionDef> byTo;
 
     /**
      * @throws IllegalArgumentException if two rules claim the same `from`.
@@ -65,6 +81,8 @@ public final class StepTable {
      */
     public StepTable(List<ConversionDef> conversions) {
         Map<Block, ConversionDef> map = new HashMap<>();
+        Map<Block, ConversionDef> reverse = new HashMap<>();
+        Set<Block> ambiguous = new HashSet<>();
         for (ConversionDef c : conversions) {
             ConversionDef other = map.put(c.from(), c);
             if (other != null) {
@@ -72,13 +90,36 @@ public final class StepTable {
                         "two rules both convert " + c.from() + ": "
                                 + other.id() + " and " + c.id());
             }
+            // A converging `to` is NOT an error -- the unraveling's table has one on
+            // purpose, and forbidding it would forbid a legitimate table for the sake of
+            // a reverse read that most callers never do. It is recorded and refused
+            // instead, so reading backwards fails loudly at exactly the block where the
+            // past is genuinely unknown.
+            if (reverse.put(c.to(), c) != null) {
+                ambiguous.add(c.to());
+            }
         }
+        ambiguous.forEach(reverse::remove);
         this.byFrom = Map.copyOf(map);
+        this.byTo = Map.copyOf(reverse);
     }
 
     /** What this block becomes in one step, or null if this table has no opinion. */
     public ConversionDef stepFrom(Block block) {
         return byFrom.get(block);
+    }
+
+    /**
+     * What this block USED to be, one step back — or null if nothing did, or if more than
+     * one thing did.
+     *
+     * The two nulls are deliberately indistinguishable to callers, because the answer to
+     * both is the same: this table cannot tell you. A caller that wanted to say *"a dead
+     * bush had two pasts and I will not guess"* differently from *"stone has no past
+     * here"* would be making a distinction the table does not have the standing to draw.
+     */
+    public ConversionDef stepTo(Block block) {
+        return byTo.get(block);
     }
 
     public int ruleCount() {

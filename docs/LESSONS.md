@@ -1435,3 +1435,52 @@ somebody picked — three routes into one ending should record one delivery, not
 Related: [#16](#16-a-check-on-the-shape-of-data-cannot-tell-you-the-data-does-anything) is
 the same gap one level down — there, data that validated but did nothing; here, behaviour
 that ran correctly and connected to nothing.
+
+## 33. The refusal was right, and it was refusing for a reason that did not exist
+
+*Rewind* reads the ageing table backwards, and must refuse a block reached by two
+different rules — a block with two pasts has no single past, and a spell that picked one
+would be guessing.
+
+To test that, the check aimed at a **dead bush**, on the reasoning that a dandelion and a
+poppy both become one. True — and true in the **unraveling's** table, which Rewind does
+not read. It reads the **Turning's**, where nothing becomes a dead bush at all.
+
+So the refusal fired, the assertion passed, and what it actually proved was *"nothing in
+this table ages into a dead bush"* wearing the label *"two things do"*. The convergence
+logic — the reverse index, the ambiguity set, the removal — had **no live coverage
+whatsoever**, and every word of the check's header describing it was false.
+
+### Why this one was invisible
+
+Both readings produce a refusal, and the refusal is all a check can see. `no-single-past`
+is returned for "nothing ages into this" *and* for "two things do", deliberately, because
+the table genuinely cannot distinguish them and a caller pretending otherwise would be
+inventing a distinction it has no standing to draw. That is the right design — and it
+means the outcome carries no evidence about which branch produced it.
+
+A check reading only the outcome therefore cannot tell a working guard from an absent one.
+The evidence has to come from **the setup**: the block under test must be one this table
+demonstrably converges on, and if no such block exists the check is testing nothing no
+matter what it asserts.
+
+### What fixed it
+
+Not a better assertion — a better world. The Turning's table gained a genuine converging
+pair (deepslate tiles crumble to cobbled deepslate, which plain deepslate also wears into),
+so the ambiguity is now real in the table Rewind actually reads. That is a rule worth
+having on its own terms, which is the test of whether test-driven data is honest: if the
+rule would embarrass you in the shipped file, the check was asking for the wrong thing.
+
+Two diagnostic markers were added alongside, naming *which* past a guess restored, because
+"it guessed" and "it guessed toward tiles" are different bugs and only one of them is
+quick to fix. The mutation that keeps ambiguous reverses now reports `GUESSED_TILES`
+before the failure line.
+
+> **The rule: when several distinct causes produce the same observable outcome, the
+> assertion cannot be evidence — the setup has to be.** Ask what would have to be true of
+> the world for this check to be testing the branch you mean, then build that, then assert.
+
+Related: [#16](#16-a-check-on-the-shape-of-data-cannot-tell-you-the-data-does-anything) and
+[#32](#32-four-scenes-shipped-and-the-thing-they-exist-to-produce-was-never-recorded) — all
+three are checks that ran, passed, and were about something other than what they said.

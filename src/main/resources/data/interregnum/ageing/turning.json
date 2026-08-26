@@ -22,14 +22,52 @@
     "",
     "SAME HARD GUARANTEE as the unraveling: every 'from' is a naturally-generated or",
     "player-neutral vanilla block, and the runtime consults placement tracking before",
-    "touching anything. A conversion that could eat a build is a design failure."
+    "touching anything. A conversion that could eat a build is a design failure.",
+    "",
+    "TWO RULES END AT COBBLED DEEPSLATE, on purpose. Plain deepslate wears into it and deepslate tiles crumble into it, so asking what a piece of cobbled deepslate USED to be has two answers and no way to choose. That is what makes REWIND -- the Turning's second spell, which reads this table backwards -- refuse it. A god whose entire law is keeping every version of everything is precisely the one that will not invent one, and a block with two pasts is where that shows."
   ],
   "conversions": [
-    { "id": "stone_wears",        "from": "minecraft:stone",               "to": "minecraft:cobblestone",          "chance": 0.35 },
-    { "id": "cobble_greens",      "from": "minecraft:cobblestone",         "to": "minecraft:mossy_cobblestone",    "chance": 0.35 },
-    { "id": "brick_cracks",       "from": "minecraft:stone_bricks",        "to": "minecraft:cracked_stone_bricks", "chance": 0.35 },
-    { "id": "cracked_greens",     "from": "minecraft:cracked_stone_bricks","to": "minecraft:mossy_stone_bricks",   "chance": 0.35 },
-    { "id": "deepslate_wears",    "from": "minecraft:deepslate",           "to": "minecraft:cobbled_deepslate",    "chance": 0.35 },
-    { "id": "deepslate_bricks_crack", "from": "minecraft:deepslate_bricks","to": "minecraft:cracked_deepslate_bricks", "chance": 0.35 }
+    {
+      "id": "stone_wears",
+      "from": "minecraft:stone",
+      "to": "minecraft:cobblestone",
+      "chance": 0.35
+    },
+    {
+      "id": "cobble_greens",
+      "from": "minecraft:cobblestone",
+      "to": "minecraft:mossy_cobblestone",
+      "chance": 0.35
+    },
+    {
+      "id": "brick_cracks",
+      "from": "minecraft:stone_bricks",
+      "to": "minecraft:cracked_stone_bricks",
+      "chance": 0.35
+    },
+    {
+      "id": "cracked_greens",
+      "from": "minecraft:cracked_stone_bricks",
+      "to": "minecraft:mossy_stone_bricks",
+      "chance": 0.35
+    },
+    {
+      "id": "deepslate_wears",
+      "from": "minecraft:deepslate",
+      "to": "minecraft:cobbled_deepslate",
+      "chance": 0.35
+    },
+    {
+      "id": "deepslate_bricks_crack",
+      "from": "minecraft:deepslate_bricks",
+      "to": "minecraft:cracked_deepslate_bricks",
+      "chance": 0.35
+    },
+    {
+      "id": "deepslate_tiles_crumble",
+      "from": "minecraft:deepslate_tiles",
+      "to": "minecraft:cobbled_deepslate",
+      "chance": 0.35
+    }
   ]
 }

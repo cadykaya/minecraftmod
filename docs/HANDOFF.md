@@ -27,10 +27,10 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **28**, every one mutation-verified, all in CI |
+| Live-world checks | **29**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
-| Magic | **four schools, one spell each**, learned in their gods' worlds; command-only for now |
+| Magic | **four schools, five spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 
 ### Band 4: the world forgets what it was
@@ -97,6 +97,27 @@ being *crossed* (no CI run waits that out, and `/time add` moves dayTime while t
 reads gameTime — the arithmetic is covered in core, including both sides of the boundary),
 and the tick handler itself (it walks `level.players()` and a headless server has none, so
 the command seam runs — calling the *same* `Tending.tendAround`, not a copy).
+
+### The ageing table runs backwards too
+
+***Rewind*** — the Turning's second, *"repair by un-aging"*. One table, two directions:
+*Weather* reads it forwards, this reads it back. The same doctrine that made the Turning
+and the unraveling share a registry, which is why the school's second spell cost almost no
+new machinery.
+
+**It may touch what a player built, and that is the decision.** Every other system here
+consults the claim ledger and refuses anything somebody placed — the unraveling, attrition,
+the Turning's own clock, *Weather*. Rewind does not, because **the ledger exists to stop
+the world eating your work, not to stop you working on it.** Refusing would make the spell
+useless at exactly its purpose: you do not un-crack a cave, you mend your own wall. The
+check asserts both sides — the Turning's clock still refuses that same block — so it is a
+distinction rather than a hole.
+
+**And some blocks have no single past.** Plain deepslate wears into cobbled deepslate and
+deepslate tiles crumble into it, so asking what a piece of it used to be has two answers.
+Rewind refuses rather than choosing, which is the most characterful thing in the school:
+**the god whose entire law is keeping every version of everything is precisely the one that
+will not invent one.**
 
 ### Four schools, and the one whose combat use most obviously falls out of its world use
 

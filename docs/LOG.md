@@ -2930,3 +2930,50 @@ all. Nothing is blocked behind the answer — the spells are built and verified 
 but shipping four spells and never mentioning that they are unreachable would have been the
 same defect as the letters that recorded no milestone, caught earlier this session: a
 feature complete in every respect except the one that connects it to a player.
+
+## The ageing table runs backwards, and one check was proving the wrong thing
+
+***Rewind*** — the Turning's second spell, *"repair by un-aging"*. One table, two
+directions: *Weather* reads it forwards and this reads it back, which is the same doctrine
+that made the Turning and the unraveling share a registry, and why the school's second
+spell cost almost no new machinery.
+
+Two decisions, both the kind that look fine while being wrong.
+
+**It may touch what a player built.** Every other system here consults the claim ledger and
+refuses anything somebody placed — the unraveling, attrition, the Turning's own clock,
+*Weather*. Rewind does not, because the ledger exists to stop **the world** eating your
+work, not to stop you working on it. Refusing would make the spell useless at its whole
+purpose: you do not un-crack a cave, you mend your own wall. The check asserts both sides
+in the same run — the Turning's clock still refuses that same block — so it is a
+distinction between the two, not a hole in the guarantee.
+
+**And some blocks have no single past**, where it refuses rather than choosing. That
+refusal is the most characterful thing in the school: the god whose entire law is keeping
+every version of everything is precisely the one that will not invent one.
+
+### The assertion about that was passing for a reason that did not exist
+
+The check aimed at a dead bush, because a dandelion and a poppy both become one. True — in
+the **unraveling's** table, which Rewind does not read. It reads the **Turning's**, where
+nothing becomes a dead bush at all. So the refusal fired, the assertion passed, and it
+proved *"nothing ages into a dead bush"* wearing the label *"two things do"*. The
+convergence logic had no live coverage at all and the header describing it was false.
+
+It was invisible because both readings produce the same outcome, and the outcome is all a
+check can see — `no-single-past` covers "nothing ages into this" and "two things do"
+deliberately, because the table genuinely cannot tell them apart. That is the right design,
+and it means the evidence cannot come from the assertion. It has to come from the setup.
+
+Fixed by giving the Turning's table a genuine converging pair rather than by writing a
+cleverer assertion: deepslate tiles crumble to cobbled deepslate, which plain deepslate
+also wears into. That is a rule worth having on its own terms, which is the test of whether
+test-driven data is honest — if the rule would embarrass you in the shipped file, the check
+was asking for the wrong thing. `LESSONS.md` #33.
+
+Two markers were added naming *which* past a guess restored, since "it guessed" and "it
+guessed toward tiles" are different bugs. The mutation that keeps ambiguous reverses now
+prints `GUESSED_TILES` before it fails.
+
+174 self-test checks, 29 live checks. `turning_check.sh` passes unchanged with the new
+rule, which is what made the table edit safe to make.

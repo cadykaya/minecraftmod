@@ -845,6 +845,15 @@ public final class SelfTest {
                       < com.cadykaya.interregnum.core.magic.Lighten.DURATION_TICKS,
               "and it holds for less time, or every encounter becomes a place you stand "
               + "until it is over");
+
+        // Weather and Rewind are one table in two directions, so they must belong to the
+        // same god. Split across two schools, half the Turning's kit would be taught by
+        // somebody who does not own the law it reads.
+        check(com.cadykaya.interregnum.core.magic.Rewind.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.TURNING,
+              "Rewind belongs to the Turning, the same school as Weather -- they are one "
+              + "table read forwards and backwards, and a school that taught only one "
+              + "direction would be teaching half a mechanism");
     }
 
     /**
