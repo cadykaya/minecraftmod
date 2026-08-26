@@ -122,6 +122,19 @@ public final class Deicide {
         if (level != null && site != null) {
             data.setSite(net.minecraft.core.GlobalPos.of(level.dimension(), site));
             formCrater(level, site);
+            // "The overflow detonates outward, scattering splinters at shrines and the
+            // crater." (WORLD.md, LOCKED.) The crater's share, taken from the world's
+            // one finite pool -- see core Clasts for why the number is the mechanic.
+            // The shrines' share is handed out as they load, which is the same shape
+            // the statues already use and for the same reason: the deicide can only
+            // reach chunks that happen to be loaded when it happens.
+            int share = com.cadykaya.interregnum.system.clast.ClastsSavedData.get(server)
+                    .take(com.cadykaya.interregnum.core.clast.Clasts.AT_CRATER);
+            int dropped = com.cadykaya.interregnum.system.clast.Scatter
+                    .drop(level, site, share);
+            if (dropped > 0) {
+                LOG.info("{} clast(s) came to rest in the crater.", dropped);
+            }
         }
 
         int woken = wakeWitnesses(server, level, site);

@@ -3405,3 +3405,51 @@ a stale record attached to a position teleporting whatever stands there to a str
 dock. Both mutations die against that, with the messages that name them. `LESSONS.md` #38.
 
 184 self-test checks, 61 mutations, 36 live checks.
+
+---
+
+## The god shatters
+
+`WORLD.md`, locked: *"The overflow detonates outward, scattering **splinters** at shrines
+and the crater"*, and *"the shattered god-pieces are **clasts** (item). Anyone may attune
+one; **clasts are finite** — the class is a server negotiation."*
+
+The item had existed since the first registry pass and nothing produced one. `PlayerTags`
+said so in its own javadoc: *"the Theoclast class does not exist yet — no clast can be
+attuned, so no player can truthfully hold it."*
+
+Finite is the mechanic, so the count is the mechanic. Everything else this mod produces
+falls out of a rule applied to whatever is there; this does not. `Clasts.TOTAL = 7`
+— **[NEEDS PLAYTEST]**, as `WORLD.md` marks it: small enough that a server of any size has
+to decide who gets one, odd so two factions cannot split it, more than the four gods so a
+full set is not the obvious goal. The pool is per world rather than per shrine, because a
+world with forty shrines would otherwise hand out forty classes and the negotiation would
+never happen.
+
+Three in the crater at the moment of death, one at each shrine as it is *found* — the
+deicide only reaches loaded chunks, which is the statues' constraint and the statues'
+solution, and the better beat for the same reason. They do not despawn: seven in a world,
+ever, and a finite thing that can be lost to a timer is not finite, it is random.
+
+A shrine is marked whether or not it paid. Waking a statue is self-marking because a woken
+statue is a different block; scattering is not, so a chunk that loaded twice would pay
+twice and a player walking back and forth could drain the world at one shrine.
+
+### Two things the check got wrong before the mod did
+
+The despawn assertion was written against `Lifespan`. `ItemEntity.setUnlimitedLifetime`
+writes the `-32768` sentinel into **`Age`** and leaves `Lifespan` at 6000, because the tick
+loop stops counting rather than raising the cap — so a check reading `Lifespan` reports a
+despawning item that is not despawning. Read out of the decompiled source after the probe
+disagreed with the code.
+
+And the "found twice" leg used a forceload remove/add cycle. Removing a ticket does not
+unload a chunk promptly, so the reload fires a Load event only sometimes: it passed once
+and failed on a clean tree. Three server runs with `KEEP_WORLD=1` now — a shrine being
+*found* is the thing under test, and a restart is the only way to guarantee the finding.
+
+Both mutations watched failing: dropping the per-chunk mark takes the count from 5 to 7 on
+a second visit, and removing `setUnlimitedLifetime` puts a clast on a 40-tick-and-counting
+timer.
+
+193 self-test checks, 63 mutations, 37 live checks.

@@ -739,6 +739,7 @@ public final class SelfTest {
 
         attrition();
         marking();
+        clasts();
         grimoires();
         zones();
         spans();
@@ -947,6 +948,56 @@ public final class SelfTest {
      * Nothing is known by default, and knowledge only ever grows. The first is the whole
      * progression -- if an untaught player could cast, crossing would buy nothing.
      */
+    /**
+     * The clast pool. `WORLD.md` locks "clasts are finite -- the class is a server
+     * negotiation", and finite is the whole mechanic, so the arithmetic that enforces it
+     * is worth more assertions than its four lines suggest.
+     */
+    static void clasts() {
+        int total = com.cadykaya.interregnum.core.clast.Clasts.TOTAL;
+        check(total > 0, "there is at least one clast, or the class cannot exist at all");
+        // The crater's share is bounded BOTH ways, and both bounds are design.
+        check(com.cadykaya.interregnum.core.clast.Clasts.AT_CRATER < total,
+              "the crater does not hold every clast. A killer who could pick up the whole "
+              + "class by standing where they already are would make 'anyone may attune "
+              + "one' untrue on the first day");
+        check(com.cadykaya.interregnum.core.clast.Clasts.AT_CRATER
+                      > com.cadykaya.interregnum.core.clast.Clasts.AT_SHRINE,
+              "and it holds more than any one shrine does -- it is where the death "
+              + "happened, and the overflow is locked as detonating outward FROM there");
+        // The pool empties, and stays empty. A shrine loading after the last clast is
+        // gone is the ordinary case rather than an error: it is what a world that has
+        // been picked over looks like.
+        check(com.cadykaya.interregnum.core.clast.Clasts.issue(0, 1) == 1,
+              "the first request is met");
+        check(com.cadykaya.interregnum.core.clast.Clasts.issue(total, 1) == 0,
+              "a request made after the last clast has gone is met with nothing, and is "
+              + "not an error -- shrines keep loading long after the pool is empty");
+        check(com.cadykaya.interregnum.core.clast.Clasts.issue(total - 1, 4) == 1,
+              "a request for more than remains gets what remains, not what it asked for. "
+              + "This is the line that makes the count a CAP rather than a suggestion");
+        check(com.cadykaya.interregnum.core.clast.Clasts.issue(0, 0) == 0
+              && com.cadykaya.interregnum.core.clast.Clasts.issue(0, -3) == 0,
+              "a site that wants nothing gets nothing, and cannot put clasts back into "
+              + "the pool by asking for a negative number");
+        check(com.cadykaya.interregnum.core.clast.Clasts.remaining(total + 5) == 0,
+              "remaining never goes below zero, however the count got there -- a negative "
+              + "remainder would read as a debt the world owes somebody");
+        // The sum of one full distribution must not exceed the pool. Stated as the thing
+        // it protects: every shrine in a world, plus the crater, cannot mint a class.
+        int afterCrater = com.cadykaya.interregnum.core.clast.Clasts.issue(
+                0, com.cadykaya.interregnum.core.clast.Clasts.AT_CRATER);
+        int issued = afterCrater;
+        for (int i = 0; i < 1000; i++) {
+            issued += com.cadykaya.interregnum.core.clast.Clasts.issue(
+                    issued, com.cadykaya.interregnum.core.clast.Clasts.AT_SHRINE);
+        }
+        check(issued == total,
+              "a thousand shrines hand out exactly " + total + " clasts between them. A "
+              + "world with forty shrines must not hand out forty classes, or the "
+              + "negotiation WORLD.md locks never happens");
+    }
+
     static void grimoires() {
         var g = new com.cadykaya.interregnum.core.magic.Grimoire();
         check(g.empty() && !g.knows(com.cadykaya.interregnum.core.magic.School.TURNING),

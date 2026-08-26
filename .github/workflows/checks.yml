@@ -147,6 +147,9 @@ jobs:
       - name: A ferry comes back to its own coordinates, and not to another ferry's
         run: ./tools/return_check.sh
 
+      - name: The god shatters into a finite number of pieces, and no shrine pays twice
+        run: ./tools/clast_check.sh
+
       - name: In the Anchorite's world, unanchored things rise
         run: ./tools/anchorite_check.sh
 

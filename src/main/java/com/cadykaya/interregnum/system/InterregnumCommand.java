@@ -1065,6 +1065,23 @@ public final class InterregnumCommand {
         // The same page a player gets for touching a keel. Two callers, one path -- see
         // FerryDocket: a right-click cannot be driven from a headless server, so a docket
         // only the block could produce is a docket no check can read.
+        // The pool, read back. There is no other way to see it: clasts are items lying in
+        // the world, and counting entities cannot tell an unclaimed one from one a player
+        // has picked up -- while the number that matters is how many the world has GIVEN
+        // UP, which is the finite thing WORLD.md locks.
+        root = root.then(Commands.literal("clasts")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .executes(ctx -> {
+                    var pool = com.cadykaya.interregnum.system.clast.ClastsSavedData
+                            .get(ctx.getSource().getServer());
+                    ctx.getSource().sendSuccess(() -> Component.literal(
+                            "clasts=" + pool.issued() + " remaining=" + pool.remaining()
+                                    + " total="
+                                    + com.cadykaya.interregnum.core.clast.Clasts.TOTAL),
+                            false);
+                    return pool.issued();
+                }));
+
         root = root.then(Commands.literal("ferry")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("inspect")

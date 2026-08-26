@@ -27,11 +27,67 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **36**, every one mutation-verified, all in CI |
+| Live-world checks | **37**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, eight spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
+
+### The god shatters
+
+`WORLD.md`, locked: *"The god's power enters its killer. An ordinary Minecraft body cannot
+hold it. The overflow detonates outward, scattering **splinters** at shrines and the
+crater."* And: *"the shattered god-pieces are **clasts** (item). Anyone may attune one;
+**clasts are finite** — the class is a server negotiation."*
+
+The item had existed since the first registry pass and **nothing in the world produced
+one.** `PlayerTags` said so in its own javadoc: *"the Theoclast class does not exist yet —
+no clast can be attuned, so no player can truthfully hold it."*
+
+**Finite is the mechanic, so the count is the mechanic.** Everything else this mod produces
+falls out of a rule applied to whatever is there — the unraveling converts what it finds,
+the Verdant grows what can grow. This does not. There is a number, it is small, and when it
+is gone it is gone, because *"the class is a server negotiation"* only means anything if
+there are fewer clasts than people who want one. That is why the pool is one per world
+rather than a per-shrine yield: a world with forty shrines would otherwise hand out forty
+classes.
+
+`Clasts.TOTAL = 7` — **[NEEDS PLAYTEST]**, and `WORLD.md` marks it so. Seven: small enough
+that a server of any size has to decide who gets one, odd so it cannot be split evenly by
+two factions, and more than the four gods so a full set is not the obvious goal. A starting
+position, and one constant, because that is what makes it cheap to change.
+
+Three land in the crater at the moment of death — the largest single share, since that is
+where it happened, but not most of them, or a killer could pick up the whole class standing
+still. The rest are at shrines, one each, handed over **as a shrine is found** rather than
+at the instant of the death: the deicide can only reach loaded chunks, which is the same
+constraint the statues have and the same solution, and it is the better beat for the same
+reason — a player who walks to a shrine days later and finds something on the step has
+*found* it.
+
+**They do not despawn.** There are seven in a world, ever, and a finite thing that can be
+lost to a five-minute timer is not finite, it is random. It also reads correctly: a piece of
+a god does not rot.
+
+**A shrine is marked whether or not it paid.** The statues need no equivalent — a woken
+statue is a different block, so waking is self-marking. Scattering is not, and a shrine
+chunk that loaded, unloaded and loaded again would take a second clast, so a player walking
+back and forth could drain a world's allowance at one shrine. A shrine that loaded after the
+pool ran dry is marked too: it is finished with, not waiting, and rescanning its sections
+forever for an answer that cannot change costs a scan per load.
+
+**Two things the check got wrong before the mod did.** The despawn assertion was written
+against `Lifespan` — `ItemEntity.setUnlimitedLifetime` writes the `-32768` sentinel into
+**`Age`** and leaves `Lifespan` at its default 6000, because the tick loop stops counting
+rather than raising the cap; a check reading `Lifespan` reports a despawning item that is
+not despawning. And the "found twice" leg used a forceload remove/add cycle, which unloads a
+chunk only sometimes — it passed once and failed on a clean tree. It is three server runs
+with `KEEP_WORLD=1` now, because a shrine being *found* is the thing under test and a
+restart is the only way to guarantee the finding.
+
+Still not built: **attuning**. `WORLD.md` says *"anyone may attune one"* and does not say
+how, which makes the affordance a mechanic rather than a detail — the same shape as the
+spell-casting question. It is in "Waiting on owner".
 
 ### The way home
 
@@ -2050,6 +2106,18 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
    Either is a small build once chosen. Choosing is the owner's, because it decides what
    the Wardenate is *for*. *No action needed until then; patrol and inspect ship without
    it.*
+
+5. **How does a player attune a clast?** They exist now — seven in a world, three in the
+   crater and one at each shrine as it is found — and nothing can be done with one.
+   `WORLD.md` locks *"anyone may attune one"* and says nothing about how, which makes the
+   affordance a mechanic rather than a detail, exactly like the casting question below.
+   The obvious candidates: **use the item** (right-click, irreversible, and the item is
+   consumed); **a rite at a shrine**, which would tie the class to the places the pieces
+   came from and give the shrine-keeper something to witness; or **at the crater only**,
+   which makes every Theoclast return to the scene. The second is the one I would build —
+   it is the only one that makes the shrines matter after they have been looted — and it
+   is not mine to choose, because it decides whether the class is a private act or a
+   public one. *No action needed until then; the clasts scatter and persist without it.*
 
 5. **How does a player cast a spell?** Eight spells exist and none can be triggered in
    play — the command is the only way in. `WORLD.md` locks what a spell *is* (*"every

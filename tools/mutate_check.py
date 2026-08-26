@@ -252,6 +252,18 @@ MUTATIONS = [
      f"{MAIN}/magic/Wildgrowth.java",
      "    public static final int RADIUS = 3;",
      "    public static final int RADIUS = 9;"),
+    # Clasts. The count IS the mechanic -- WORLD.md locks "clasts are finite; the class
+    # is a server negotiation" -- so the arithmetic that caps it gets the same treatment
+    # as a block table.
+    ("clasts: the crater holds the whole class, so the killer has it on the first day",
+     f"{MAIN}/clast/Clasts.java",
+     "    public static final int AT_CRATER = 3;",
+     "    public static final int AT_CRATER = 7;"),
+    ("clasts: the pool hands out whatever is asked for, so a world mints classes",
+     f"{MAIN}/clast/Clasts.java",
+     "        return Math.max(0, Math.min(want, TOTAL - Math.max(0, issued)));",
+     "        return want;"),
+
     ("magic: one cast of Wildgrowth is worth less than one segment of sugar cane",
      f"{MAIN}/magic/Wildgrowth.java",
      "    public static final int PUSHES = 24;",

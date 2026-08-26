@@ -29,6 +29,17 @@ public final class ModAttachments {
             ATTACHMENTS.register("tended",
                     () -> AttachmentType.serializable(Tended::new).build());
 
+    /**
+     * Whether this chunk has already given up its clast. Attached to chunks, saved with
+     * them. See {@link com.cadykaya.interregnum.system.clast.Seeded} for why scattering
+     * needs a mark when waking a statue does not.
+     */
+    public static final DeferredHolder<AttachmentType<?>,
+            AttachmentType<com.cadykaya.interregnum.system.clast.Seeded>> SEEDED =
+            ATTACHMENTS.register("seeded",
+                    () -> AttachmentType.serializable(
+                            com.cadykaya.interregnum.system.clast.Seeded::new).build());
+
     public static void register(IEventBus modBus) {
         ATTACHMENTS.register(modBus);
     }
