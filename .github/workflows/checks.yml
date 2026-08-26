@@ -147,3 +147,6 @@ jobs:
 
       - name: Ground somebody tends keeps its definition; the fringe does not
         run: ./tools/attrition_check.sh
+
+      - name: The first spell works, and costs the overworld what it does not cost a god's world
+        run: ./tools/casting_check.sh

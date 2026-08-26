@@ -2629,3 +2629,58 @@ on every line anybody speaks and end the progression before the first scene did.
 Live: `letters delivered: 0 -> 4`. Watched failing by stripping the marks back out, which
 is the state the repository was actually in: `0 -> 0`, with every other assertion in the
 file still passing.
+
+## The first spell, and two ways it nearly shipped as a coin flip
+
+*Weather* — the Turning's, and the mod's first. `WORLD.md` names it: *"age blocks: instant
+mossy/cracked/oxidized — magic as a builder's palette"*, under the locked doctrine that
+**every spell is a world-verb**: no damage buttons with particle effects.
+
+It is the cleanest possible first case for that rule because it has no combat use at all.
+The first thing this mod teaches you to do with magic is decorate.
+
+And it is not new machinery. `WORLD.md`'s locked reuse note says the ageing registry
+powering the Turning **is** the system that runs the unraveling, so the spell calls
+`Hearth.step` — the same method the Hearth-Turner's world runs on its clock. `ageOnce` had
+the dimension gate baked into it, which would have made Weather castable only in the god's
+own world, so the gate moved out to its callers and the law became one method. Every
+promise the table already makes now holds for the spell for free, including the oldest one
+here: you cannot Weather somebody's wall.
+
+**The economics are the interesting half.** Locked: *"With the god dead, all overworld
+casting draws on the corpse… Heavy casting visibly frays its surroundings. The Wardens'
+law is right, and the player can discover it is right."* So a cast at home frays the
+ground around the caster, through the unraveling, spending the same residue in the same
+currency the player has been reading since chapter one — and the cost rises with the band
+with nobody tuning it.
+
+The enforcement agency is not wrong, and nothing in the mod ever says so. You cast at
+home, watch the ground go, cast off-world, watch it not, and work it out.
+
+### Twice it was a coin flip wearing a categorical assertion
+
+The check failed its first run reporting `frayed 0` and the failure was mine both times.
+
+**The fraying sampled a cube** around the cast. A thirteen-block cube is almost entirely
+air, so under a tenth of samples landed on anything at all and a cast usually cost nothing.
+Fixed by sampling the surface column — which is also what the sentence means, since
+*"frays its surroundings"* is about ground a caster can see.
+
+**Then it sampled a random depth below that surface**, and only the top layer had a band-1
+rule, so the cost came out at 2 of 12 and one cast in fourteen still spent nothing. That
+would have shipped `casting costs the overworld something` as a 93%-true assertion dressed
+as a categorical one. Depth sampling belongs to the passive unraveling, which is eating a
+whole world and should reach under it; a cast's cost is local, immediate, and has to be
+reliable. Now every sample lands on the surface: **12 of 12, twice running.**
+
+Both are `LESSONS.md` #31 again — a threshold on something that varies — except the
+randomness was not in a roll this time, it was in *where the samples landed*, one level
+below where I was looking. That is the fourth time this session, and the first where the
+variance was hidden in the sampling geometry rather than in a probability.
+
+### What is not built
+
+How a player learns it. The command is the seam, as it is for `unravel at` and
+`turning age`. `WORLD.md`'s *"schools, one per god, learned in their worlds"* is the next
+increment — and it is exactly what the questline middles have been short of, so the two
+gaps close together.

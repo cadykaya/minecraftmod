@@ -648,6 +648,29 @@ public final class InterregnumCommand {
                                     return 1;
                                 }))));
 
+        // The first spell. A command rather than an item because the LAW is what is
+        // being built here and the law is what a headless server can drive; how a player
+        // comes to know Weather -- learning it in the Hearth-Turner's world, per
+        // WORLD.md's "schools, one per god, learned in their worlds" -- is the next
+        // increment and is recorded in HANDOFF rather than guessed at.
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("weather")
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                    var cast = com.cadykaya.interregnum.system.magic.Weather
+                                            .cast(ctx.getSource().getLevel(), pos);
+                                    String became = cast.worked()
+                                            ? net.minecraft.core.registries.BuiltInRegistries.BLOCK
+                                                    .getKey(cast.became().getBlock()).toString()
+                                            : "nothing";
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "cast=weather became=" + became
+                                                    + " frayed=" + cast.frayed()), false);
+                                    return cast.worked() ? 1 : 0;
+                                }))));
+
         root = root.then(Commands.literal("exodus")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("at")

@@ -213,6 +213,66 @@ public final class Unraveling {
      */
     public static Decision apply(ServerLevel level, BlockPos pos, ChapterSavedData data,
                                 RandomSource random, boolean certain) {
+        return apply(level, pos, data, random, certain, false);
+    }
+
+    /**
+     * What one cast costs the world around it.
+     *
+     * `WORLD.md`, locked: *"With the god dead, all overworld casting draws on the corpse
+     * — the residue still holding the world together. Heavy casting visibly frays its
+     * surroundings."* The corpse is what this class is already spending, so casting
+     * spends it through the same table rather than through a number invented for spells.
+     *
+     * <b>It does not consult the scope, and that is the one real difference.</b> A band's
+     * scope describes where the world is thin enough to come apart <i>on its own</i> —
+     * near the crater and the shrines in band 1, everywhere after. Fraying from a cast is
+     * not the frontier arriving, it is the caster drawing on the residue where they
+     * stand, so it happens wherever they are. Made to obey the scope, band-1 casting
+     * would be visibly free anywhere away from a shrine, a player would reasonably
+     * conclude the Wardens' ban was arbitrary, and *"the player can discover it is
+     * right"* would be false.
+     *
+     * Certain rather than rolled: a cost that usually does not happen is a cost nobody
+     * connects to the spell.
+     *
+     * @return how many places this cast spent.
+     */
+    public static int frayAround(ServerLevel level, BlockPos centre, ChapterSavedData data,
+                                 RandomSource random, int radius, int samples) {
+        int frayed = 0;
+        for (int i = 0; i < samples; i++) {
+            // THE SURFACE COLUMN, not a cube around the cast. The first version sampled a
+            // box and almost always spent nothing: a thirteen-cube is mostly air, so the
+            // hit rate was under a tenth and the cost of a cast came out as zero more
+            // often than not. That is the same defect as a threshold on a random count
+            // (docs/LESSONS.md #31) with the randomness hidden one level down, in where
+            // the samples land rather than in what they roll.
+            //
+            // The surface is also what the sentence means. "Frays its surroundings" is
+            // about the ground a caster is standing on and can see, which is the whole
+            // reason the cost teaches anything.
+            int x = centre.getX() + random.nextInt(radius * 2 + 1) - radius;
+            int z = centre.getZ() + random.nextInt(radius * 2 + 1) - radius;
+            BlockPos surface = surfaceOf(level, x, z);
+            if (surface == null) {
+                continue;
+            }
+            // THE SURFACE BLOCK ITSELF, with no random depth. Depth sampling belongs to
+            // the passive unraveling, which is eating a whole world and should reach
+            // under it. A cast's cost is local and immediate and has to be RELIABLE: with
+            // a random depth only the top layer had a band-1 rule, so one cast in
+            // fourteen spent nothing at all, and "casting costs the overworld something"
+            // would have been a 93%-true assertion shipped as if it were categorical.
+            if (apply(level, surface, data, random, true, true).outcome() == Outcome.CONVERTED) {
+                frayed++;
+            }
+        }
+        return frayed;
+    }
+
+    private static Decision apply(ServerLevel level, BlockPos pos, ChapterSavedData data,
+                                RandomSource random, boolean certain, boolean anywhere) {
         if (level.dimension() != Level.OVERWORLD) {
             return Decision.of(Outcome.WRONG_DIMENSION);
         }
@@ -238,7 +298,7 @@ public final class Unraveling {
             }
             nearest = worse(nearest, Outcome.OUT_OF_SCOPE);
             nearestRule = rule.id();
-            if (!inScope(level, pos, data, rule.scope())) {
+            if (!anywhere && !inScope(level, pos, data, rule.scope())) {
                 continue;
             }
             // THE guarantee. Before the roll, so that a block somebody placed is

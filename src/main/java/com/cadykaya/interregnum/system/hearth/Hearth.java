@@ -135,6 +135,26 @@ public final class Hearth {
         if (!holds(level)) {
             return null;
         }
+        return step(level, pos);
+    }
+
+    /**
+     * One block, one step older, <b>with no opinion about which world it is in</b>.
+     *
+     * Split out of {@link #ageOnce} when the Turning's school got its first spell.
+     * `WORLD.md` locks the reuse — *"the block-aging registry powering the Turning **is
+     * the same system that runs the unraveling.** One mechanism; a school and an
+     * apocalypse"* — and *Weather* is that mechanism pointed at a block on purpose rather
+     * than by the passing of time. A spell you can only cast in the god's own world is
+     * not "magic as a builder's palette"; it is scenery.
+     *
+     * So the dimension gate stays where it belongs, on the two callers that need it, and
+     * the law itself is one method. Every OTHER gate is here and applies to both: no rule
+     * in the table, a block somebody placed, a result that cannot stand where it is put.
+     *
+     * @return what the block became, or null if nothing applied.
+     */
+    public static BlockState step(ServerLevel level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         ConversionDef rule = TurningLoader.table().stepFrom(state.getBlock());
         if (rule == null || Claims.isClaimed(level, pos)) {

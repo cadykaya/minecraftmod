@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **24**, every one mutation-verified, all in CI |
+| Live-world checks | **25**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
@@ -95,6 +95,51 @@ being *crossed* (no CI run waits that out, and `/time add` moves dayTime while t
 reads gameTime — the arithmetic is covered in core, including both sides of the boundary),
 and the tick handler itself (it walks `level.players()` and a headless server has none, so
 the command seam runs — calling the *same* `Tending.tendAround`, not a copy).
+
+### The first spell, and why the Wardens are right
+
+`WORLD.md` locks the doctrine — *"**Every spell is a world-verb.** No damage buttons with
+particle effects"* — and names the spell: *"**Weather** — age blocks: instant
+mossy/cracked/oxidized — magic as a builder's palette."*
+
+Weather is the cleanest possible first case for that rule because it has **no combat use
+at all**. It turns stone into cobble into mossy cobble. The first thing the mod teaches
+you to do with magic is decorate.
+
+It is the ageing table, **aimed**. `WORLD.md`'s locked reuse note — *"the block-aging
+registry powering the Turning **is the same system that runs the unraveling**. One
+mechanism; a school and an apocalypse"* — means the spell calls `Hearth.step`, the same
+method the Hearth-Turner's world runs on its own clock. So every promise that table
+already makes holds for free, including the oldest one in the mod: **you cannot Weather
+somebody's wall.**
+
+**And in the overworld it costs.** Locked: *"With the god dead, all overworld casting
+draws on the corpse… Heavy casting visibly frays its surroundings. The Wardens' law is
+right, and the player can **discover** it is right. Off-world, living gods replenish what
+casting spends."* So a successful cast frays the ground around the caster through the
+unraveling — the same machinery spending the same residue, so the cost is legible in a
+currency the player has been reading since chapter one, and it **rises with the band**
+without anyone tuning it.
+
+That is unusual enough to state plainly: **the enforcement agency is not wrong.** Every
+instinct says the law banning your powers is arbitrary and the fun is in breaking it. Here
+it is a correct reading of a real hazard. Nobody ever says so — the player casts at home,
+sees the ground go, casts off-world, sees it not, and works it out.
+
+Two decisions worth keeping:
+
+- **A miss is free.** Aiming at a block the table has no rule for spends nothing. A spell
+  that frayed the world for a miss would punish experimenting with it, and the ban would
+  read as arbitrary after all.
+- **The cost does not consult the band's scope**, which is the one place casting departs
+  from the passive unraveling. A scope describes where the world comes apart *on its own*;
+  fraying from a cast is the caster drawing on the residue where they stand. Made to obey
+  the scope, band-1 casting would be visibly free anywhere away from a shrine and the ban
+  would look invented.
+
+**Not built: how a player learns it.** The command is the seam, as it is for `unravel at`
+and `turning age`. `WORLD.md`'s *"schools, one per god, learned in their worlds"* is the
+next increment, and it is what the questline middles have been short of.
 
 ### Delivering a letter now moves the world
 
