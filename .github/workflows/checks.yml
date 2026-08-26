@@ -138,6 +138,9 @@ jobs:
       - name: Four god-worlds, four biomes, and only one of them grows anything
         run: ./tools/worlds_check.sh
 
+      - name: The ferry's checklist teaches four worlds' rules before departure
+        run: ./tools/inspection_check.sh
+
       - name: In the Anchorite's world, unanchored things rise
         run: ./tools/anchorite_check.sh
 

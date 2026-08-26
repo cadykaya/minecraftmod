@@ -307,5 +307,17 @@
   "interregnum.dlg.quiet_one_delivery.leaving.come_back": "\"We will come back. Whether or not you want us to.\"",
   "interregnum.dlg.quiet_one_delivery.leaving.done": "Leave. There is nothing here.",
   "interregnum.dlg.quiet_one_delivery.opened": "You say it out loud and it is the last sound made in that place for a long time. On the way out you pass the spot where you first saw the light bend, and it is bending somewhere else now. Not toward you. Just somewhere it was not before.",
-  "interregnum.dlg.quiet_one_delivery.closes": "You go. Behind you the letter lies where it was set down, addressed to a dash, in a world that has never once said no to anything."
+  "interregnum.dlg.quiet_one_delivery.closes": "You go. Behind you the letter lies where it was set down, addressed to a dash, in a world that has never once said no to anything.",
+  "interregnum.ferry.inspection.header": "FERRY KEEL — PRE-DEPARTURE INSPECTION",
+  "interregnum.ferry.inspection.hull": "Hull of record: %s block(s). Findings below are per destination and are not appealable at this desk.",
+  "interregnum.ferry.inspection.cleared": "%s — CLEARED",
+  "interregnum.ferry.inspection.refused": "%s — REFUSED",
+  "interregnum.ferry.inspection.line": "    %s × %s",
+  "interregnum.ferry.inspection.nothing_built": "Nothing is attached to this keel. A keel alone is not a vessel and will not be logged as one.",
+  "interregnum.ferry.inspection.too_large": "Hull exceeds the tonnage this desk is authorised to inspect. Reduce it. There is no larger desk.",
+  "interregnum.ferry.inspection.not_a_keel": "There is no keel here.",
+  "interregnum.ferry.destination.quiet_one": "THE UNRESPONSIVE",
+  "interregnum.ferry.destination.anchorite": "THE MASS AUTHORITY",
+  "interregnum.ferry.destination.verdant": "THE GREEN AUTHORITY",
+  "interregnum.ferry.destination.hearth_turner": "THE TEMPORAL AUTHORITY"
 }

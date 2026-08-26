@@ -3271,3 +3271,54 @@ it exists to print, so the check went red with **no output at all** — the thir
 LESSONS #23 has been paid for, and the first time it cost only a minute.
 
 184 self-test checks, 61 mutations, 33 live checks.
+
+---
+
+## The first thing in the mod a player can touch
+
+`WORLD.md`, locked: *"a keel block captures the structure, validates it against the
+destination's law, and re-places it at the far pad. **The validation checklist teaches
+each world's rule before arrival** — the Quiet One's crossing: no note blocks, no jukebox,
+muffle your animals."*
+
+The middle clause shipped a long time ago and was reachable only from a command. Which
+means the beat that sentence is about — a player learning what a god is like by being
+refused by its paperwork — had never once happened in play. Touching the keel runs the
+capture and hands back the docket now.
+
+All four crossings, every time. A player told about one destination learns one rule; a
+player handed the whole page learns that the four gods refuse *different* things, which is
+the reconnaissance band 3 exists to begin and the reason the letters are worth reading. It
+costs four map lookups over a census, so there was no case for the narrower version.
+
+It does not sail. Nothing in `WORLD.md` says how a player names the destination and the
+options are not interchangeable — a keel that cycles four worlds is a menu, while a ferry
+that goes where the letter in your hand is addressed is *"the route to them is its
+unanswered correspondence"* made mechanical. Recorded under "Waiting on owner"; this ships
+the half that is locked.
+
+### The seam, again
+
+`FerryDocket.of` builds the page; the block and `interregnum ferry inspect` both call it
+and do nothing else. A right-click cannot be driven from a headless server, so a docket
+only the block could produce would be a docket no check could read — the same arrangement
+`interregnum learn` has with the dialogue node that teaches a school.
+
+`inspection_check.sh` asserts what the page is FOR, not what it prints: all four crossings
+named, **the four disagreeing about one hull**, the block and the count on every refusal,
+the god's reason line beneath it, every violation rather than the first, one line for a
+bare keel, and the same page twice for an unchanged hull. Watched failing twice —
+validating every destination against one law (4 cleared, 0 refused: a page with one law
+behind it teaches nothing), and truncating the violation list.
+
+Two of its own assertions were wrong before they were right, both about reading rather
+than about the mod: the count regex used a single `.` for the `×` between the number and
+the block id, which is multi-byte and does not match in byte mode; and the two-inspections
+comparison included the `say` markers that bound each range, so it compared marker names
+and called a stable page unstable.
+
+**26.2 removed `LivingEntity#displayClientMessage`.** The replacement is
+`ServerPlayer#sendSystemMessage`, on a different type — which matters because a block's
+`useWithoutItem` hands you a plain `Player`. Row added to PLATFORM.md.
+
+184 self-test checks, 61 mutations, 34 live checks.

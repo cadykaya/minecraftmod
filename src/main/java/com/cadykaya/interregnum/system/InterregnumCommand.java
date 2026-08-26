@@ -975,6 +975,23 @@ public final class InterregnumCommand {
         // a headless server has nobody to click it, so this is the seam that makes the
         // whole mechanism reachable from CI -- the same shape as `unravel at` and
         // `warden post`.
+        // The same page a player gets for touching a keel. Two callers, one path -- see
+        // FerryDocket: a right-click cannot be driven from a headless server, so a docket
+        // only the block could produce is a docket no check can read.
+        root = root.then(Commands.literal("ferry")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("inspect")
+                        .then(Commands.argument("keel", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos keel = BlockPosArgument.getLoadedBlockPos(ctx, "keel");
+                                    var lines = com.cadykaya.interregnum.system.ferry.FerryDocket
+                                            .of(ctx.getSource().getLevel(), keel);
+                                    for (Component line : lines) {
+                                        ctx.getSource().sendSuccess(() -> line, false);
+                                    }
+                                    return lines.size();
+                                }))));
+
         root = root.then(Commands.literal("ferry")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("manifest")

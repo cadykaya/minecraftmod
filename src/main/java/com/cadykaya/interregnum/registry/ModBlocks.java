@@ -83,11 +83,16 @@ public final class ModBlocks {
      * the ferry captures from here, so it must be findable at a glance, which is
      * what the brass ring on the top face is for.
      */
-    public static final DeferredBlock<Block> FERRY_KEEL = BLOCKS.registerSimpleBlock(
+    public static final DeferredBlock<com.cadykaya.interregnum.content.block.FerryKeelBlock>
+            FERRY_KEEL = BLOCKS.register(
             "ferry_keel",
-            p -> p.mapColor(MapColor.WOOD)
-                    .strength(2.0F, 3.0F)
-                    .sound(SoundType.WOOD));
+            key -> new com.cadykaya.interregnum.content.block.FerryKeelBlock(
+                    BlockBehaviour.Properties.of()
+                            .setId(net.minecraft.resources.ResourceKey.create(
+                                    net.minecraft.core.registries.Registries.BLOCK, key))
+                            .mapColor(MapColor.WOOD)
+                            .strength(2.0F, 3.0F)
+                            .sound(SoundType.WOOD)));
 
     public static void register(IEventBus modBus) {
         BLOCKS.register(modBus);

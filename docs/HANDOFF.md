@@ -27,11 +27,50 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **33**, every one mutation-verified, all in CI |
+| Live-world checks | **34**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, eight spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
+
+### The first thing in the mod a player can touch
+
+`WORLD.md`, locked: *"a keel block captures the structure, validates it against the
+destination's law, and re-places it at the far pad. **The validation checklist teaches each
+world's rule before arrival** — the Quiet One's crossing: no note blocks, no jukebox, muffle
+your animals."*
+
+The middle clause shipped a long time ago and was reachable **only from a command**. Which
+means the beat that sentence is actually about — a player learning what a god is like by
+being refused by its paperwork — had never once happened in play. Touching the keel now
+runs the capture and hands back the docket.
+
+**All four crossings, every time, and not just the one you meant.** A player told about one
+destination learns one rule; a player handed the whole page learns that the four gods refuse
+*different* things, which is the reconnaissance band 3 exists to begin and the reason the
+letters are worth reading. It costs four map lookups over a census.
+
+**It does not sail, and that is deliberate** — see "Waiting on owner" below. Nothing in
+`WORLD.md` says how a player names the destination and the options are not interchangeable.
+This ships the half that is locked.
+
+**The docket lives in `FerryDocket`, not in the block**, for the reason every command seam
+here exists: a right-click cannot be driven from a headless server, so a page only the
+block could produce is a page no check could read. `interregnum ferry inspect` and the
+keel's right-click call the same method and nothing else — the same arrangement
+`interregnum learn` has with the dialogue node that teaches a school.
+
+`inspection_check.sh` asserts what the page is FOR rather than what it prints: all four
+crossings named, **the four disagreeing about one hull** (a page where they agree is a page
+with one law behind it, and teaches nothing), the block *and the count* on every refusal,
+the god's own reason line beneath it, every violation rather than the first, a one-line
+answer for a bare keel, and the same page twice for one unchanged hull. Watched failing by
+validating every destination against one law, and again by truncating the violation list.
+
+**26.2 removed `LivingEntity#displayClientMessage`**; the replacement is
+`ServerPlayer#sendSystemMessage`, on a different type — which matters because a block's
+`useWithoutItem` hands you a plain `Player`. Row added to
+[`PLATFORM.md`](PLATFORM.md#things-26x-renamed-and-where-each-one-bit).
 
 ### Four worlds that no longer look alike
 
@@ -1933,7 +1972,7 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
    the Wardenate is *for*. *No action needed until then; patrol and inspect ship without
    it.*
 
-5. **How does a player cast a spell?** Four spells exist and none can be triggered in
+5. **How does a player cast a spell?** Eight spells exist and none can be triggered in
    play — the command is the only way in. `WORLD.md` locks what a spell *is* (*"every
    spell is a world-verb"*) and is silent on the affordance, which makes it a mechanic
    under the standing rule and therefore proposed rather than picked.
@@ -1949,6 +1988,28 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
    The first is the most conventional, the second is the most *this mod*, the third is
    the least work. Nothing is blocked behind this: the spells are built and verified
    either way, and an operator can already cast them.
+5. **How does a player tell the ferry where to go?** The keel now inspects — touch it and
+   it hands back the checklist for all four crossings, which is the locked half. What it
+   cannot do is *sail*, because nothing in `WORLD.md` says how the destination is named,
+   and the options say different things about what the ferry is:
+
+   * **the keel cycles through the four**, shift-click to change. Simplest, and it makes
+     the ferry a menu — the least interesting reading, and the only one that needs no
+     other system to exist.
+   * **it goes where the letter in your hand is addressed.** `WORLD.md`: *"the remaining
+     gods … are reachable only by the dead god's sealed mail-ferry, and **the route to
+     them is its unanswered correspondence**"*, and *"you are the only one carrying their
+     mail"*. This is that sentence made mechanical: you cannot reach a god you are not
+     carrying mail for, the letters become the map, and the fourth letter's `To —` becomes
+     a genuine navigational problem rather than a sad detail. It also makes the *"where
+     does a player find the mail"* question above load-bearing instead of flavour.
+   * **a destination is written on the keel**, by hand, like a shipping label. Fits the
+     bureaucracy hardest and is the most fiddly to use.
+
+   The second is what I would build, and it is not mine to choose: it decides whether the
+   letters are the plot or a collectible. *No action needed until then; the inspection
+   ships without it.*
+
 5. **Playtesting, and looking at the Warden.** This container has no game client, so two
    things about the model are unverifiable here and are not claimed: how it looks
    **animated**, and how it looks **lit**. `tools/entity_view.py` covers shape and paint;
