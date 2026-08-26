@@ -214,6 +214,13 @@ MUTATIONS = [
      f"{MAIN}/magic/Zone.java",
      "        return nowTick > expiresAtTick;", "        return false;"),
 
+    ("magic: a span has no cap, so distance stops costing anything",
+     f"{MAIN}/magic/Bridgeroot.java",
+     "        int reach = Math.min(steps, MAX_SPAN);", "        int reach = steps;"),
+    ("magic: a span starts under the caster's feet",
+     f"{MAIN}/magic/Bridgeroot.java",
+     "        for (int i = 1; i <= reach; i++) {", "        for (int i = 0; i <= reach; i++) {"),
+
     # The dead god's mail. The invariant here is about a SET -- three letters open with
     # a name, the fourth opens `To --` -- so nothing about an individual letter can
     # catch it going. If it goes, the mid-game's best reveal quietly stops being one and

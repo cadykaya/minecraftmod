@@ -741,6 +741,53 @@ public final class SelfTest {
         marking();
         grimoires();
         zones();
+        spans();
+    }
+
+    /**
+     * A span is continuous, capped, and does not start under the caster's feet. All three
+     * fail quietly: a gap is only found by falling through it, an uncapped span makes the
+     * overworld's casting cost a rounding error, and one that includes the origin
+     * suffocates whoever cast it.
+     */
+    static void spans() {
+        var span = com.cadykaya.interregnum.core.magic.Bridgeroot.span(20, 0, 0);
+        int cap = com.cadykaya.interregnum.core.magic.Bridgeroot.MAX_SPAN;
+        check(span.size() == cap,
+              "a span toward something far away stops at the cap. Crossing anything large "
+              + "should be several casts and therefore several costs; an unlimited span "
+              + "makes the overworld's fraying a rounding error and the ban unenforceable");
+        check(span.get(0)[0] == 1 && span.get(0)[1] == 0 && span.get(0)[2] == 0,
+              "the first block is one step out, not the origin -- a spell that grew into "
+              + "the space the caster occupies would suffocate them the first time they "
+              + "used it correctly");
+
+        // Continuity, asserted as adjacency rather than as a count. A count of twelve is
+        // equally satisfied by twelve blocks with a hole in the middle, and the hole is
+        // the whole failure: you find out about it while standing over it.
+        var diagonal = com.cadykaya.interregnum.core.magic.Bridgeroot.span(9, 3, -6);
+        int[] prev = {0, 0, 0};
+        boolean contiguous = true;
+        for (int[] p : diagonal) {
+            int step = Math.max(Math.abs(p[0] - prev[0]),
+                    Math.max(Math.abs(p[1] - prev[1]), Math.abs(p[2] - prev[2])));
+            if (step != 1) {
+                contiguous = false;
+            }
+            prev = p;
+        }
+        check(contiguous,
+              "a span toward a diagonal target has no gaps: every block touches the last. "
+              + "A bridge you can fall through is worse than no bridge");
+        check(diagonal.get(diagonal.size() - 1)[0] == 9
+              && diagonal.get(diagonal.size() - 1)[2] == -6,
+              "and it arrives where it was aimed when the target is inside the cap");
+
+        check(com.cadykaya.interregnum.core.magic.Bridgeroot.span(0, 0, 0).isEmpty(),
+              "a span of no length grows nothing rather than one block underfoot");
+        check(com.cadykaya.interregnum.core.magic.Bridgeroot.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.VERDANCY,
+              "Bridgeroot belongs to the Verdant's school");
     }
 
     /**

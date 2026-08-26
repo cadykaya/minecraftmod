@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **26**, every one mutation-verified, all in CI |
+| Live-world checks | **27**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
@@ -95,6 +95,36 @@ being *crossed* (no CI run waits that out, and `/time add` moves dayTime while t
 reads gameTime — the arithmetic is covered in core, including both sides of the boundary),
 and the tick handler itself (it walks `level.players()` and a headless server has none, so
 the command seam runs — calling the *same* `Tending.tendAround`, not a copy).
+
+### Three spells, three shapes, and what you grow is yours
+
+***Bridgeroot*** — the Verdant's. `WORLD.md`: *"grow a living span toward your gaze, **real
+persistent blocks**."*
+
+Those last three words are the design brief, and they are unusual. Most games' bridge
+spells are temporary platforms that evaporate — a *movement ability* wearing a spell's
+clothes. This one leaves actual world behind: you can build out of it, and somebody can
+walk across it a year later.
+
+**Which makes the load-bearing decision the claim ledger.** Every block a span leaves is
+recorded exactly as if you had placed it by hand, so the unraveling, the Turning and band
+4's attrition all refuse it — they consult that same ledger. It is the only reading that
+makes "real persistent blocks" mean anything: a bridge the world dissolves next chapter is
+a temporary platform with extra steps, and a player who lost one that way would never
+trust the spell again. **Growing something and having it be yours** is what lets Verdancy
+be a building school rather than a traversal one.
+
+It never replaces anything — a span grows into air and stops at the first block it meets.
+Stopping short is legible; boring through terrain, or through what somebody built, is not.
+
+**The three shapes are now the point.** *Weather* changes a block. *Lighten* encloses a
+region. *Bridgeroot* creates. Having all three is what shows the school system carries
+genuinely different kinds of verb rather than one mechanism with three names — and all
+three share exactly two rules: you must have been taught it, and at home it costs.
+
+Three of the four questlines now open onto their school. Only the Quiet One's has no spell
+yet; *Hush* is named and locked, and its region form is the same thing band 3 cannot leak
+for want of client-side audio.
 
 ### A second spell, and the school system stops being one special case
 

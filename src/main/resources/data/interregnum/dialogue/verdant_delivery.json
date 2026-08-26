@@ -223,7 +223,8 @@
       "text_key": "interregnum.dlg.verdant_delivery.opened",
       "rule": "INITIATOR",
       "options": [],
-      "milestone": "LETTER_DELIVERED"
+      "milestone": "LETTER_DELIVERED",
+      "teaches": "VERDANCY"
     },
     {
       "id": "closes",

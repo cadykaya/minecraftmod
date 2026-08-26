@@ -153,3 +153,6 @@ jobs:
 
       - name: A second school's spell makes a patch of world obey another god's law
         run: ./tools/lighten_check.sh
+
+      - name: A grown span is continuous, stops where it should, and belongs to whoever grew it
+        run: ./tools/bridgeroot_check.sh

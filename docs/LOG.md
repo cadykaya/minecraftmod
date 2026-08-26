@@ -2801,3 +2801,52 @@ right there in the output, guessed at instead of read.
 164 self-test checks, 52 mutations. The two new core guards are the ones that fail
 silently: a zone with no edge looks like the spell working from inside it, and one that
 never lapses looks like it working for longer than you were watching.
+
+## Three spells, three shapes, and what you grow is yours
+
+***Bridgeroot*** — the Verdant's. `WORLD.md`: *"grow a living span toward your gaze, **real
+persistent blocks**."*
+
+Those last three words are the design brief and they are unusual enough to dwell on. Most
+games' bridge spells are temporary platforms that evaporate, which is a *movement ability*
+wearing a spell's clothes. This one leaves actual world behind. You can build a house out
+of it. Somebody can walk across it a year later.
+
+**Which makes the load-bearing decision the claim ledger.** Every block a span leaves is
+recorded exactly as if you had placed it by hand, so the unraveling, the Turning and band
+4's attrition all refuse it — all three consult that ledger. It is the only reading that
+makes "real persistent blocks" mean anything: a bridge the world dissolves next chapter is
+a temporary platform with extra steps, and a player who lost one that way would, correctly,
+never trust the spell again. Growing something and having it be **yours** is what lets
+Verdancy be a building school rather than a traversal one.
+
+It never replaces anything: a span grows into air and stops at the first block it meets.
+Stopping short is legible. Boring through terrain — and worse, through whatever somebody
+built in the way — is not.
+
+### The geometry is in core because it is arithmetic
+
+Which blocks a span occupies has no game in it, so it is decided in `core` and tested
+without one. A Bresenham-style walk along the dominant axis, rounded rather than truncated
+so the line stays centred instead of drifting toward the origin on the minor axes.
+
+**Gaps are the failure that matters**, and both the self-test and the live check assert
+continuity as *adjacency* rather than as a count — a count of twelve is equally satisfied
+by twelve blocks with a hole in the middle, and the hole is the entire problem, because
+you find out about it while standing over it. The mutation that skips every other block
+reports exactly that: `holes at 2 4 6 8 10 12`.
+
+### The three shapes are the point
+
+*Weather* changes a block. *Lighten* encloses a region. *Bridgeroot* creates. Having all
+three is what shows the school system carries genuinely different **kinds** of verb rather
+than one mechanism with three names — and all three share exactly two rules: you must have
+been taught it, and at home it costs. Everything else about them differs.
+
+Three of the four questlines now open onto their school. Only the Quiet One's has no spell:
+*Hush* is named and locked, and its region form is the same thing band 3 cannot leak, for
+the same reason — client-side audio suppression this container cannot verify.
+
+170 self-test checks, 54 mutations. The two new core guards are an uncapped span, which
+makes the overworld's casting cost a rounding error, and one that starts under the
+caster's feet, which suffocates whoever cast it the first time they use it correctly.

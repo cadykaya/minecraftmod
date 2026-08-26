@@ -716,6 +716,25 @@ public final class InterregnumCommand {
                                             return cast.opened() ? 1 : 0;
                                         })))));
 
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("bridgeroot")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("from", BlockPosArgument.blockPos())
+                                        .then(Commands.argument("toward", BlockPosArgument.blockPos())
+                                                .executes(ctx -> {
+                                                    BlockPos from = BlockPosArgument.getLoadedBlockPos(ctx, "from");
+                                                    BlockPos toward = BlockPosArgument.getLoadedBlockPos(ctx, "toward");
+                                                    var cast = com.cadykaya.interregnum.system.magic
+                                                            .BridgerootSpell.cast(ctx.getSource().getLevel(),
+                                                                    from, toward, grimoireOf(ctx, "who"));
+                                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                                            "cast=bridgeroot grew=" + cast.grew()
+                                                                    + " frayed=" + cast.frayed()
+                                                                    + " refused=" + cast.refused()), false);
+                                                    return cast.grew() > 0 ? 1 : 0;
+                                                }))))));
+
         // Teaching, the operator seam. In play a school is taught by a scene -- see the
         // `teaches` field on a dialogue node -- and this is the same path with a
         // different caller, the way `record deicide` is for the deicide.
