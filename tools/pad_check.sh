@@ -73,8 +73,8 @@ sailed=$(grep -c 'ferry=sailed' /tmp/pad.txt || true)
 # THE BERTH IS NOT A QUEUE, and this is the assertion that says so. Without the refusal
 # the second ferry to a world comes down ON the first and silently replaces whatever of
 # it shared a coordinate -- a hull deleted by another hull, reported nowhere.
-grep -q 'ferry=refused reason=berth occupied' /tmp/pad.txt || {
-    grep -oE 'ferry=[a-z]+[a-z= :_0-9]*' /tmp/pad.txt | tail -4 || true
+grep -q 'ferry=refused reason=BERTH_OCCUPIED' /tmp/pad.txt || {
+    grep -oE 'ferry=[a-z]+ reason=[A-Z_]+[a-z= :_0-9]*' /tmp/pad.txt | tail -4 || true
     fail "a second crossing to a world whose dock already had a ferry on it was allowed. It lands on the first one and deletes whatever of it shared a block, and nothing anywhere says so"; }
 
 # --- and none of them named a position --------------------------------------

@@ -4057,3 +4057,33 @@ on its own is equally satisfied by a ferry that always goes to the same place. M
 run: routing every letter to one fixed crossing was caught by exactly that.
 
 226 self-test checks, 79 mutations, 44 live checks, 20 fast-gate stages.
+
+---
+
+## The reply was an interface
+
+CI went red on `0c33c60`. `pad_check.sh`: *a second crossing to a world whose dock already
+had a ferry on it was allowed.*
+
+It was not allowed. The crossing refused correctly and said so in different words. Pulling
+the crossing out of the command handler into `Sailing` turned a hand-written prose reply --
+`reason=berth occupied at interregnum:unresponsive` -- into a structured one derived from
+an enum: `reason=BERTH_OCCUPIED interregnum:unresponsive`. Better in every way except that
+five live checks read those strings and one was reading that line.
+
+**A command's reply in this repository is not debug output.** It is the only interface CI
+has to a running game, and every live check is a consumer of it.
+
+### The repair broke a check that had been passing
+
+Grepping the old wording found readers in `ferry_check.sh` as well, so those were updated
+too -- and `ferry_check.sh` promptly went red, because those two assertions read `ferry
+check`, a different verb that had kept the old format. Only ONE check had ever been broken.
+
+Grepping for the string finds the readers. It does not find which of them read the changed
+*path*, and those are different questions. Reverted, and all four ferry checks run clean.
+
+`LESSONS.md` #42: when you change what a command prints, grep the checks -- and then run
+every one that greps it, before pushing. `check_all.sh` cannot see this; it is the fast
+gate, and the live checks are the ones that talk to a server. Four checks touch the ferry
+and running all four costs six minutes.

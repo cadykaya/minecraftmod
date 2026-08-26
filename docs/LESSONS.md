@@ -1883,3 +1883,48 @@ Related: [#35](#35-a-check-written-from-the-implementation-will-defend-the-bug) 
 failure with the direction reversed — there a check written from the code could not
 disagree with the code; here a check written from the design could not disagree with the
 design.
+
+---
+
+## 42. Refactoring a command's reply is changing an interface
+
+`Sailing` pulled the crossing out of the command handler so a keel and a command could
+share one sequence. The refactor was sound and the new check was green. CI went red on
+`pad_check.sh`.
+
+The command's reply had been hand-written prose per case:
+
+```java
+"ferry=refused reason=berth occupied at " + target.identifier()
+```
+
+and became structured, one vocabulary, derived from an enum:
+
+```java
+"ferry=refused reason=" + done.outcome() + " " + done.detail()
+```
+
+Which is better in every way except the one that mattered: **five live checks read those
+strings, and one of them was reading that line.** The reply of a command in this repository
+is not debug output. It is the only interface CI has to the running game, and every check
+is a consumer of it.
+
+### The near-miss inside the fix
+
+The failure named `pad_check.sh`, and a grep for the old wording found readers in
+`ferry_check.sh` too — so both were "fixed". Then `ferry_check.sh` went red on the fix,
+because those two assertions read `ferry check`, a **different verb** that had kept the old
+format. The repair broke a check that had been passing.
+
+Grepping for the string found the readers. It did not find which of them were reading the
+*changed path*, and the two are not the same question.
+
+> **The rule: when you change what a command prints, grep the checks — and then run every
+> one that greps it, before pushing.** `check_all.sh` cannot see this: it is the fast gate
+> and the live checks are the ones that talk to a server. Four checks touch the ferry and
+> running all four costs about six minutes, which is cheaper than a red CI and much cheaper
+> than a repair that breaks a second check.
+
+Related: [#9](#9-the-gate-itself-printed-all-checks-passed-while-broken) — there the
+gate stopped checking; here the gate was fine and the thing being checked moved out from
+under it.
