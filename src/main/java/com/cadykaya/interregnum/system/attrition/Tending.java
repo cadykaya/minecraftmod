@@ -80,6 +80,30 @@ public final class Tending {
                 && Attrition.stale(tended.lastTended(), level.getGameTime());
     }
 
+    /**
+     * Stamp this chunk as last tended long enough ago that it has gone stale.
+     *
+     * An operator verb with a real meaning -- *mark this region abandoned* -- and the
+     * only way a check can reach the rest of band 4's law, because ground goes stale
+     * after twenty minutes and no CI run waits that out. `/time add` cannot help: it
+     * moves dayTime while the stamp is compared against gameTime.
+     *
+     * <b>It is a state-setter, not a bypass.</b> It writes the same field {@link #tend}
+     * writes, with a different value; every gate downstream -- the overworld, the band,
+     * the claim ledger -- still applies to ground marked this way, exactly as it would to
+     * ground that got there by being ignored for twenty minutes. The threshold ITSELF is
+     * arithmetic and is proven in core's self-test, on both sides of the boundary.
+     */
+    public static void abandon(ServerLevel level, ChunkPos at) {
+        ChunkAccess chunk = level.getChunk(at.x(), at.z(), ChunkStatus.FULL, false);
+        if (chunk == null) {
+            return;
+        }
+        chunk.getData(ModAttachments.TENDED)
+                .tend(level.getGameTime() - Attrition.FRAY_AFTER_TICKS - 1);
+        chunk.markUnsaved();
+    }
+
     /** For the command seam: how long since anybody was here, in ticks. -1 if unknown. */
     public static long sinceTended(ServerLevel level, ChunkPos at) {
         ChunkAccess chunk = level.getChunk(at.x(), at.z(), ChunkStatus.FULL, false);

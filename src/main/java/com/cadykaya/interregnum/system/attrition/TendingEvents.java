@@ -44,6 +44,16 @@ public final class TendingEvents {
      */
     public static final int INTERVAL = 200;
 
+    /**
+     * How far from a player attrition sweeps, in chunks.
+     *
+     * Deliberately much larger than {@link Attrition#TEND_RADIUS_CHUNKS}, and that gap is
+     * the whole mechanic rather than a tuning choice -- see {@link Attrition}. Eight is
+     * roughly a default view distance: the ground a player keeps loaded, most of which
+     * they are not standing on.
+     */
+    public static final int SWEEP_REACH = 8;
+
     @SubscribeEvent
     public static void onLevelTick(LevelTickEvent.Post event) {
         if (!(event.getLevel() instanceof ServerLevel level)
@@ -52,6 +62,33 @@ public final class TendingEvents {
         }
         for (ServerPlayer player : level.players()) {
             Tending.tendAround(level, player.chunkPosition());
+        }
+
+        // Tend first, then sweep, and the order matters: a player who has just arrived
+        // must not have the ground under them generalised in the same tick they started
+        // keeping it. Tending is the counter-move, so it goes first.
+        var data = com.cadykaya.interregnum.system.ChapterSavedData.get(level.getServer());
+        if (!Attrition.fraying(data.band())) {
+            return;
+        }
+        // getChunkNow, never getChunk: attrition must never be the thing that causes a
+        // chunk to load. The same rule the exodus leak and the statue sweep follow.
+        var seen = new it.unimi.dsi.fastutil.longs.LongOpenHashSet(
+                level.getForceLoadedChunks());
+        for (ServerPlayer player : level.players()) {
+            ChunkPos at = player.chunkPosition();
+            for (int dx = -SWEEP_REACH; dx <= SWEEP_REACH; dx++) {
+                for (int dz = -SWEEP_REACH; dz <= SWEEP_REACH; dz++) {
+                    seen.add(ChunkPos.pack(at.x() + dx, at.z() + dz));
+                }
+            }
+        }
+        for (long packed : seen) {
+            var chunk = level.getChunkSource()
+                    .getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
+            if (chunk != null) {
+                Generalise.sweep(level, chunk, data);
+            }
         }
     }
 
@@ -68,6 +105,17 @@ public final class TendingEvents {
      * must NOT count as tending it, or leaving and coming back would launder the whole
      * mechanic away.
      */
+    /** Band 4's table is a datapack file, loaded the way every other table here is. */
+    public static final net.minecraft.resources.Identifier GENERALISE_LISTENER =
+            net.minecraft.resources.Identifier.fromNamespaceAndPath(
+                    Interregnum.MOD_ID, "generalise");
+
+    @SubscribeEvent
+    public static void onAddReloadListener(
+            net.neoforged.neoforge.event.AddServerReloadListenersEvent event) {
+        event.addListener(GENERALISE_LISTENER, new GeneraliseLoader());
+    }
+
     @SubscribeEvent
     public static void onChunkLoad(ChunkEvent.Load event) {
         if (!(event.getLevel() instanceof ServerLevel level)) {

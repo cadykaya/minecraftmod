@@ -1,5 +1,6 @@
 package com.cadykaya.interregnum.system.hearth;
 
+import com.cadykaya.interregnum.system.convert.StepTable;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
@@ -20,21 +21,21 @@ import java.util.Map;
  * some chains would run and others would stop halfway, so a wall would age to cobble and
  * then never green, and the world would look like it had a law it had merely lost half of.
  */
-public final class TurningLoader extends SimpleJsonResourceReloadListener<TurningTable.File> {
+public final class TurningLoader extends SimpleJsonResourceReloadListener<StepTable.File> {
     private static final Logger LOG = LogUtils.getLogger();
 
-    private static TurningTable table = TurningTable.EMPTY;
+    private static StepTable table = StepTable.EMPTY;
 
     public TurningLoader() {
-        super(TurningTable.File.CODEC, FileToIdConverter.json("ageing"));
+        super(StepTable.File.CODEC, FileToIdConverter.json("ageing"));
     }
 
-    public static TurningTable table() {
+    public static StepTable table() {
         return table;
     }
 
     @Override
-    protected void apply(Map<Identifier, TurningTable.File> files,
+    protected void apply(Map<Identifier, StepTable.File> files,
                          ResourceManager manager, ProfilerFiller profiler) {
         try {
             List<com.cadykaya.interregnum.system.unraveling.UnravelingDefs.ConversionDef> all =
@@ -42,12 +43,12 @@ public final class TurningLoader extends SimpleJsonResourceReloadListener<Turnin
             for (var entry : files.entrySet()) {
                 all.addAll(entry.getValue().conversions());
             }
-            table = new TurningTable(all);       // validates, and throws if wrong
+            table = new StepTable(all);       // validates, and throws if wrong
         } catch (RuntimeException e) {
             LOG.error("The Turning's ageing table is broken; NOTHING ages rather than "
                     + "some things ageing. The Hearth-Turner's world has no law until "
                     + "this is fixed.", e);
-            table = TurningTable.EMPTY;
+            table = StepTable.EMPTY;
             return;
         }
         LOG.info("content: {} ageing rule(s) loaded", table.ruleCount());

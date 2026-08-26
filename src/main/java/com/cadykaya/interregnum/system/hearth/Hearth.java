@@ -1,5 +1,6 @@
 package com.cadykaya.interregnum.system.hearth;
 
+import com.cadykaya.interregnum.system.convert.StepTable;
 import com.cadykaya.interregnum.system.claim.Claims;
 import com.cadykaya.interregnum.system.unraveling.UnravelingDefs.ConversionDef;
 import com.cadykaya.interregnum.worldgen.ModDimensions;
@@ -67,7 +68,7 @@ public final class Hearth {
      * are air and answer no to both.
      */
     public static void age(ServerLevel level, LevelChunk chunk) {
-        TurningTable table = TurningLoader.table();
+        StepTable table = TurningLoader.table();
         if (table.ruleCount() == 0) {
             return;
         }
@@ -82,7 +83,7 @@ public final class Hearth {
             }
             // A palette-level reject before any position is rolled: if nothing in this
             // section can age, the whole section costs one predicate pass.
-            if (!section.maybeHas(state -> table.ageOf(state.getBlock()) != null)) {
+            if (!section.maybeHas(state -> table.stepFrom(state.getBlock()) != null)) {
                 continue;
             }
             int sectionBottom = minY + (i << 4);
@@ -91,7 +92,7 @@ public final class Hearth {
                         origin.getMinBlockX(), sectionBottom, origin.getMinBlockZ(), 15);
                 BlockState state = section.getBlockState(
                         pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15);
-                ConversionDef rule = table.ageOf(state.getBlock());
+                ConversionDef rule = table.stepFrom(state.getBlock());
                 if (rule == null) {
                     continue;
                 }
@@ -135,7 +136,7 @@ public final class Hearth {
             return null;
         }
         BlockState state = level.getBlockState(pos);
-        ConversionDef rule = TurningLoader.table().ageOf(state.getBlock());
+        ConversionDef rule = TurningLoader.table().stepFrom(state.getBlock());
         if (rule == null || Claims.isClaimed(level, pos)) {
             return null;
         }

@@ -605,6 +605,36 @@ public final class InterregnumCommand {
                                                     + " band=" + data.band()), false);
                                     return stale && fraying ? 1 : 0;
                                 })))
+                // The seam. Band 4's rates are slow on purpose, and a check that waited
+                // for a roll to land would be testing the random number generator rather
+                // than the law. `null` for the random skips ONLY the chance roll; the
+                // overworld gate, the band gate, the staleness gate and the claim ledger
+                // all still apply.
+                .then(Commands.literal("generalise")
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                    var level = ctx.getSource().getLevel();
+                                    var data = com.cadykaya.interregnum.system.ChapterSavedData
+                                            .get(ctx.getSource().getServer());
+                                    final String r = com.cadykaya.interregnum.system.attrition
+                                            .Generalise.step(level, pos, data, null);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "attrition-step=" + r), false);
+                                    return r.startsWith("minecraft:") ? 1 : 0;
+                                })))
+                .then(Commands.literal("abandon")
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                    var level = ctx.getSource().getLevel();
+                                    var at = net.minecraft.world.level.ChunkPos.containing(pos);
+                                    com.cadykaya.interregnum.system.attrition.Tending
+                                            .abandon(level, at);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "attrition abandoned " + at.x() + " " + at.z()), false);
+                                    return 1;
+                                })))
                 .then(Commands.literal("tend")
                         .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                 .executes(ctx -> {

@@ -2353,3 +2353,68 @@ The conversion table: what *generalised* actually means, block by block. Ores to
 biome foliage to grass and then to nothing in particular. It is a third use of the
 `ConversionDef` machinery that the unraveling and the Turning already share, which makes
 it the cheapest large thing still on the list.
+
+## Band 4: the world forgets what it was
+
+The other half of attrition — what *generalised* actually means, block by block.
+
+Every rule answers one question: what is the plainest thing this could be? Not the most
+broken thing, the most **generic** one. Nothing in the table makes rubble. Ores return to
+stone, deepslate ores to deepslate (their plainest equivalent is the stone they are
+actually embedded in — a vein of stone at y=−40 would read as somebody having been there).
+Birch, spruce, acacia and jungle go to oak. Podzol and mycelium go to coarse dirt and then
+to dirt. Flowers go to grass and then to nothing in particular. A birch forest does not
+become a ruin; it becomes an oak wood, then trees, then somewhere with some trees on it.
+
+Loss by generalisation reads sadder than loss by destruction, and it is the whole reason
+band 4 is not band 2 with bigger numbers.
+
+### Three uses, and by now one type
+
+`WORLD.md` locked the first reuse — *"the block-aging registry powering the Turning is the
+same system that runs the unraveling"* — and attrition is the third caller. By then the
+shape had been written twice identically: a map from block to rule, a refusal to accept
+two rules claiming the same `from`, and chains formed by one rule's `to` being another's
+`from`.
+
+So `StepTable` was extracted from the Turning's copy rather than written a third time, and
+the Turning migrated onto it. `turning_check.sh` in CI is what makes that migration safe
+to do: the Hearth-Turner's world still ages stone through cobble to moss, so the shared
+type behaves exactly as the copy did. What differs between the three systems is only what
+their tables contain — loosening, weathering, generalising — which is the content.
+
+### The gates were in the wrong place, and the check would not have noticed
+
+`Generalise.step` originally tested only the claim ledger. The command that calls it
+tested the dimension, the band and the staleness, so it could report a precise reason for
+refusing.
+
+That is the shape of a check that tests its own harness. `attrition_check.sh` asserts that
+tended ground is spared — but with the staleness gate living in the command, deleting it
+from the sweep would have left the check green and the law gone. The assertion would have
+been about my command's argument handling.
+
+All four gates now live in the law, the command reports what it returns, and the sweep and
+the command are the same rule with different callers. Both refusals are mutation-verified
+against the law itself: removing the staleness gate fails with *"a birch log in TENDED
+ground was generalised anyway"*, and removing the claim check fails with *"a block a
+player had placed was generalised"*.
+
+### One operator verb, and why it is not a bypass
+
+Ground frays after twenty minutes untended, and no CI run waits that out — `/time add`
+cannot help, because it moves dayTime while the stamp is compared against gameTime. So
+`interregnum attrition abandon` stamps a chunk as last tended long ago, the way an
+operator marking a region abandoned would.
+
+It writes the same field tending writes, with a different value. Every gate downstream
+still applies to ground marked that way, exactly as it would to ground that got there by
+being ignored for twenty minutes — which is what the two refusal assertions demonstrate,
+since both of them operate on abandoned ground and still refuse. The threshold itself is
+arithmetic and is proven in core's self-test, on both sides of the boundary.
+
+This half of the check is categorical throughout, and gets to be for a reason the
+Verdant's growth did not: nothing in vanilla turns a birch log into an oak log, or podzol
+into dirt, or diamond ore into stone. There is no background process to separate the mod's
+effect from, so a single conversion where none was permitted is the law having escaped its
+gates rather than a rate to compare.

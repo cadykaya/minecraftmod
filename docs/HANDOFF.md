@@ -31,6 +31,36 @@ asserted against a running world rather than against its own source.
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
+### Band 4: the world forgets what it was
+
+Both halves now. The *tending* signal is below; this is what it gates.
+
+**What gets subtracted is distinction.** `WORLD.md`: *"Biome-specific detail reverts to
+its plainest equivalent. Your forest stops being a forest — not destroyed, **generalised**.
+Ores return to stone."* So every rule answers one question — what is the plainest thing
+this could be? — and nothing in the table makes rubble. A birch forest becomes an oak
+wood, then trees, then somewhere with some trees on it. Loss by generalisation reads
+sadder than loss by destruction, and it is why band 4 is not band 2 with bigger numbers.
+
+**Third use of one mechanism, and by now it is one type.** The unraveling loosens, the
+Turning weathers, attrition generalises — the same `ConversionDef`, and now the same
+`StepTable`, which was extracted from the Turning's copy rather than written a third
+time. What differs is only what the three tables contain, which is the whole content.
+
+**The gates all live in `Generalise.step`**, and briefly they did not. The command tested
+dimension, band and staleness so it could report a precise reason, while the law tested
+only the claim ledger. That is a check testing its own harness: `attrition_check.sh`
+asserts tended ground is spared, and with the gate in the command, deleting it from the
+sweep would have left the check green and the law gone. Both gates are now
+mutation-verified in the law itself.
+
+`attrition_check.sh` is categorical throughout this half, and gets to be for a reason the
+Verdant's growth did not: nothing in vanilla turns a birch log into an oak log, or podzol
+into dirt, or diamond ore into stone. There is no background process to separate the mod
+from, so one conversion where none was permitted is the law escaping its gates. It proves
+the chain (podzol → coarse dirt → dirt, two links in order), the ores, the band gate, and
+the two refusals — tended ground and anyone's placed block.
+
 ### The world can be held together by living in it
 
 Band 4's first half. `WORLD.md`: *"It frays where nobody tends. Regions people visit and
@@ -1466,13 +1496,9 @@ next to each, so the provenance travels with the decision.
 
    Also missing from every one of them: **terrain that is designed**. All four use
    vanilla noise with one fixed biome, and each file says so in its own javadoc.
-2. **Band 4 — ATTRITION: half built.** The *tending* signal exists — chunks carry when
-   anybody was last near them, tending is simply being somewhere, and
-   `attrition_check.sh` proves the ring of loaded-but-unattended ground is real. **The
-   conversion table is the unbuilt half**: what "generalised" actually means, block by
-   block. Ores to stone, biome foliage to grass to nothing in particular. It is a third
-   use of the `ConversionDef` machinery the unraveling and the Turning already share, so
-   it is the cheapest large thing left.
+2. ~~**Band 4 — ATTRITION.**~~ **Built**, both halves — see below. What remains of it
+   is content rather than machinery: the table covers ores, the four common tree species,
+   biome ground and flowers, and could grow indefinitely.
 
 3. ~~**Band 3 — EXODUS.**~~ **Built.** Patches of overworld obeying another god's law,
    anchored on the shrines. Three of the four laws leak; the Quiet One's needs

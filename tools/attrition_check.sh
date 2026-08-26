@@ -118,5 +118,105 @@ echo "  eight seconds later:  home=$home_aged ticks   far=$far_aged ticks"
 [ "$far_aged" -gt "$far_tended" ] || \
     fail "untended ground did not age either -- the clock the staleness comparison reads is not advancing"
 
+# ==========================================================================
+# The other half: what "generalised" actually means.
+# ==========================================================================
+# WORLD.md: "Biome-specific detail reverts to its plainest equivalent. Your forest stops
+# being a forest -- not destroyed, GENERALISED. Ores return to stone."
+#
+# Every assertion below is CATEGORICAL, and it is worth saying why this half gets to be
+# when the Verdant's growth did not: nothing in vanilla turns a birch log into an oak log,
+# or podzol into dirt, or diamond ore into stone. There is no background process to
+# separate the mod's effect from, so a single conversion where none was permitted is the
+# law having escaped its gates -- not a rate to compare.
+#
+# The staleness THRESHOLD is not asserted here and is not asserted anywhere live: ground
+# frays after twenty minutes and no CI run waits that out, and `/time add` cannot help
+# because it moves dayTime while the stamp reads gameTime. `interregnum attrition abandon`
+# sets the stamp, the way an operator marking a region abandoned would; every gate after
+# it still applies. The threshold itself is arithmetic, proven in core's self-test on both
+# sides of the boundary.
+G="/tmp/generalise.log"
+COMMANDS="forceload add -16 -16 63 63
+wait 3
+setblock 0 100 40 minecraft:birch_log replace
+setblock 1 100 40 minecraft:podzol replace
+setblock 2 100 40 minecraft:diamond_ore replace
+setblock 3 100 40 minecraft:birch_log replace
+setblock 4 100 40 minecraft:birch_log replace
+interregnum claim record 4 100 40 4 100 40
+execute if block 0 100 40 minecraft:birch_log run say SETUP_BIRCH
+execute if block 2 100 40 minecraft:diamond_ore run say SETUP_ORE
+execute if block 4 100 40 minecraft:birch_log run say SETUP_CLAIMED
+interregnum attrition abandon 0 100 40
+interregnum attrition generalise 0 100 40
+say BEFORE_BAND4
+execute positioned 0 -60 0 run interregnum record deicide
+interregnum record warden_contact
+interregnum record first_crossing
+interregnum record letter_delivered
+say AT_BAND4
+interregnum attrition abandon 0 100 40
+interregnum attrition generalise 0 100 40
+interregnum attrition generalise 1 100 40
+interregnum attrition generalise 1 100 40
+interregnum attrition generalise 2 100 40
+interregnum attrition generalise 4 100 40
+interregnum attrition tend 3 100 40
+interregnum attrition generalise 3 100 40
+execute if block 0 100 40 minecraft:oak_log run say BIRCH_GENERALISED
+execute if block 1 100 40 minecraft:dirt run say PODZOL_CHAINED
+execute if block 2 100 40 minecraft:stone run say ORE_GENERALISED
+execute if block 3 100 40 minecraft:birch_log run say TENDED_SPARED
+execute if block 4 100 40 minecraft:birch_log run say CLAIMED_SPARED" \
+    LOG="$G" timeout 900 ./tools/server_smoke.sh > /tmp/gen.txt 2>&1 \
+    || { tail -25 /tmp/gen.txt; fail "the generalisation run did not complete"; }
+
+mark() { grep -q "$1" "$G"; }
+
+# --- the table loaded, and the setup exists ---------------------------------
+grep -q 'generalisation rule(s) loaded' "$G" || {
+    grep -iE "generalis|attrition" "$G" | tail -5 || true
+    fail "band 4's generalisation table did not load, so nothing below proves anything"; }
+mark SETUP_BIRCH   || fail "no birch log was placed -- the control does not exist"
+mark SETUP_ORE     || fail "no diamond ore was placed -- the control does not exist"
+mark SETUP_CLAIMED || fail "the claimed birch log was never placed, so sparing it proves nothing"
+
+# --- the gate: nothing generalises before band 4 ----------------------------
+before=$(sed -n '/SETUP_CLAIMED/,/BEFORE_BAND4/p' /tmp/gen.txt | grep -oE 'attrition-step=[a-z:_-]+' | head -1 || true)
+[ "$before" = "attrition-step=not-fraying" ] || \
+    fail "abandoned ground generalised at band 0 (reported '$before') -- band 4 is when the world starts forgetting, and a world forgetting before its god has died has no escalation left"
+
+# --- and it does at band 4 --------------------------------------------------
+mark BIRCH_GENERALISED || {
+    grep -oE 'attrition-step=[a-z:_-]+' /tmp/gen.txt | head -8 || true
+    fail "an abandoned birch log did not become an oak log at band 4 -- the table is loaded and the gates are open, so the law is not being applied"; }
+
+# --- the chain: podzol -> coarse dirt -> dirt -------------------------------
+# Two steps on one block. Nothing in the table takes podzol to dirt directly, so finding
+# dirt proves two links ran IN ORDER -- which a single-step implementation, or a table
+# whose chains do not join up, cannot fake. The same property turning_check.sh asserts
+# for the Turning, because it is the same machinery.
+mark PODZOL_CHAINED || {
+    grep -oE 'attrition-step=[a-z:_-]+' /tmp/gen.txt | head -8 || true
+    fail "two generalisation passes on podzol did not reach plain dirt -- the chain is not joining up, so the world loses one distinction and then stops forgetting"; }
+
+# --- ores return to stone ---------------------------------------------------
+# Locked in WORLD.md, and the harshest rule in the table. If it stops working the band
+# loses the consequence that makes tending worth anything.
+mark ORE_GENERALISED || \
+    fail "abandoned diamond ore did not return to stone. WORLD.md locks it, and it is the rule that gives tending a price: without it the world stops being worth anything only cosmetically"
+
+# --- THE COUNTER-MOVE: tended ground keeps its definition -------------------
+# The assertion band 4 exists for. Its control is BIRCH_GENERALISED above -- identical
+# block, identical command, one chunk tended and one not -- so this is a decision rather
+# than a world where nothing happened to anything.
+mark TENDED_SPARED || \
+    fail "a birch log in TENDED ground was generalised anyway. Regions people visit are supposed to hold their definition; without that the apocalypse is weather rather than something a player can argue with, and the 'take the job' ending has nothing behind it"
+
+# --- and never anyone's work ------------------------------------------------
+mark CLAIMED_SPARED || \
+    fail "a block a player had placed was generalised -- the oldest promise in the mod is that the world may warp but a player's work may not"
+
 echo
-echo "OK: standing somewhere keeps it, four chunks out is loaded and unattended, and the stamp ages"
+printf "OK: standing somewhere keeps it, four chunks out is loaded and unattended, the stamp ages,\n    and abandoned ground forgets what it was -- through every step, never where somebody\n    tends, and never anything anyone built\\n"
