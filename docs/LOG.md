@@ -4009,3 +4009,51 @@ A check that can fail without saying anything is worse than one that fails loudl
 wrong reason. The guard now reports what it found.
 
 224 self-test checks, 78 mutations, 43 live checks, 20 fast-gate stages.
+
+---
+
+## The mail is the map
+
+The ferry sails where the letter in your hand is addressed. Ask a keel with an empty hand
+and it hands back the docket for all four crossings, exactly as before; hold a letter out
+to it and it sails that god's crossing. **You cannot reach a god you are not carrying post
+for**, which makes the shrine-keeper's hand-over the moment the map exists.
+
+The crossing moved out of the command handler into `Sailing`, and the command and the block
+are both four lines over it. Eight ways to refuse: two copies would have been two ferries
+that disagreed about what a berth is.
+
+### The elegant rule, and the data that killed it
+
+`Post` enforces that exactly one letter opens `To --`. So the rule wrote itself: an
+envelope with no name cannot be routed, the boat does not move, and *who was it for*
+becomes a question the mechanism asks rather than a line of text. It was in the design
+note, the class javadoc, the check header and the draft commit message.
+
+**The unaddressed letter is the Quiet One's.** Three letters open with a name; the fourth
+opens `To --` because nobody has a name for that god -- and `WORLD.md` calls that "the whole
+character". The rule would have stranded an entire world behind the only affordance there
+is for reaching one, silently, with every check passing because every check was written
+from the same wrong premise.
+
+It surfaced because the live check needed a real letter id on a command line, and the ids
+had to be read out of `post.json` to write it.
+
+`LESSONS.md` #41: when a design turns on a property of the data, open the data -- not the
+document that describes it. "Exactly one is unaddressed" tells you a shape and says nothing
+about which element has it, and the more elegant the rule built on top, the less likely
+anybody is to go and look.
+
+### The guard that generalises it
+
+`letters_check.py` now asserts that every letter names a crossing and every crossing has a
+letter. That is the set-level fact the correct version depends on, and Java cannot see it:
+a missing law is a null at runtime, in one world, for one player, indistinguishable from a
+refusal that means something. Watched failing by renaming one crossing -- it reported both
+halves, the orphaned letter and the unreachable world.
+
+`carry_check.sh` sails two letters from identical hulls to two worlds, because one crossing
+on its own is equally satisfied by a ferry that always goes to the same place. Mutation
+run: routing every letter to one fixed crossing was caught by exactly that.
+
+226 self-test checks, 79 mutations, 44 live checks, 20 fast-gate stages.

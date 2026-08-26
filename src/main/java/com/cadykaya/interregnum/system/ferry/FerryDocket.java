@@ -88,4 +88,46 @@ public final class FerryDocket {
         }
         return out;
     }
+
+    /**
+     * What the desk says back when somebody holds a letter out to a keel.
+     *
+     * Every outcome gets a line, including the ones that are nobody's fault: a keel that
+     * answered nothing would be indistinguishable from a mod that had stopped working,
+     * which is the same argument the inspection docket runs on.
+     *
+     * The one worth reading twice is {@code UNADDRESSED}. The dead god's last document is
+     * addressed `To --`, and a ferry that sails where the letter says cannot be told where
+     * to go with it in hand. That line is written as a clerk's shrug rather than an error,
+     * because the endgame's opening question is *who was it for* and the mechanism asking
+     * it should sound like the rest of the institution.
+     */
+    public static List<Component> report(Sailing.Sail done) {
+        List<Component> out = new ArrayList<>();
+        if (done.ok()) {
+            out.add(Component.translatable("interregnum.ferry.sailed",
+                            Component.translatable("interregnum.ferry.destination." + done.law()),
+                            done.blocks())
+                    .withStyle(ChatFormatting.GOLD));
+            return out;
+        }
+        if (done.outcome() == Sailing.Outcome.HELD) {
+            Component where = Component.translatable(
+                    "interregnum.ferry.destination." + done.law());
+            out.add(Component.translatable("interregnum.ferry.inspection.refused", where)
+                    .withStyle(ChatFormatting.RED));
+            for (Manifest.Violation v : done.held()) {
+                out.add(Component.translatable("interregnum.ferry.inspection.line",
+                                v.count(), v.blockId())
+                        .withStyle(ChatFormatting.DARK_RED));
+                out.add(Component.translatable(v.reasonKey())
+                        .withStyle(ChatFormatting.DARK_GRAY));
+            }
+            return out;
+        }
+        out.add(Component.translatable("interregnum.ferry.refused."
+                        + done.outcome().name().toLowerCase(java.util.Locale.ROOT))
+                .withStyle(ChatFormatting.GRAY));
+        return out;
+    }
 }

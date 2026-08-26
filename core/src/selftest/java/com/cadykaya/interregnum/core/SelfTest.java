@@ -1059,6 +1059,31 @@ public final class SelfTest {
               + "-- the ferry declines to sail without a letter, which is a consequence of "
               + "what the ferry reads rather than a clause in the chapter machine");
 
+        // ROUTING. The rule that nearly shipped inverted: an unaddressed letter must sail
+        // like any other, because the unaddressed one is the QUIET ONE'S and routing on
+        // the addressee would have made that god's world permanently unreachable by the
+        // only affordance there is. Asserted here rather than only in prose, so that
+        // re-adding the appealing version fails instead of shipping.
+        var named = new com.cadykaya.interregnum.core.letters.Letter(
+                "verdant", java.util.Optional.of("Rill"), "s", java.util.List.of("b"));
+        var blank = new com.cadykaya.interregnum.core.letters.Letter(
+                "quiet_one", java.util.Optional.empty(), "s", java.util.List.of("b"));
+        check(com.cadykaya.interregnum.core.ferry.Routing.lawFor(named)
+                      .orElse("").equals("verdant")
+              && com.cadykaya.interregnum.core.ferry.Routing.lawFor(blank)
+                      .orElse("").equals("quiet_one"),
+              "a letter routes on its id, and the one with no name on the envelope routes "
+              + "exactly like the rest. The blank line is a fact about the Quiet One, not "
+              + "a defect in a document -- a ferry that refused it would strand a whole "
+              + "god behind the only way there is of reaching one");
+        check(com.cadykaya.interregnum.core.ferry.Routing.lawFor(null).isEmpty()
+              && com.cadykaya.interregnum.core.ferry.Routing.refusalFor(null)
+                      == com.cadykaya.interregnum.core.ferry.Routing.Refusal.NOT_A_LETTER
+              && com.cadykaya.interregnum.core.ferry.Routing.refusalFor(blank)
+                      == com.cadykaya.interregnum.core.ferry.Routing.Refusal.NONE,
+              "and an empty hand is the only thing a ferry refuses to route on. No letter, "
+              + "no voyage -- a keel that moves without one makes the mail decorative");
+
         // THE SPOKEN WORD. `WORLD.md` locks casting as something you say out loud in chat,
         // which puts the whole affordance one method away from every sentence any player
         // has ever typed. These are the guards on that.

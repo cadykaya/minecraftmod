@@ -215,3 +215,6 @@ jobs:
 
       - name: The dead god's returned post changes hands, once, and survives being refused
         run: ./tools/handover_check.sh
+
+      - name: The ferry goes where the letter says, and nothing but the post moves it
+        run: ./tools/carry_check.sh

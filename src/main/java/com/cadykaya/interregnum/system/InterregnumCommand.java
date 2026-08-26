@@ -88,6 +88,16 @@ public final class InterregnumCommand {
      *        way to say "sail to the dock", so the two questions are now two parameters
      *        rather than one overloaded one.
      */
+    /**
+     * `ferry check|sail <keel> <law> [pad]` -- the operator's form, where the crossing is
+     * typed rather than read off a letter.
+     *
+     * Kept, and not deprecated: a keel with a letter in front of it is how a player
+     * sails, and this is how somebody debugging a stuck hull sails. Both go through
+     * {@link com.cadykaya.interregnum.system.ferry.Sailing}, so there is exactly one
+     * sequence and one set of refusals; before that seam existed this method WAS the
+     * crossing, and the block would have had to copy it.
+     */
     private static int ferryCheck(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
                                   BlockPos pad, boolean sail) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         BlockPos keel = BlockPosArgument.getLoadedBlockPos(ctx, "keel");
@@ -98,73 +108,77 @@ public final class InterregnumCommand {
                     "ferry=refused reason=no such law " + lawId), false);
             return 0;
         }
-        var cap = com.cadykaya.interregnum.system.ferry.Ferry
-                .capture(ctx.getSource().getLevel(), keel);
-        if (!cap.ok()) {
-            ctx.getSource().sendSuccess(() -> Component.literal(
-                    "ferry=refused reason=" + cap.refusal()), false);
-            return 0;
-        }
-        var bad = com.cadykaya.interregnum.system.ferry.Ferry.checklist(cap.hull(), law);
-        if (!bad.isEmpty()) {
-            ctx.getSource().sendSuccess(() -> Component.literal(
-                    "ferry=held law=" + lawId + " violations=" + bad.size()), false);
-            for (var v : bad) {
-                ctx.getSource().sendSuccess(() -> Component.literal(
-                        "  ferry-notice " + v.rule() + " " + v.blockId()
-                                + " x" + v.count() + " [" + v.reasonKey() + "]"), false);
-            }
-            return 0;
-        }
         if (!sail) {
+            // `check` stops at the checklist and never moves anything, so it does its own
+            // capture rather than asking Sailing to start a crossing and abandon it.
+            var cap = com.cadykaya.interregnum.system.ferry.Ferry
+                    .capture(ctx.getSource().getLevel(), keel);
+            if (!cap.ok()) {
+                ctx.getSource().sendSuccess(() -> Component.literal(
+                        "ferry=refused reason=" + cap.refusal()), false);
+                return 0;
+            }
+            var bad = com.cadykaya.interregnum.system.ferry.Ferry.checklist(cap.hull(), law);
+            if (!bad.isEmpty()) {
+                notices(ctx, lawId, bad);
+                return 0;
+            }
             ctx.getSource().sendSuccess(() -> Component.literal(
                     "ferry=clear law=" + lawId + " total=" + cap.hull().manifest().total()), false);
             return 1;
         }
-        // Where the law says this crossing goes. Not a parameter: the destination is a
-        // property of the law the hull was cleared against, so a hull cleared for the
-        // Quiet One cannot be sailed anywhere else. The boarding notice a player read
-        // on the dock names the destination, and this is what makes that true.
-        var target = com.cadykaya.interregnum.system.ferry.FerryLaws.destinationOf(lawId);
-        net.minecraft.server.level.ServerLevel to =
-                ctx.getSource().getServer().getLevel(target);
-        if (to == null) {
-            // A law may legitimately name a dimension another datapack supplies, so
-            // this is refused HERE rather than at load -- where it can name what is
-            // missing instead of taking down every law in the file.
-            ctx.getSource().sendSuccess(() -> Component.literal(
-                    "ferry=refused reason=no such destination " + target.identifier()), false);
-            return 0;
-        }
-        // No pad named: go where the dock is. WORLD.md says a crossing arrives "at the
-        // far pad", and until there was one the arrival position was an argument an
-        // operator typed -- a mail service whose destination is a parameter is not one.
-        // The three-argument form stays for the nudge case, where a hull is moved a few
-        // blocks inside one world and there is no dock involved.
-        BlockPos arrival = pad != null
-                ? pad
-                : com.cadykaya.interregnum.system.ferry.FerryPad.ensure(to);
-        if (arrival == null) {
-            ctx.getSource().sendSuccess(() -> Component.literal(
-                    "ferry=refused reason=no pad in " + target.identifier()), false);
-            return 0;
-        }
-        if (pad == null && com.cadykaya.interregnum.system.ferry.FerryPad
-                .occupied(to, arrival)) {
-            ctx.getSource().sendSuccess(() -> Component.literal(
-                    "ferry=refused reason=berth occupied at " + target.identifier()), false);
-            return 0;
-        }
-        com.cadykaya.interregnum.system.ferry.Ferry
-                .place(ctx.getSource().getLevel(), cap.hull(), keel, to, arrival);
-        // The return leg, filed on departure. A mail service knows where its vessels came
-        // from; see Voyages for why the way home is a record rather than a fifth law.
-        com.cadykaya.interregnum.system.ferry.Voyages.get(ctx.getSource().getServer())
-                .departed(ctx.getSource().getLevel().dimension(), keel, target, arrival);
+        var done = com.cadykaya.interregnum.system.ferry.Sailing
+                .sail(ctx.getSource().getLevel(), keel, lawId, pad);
+        return report(ctx, done);
+    }
+
+    /** The checklist a held hull is owed, in the order a person reads it. */
+    private static void notices(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
+                                String lawId,
+                                java.util.List<com.cadykaya.interregnum.core.ferry.Manifest.Violation> bad) {
         ctx.getSource().sendSuccess(() -> Component.literal(
-                "ferry=sailed law=" + lawId + " to=" + target.identifier()
-                        + " total=" + cap.hull().manifest().total()), true);
-        return cap.hull().manifest().total();
+                "ferry=held law=" + lawId + " violations=" + bad.size()), false);
+        for (var v : bad) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "  ferry-notice " + v.rule() + " " + v.blockId()
+                            + " x" + v.count() + " [" + v.reasonKey() + "]"), false);
+        }
+    }
+
+    /** One crossing's outcome, in the shape every ferry check already reads. */
+    private static int report(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
+                              com.cadykaya.interregnum.system.ferry.Sailing.Sail done) {
+        if (done.outcome() == com.cadykaya.interregnum.system.ferry.Sailing.Outcome.HELD) {
+            notices(ctx, done.law(), done.held());
+            return 0;
+        }
+        if (!done.ok()) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "ferry=refused reason=" + done.outcome() + " " + done.detail()), false);
+            return 0;
+        }
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                "ferry=sailed law=" + done.law() + " to=" + done.to().identifier()
+                        + " total=" + done.blocks()), true);
+        return done.blocks();
+    }
+
+    /**
+     * `ferry carry <keel> <letter>` -- sail on the crossing the letter names.
+     *
+     * The player-facing path, reachable without a player. Which crossing comes entirely
+     * from the letter: a keel that could be told where to go by any other means would make
+     * the mail decorative, which is the locked rule this exists to enforce.
+     */
+    private static int ferryCarry(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        BlockPos keel = BlockPosArgument.getLoadedBlockPos(ctx, "keel");
+        String letter = StringArgumentType.getString(ctx, "letter");
+        // `none` is how a check says "an empty hand or an unmarked stack" on a command
+        // line, where there is no way to pass an absent argument to a required one.
+        var done = com.cadykaya.interregnum.system.ferry.Sailing.byLetter(
+                ctx.getSource().getLevel(), keel, "none".equals(letter) ? null : letter);
+        return report(ctx, done);
     }
 
     /**
@@ -1268,6 +1282,13 @@ public final class InterregnumCommand {
                 .then(Commands.literal("home")
                         .then(Commands.argument("keel", BlockPosArgument.blockPos())
                                 .executes(InterregnumCommand::ferryHome)))
+                // What holding a letter out to the keel does. A headless server has
+                // nobody to hold anything, so this is the seam the block is four lines
+                // over -- exactly the arrangement `haunt dream` and `speak` use.
+                .then(Commands.literal("carry")
+                        .then(Commands.argument("keel", BlockPosArgument.blockPos())
+                                .then(Commands.argument("letter", StringArgumentType.word())
+                                        .executes(InterregnumCommand::ferryCarry))))
                 .then(Commands.literal("sail")
                         .then(Commands.argument("keel", BlockPosArgument.blockPos())
                                 .then(Commands.argument("law", StringArgumentType.word())

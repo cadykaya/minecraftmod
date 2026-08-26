@@ -53,14 +53,14 @@ writing it here is what makes it so.
 | `shrine_stone_carved` | generated in shrines; mined and built with. **Its script cannot be read** — see below | `BLOCKED: reading is dangerous` |
 | `warning_stele` | generated at shrines; **used to read its notice**, if there is light | `PLAY` |
 | `warden_statue` | generated at shrines; opens its eyes at the deicide and posts a Warden | `PLAY` |
-| `ferry_keel` | crafted and placed by the player; **used to inspect the hull** against all four crossings | `PLAY` |
+| `ferry_keel` | crafted and placed by the player. **Empty hand: inspect the hull** against all four crossings. **A letter in hand: sail that crossing** | `PLAY` |
 
 ## Items
 
 | Registered | Reached by | Status |
 |---|---|---|
 | `god_heart` | found in shrine loot, once per world; **picking it up is the deicide** | `PLAY` |
-| `sealed_letter` | **given by a shrine-keeper**, once the god is dead — the returned post they have been holding. Used to read the letter it carries | `PLAY` |
+| `sealed_letter` | **given by a shrine-keeper**, once the god is dead — the returned post they have been holding. Used to read the letter it carries, and **held out to a ferry keel to sail that god's crossing** | `PLAY` |
 | `clast` | scattered at the crater and at shrines when the god shatters; can be picked up and held. **Nothing can be done with one** | `BLOCKED: how a clast is attuned` |
 
 ## Entities

@@ -270,6 +270,15 @@ MUTATIONS = [
     ("haunt: every interval manifests, so the ghost is a metronome",
      f"{MAIN}/haunt/Manifestation.java",
      "    public static final int ODDS = 90;", "    public static final int ODDS = 1;"),
+    # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
+    # world, because the unaddressed letter is that god's -- silently, permanently, behind
+    # the only affordance there is for reaching any god at all.
+    ("ferry: an unaddressed letter cannot be routed, stranding the Quiet One",
+     f"{MAIN}/ferry/Routing.java",
+     "        return letter == null ? Optional.empty() : Optional.of(letter.id());",
+     "        return letter == null || letter.addressee().isEmpty()\n"
+     "                ? Optional.empty() : Optional.of(letter.id());"),
+
     # The mail must not gate a chapter: refusing the post is an answer, and an answer must
     # not be able to freeze the world from a dialogue option.
     ("chapter: taking the returned post is a prerequisite for the exodus",

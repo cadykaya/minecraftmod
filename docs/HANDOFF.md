@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **43**, every one mutation-verified, all in CI |
+| Live-world checks | **44**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, ten spells**, learned in their gods' worlds and **cast by saying the word** |
@@ -737,6 +737,44 @@ Mutation run: making the cancel never fire was caught.
 
 Nothing audible is claimed. Same wall as Hush — the Quiet One's most characteristic effects
 live on a client and this container has none.
+
+### The ferry reads the letter
+
+**Ask with an empty hand, go with a full one.** Touching a keel bare-handed hands back the
+docket for all four crossings — the locked *"the validation checklist teaches each world's
+rule before arrival"*, unchanged. Holding a letter out to it sails that god's crossing.
+
+`WORLD.md`: *"the route to them is its unanswered correspondence"* and *"you are the only
+one carrying their mail."* Both are now the navigation rather than flavour: **you cannot
+reach a god you are not carrying post for.** The letters are the map, which makes the
+shrine-keeper's hand-over the moment the map exists.
+
+**One sequence, two callers.** The whole crossing used to live inside the command handler
+where an operator typed the law. It is now `Sailing`, and the command and the block are
+both four lines over it — a crossing has eight ways to refuse, and two copies would have
+been two ferries that disagreed about what a berth is.
+
+**The design error that nearly shipped, and the reason it is written down twice.** The
+appealing rule was: the ferry sails where the letter is *addressed*, so the one that opens
+`To —` cannot be routed and the boat does not move — the endgame's opening question
+arriving as a mechanism. It reads beautifully and it is wrong. **The unaddressed letter is
+the Quiet One's**, and `WORLD.md` says why in as many words: *"the Quiet One has no name in
+the letters, and that is the whole character."* Routing on the addressee would have made
+that god's world **permanently unreachable, silently, by the only affordance there is.**
+
+So routing is by the letter's **id**, the addressee is never consulted, and the blank line
+stays what it was written to be. The long version is in `Routing`'s javadoc, because the
+wrong version is the more appealing one and nothing downstream would have caught it.
+
+What does catch the class of problem: `letters_check.py` now asserts the set-level fact the
+right version depends on — **every letter names a crossing and every crossing has a
+letter.** A letter with no law is one a player can carry and never deliver; a law with no
+letter is a world nothing can route to. Java cannot see either: it is a null at runtime, in
+one world, for one player, indistinguishable from a refusal that means something.
+
+`carry_check.sh` sails **two** letters from **identical** hulls to **two** worlds, because
+one crossing on its own is equally satisfied by a ferry that always goes to the same place.
+Mutation run: routing every letter to one fixed crossing was caught by exactly that.
 
 ### The post comes back, and somebody has been holding it
 

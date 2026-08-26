@@ -1834,3 +1834,52 @@ one — *the shed was not still in hand after a restart*.
 Related: [#38](#38-one-instance-cannot-test-a-per-instance-property) is the same shape one
 level up — there one ferry could not exhibit a property that only exists between two, here
 one server run could not exhibit a property that only exists between two.
+
+---
+
+## 41. The elegant rule is the one to check against the data
+
+The ferry sails where the letter in your hand is addressed. `Post` enforces that exactly
+one of the four letters opens `To —`. So the rule wrote itself:
+
+> a letter with no name on the envelope cannot be routed, and the boat does not move.
+
+The dead god's blank document refusing to sail, and *who was it for* becoming a question
+the mechanism asks rather than a line of text. It is the best beat in the feature and it
+was in the design document, the class javadoc, the check header and the commit message
+before anybody looked at the data.
+
+**The unaddressed letter is the Quiet One's.** `WORLD.md`, in as many words: *"the Quiet
+One has no name in the letters, and that is the whole character."* Three letters open with
+a name; the fourth opens `To —` because nobody has a name for that god.
+
+The rule would have made the Quiet One's world **permanently unreachable** — silently, by
+the only affordance there is for reaching any god at all — and every check would have
+passed, because every check would have been written from the same wrong premise.
+
+### What actually went wrong
+
+Not the reasoning. The reasoning was sound given "exactly one letter is unaddressed" and
+"the last letter is the ending." Both are true. They are **about different documents**, and
+the design that joined them never checked which letter the blank one was.
+
+It surfaced only when the live check needed a concrete letter id to sail with, and the ids
+had to be read out of `post.json` to write the command line.
+
+> **The rule: when a design turns on a property of the data, open the data.** Not the
+> document that describes it — the file. An invariant stated in prose ("exactly one is
+> unaddressed") tells you a shape and says nothing about *which* element has it, and the
+> more elegant the rule you have built on top, the less likely anybody is to go and look.
+
+### And the check that would have caught it
+
+`letters_check.py` now asserts that every letter names a crossing and every crossing has a
+letter. That is the set-level fact the correct version depends on, it is invisible to Java
+— a missing law is a null at runtime, in one world, for one player, indistinguishable from
+a refusal that means something — and it is the guard that makes "the mail is the map" a
+thing the build can verify rather than a thing the design asserts.
+
+Related: [#35](#35-a-check-written-from-the-implementation-will-defend-the-bug) is the same
+failure with the direction reversed — there a check written from the code could not
+disagree with the code; here a check written from the design could not disagree with the
+design.

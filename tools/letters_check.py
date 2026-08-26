@@ -39,6 +39,7 @@ import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 POST = os.path.join(REPO, "src/main/resources/data/interregnum/letters/post.json")
+LAWS = os.path.join(REPO, "src/main/resources/data/interregnum/ferry/laws.json")
 LANG = os.path.join(REPO, "src/main/resources/assets/interregnum/lang/en_us.json")
 
 fails = []
@@ -107,6 +108,35 @@ for name in names:
             f"name spent early lands as recognition instead of as a stranger's "
             f"correspondence, and nothing else would ever fail.")
 
+# --- the mail IS the map ----------------------------------------------------
+# WORLD.md, locked: the ferry sails where the letter in your hand is addressed. That makes
+# the letter ids and the crossing law ids the same set -- not by coincidence, by
+# definition: a letter naming no crossing is a letter that cannot be delivered, and a
+# crossing named by no letter is a world nothing can route to.
+#
+# Nothing in Java can catch this. `Routing` returns a law id and `FerryLaws.of` looks it
+# up; a missing entry is a null at runtime, in one world, for one player, with the ferry
+# simply declining to move and no way to tell that from a refusal that means something.
+with open(LAWS) as fh:
+    laws = json.load(fh)["laws"]
+
+letter_ids = {l["id"] for l in post}
+law_ids = {l["id"] for l in laws}
+if letter_ids != law_ids:
+    orphan_letters = sorted(letter_ids - law_ids)
+    orphan_laws = sorted(law_ids - letter_ids)
+    if orphan_letters:
+        fails.append(
+            f"letter(s) with no crossing: {', '.join(orphan_letters)}. The ferry sails "
+            f"where the letter is addressed, so a letter naming no law is one a player "
+            f"can carry and never deliver -- and the ferry would decline to move with no "
+            f"way to tell that from a refusal that means something.")
+    if orphan_laws:
+        fails.append(
+            f"crossing(s) with no letter: {', '.join(orphan_laws)}. Nothing can route to "
+            f"that world: the mail is the map, and a destination nobody is carrying post "
+            f"for is unreachable by the only affordance there is.")
+
 if fails:
     print()
     for f in fails:
@@ -115,4 +145,5 @@ if fails:
     sys.exit(1)
 
 print(f"\nOK: {len(post)} letter(s), {len(names)} named and one not; "
-      f"{', '.join(names)} appear nowhere else in the mod")
+      f"{', '.join(names)} appear nowhere else in the mod; "
+      f"every letter names a crossing and every crossing has a letter")
