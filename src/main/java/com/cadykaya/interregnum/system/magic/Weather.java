@@ -33,9 +33,17 @@ import net.minecraft.world.level.block.state.BlockState;
  * runs on its own clock — not a copy of it, and not a table tuned to look similar. The
  * spell is that law performed on purpose instead of by the passage of time.
  *
- * Which means every promise the ageing table already makes holds here for free, including
- * the oldest one in the mod: <b>a block somebody placed is never touched.</b> You cannot
- * Weather your neighbour's wall.
+ * <h2>And it may be used on your own building, which took a second spell to notice</h2>
+ *
+ * `WORLD.md` calls this *"magic as a builder's palette"*. The first version reused
+ * {@link Hearth#step} wholesale and therefore inherited the claim ledger's refusal — so
+ * ageing a wall you had just built did nothing at all, silently, which is the exact
+ * opposite of a palette. It took writing *Rewind*, where refusing to repair your own wall
+ * is obviously absurd, to see that the same absurdity had already shipped here.
+ *
+ * The principle is now explicit and shared: <b>the ledger gates the world, not the
+ * caster.</b> The unraveling, attrition and the Turning's own clock will never touch a
+ * block you placed. A spell you aim yourself is not the world.
  *
  * <h2>And in the overworld it costs</h2>
  *
@@ -77,7 +85,10 @@ public final class Weather {
         if (!Casting.permitted(grimoire, School.TURNING)) {
             return Cast.no("unlearned");
         }
-        BlockState became = Hearth.step(level, pos);
+        // `false`: this is a caster aiming at a block, not the world eating one. See
+        // Hearth.step -- the ledger gates the world, not the caster, and a builder's
+        // palette you cannot use on your own building is not a palette.
+        BlockState became = Hearth.step(level, pos, false);
         if (became == null) {
             return Cast.no("nothing");       // nothing happened; nothing is owed
         }

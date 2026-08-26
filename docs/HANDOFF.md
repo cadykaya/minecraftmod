@@ -33,6 +33,37 @@ asserted against a running world rather than against its own source.
 | Magic | **four schools, six spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 
+### The ledger gates the world, not the caster
+
+A shipped bug, found by designing the *next* thing rather than by any check — and the check
+that should have caught it was the reason it survived.
+
+**What was wrong.** `Hearth.step` refused any block in the claim ledger, and *Weather* —
+the Turning's first spell, "age a block one step" — went through `Hearth.step`. So the one
+spell a builder would most obviously aim at their own wall was the one thing it could not
+touch, and it failed *silently*: cast, nothing happens, no message. `WORLD.md` sells magic
+as a builder's palette; this was the opposite of the pitch.
+
+**Why the ledger exists.** So that the *world* — the unraveling, attrition, the Turning's
+clock — may warp everything it likes and never take a block somebody placed. That
+guarantee is about the world acting on its own. It was never about a player pointing a
+spell at their own cobblestone and asking for it to be older.
+
+So the rule is now stated once and true everywhere: **the ledger gates the world, not the
+caster.** `Hearth.step(level, pos)` still spares placed blocks and is what the world's three
+sweeps call. `Hearth.step(level, pos, false)` is what a spell calls.
+
+**The two directions are asserted in two different files, deliberately.**
+`turning_check.sh` proves the world still spares a build; `casting_check.sh` proves a caster
+may aim at one. Either one alone is satisfiable by getting it uniformly wrong in either
+direction, which is exactly how the bug lived.
+
+**The part worth carrying.** `casting_check.sh` had *asserted the bug*
+(`CLAIMED_SPARED`), eloquently, with a failure message invoking the mod's oldest guarantee.
+It was written by reading `Hearth.step` and describing what the code did, so it could not
+disagree with the code — and a check that cannot disagree is not evidence, it is a lock on
+whatever was there. [`LESSONS.md` #35](LESSONS.md#35-a-check-written-from-the-implementation-will-defend-the-bug).
+
 ### Band 4: the world forgets what it was
 
 Both halves now. The *tending* signal is below; this is what it gates.

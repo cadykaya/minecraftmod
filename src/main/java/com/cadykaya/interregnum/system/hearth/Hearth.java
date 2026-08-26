@@ -155,9 +155,31 @@ public final class Hearth {
      * @return what the block became, or null if nothing applied.
      */
     public static BlockState step(ServerLevel level, BlockPos pos) {
+        return step(level, pos, true);
+    }
+
+    /**
+     * @param sparePlacedBlocks whether to refuse a block somebody put there.
+     *
+     * <b>True for the world, false for a caster</b>, and the distinction turned out to be
+     * a real one rather than a convenience.
+     *
+     * The claim ledger exists so the world cannot eat your work: the unraveling, attrition
+     * and this world's own clock all pass true, and none of them will ever touch a wall
+     * you built. But `WORLD.md` calls *Weather* *"magic as a builder's palette"*, and a
+     * palette you cannot use on your own building is not one — the first thing anybody
+     * will try is ageing a wall they just made, and it would silently do nothing.
+     *
+     * Weather inherited the refusal by reusing this method wholesale, and it took writing
+     * *Rewind* — where refusing your own wall is obviously absurd, since the spell is
+     * literally *repair* — to notice that the same absurdity had already shipped in the
+     * spell next to it. The principle, now explicit: <b>the ledger gates the world, not
+     * the caster.</b>
+     */
+    public static BlockState step(ServerLevel level, BlockPos pos, boolean sparePlacedBlocks) {
         BlockState state = level.getBlockState(pos);
         ConversionDef rule = TurningLoader.table().stepFrom(state.getBlock());
-        if (rule == null || Claims.isClaimed(level, pos)) {
+        if (rule == null || (sparePlacedBlocks && Claims.isClaimed(level, pos))) {
             return null;
         }
         BlockState next = rule.to().defaultBlockState();

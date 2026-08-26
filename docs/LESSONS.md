@@ -1530,3 +1530,60 @@ property a guard against an invisible bug needs.
 Related: [#33](#33-the-refusal-was-right-and-it-was-refusing-for-a-reason-that-did-not-exist)
 — both are cases where the evidence has to be built into the setup, because the outcome
 alone cannot distinguish working from absent.
+
+## 35. A check written from the implementation will defend the bug
+
+*Weather* is the Turning's first spell and `WORLD.md` calls it, in as many words, **magic
+as a builder's palette**: age a block, make new stone look old.
+
+It could not be cast on anything you had built. Ageing a wall you had just made did
+nothing at all — silently, no message, no refusal — which is the exact opposite of a
+palette, and it is the first thing anybody would try.
+
+The cause was reuse working slightly too well. Weather calls `Hearth.step`, the same
+method the Hearth-Turner's world runs on its clock, which is exactly the sharing
+`WORLD.md` asks for. And that method consults the claim ledger, because **the world** must
+never eat a player's work. The spell inherited a refusal that was correct for its other
+caller and absurd for this one.
+
+### The check made it permanent
+
+`casting_check.sh` asserted the refusal:
+
+```bash
+mark CLAIMED_SPARED || fail "Weather aged a block a player had placed. The mod's oldest
+guarantee is that the world may warp but a player's work may not…"
+```
+
+Confident, thematically fluent, mutation-verified — and **wrong**. It was written by
+reading `Hearth.step`, seeing the claim check, and asserting what the code did. Once
+written, it was a wall: the bug could not be fixed without a check going red, and a red
+check reads as *stop*.
+
+That is the specific hazard. A check derived from the implementation cannot disagree with
+it, so it converts an accident into a requirement — and the more eloquent its failure
+message, the more certainly the next person leaves it alone.
+
+### What actually found it
+
+Not a check. Writing the *next* spell. *Rewind* is "repair by un-aging", and refusing to
+repair your own wall is so obviously absurd that the question got asked out loud for the
+first time — at which point the same absurdity was plainly sitting in the spell next door,
+where it was less obvious only because ageing your own wall is a slightly less common wish
+than mending it.
+
+The principle that fell out is now stated once and shared: **the ledger gates the world,
+not the caster.** The unraveling, attrition and the Turning's clock pass `true` and will
+never touch a placed block. A spell somebody aims passes `false`.
+
+And the two directions are now asserted in two different files, on purpose:
+`turning_check.sh` proves the world still spares a build; `casting_check.sh` proves a
+caster may aim at one. Either alone is satisfiable by getting it uniformly wrong.
+
+> **The rule: never write an assertion by reading the code it is about — write it from
+> what the feature is FOR, then run it.** A check that agrees with the implementation by
+> construction is not evidence, it is a lock; and it locks whatever was there, including
+> the mistake.
+
+Related: [#5](#5-a-test-that-passes-either-way-is-not-a-test) is the same family from the
+other side — there the check could not fail, here it could not be right.

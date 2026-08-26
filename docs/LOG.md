@@ -3022,3 +3022,39 @@ naming the pair that actually motivated the key — Hush and Still are both the 
 rather than counting. An assertion about "some pair exists" cannot defend a specific pair.
 
 177 self-test checks, 56 mutations, 30 live checks.
+
+---
+
+## The ledger gates the world, not the caster
+
+A bug that had already shipped, found while designing the spell *next door* — and the
+check that should have caught it was the reason it lasted.
+
+***Weather*** ages a block one step. It went through `Hearth.step`, which refuses anything
+in the claim ledger. So the one spell a builder would most obviously point at their own
+wall was the one thing it could not touch — and it did nothing *silently*: cast, no
+change, no message. `WORLD.md` sells magic as a builder's palette; that is the opposite.
+
+The ledger exists so the **world** may warp whatever it likes and never take a block
+somebody placed. That is a promise about the world acting on its own. It was never a
+promise that a player may not point a spell at their own cobblestone. `Hearth.step(level,
+pos)` still spares placed blocks and is what the unraveling, attrition and the Turning's
+clock call; `Hearth.step(level, pos, false)` is what a spell calls.
+
+### The check had asserted the bug
+
+`casting_check.sh` contained `mark CLAIMED_SPARED`, with a failure message invoking the
+mod's oldest guarantee. Confident, thematically fluent, mutation-verified, and wrong — it
+had been written by reading `Hearth.step` and describing what the code did. A check that
+cannot disagree with its implementation is not evidence, it is a lock, and this one had
+locked an accident in as a requirement. `LESSONS.md` #35.
+
+What found it was writing *Rewind*'s neighbour rule: refusing to **repair** your own wall
+is absurd enough that the question got asked aloud, at which point the same absurdity was
+plainly sitting one spell over, where it read as merely odd rather than broken.
+
+The two directions are now asserted in two different files on purpose: `turning_check.sh`
+proves the world still spares a build, `casting_check.sh` proves a caster may aim at one.
+Either alone is satisfiable by getting it uniformly wrong.
+
+177 self-test checks, 56 mutations, 30 live checks.

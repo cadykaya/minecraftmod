@@ -16,11 +16,20 @@
 # rules out. So this casts the SAME spell on the SAME block type in the overworld and in
 # the Hearth-Turner's world, and the difference between what the two cost is the feature.
 #
-# ALSO ASSERTED, because it is the oldest promise in the mod and the spell inherits it
-# rather than reimplementing it: you cannot Weather a block somebody placed. That falls
-# out of calling `Hearth.step`, which is the same method the Hearth-Turner's own world
-# runs on its clock -- WORLD.md's locked reuse, "one mechanism; a school and an
-# apocalypse". The check proves the promise survived the reuse.
+# AND IT MAY BE CAST ON YOUR OWN BUILDING. This assertion used to say the opposite, and
+# it was wrong in a way that had already shipped: Weather reused `Hearth.step` wholesale
+# and inherited the claim ledger's refusal, so ageing a wall you had just built did
+# nothing at all, silently. WORLD.md calls this spell "magic as a builder's palette", and
+# a palette you cannot use on your own building is not one.
+#
+# The check enshrined the bug because the check was written FROM THE IMPLEMENTATION --
+# Hearth.step refuses claimed blocks, so the assertion said it should. It took writing
+# REWIND, where refusing to repair your own wall is obviously absurd, to see the same
+# absurdity sitting in the spell next door.
+#
+# The principle, now explicit and asserted in both directions: THE LEDGER GATES THE
+# WORLD, NOT THE CASTER. `turning_check.sh` still proves the Hearth-Turner's own clock
+# will not touch a placed block; this proves a caster may.
 #
 # AND NOTHING IS KNOWN BY DEFAULT. WORLD.md locks schools as "learned in their worlds",
 # so an untaught caster cannot cast at all -- which is what makes crossing worth the
@@ -72,7 +81,7 @@ say CAST_NOTHING
 interregnum cast weather $WHO 4 101 4
 execute if block 4 100 4 minecraft:cobblestone run say HOME_AGED
 execute in interregnum:temporal_authority if block 4 100 4 minecraft:cobblestone run say THERE_AGED
-execute if block 8 100 4 minecraft:stone run say CLAIMED_SPARED" \
+execute if block 8 100 4 minecraft:cobblestone run say CLAIMED_AGED" \
     LOG=/tmp/casting.log timeout 900 ./tools/server_smoke.sh > /tmp/cast.txt 2>&1 \
     || { tail -25 /tmp/cast.txt; fail "the run did not complete"; }
 
@@ -101,12 +110,12 @@ mark HOME_AGED || {
 mark THERE_AGED || \
     fail "casting Weather in the Hearth-Turner's own world did not age the stone -- the spell fails in the one place its school is taught"
 
-# --- and it inherits the oldest promise in the mod --------------------------
-# Not reimplemented here: Weather calls the same `Hearth.step` the Turning's clock calls,
-# so the claim ledger protects a build from the spell for the same reason it protects one
-# from the apocalypse. This asserts the promise survived the reuse.
-mark CLAIMED_SPARED || \
-    fail "Weather aged a block a player had placed. The mod's oldest guarantee is that the world may warp but a player's work may not, and a spell that breaks it is worse than an apocalypse that does -- the apocalypse at least is not aimed"
+# --- and a caster may use it on their own building --------------------------
+# The counterpart to turning_check.sh's CLAIMED_STONE_SPARED, which proves the same table
+# refuses the same block when the WORLD is the one applying it. Together they make the
+# distinction load-bearing rather than incidental.
+mark CLAIMED_AGED || \
+    fail "Weather refused to age a block the player had placed. WORLD.md calls this spell magic as a builder's palette, and a palette that silently does nothing on your own wall is not one -- the claim ledger stops the WORLD eating your work, not you working on it"
 
 # --- THE ASSERTION: the same cast costs differently in two worlds -----------
 home=$(frayed CAST_HOME)
@@ -133,4 +142,4 @@ echo "$miss" | grep -q 'became=nothing frayed=0' || \
     fail "a cast that changed nothing still cost something ('$miss') -- experimenting with a spell would fray the world, and a player learning what Weather does would be punished for finding out"
 
 echo
-printf "OK: the first spell cannot be cast untaught, ages a block once it is, spares what a\n    player built, and costs the overworld something it does not cost a living god's world\n"
+printf "OK: the first spell cannot be cast untaught, ages a block once it is, may be aimed at\n    its caster's own wall, and costs the overworld what it does not cost a living god's\n    world\n"
