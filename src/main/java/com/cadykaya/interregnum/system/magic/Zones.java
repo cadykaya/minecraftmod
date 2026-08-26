@@ -1,6 +1,6 @@
 package com.cadykaya.interregnum.system.magic;
 
-import com.cadykaya.interregnum.core.magic.School;
+import com.cadykaya.interregnum.core.magic.Spell;
 import com.cadykaya.interregnum.core.magic.Zone;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
@@ -34,19 +34,22 @@ public final class Zones {
 /**
      * Which spell opened a zone.
      *
-     * Zones are keyed by school rather than pooled, because two spells now open them and
-     * they mean different things: standing in a Lighten field must not silence a creeper,
-     * and standing in a Hush must not make the gravel float. A single list would have
-     * made every zone do everything the moment the second spell shipped -- and it would
-     * have looked like the spells working, from inside either one.
+     * Zones are keyed by SPELL, not by school and not pooled. Both narrowings were
+     * forced by the same shape of bug arriving twice: one list per world broke when a
+     * second spell of any school opened a zone, and keying by school broke when one
+     * school turned out to have two zone spells -- Hush and Still are both Silence.
+     *
+     * Nothing fails when the colliding case arrives. The two zones simply become each
+     * other, and from inside either spell that looks exactly like both of them working.
+     * See {@link Spell}.
      */
-    private static final Map<ResourceKey<Level>, Map<School, List<Zone>>> ACTIVE =
+    private static final Map<ResourceKey<Level>, Map<Spell, List<Zone>>> ACTIVE =
             new HashMap<>();
 
     /** Open a zone belonging to one school. */
-    public static void open(ServerLevel level, School school, Zone zone) {
+    public static void open(ServerLevel level, Spell spell, Zone zone) {
         ACTIVE.computeIfAbsent(level.dimension(), k -> new HashMap<>())
-                .computeIfAbsent(school, k -> new ArrayList<>()).add(zone);
+                .computeIfAbsent(spell, k -> new ArrayList<>()).add(zone);
     }
 
     /**
@@ -56,12 +59,12 @@ public final class Zones {
      * overwhelmingly common case of no zones at all in this world -- which is the
      * `isEmpty` early-out, and is why the map is keyed by dimension rather than scanned.
      */
-    public static boolean covering(ServerLevel level, School school, BlockPos pos) {
-        Map<School, List<Zone>> bySchool = ACTIVE.get(level.dimension());
-        if (bySchool == null) {
+    public static boolean covering(ServerLevel level, Spell spell, BlockPos pos) {
+        Map<Spell, List<Zone>> bySpell = ACTIVE.get(level.dimension());
+        if (bySpell == null) {
             return false;
         }
-        List<Zone> zones = bySchool.get(school);
+        List<Zone> zones = bySpell.get(spell);
         if (zones == null || zones.isEmpty()) {
             return false;
         }
@@ -85,12 +88,12 @@ public final class Zones {
     }
 
     /** How many zones are in force here. For the command seam. */
-    public static int count(ServerLevel level, School school) {
-        Map<School, List<Zone>> bySchool = ACTIVE.get(level.dimension());
-        if (bySchool == null) {
+    public static int count(ServerLevel level, Spell spell) {
+        Map<Spell, List<Zone>> bySpell = ACTIVE.get(level.dimension());
+        if (bySpell == null) {
             return 0;
         }
-        List<Zone> zones = bySchool.get(school);
+        List<Zone> zones = bySpell.get(spell);
         if (zones == null) {
             return 0;
         }

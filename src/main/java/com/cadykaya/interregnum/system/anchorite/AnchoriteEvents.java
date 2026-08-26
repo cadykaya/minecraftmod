@@ -58,7 +58,7 @@ public final class AnchoriteEvents {
         // handlers that would drift.
         if (Anchorite.holds(entity)
                 || Leaks.leaks(level, entity.blockPosition(), Exodus.Law.ANCHORITE)
-                || Zones.covering(level, com.cadykaya.interregnum.core.magic.School.WEIGHT,
+                || Zones.covering(level, com.cadykaya.interregnum.core.magic.Spell.LIGHTEN,
                         entity.blockPosition())) {
             Anchorite.lift(entity);
         }

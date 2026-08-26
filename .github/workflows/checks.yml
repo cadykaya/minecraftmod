@@ -162,3 +162,6 @@ jobs:
 
       - name: The ageing table runs backwards, mends what its owner built, and invents no pasts
         run: ./tools/rewind_check.sh
+
+      - name: A stillness holds what is falling, and its own school-mate does not
+        run: ./tools/still_check.sh

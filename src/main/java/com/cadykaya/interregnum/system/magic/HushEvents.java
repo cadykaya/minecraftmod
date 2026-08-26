@@ -33,7 +33,8 @@ public final class HushEvents {
     @SubscribeEvent
     public static void onChangeTarget(LivingChangeTargetEvent event) {
         if (event.getEntity().level() instanceof ServerLevel level
-                && Zones.covering(level, Hush.SCHOOL, event.getEntity().blockPosition())) {
+                && Zones.covering(level, com.cadykaya.interregnum.core.magic.Spell.HUSH,
+                        event.getEntity().blockPosition())) {
             event.setCanceled(true);
         }
     }
@@ -63,7 +64,7 @@ public final class HushEvents {
                 || !(creeper.level() instanceof ServerLevel level)) {
             return;
         }
-        if (!Zones.covering(level, Hush.SCHOOL, creeper.blockPosition())) {
+        if (!Zones.covering(level, com.cadykaya.interregnum.core.magic.Spell.HUSH, creeper.blockPosition())) {
             return;
         }
         if (creeper.isIgnited()) {

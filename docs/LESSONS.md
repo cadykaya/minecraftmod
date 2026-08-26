@@ -1484,3 +1484,49 @@ before the failure line.
 Related: [#16](#16-a-check-on-the-shape-of-data-cannot-tell-you-the-data-does-anything) and
 [#32](#32-four-scenes-shipped-and-the-thing-they-exist-to-produce-was-never-recorded) — all
 three are checks that ran, passed, and were about something other than what they said.
+
+## 34. A key that is unique because only one thing uses it
+
+Spell zones were stored one list per world. Correct — while exactly one spell opened them.
+The moment a second did, standing in a low-gravity field silenced creepers and standing in
+a silence made gravel float.
+
+Fixed by keying them on the school that opened them. Correct — while each school had at
+most one zone spell. Then the Quiet One turned out to have two, *Hush* and *Still*, and
+they became each other.
+
+**Twice, the same signature.** A key that distinguishes nothing today, because there is
+only one of the thing it distinguishes; and no failure at all when the second one arrives,
+because the two simply merge. From inside either spell it looks exactly like both of them
+working.
+
+### Why it survives review
+
+The natural question when writing the first zone spell is *"what do I need to look this
+up by?"*, and the honest answer is *"nothing, there is only one"*. Adding a key at that
+point looks like speculative generality — the thing every instinct says not to do — and it
+would have been, if the key had been *invented*. It was not: `Spell` is a fact about the
+mod that already existed in `WORLD.md`, which lists four verbs per god.
+
+That is the distinction worth carrying. Keying on something that exists in the design costs
+nothing and cannot be wrong; inventing an abstraction in case you need one later usually
+is.
+
+### The tell, and the only reliable check
+
+The tell is a lookup key whose set of possible values currently has **one member**. Ask:
+*what happens when there are two?* If the answer is "they collide and nothing fails", the
+key is wrong now and the bug is scheduled rather than absent.
+
+And the check has to be the collision itself, because nothing else can see it.
+`still_check.sh` drops sand into a *Hush* — the wrong zone entirely — and asserts it lands.
+That assertion is meaningless in every world except the broken one, which is exactly the
+property a guard against an invisible bug needs.
+
+> **The rule: when a lookup key can only take one value today, it is not a key, and the
+> bug arrives with the second value rather than with a mistake.** Key on the distinction
+> the design already makes, and write the check that only fails when the two collide.
+
+Related: [#33](#33-the-refusal-was-right-and-it-was-refusing-for-a-reason-that-did-not-exist)
+— both are cases where the evidence has to be built into the setup, because the outcome
+alone cannot distinguish working from absent.

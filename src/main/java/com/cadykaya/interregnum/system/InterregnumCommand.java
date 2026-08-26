@@ -711,7 +711,7 @@ public final class InterregnumCommand {
                                                             + " frayed=" + cast.frayed()
                                                             + " refused=" + cast.refused()
                                                             + " zones=" + com.cadykaya.interregnum
-                                                                    .system.magic.Zones.count(level, com.cadykaya.interregnum.core.magic.Lighten.SCHOOL)),
+                                                                    .system.magic.Zones.count(level, com.cadykaya.interregnum.core.magic.Spell.LIGHTEN)),
                                                     false);
                                             return cast.opened() ? 1 : 0;
                                         })))));
@@ -768,6 +768,23 @@ public final class InterregnumCommand {
                                                                     .RewindSpell.describe(cast)
                                                             + " frayed=" + cast.frayed()), false);
                                             return cast.worked() ? 1 : 0;
+                                        })))));
+
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("still")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                        .executes(ctx -> {
+                                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                            var cast = com.cadykaya.interregnum.system.magic.StillSpell
+                                                    .cast(ctx.getSource().getLevel(), pos,
+                                                            grimoireOf(ctx, "who"));
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "cast=still opened=" + cast.opened()
+                                                            + " frayed=" + cast.frayed()
+                                                            + " refused=" + cast.refused()), false);
+                                            return cast.opened() ? 1 : 0;
                                         })))));
 
         // Teaching, the operator seam. In play a school is taught by a scene -- see the

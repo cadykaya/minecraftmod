@@ -226,6 +226,10 @@ MUTATIONS = [
      "    public static final School SCHOOL = School.SILENCE;",
      "    public static final School SCHOOL = School.WEIGHT;"),
 
+    ("magic: two spells of one school collapse onto the same key",
+     f"{MAIN}/magic/Spell.java",
+     "    STILL(School.SILENCE);", "    STILL(School.WEIGHT);"),
+
     # The dead god's mail. The invariant here is about a SET -- three letters open with
     # a name, the fourth opens `To --` -- so nothing about an individual letter can
     # catch it going. If it goes, the mid-game's best reveal quietly stops being one and

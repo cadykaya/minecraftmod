@@ -854,6 +854,39 @@ public final class SelfTest {
               "Rewind belongs to the Turning, the same school as Weather -- they are one "
               + "table read forwards and backwards, and a school that taught only one "
               + "direction would be teaching half a mechanism");
+
+        // EVERY SPELL IS ITS OWN KEY. Spell zones were keyed by school until a school
+        // turned out to have two zone spells, and the failure had no symptom: keyed by
+        // school, Hush and Still become each other and both appear to work.
+        //
+        // The guard is that no two spells share an identity, which is trivially true of
+        // an enum -- so what is actually asserted is that more than one spell maps to
+        // some school, i.e. that the collision this key exists to prevent is REAL and not
+        // hypothetical. A key nobody could collide on needs no protecting.
+        var perSchool = new java.util.EnumMap<com.cadykaya.interregnum.core.magic.School,
+                Integer>(com.cadykaya.interregnum.core.magic.School.class);
+        for (var sp : com.cadykaya.interregnum.core.magic.Spell.values()) {
+            perSchool.merge(sp.school(), 1, Integer::sum);
+        }
+        // Named explicitly rather than counted. A first version asserted "some school
+        // teaches more than one spell", which sounds like the same thing and is not: it
+        // survived moving Still to another school entirely, because Weather and Rewind
+        // still shared the Turning. The assertion has to be about the PAIR that motivated
+        // the key, not about the existence of any pair.
+        check(com.cadykaya.interregnum.core.magic.Spell.HUSH.school()
+                      == com.cadykaya.interregnum.core.magic.School.SILENCE
+              && com.cadykaya.interregnum.core.magic.Spell.STILL.school()
+                      == com.cadykaya.interregnum.core.magic.School.SILENCE,
+              "Hush and Still are both the Quiet One's. They are the pair that forced "
+              + "spell zones to stop being keyed by school -- keyed that way they become "
+              + "each other, a silence stops falling blocks and a stillness mutes "
+              + "creepers, and nothing fails anywhere");
+        check(perSchool.values().stream().anyMatch(n -> n > 1),
+              "and at least one school does teach more than one spell, so the key is "
+              + "guarding a collision that is real rather than hypothetical");
+        check(perSchool.size() == com.cadykaya.interregnum.core.magic.School.values().length,
+              "every school teaches at least one spell, so no god's world is a journey "
+              + "toward nothing");
     }
 
     /**

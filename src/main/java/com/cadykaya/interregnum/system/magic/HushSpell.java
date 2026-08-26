@@ -24,7 +24,7 @@ public final class HushSpell {
         if (!Casting.permitted(grimoire, Hush.SCHOOL)) {
             return Cast.no("unlearned");
         }
-        Zones.open(level, Hush.SCHOOL,
+        Zones.open(level, com.cadykaya.interregnum.core.magic.Spell.HUSH,
                 Hush.zoneAt(pos.getX(), pos.getY(), pos.getZ(), level.getGameTime()));
         if (!Casting.drawsOnTheCorpse(level.dimension() == Level.OVERWORLD)) {
             return new Cast(true, 0, "");

@@ -27,10 +27,10 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **29**, every one mutation-verified, all in CI |
+| Live-world checks | **30**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
-| Magic | **four schools, five spells**, learned in their gods' worlds; command-only for now |
+| Magic | **four schools, six spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 
 ### Band 4: the world forgets what it was
@@ -97,6 +97,32 @@ being *crossed* (no CI run waits that out, and `/time add` moves dayTime while t
 reads gameTime — the arithmetic is covered in core, including both sides of the boundary),
 and the tick handler itself (it walks `level.players()` and a headless server has none, so
 the command seam runs — calling the *same* `Tending.tendAround`, not a copy).
+
+### A key that was unique only because one thing used it
+
+***Still*** — the Quiet One's second. `WORLD.md`: *"freeze primed TNT / falling block
+**mid-state**."* The last word is the spell: the thing is already happening and it stops,
+holding the state it was in. Nothing is deleted and nothing is defused — when the zone
+lapses, the sand falls and the TNT goes off. A spell that removed the hazard would be a
+damage button with extra steps.
+
+It is a different verb from its own school-mate. **Hush is about information** (nothing
+hears, nothing notices, no fuse completes because a fuse is a sound); **Still is about
+motion** (what is already in flight stops). A creeper walking at you is unaffected by
+Still; a falling anvil is unaffected by Hush. They overlap on exactly one object — primed
+TNT — and treat it differently: one denies it the sound it needs, the other the moment.
+
+**Building it surfaced a latent bug, which is the part worth keeping.** Spell zones were
+keyed by `School`. That was correct while each school had at most one zone spell, and Hush
+and Still are *both* Silence — so keyed by school they become each other: a silence would
+stop falling blocks and a stillness would mute creepers, **with nothing failing anywhere
+and both spells appearing to work from inside either one.**
+
+This is the **second time** that shape has come up. The first was one list of zones per
+world, which broke as soon as a second spell of any school opened one. Both are the same
+signature: *a key that is unique today because only one thing uses it.* Zones are now keyed
+by `Spell`, and `still_check.sh` is the only place the difference has a symptom — it drops
+sand into a Hush and asserts it lands.
 
 ### The ageing table runs backwards too
 

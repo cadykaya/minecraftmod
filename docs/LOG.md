@@ -2977,3 +2977,48 @@ prints `GUESSED_TILES` before it fails.
 
 174 self-test checks, 29 live checks. `turning_check.sh` passes unchanged with the new
 rule, which is what made the table edit safe to make.
+
+## A key that was unique only because one thing used it
+
+***Still*** — the Quiet One's second spell. `WORLD.md`: *"freeze primed TNT / falling block
+**mid-state**."* The last word is the whole thing: it is already happening, and it stops,
+holding the state it was in. Nothing is deleted and nothing is defused — when the zone
+lapses the sand falls and the TNT goes off, which is what keeps it a reprieve rather than a
+damage button with extra steps.
+
+It is a genuinely different verb from its own school-mate. **Hush is about information**:
+nothing hears, nothing notices, no fuse completes because a fuse is a sound. **Still is
+about motion**: what is already in flight stops. A creeper walking at you is unaffected by
+Still, and a falling anvil is unaffected by Hush. They overlap on exactly one object,
+primed TNT, and treat it differently — one denies it the sound it needs, the other the
+moment. That is what two spells in one school should look like.
+
+### The bug it surfaced before it happened
+
+Spell zones were keyed by `School`. Correct while each school had at most one zone spell —
+and Hush and Still are both Silence, so keyed that way **they become each other**: a
+silence would stop falling blocks, a stillness would mute creepers, and nothing anywhere
+would fail.
+
+That is the second time this exact shape has come up. The first was one list of zones per
+world, which broke the moment a second spell of *any* school opened one. Both are the same
+signature: **a key that is unique today because only one thing uses it.** `LESSONS.md` #34.
+
+Zones are now keyed by `Spell`, an enum that was a fact about the mod already — `WORLD.md`
+lists four verbs per god — rather than an abstraction invented in case it was needed. That
+distinction is the difference between this and speculative generality.
+
+`still_check.sh` is the only place the difference has a symptom: it drops sand into a
+*Hush*, the wrong zone entirely, and asserts it lands. Meaningless in every world except
+the broken one, which is exactly what a guard against an invisible bug has to look like.
+The mutation that keys by school again fails on precisely that line.
+
+### And a core guard that did not guard
+
+The first version asserted "some school teaches more than one spell", which sounds like the
+right property and is not. Moving Still to another school entirely left Weather and Rewind
+still sharing the Turning, so the assertion passed and the mutation escaped. Fixed by
+naming the pair that actually motivated the key — Hush and Still are both the Quiet One's —
+rather than counting. An assertion about "some pair exists" cannot defend a specific pair.
+
+177 self-test checks, 56 mutations, 30 live checks.
