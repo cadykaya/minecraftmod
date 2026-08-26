@@ -260,6 +260,21 @@ MUTATIONS = [
      f"{MAIN}/magic/Loft.java",
      "        return blocks > MAX_BLOCKS;", "        return blocks >= MAX_BLOCKS;"),
 
+    # The manifestation's rate IS the feature -- `WORLD.md` calls it a credibility problem
+    # and not a sanity bar, and the only thing separating those is how often it happens.
+    # Both bounds are asserted, because the two ways to get it wrong are opposite.
+    ("haunt: a door moves often enough to be weather",
+     f"{MAIN}/haunt/Manifestation.java",
+     "    public static final int INTERVAL_TICKS = 200;",
+     "    public static final int INTERVAL_TICKS = 20;"),
+    ("haunt: every interval manifests, so the ghost is a metronome",
+     f"{MAIN}/haunt/Manifestation.java",
+     "    public static final int ODDS = 90;", "    public static final int ODDS = 1;"),
+    ("haunt: the world asks on every tick rather than on the interval",
+     f"{MAIN}/haunt/Manifestation.java",
+     "        return Math.floorMod(gameTime, INTERVAL_TICKS) == 0;",
+     "        return true;"),
+
     # The Anchorite's pair is the worse one: Lighten and Drop-forge are opposites, so
     # collapsing them onto one key produces a zone that lifts the weight it is waiting
     # for. Named separately from the Quiet One's because the assertion has to be about

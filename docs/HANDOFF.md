@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **40**, every one mutation-verified, all in CI |
+| Live-world checks | **41**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, ten spells**, learned in their gods' worlds; command-only for now |
@@ -1886,6 +1886,42 @@ this scene has. `tools/haunt_check.sh`, four mutations, four caught.
 
 `Milestone.HAUNT_OPENED` is deliberately **not** a chapter prerequisite: the Haunt is
 a thread, not a gate, and a killer who never sleeps must not stall the whole world.
+
+### The Haunt does something a bystander can see
+
+`WORLD.md`, locked: *"**Rarely, a manifestation is server-real** — a bystander sees the
+door move too. Not a sanity bar: a **credibility problem**."*
+
+That distinction is the whole feature, and until now the mod only had the half that
+undermines it. Every other manifestation on the locked list is rendered for one player,
+and a mod that only ever did that has built a sanity meter: the killer sees things,
+everybody knows the killer sees things, and nobody has to decide anything. The rare ones
+being *real* is what turns it into something two people can disagree about.
+
+**A door, because the locked text says a door.** It is the right object precisely because
+it is the most ordinary one: it moves on its own for six mundane reasons, somebody who
+reports it sounds like somebody reporting a draught, and the killer is the only one in the
+room who knows it was not. Trapdoors and fence gates are deliberately excluded — they
+would double the hit rate for nothing, since the beat is not "something opened".
+
+**The claim ledger does not gate this**, and the exception is worth stating because it is
+the first one. The ledger exists so the unraveling cannot *unmake* somebody's work; opening
+a door unmakes nothing, and a ghost that could only move doors the player had not hung
+would be a poltergeist with a property deed — it would never touch the one door in the
+world that would mean anything.
+
+**The rate is the design**, so both bounds are asserted in `SelfTest` rather than left as
+taste: more often than every five minutes and it is weather, less often than once an hour
+and it exists only in the source code. Checked every ten seconds, one in ninety — a mean of
+about fifteen minutes, which means a few in a long session and none at all in a short one.
+That unevenness is the mechanism: a thing that happens on a schedule is a mechanic, and a
+thing that happens sometimes is a rumour. **[NEEDS PLAYTEST]**, more than most rates here —
+what is being tuned is how plausible a person sounds when they say a door opened by itself.
+
+`manifest_check.sh` reads the door's state back out of the world rather than trusting the
+command's own reply, and asserts the toggle in both directions and a door forty blocks away
+untouched at both moments. Mutation run: setting the door to the state it was already in —
+returning MOVED and changing nothing — was caught.
 
 ### The Haunt comes back
 

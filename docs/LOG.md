@@ -3811,3 +3811,51 @@ Ten spells, four schools. What is left of the kits is six bare names — *Hedge*
 Deciding what one of those does is designing a mechanic, so they wait on the owner.
 
 213 self-test checks, 70 mutations, 40 live checks, 20 fast-gate stages.
+
+---
+
+## Something a bystander can see
+
+`WORLD.md`, locked: *"Rarely, a manifestation is server-real — a bystander sees the door
+move too. Not a sanity bar: a credibility problem."*
+
+Until now the mod had only the half that undermines that. The dream-audiences are the
+killer's alone and everything else on the Haunt's list is client-rendered, and a mod that
+only ever does that has built a sanity meter: the killer sees things, everybody knows the
+killer sees things, and nobody has to decide anything. The rare ones being **real** is what
+makes it something two people can disagree about.
+
+A door, because the locked text says a door — and because it is the most ordinary object
+available. It moves on its own for six mundane reasons, somebody who reports it sounds like
+somebody reporting a draught, and the killer is the only one in the room who knows it was
+not. Trapdoors and fence gates would double the hit rate for nothing; the beat is not
+"something opened", it is that a *door* did.
+
+### The first place the claim ledger does not apply
+
+Everywhere else, an effect nobody aimed at spares what a player placed. The ledger exists
+so the unraveling cannot *unmake* somebody's work — and opening a door unmakes nothing. A
+ghost that could only move doors the player had not hung would be a poltergeist with a
+property deed, and it would never touch the one door in the world that would mean anything.
+Written into the class, because an exception nobody explains reads as an oversight.
+
+### The rate is the feature, so both bounds are asserted
+
+More often than every five minutes and it is weather: nobody's account of it is in
+question, because there is nothing left to doubt. Less often than once an hour and a
+session never contains one. Checked every ten seconds, one in ninety — a mean of about
+fifteen minutes, a few in a long session and none in a short one. The interval and the odds
+are separate numbers on purpose: one is "how much work is this per player" and the other is
+"how often does it happen", and a single number would have made the ghost cheaper the
+rarer it got, which is the wrong pressure on whoever tunes it next.
+
+### The check reads the world, not the reply
+
+`manifest_check.sh` asserts the door's block state rather than the command's outcome, in
+both directions, with a door forty blocks away checked at both moments rather than once at
+the end — a far door that opened and shut between the two would satisfy a single late check
+while every door in the world had in fact been moving. Mutation run: setting the door to
+the state it was already in, so the method returns MOVED and changes nothing, was caught
+with exactly that message.
+
+217 self-test checks, 73 mutations, 41 live checks, 20 fast-gate stages.

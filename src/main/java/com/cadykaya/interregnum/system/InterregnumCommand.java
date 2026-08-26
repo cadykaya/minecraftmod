@@ -446,6 +446,25 @@ public final class InterregnumCommand {
         return cast.ok() ? 1 : 0;
     }
 
+    /** `haunt manifest <who> <near>`. See {@link com.cadykaya.interregnum.system.dialogue.Manifest}. */
+    private static int manifest(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        String who = StringArgumentType.getString(ctx, "who");
+        java.util.UUID uuid;
+        try {
+            uuid = java.util.UUID.fromString(who);
+        } catch (IllegalArgumentException e) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "manifest=refused reason=not a player id"), false);
+            return 0;
+        }
+        BlockPos near = BlockPosArgument.getLoadedBlockPos(ctx, "near");
+        var outcome = com.cadykaya.interregnum.system.dialogue.Manifest
+                .move(ctx.getSource().getLevel(), near, uuid);
+        ctx.getSource().sendSuccess(() -> Component.literal("manifest=" + outcome), false);
+        return outcome == com.cadykaya.interregnum.system.dialogue.Manifest.Outcome.MOVED ? 1 : 0;
+    }
+
     private static int haunt(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
                             boolean force) {
         String who = StringArgumentType.getString(ctx, "who");
@@ -1229,7 +1248,13 @@ public final class InterregnumCommand {
                         .then(Commands.argument("who", StringArgumentType.string())
                                 .executes(ctx -> haunt(ctx, false))
                                 .then(Commands.literal("force")
-                                        .executes(ctx -> haunt(ctx, true))))));
+                                        .executes(ctx -> haunt(ctx, true)))))
+                // The server-real half. It takes a position because the tick handler uses
+                // the killer's, and a headless server has none to use.
+                .then(Commands.literal("manifest")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("near", BlockPosArgument.blockPos())
+                                        .executes(InterregnumCommand::manifest)))));
 
         root = root.then(talk());
 

@@ -1034,6 +1034,30 @@ public final class SelfTest {
               "and a caster stands at the thing they are picking up. This is the one "
               + "spell that takes a specific building rather than a volume, so a reach "
               + "wider than a room would make 'that one' unanswerable");
+
+        // THE SERVER-REAL MANIFESTATION. `WORLD.md` calls it "a credibility problem" and
+        // explicitly not a sanity bar, and the entire difference between those two things
+        // is a rate. Both bounds below are the design rather than tuning taste.
+        long mean = com.cadykaya.interregnum.core.haunt.Manifestation.meanTicksBetween();
+        check(mean > 20L * 60 * 5,
+              "a door moves less often than every five minutes. More often than that and "
+              + "it is weather: nobody's account of it is in question, because there is "
+              + "nothing left to doubt");
+        check(mean < 20L * 60 * 60,
+              "and more often than once an hour. A beat tuned so fine that a session "
+              + "never contains one exists only in the source code");
+        check(com.cadykaya.interregnum.core.haunt.Manifestation.due(0)
+              && com.cadykaya.interregnum.core.haunt.Manifestation.due(
+                      com.cadykaya.interregnum.core.haunt.Manifestation.INTERVAL_TICKS)
+              && !com.cadykaya.interregnum.core.haunt.Manifestation.due(1),
+              "the world asks on the interval and not on every tick. Asking every tick "
+              + "would move the rarity entirely into the odds and make the cost of the "
+              + "feature scale with how often it is supposed to happen");
+        check(com.cadykaya.interregnum.core.haunt.Manifestation.REACH
+                      <= com.cadykaya.interregnum.core.magic.Hush.RADIUS,
+              "and the ghost reaches no further than a room. A bystander who saw the "
+              + "door move has to have seen who was standing there, or it is just a "
+              + "door moving");
     }
 
     /**
