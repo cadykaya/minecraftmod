@@ -38,6 +38,7 @@ cd "$(dirname "$0")/.."
 fail() { echo "FAIL: $1"; exit 1; }
 
 SCENE=interregnum:verdant_delivery
+SCENE2=interregnum:anchorite_delivery
 # UUID participants, because `interregnum regard` takes a player id and the whole point
 # of this file is reading the number back. Opaque string ids are fine for the table but
 # have no regard to inspect.
@@ -78,6 +79,31 @@ interregnum talk say $B accept
 interregnum talk say $C accept
 say AFTER_SCENE
 interregnum talk status $A
+interregnum regard $A
+interregnum talk start $SCENE2 $A+$B+$C
+interregnum talk say $A heavy
+interregnum talk say $B heavy
+interregnum talk say $C heavy
+interregnum talk say $A letter
+interregnum talk say $B letter
+interregnum talk say $C letter
+interregnum talk say $A wait
+interregnum talk say $B wait
+interregnum talk say $C wait
+interregnum talk say $A thanks
+interregnum talk say $B thanks
+interregnum talk say $C thanks
+interregnum talk say $A put_it_down
+interregnum talk say $B put_it_down
+interregnum talk say $C put_it_down
+interregnum talk say $A onward
+interregnum talk say $B onward
+interregnum talk say $C onward
+interregnum talk say $A accept
+interregnum talk say $B accept
+interregnum talk say $C accept
+say AFTER_SCENE2
+interregnum talk status $A
 interregnum regard $A" \
     LOG=/tmp/delivery.log timeout 900 ./tools/server_smoke.sh > /tmp/dl.txt 2>&1 \
     || { tail -25 /tmp/dl.txt; fail "the run did not complete"; }
@@ -114,5 +140,33 @@ echo "  VERDANT: $v_before -> $v_after   (permanent cap $cap)"
 [ "$v_after" -le "$cap" ] || \
     fail "the delivery scene lifted the Verdant to $v_after, past the permanent cap of $cap that killing a god imposes. WORLD.md is explicit that the surviving gods write the killer off; a scene that can undo that in one conversation makes the deicide a debt instead of a scar"
 
+# --- and the second god's scene, which is a different shape ------------------
+# The Verdant opens mid-argument, defending an arrangement nobody mentioned. The
+# Anchorite does not defend anything: it has been holding something for an age and asks
+# what the load is before it asks who you are. Two gods, two openings, one machinery --
+# and this asserts the second one is reachable, plays to its end, and pays.
+after2=$(sed -n '/AFTER_SCENE2/,$p' /tmp/dl.txt | grep -oE 'talk=[a-z]+' | head -1 || true)
+[ "$after2" = "talk=none" ] || {
+    sed -n '/AFTER_SCENE2/,$p' /tmp/dl.txt | grep -E 'talk=' | head -4 || true
+    fail "the Anchorite's table was still open after the last answer ('$after2') -- the scene did not reach an ending, so somewhere on the generous path a node does not resolve"; }
+
+a_before=$(sed -n '/AFTER_SCENE/,/AFTER_SCENE2/p' /tmp/dl.txt | grep -oE 'ANCHORITE=[A-Z]+\(-?[0-9]+\)' | head -1 | grep -oE '\(-?[0-9]+\)' | tr -d '()')
+a_after=$(sed -n '/AFTER_SCENE2/,$p' /tmp/dl.txt | grep -oE 'ANCHORITE=[A-Z]+\(-?[0-9]+\)' | head -1 | grep -oE '\(-?[0-9]+\)' | tr -d '()')
+a_cap=$(sed -n '/AFTER_SCENE2/,$p' /tmp/dl.txt | grep -oE 'ANCHORITE=[A-Z]+\(-?[0-9]+\)cap-?[0-9]+' | head -1 | grep -oE 'cap-?[0-9]+$' | sed 's/cap//')
+[ -n "$a_before" ] && [ -n "$a_after" ] && [ -n "$a_cap" ] || {
+    grep -oE 'ANCHORITE=[A-Za-z]+\(-?[0-9]+\)(cap-?[0-9]+)?' /tmp/dl.txt | head -4 || true
+    fail "could not read the Anchorite's regard before and after its scene"; }
+
+echo "  ANCHORITE: $a_before -> $a_after   (permanent cap $a_cap)"
+[ "$a_after" -gt "$a_before" ] || \
+    fail "the most generous path through the Anchorite's scene left it at $a_after, no better than the $a_before it started at -- the choices in that scene are decoration"
+
+# STRICTLY under, not merely at. `dialogue_check.py` now refuses a scene whose best route
+# would reach the ceiling, because `adjust` clamps and the tail of such a scene pays a
+# capped player nothing. Landing exactly ON the cap here would mean the fast gate's
+# arithmetic and the running game disagree about what the best route is worth.
+[ "$a_after" -lt "$a_cap" ] || \
+    fail "the Anchorite finished at $a_after, at or past its permanent cap of $a_cap. dialogue_check.py computes the best route statically and refuses one that reaches the ceiling; if the live number gets there anyway, the two disagree and the static guard is not guarding what it thinks"
+
 echo
-echo "OK: the Verdant's letter can be delivered, the scene plays to its end, and the most generous path still leaves a god that will not have you"
+echo "OK: two gods' letters can be delivered, both scenes play to their ends, and the most generous path through either still leaves a god that will not have you"

@@ -2418,3 +2418,76 @@ Verdant's growth did not: nothing in vanilla turns a birch log into an oak log, 
 into dirt, or diamond ore into stone. There is no background process to separate the mod's
 effect from, so a single conversion where none was permitted is the law having escaped its
 gates rather than a rate to compare.
+
+## The second god's letter, and a hazard I had written off
+
+The Anchorite's delivery scene, and the pair with the Verdant's is the point: **two
+openings, one machinery.** The Verdant opens mid-argument, defending a coverage
+arrangement nobody mentioned. The Anchorite does not defend anything — it has been
+holding something for an age, and asks *what the load is* before it asks who you are.
+
+Its locked source is its own letter, which shipped long before this scene existed:
+
+> `SUBJECT: MASS AUTHORITY — no matter arising`
+>
+> *There is no matter arising. I have checked the register twice and there is nothing I am
+> required to raise with you, which is why this has taken the form it has. The undersigned
+> has no procedure for the other kind.*
+>
+> *You held the corner of it while I set the rest. I do not think either of us has said so
+> since. Filed for the record, in case there is one.*
+
+So the relationship is not an estrangement at all. It is a shared piece of work neither of
+them ever acknowledged, and the dead god wanted to say thank you and could only do it by
+filing the form that exists for saying nothing.
+
+The scene follows the consequence rather than restating the letter. Nobody ever came back
+to say the setting was finished, so the Anchorite never let go — and its whole world, the
+one where unanchored things rise and do not stop, is a place where the only thing still
+being held down is that one corner. The UNANIMOUS node is telling it the setter is dead
+and it can put the corner down: a mercy, and the end of the only job it has had for an
+age, which is why nobody gets to do it alone.
+
+Neither scene spends its god's name. `letters_check.py` still passes, which is the whole
+reason it exists — a delivery scene is the most tempting place in the mod to break that
+reveal, and nothing else would fail if it did.
+
+### The hazard I recorded as uncheckable, checked
+
+One increment ago I found that the regard engine **clamps** to the post-deicide ceiling,
+so an author can write `+25` into an option, a capped player silently receives `+0`, and
+the choice reads as consequential while doing nothing. I wrote it into `HANDOFF.md` as
+something that could not be caught statically, on the grounds that whether a player is
+capped is runtime state.
+
+That was true and beside the point. **The worst case is arithmetic.** Walk every path
+through a scene, take the most generous route per god, and compare the post-deicide floor
+plus that route against the ceiling. If it passes the ceiling, then for the players the
+scene is actually about — the ones who killed a god — some of its choices are decoration.
+
+`dialogue_check.py` now does that on every push. The two constants are read out of
+`RegardState.java` with a regex rather than copied: if `recordDeicide` is reshaped the
+check fails loudly instead of quietly validating against numbers that no longer exist.
+Both failure modes were watched — the over-generous scene, and the constants moving.
+
+I found it by walking into it. The Anchorite's scene was written at **+40** against a
+floor of −45 and a ceiling of −10, so its final choice — accepting the errand, the beat
+the whole scene builds to — was worth nothing to the only audience it is for. Retuned to
++30, which lands at −15.
+
+The live check now measures both: `VERDANT: -45 -> -16` and `ANCHORITE: -45 -> -15`,
+matching the static computation of +29 and +30 exactly. That agreement is worth more than
+either number — it means the fast gate's path arithmetic and the running game have the
+same idea of what the best route through a scene is worth.
+
+### And one thing nothing can check
+
+`ci_claims_check.py` guards `HANDOFF.md`'s counts on every push by counting the workflow
+rather than trusting the table. The pull request description carries the same numbers and
+**nothing checks it**, because it does not live in the repository.
+
+It has now gone stale twice — once at 48 commits, again at 67 — both times in the
+flattering direction, and the second time it told the owner that nothing was waiting on
+them while two decisions were. Rewritten against the tree, with every number counted, and
+`HANDOFF.md` now carries a note saying the description must be updated by hand whenever
+those counts move. That is a weaker mitigation than a check and it is labelled as one.

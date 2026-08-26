@@ -96,6 +96,28 @@ reads gameTime — the arithmetic is covered in core, including both sides of th
 and the tick handler itself (it walks `level.players()` and a headless server has none, so
 the command seam runs — calling the *same* `Tending.tendAround`, not a copy).
 
+### Two gods' letters can be delivered
+
+The Verdant's and the Anchorite's, and the pair is the point: **two openings, one
+machinery.** The Verdant opens mid-argument, defending a coverage arrangement nobody
+mentioned. The Anchorite does not defend anything — it has been holding something for an
+age and asks *what the load is* before it asks who you are.
+
+The Anchorite's locked source is its own letter, which shipped long before the scene:
+*"You held the corner of it while I set the rest. I do not think either of us has said so
+since."* — filed under `SUBJECT: MASS AUTHORITY — no matter arising`, the form you use to
+report that there is nothing to report, because *"the undersigned has no procedure for the
+other kind."*
+
+So the relationship is not an estrangement. It is a shared piece of work neither of them
+ever acknowledged, and the scene follows the consequence: nobody came back to say the
+setting was finished, so the Anchorite never let go. Its whole world is a place where
+unanchored things rise and do not stop — already built, already what the ferry's boarding
+notice promises — because the only thing it is still holding down is that one corner. The
+UNANIMOUS node is telling it the setter is dead and it can put the corner down.
+
+Neither scene spends its god's name; `letters_check.py` still passes.
+
 ### The first god's letter can be delivered
 
 `WORLD.md`: *"Each world's questline opens by delivering that god's letter. Their reaction
@@ -122,14 +144,22 @@ like that in a very long time"* does more than the name would.
 a god drops every survivor by 45 and locks a permanent ceiling at −10. The most generous
 path here is worth +29 and lands at **−16**: measured live, not asserted in prose.
 
-**A hazard found while testing that, worth fixing before more god scenes exist.** The
-regard engine *clamps* to the ceiling, so an author can write `+25` into an option, a
-capped player silently receives `+0`, and the choice reads as consequential while doing
-nothing. `dialogue_check.py` already rejects `regard: 0` for exactly this reason —
-*"omit it rather than implying a consequence"* — and the clamped case is the same defect
-wearing a number. It cannot be caught statically, because whether a player is capped is
-runtime state. Not yet solved; recorded so the next god scene does not discover it the
-hard way.
+**The hazard found while testing that is now checked** — and the note that said it
+could not be was wrong. The regard engine *clamps* to the ceiling, so an author can write
+`+25` into an option, a capped player silently receives `+0`, and the choice reads as
+consequential while doing nothing. I recorded that as uncatchable on the grounds that
+whether a player is capped is runtime state.
+
+True, and beside the point: the **worst case is arithmetic**. `dialogue_check.py` now
+walks every path through every scene, takes the most generous route per god, and refuses
+any scene where the post-deicide floor plus that route would pass the ceiling. The
+constants are read out of `RegardState.java` rather than copied, so reshaping
+`recordDeicide` fails the check loudly instead of leaving it validating against numbers
+that no longer exist.
+
+It was found by walking into it: the Anchorite's delivery scene was written at +40
+against a floor of −45 and a ceiling of −10, so its final choice was worth nothing to the
+only audience the scene is about. Retuned to +30.
 
 ### The overworld starts leaking somebody else's law
 
@@ -1306,6 +1336,19 @@ best, same with mod loader."* Both are recorded with reasoning so a future sessi
 overturn them on grounds rather than taste.
 
 ---
+
+### A rot surface nothing can check
+
+`docs/HANDOFF.md`'s counts are guarded on every push by `ci_claims_check.py`, which
+counts the workflow rather than trusting the table. **The pull request description carries
+the same numbers and nothing checks it**, because it does not live in the repository — and
+it has now gone stale twice, once at 48 commits and again at 67, both times in the
+flattering direction, and the second time it claimed nothing was waiting on the owner
+while two decisions were.
+
+There is no fix available from CI. The mitigation is this note: **when the counts in the
+table above change, the PR description changes too**, by hand, and the "Waiting on you"
+section at the bottom of it is checked against "Waiting on owner" below.
 
 ## The heartbeat
 

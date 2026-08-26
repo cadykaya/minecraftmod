@@ -6,7 +6,7 @@ player -- and adds the data-side checks Java cannot do: schema shape, known rule
 and that every text_key resolves in the lang file (an untranslated key renders as
 the raw key in game, which is a bug wearing a costume).
 """
-import json, os, sys
+import json, os, re, sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DLG = os.path.join(REPO, "src/main/resources/data/interregnum/dialogue")
@@ -112,13 +112,100 @@ def check_file(path, lang):
            [1 for n in d["nodes"] for o in n.get("options", []) if o.get("target") == END]
     if not term: fails.append(f"{name}: no reachable ending")
 
+GODS = {"VERDANT", "ANCHORITE", "HEARTH_TURNER", "QUIET_ONE"}
+
+
+def deicide_numbers():
+    """The two constants a deicide imposes, read from the source rather than remembered.
+
+    A regex over Java is a fragile way to learn a number, and it is deliberate here: if
+    `recordDeicide` is reshaped, this returns None and the check below says so instead of
+    quietly validating against numbers that no longer exist.
+    """
+    src = os.path.join(REPO, "core/src/main/java/com/cadykaya/interregnum/core/regard/"
+                             "RegardState.java")
+    text = open(src).read()
+    drop = re.search(r"adjust\(i,\s*(-?\d+)\)", text)
+    cap = re.search(r"lowerCeiling\(i,\s*(-?\d+)\)", text)
+    return (int(drop.group(1)), int(cap.group(1))) if drop and cap else (None, None)
+
+
+def best_path(nodes, start, inst):
+    """The most regard any single play-through can earn with one institution.
+
+    Longest path over a graph that is small and usually a DAG, with a visited set so a
+    scene that loops back cannot make this run forever. Only POSITIVE deltas are summed:
+    the question is what the most generous possible route is worth, and a player taking
+    it would not choose the options that cost them.
+    """
+    best = {}
+
+    def walk(node_id, seen):
+        if node_id in best and node_id not in seen:
+            return best[node_id]
+        node = nodes.get(node_id)
+        if node is None or node_id in seen:
+            return 0
+        seen = seen | {node_id}
+        top = 0
+        for o in node.get("options", []):
+            gain = max(0, o.get("regard", {}).get(inst, 0))
+            top = max(top, gain + walk(o.get("target"), seen))
+        best[node_id] = top
+        return top
+
+    return walk(start, frozenset())
+
+
+def check_ceilings(scenes):
+    """No scene may promise a capped player more than the cap can deliver.
+
+    A deicide drops every surviving god and locks a permanent ceiling, and `adjust`
+    CLAMPS to that ceiling. So an option worth +25 written past the cap gives a capped
+    player +0 -- the choice reads as consequential and does nothing, which is the same
+    defect this file already rejects for `regard: 0` ("omit it rather than implying a
+    consequence") wearing a number instead of a zero.
+
+    This was written off as uncheckable, on the grounds that whether a player is capped
+    is runtime state. That is true and beside the point: the WORST case is arithmetic.
+    If the floor plus the most generous route exceeds the ceiling, then for the players
+    the scene is really about -- the ones who killed a god -- some of its choices are
+    decoration. Found by walking into it: the Anchorite's delivery scene was written at
+    +40 against a floor of -45 and a ceiling of -10, so its final choice was worth
+    nothing to the only audience that matters.
+    """
+    drop, cap = deicide_numbers()
+    if drop is None:
+        fails.append(
+            "could not read the deicide's drop and ceiling out of RegardState.java -- "
+            "`recordDeicide` has been reshaped, so the ceiling check below is not "
+            "running and no scene is being checked against it.")
+        return
+    for name, d in scenes:
+        nodes = {n["id"]: n for n in d.get("nodes", [])}
+        for inst in sorted(GODS):
+            top = best_path(nodes, d.get("start"), inst)
+            if top and drop + top > cap:
+                fails.append(
+                    f"{name}: the most generous route earns {inst} +{top}, which from the "
+                    f"post-deicide floor of {drop} reaches {drop + top} -- past the "
+                    f"permanent ceiling of {cap} that killing a god imposes. `adjust` "
+                    f"clamps, so a player who killed a god silently receives less than "
+                    f"the scene offers and its later choices do nothing. Keep the best "
+                    f"route at or under {cap - drop}.")
+
+
 def main():
     lang = json.load(open(LANG)) if os.path.exists(LANG) else {}
     n = 0
+    scenes = []
     for root, _, files in os.walk(DLG):
         for f in sorted(files):
             if f.endswith(".json"):
-                check_file(os.path.join(root, f), lang); n += 1
+                path = os.path.join(root, f)
+                check_file(path, lang); n += 1
+                scenes.append((os.path.relpath(path, REPO), json.load(open(path))))
+    check_ceilings(scenes)
     if fails:
         print(f"FAIL: {len(fails)} dialogue violation(s)")
         for f in fails: print("  -", f)
@@ -130,8 +217,10 @@ def main():
                 doc = json.load(open(os.path.join(root, f)))
                 effects += sum(1 for nd in doc["nodes"]
                                for o in nd.get("options", []) if o.get("regard"))
+    drop, cap = deicide_numbers()
     print(f"OK: {n} dialogue file(s) valid, all keys resolve, "
-          f"{effects} option(s) carry consequences")
+          f"{effects} option(s) carry consequences; no scene offers a god more than "
+          f"the {cap} ceiling a deicide leaves")
     return 0
 
 if __name__ == "__main__":
