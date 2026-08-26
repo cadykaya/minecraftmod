@@ -33,6 +33,41 @@ asserted against a running world rather than against its own source.
 | Magic | **four schools, eight spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 
+### The ghost could not reach anybody
+
+`WORLD.md`, locked, on the Haunt: *"dream-audiences: **sleep** sometimes routes the killer
+to a small dimension where the ghost…"* The scene, the gate and the once-only rule had all
+existed for a long time. The only thing that could reach them was
+`/interregnum haunt dream`. **The mod's best beat could not happen in play**, and nothing
+said so — `haunt_check.sh` was green throughout, because it drives the command seam, which
+is exactly what it is for.
+
+This is the same shape as the four questions in "Waiting on owner" — a system built and
+verified and unreachable — with one difference that makes it mine rather than the owner's:
+**the affordance is locked.** `WORLD.md` names sleep. There was nothing to decide.
+
+**It fires whether or not the bed would have worked, and that is the whole thing.** The
+death stops the daylight cycle — locked, and the entire announcement of the death. So if
+the god dies in the afternoon, **night never comes**, and a rule of "the dream arrives when
+you successfully sleep" would have made the Haunt unreachable in precisely the worlds it is
+about. `HauntSleepEvents` never looks at the vanilla problem: you lie down in a world where
+the sun has not moved since you did it, and the thing you cannot stop thinking about takes
+you anyway. Two locked beats that would otherwise contradict each other, and the
+contradiction is the better version of both.
+
+The refusal is `OTHER_PROBLEM`, the one that carries no message, because the world does not
+narrate what it is doing to this player. Every other outcome leaves the event exactly as
+vanilla decided it: `TheHaunt.offer` already refuses a non-killer, a living god, a second
+dream and a player mid-conversation, so the handler adds no rule of its own and there is
+one implementation of the gate to get wrong.
+
+**[VERIFY] — the trigger, not the scene.** No client here, so no player can right-click a
+bed on a headless server and that branch is not exercised. What it calls is: `haunt_check.sh`
+drives `TheHaunt.offer` and asserts the ghost reaches its killer once and nobody else ever.
+The handler is deliberately three lines of adapter over that — the arrangement `Deicide`
+documents, and for the same reason. Clearing it needs one player, one bed, and a client to
+hold them.
+
 ### More of the world to lose
 
 Nineteen conversions where there were nine. Bands 1 and 2 are the only part of this mod a
@@ -2343,7 +2378,7 @@ Everything else is unblocked. In order:
    DATAGEN.md's item-model row and TEXTURING.md's paths are now **VERIFIED against
    26.2.0.67** — most of them by shapes this repo compiles and CI boots a server on.
 
-   **Four remain, and none of them is debt.** Each now says what evidence would clear it,
+   **Five remain, and none of them is debt.** Each now says what evidence would clear it,
    because "unverified" and "unverifiable here" were being conflated:
 
    * `MODELS.md` **render types** — every block here is an opaque cube and every item is
@@ -2357,6 +2392,10 @@ Everything else is unblocked. In order:
    * `PLATFORM.md` **`gradle.properties` values** — a standing caveat that the *names* are
      stable and the *build numbers* must be checked at setup. Policy; it should never be
      cleared.
+   * `HauntSleepEvents` **the dream's trigger** — the branch that routes a sleeping killer
+     to the ghost. Every rule it applies is verified through the command seam; the
+     right-click that reaches it is not, because a headless server has no player to make
+     one. Clearing it needs one player, one bed, and a client.
    * `VERIFICATION.md` **gametests** — overtaken rather than skipped. Block and entity
      behaviour is tested by booting a real server and driving it over RCON, which covers
      what gametests would and additionally proves the mod loads. Clearing it needs a

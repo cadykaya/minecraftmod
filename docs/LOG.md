@@ -3489,3 +3489,47 @@ gets a guard deleted rather than fixed. It counts the rules out of `bands.json` 
 is what the assertion always meant: everything in the file loaded, not "nine things loaded".
 
 193 self-test checks, 63 mutations, 37 live checks.
+
+---
+
+## The ghost could not reach anybody
+
+`WORLD.md`, locked, on the Haunt: *"dream-audiences: **sleep** sometimes routes the killer
+to a small dimension where the ghost…"*
+
+The scene, the gate and the once-only rule had all existed for a long time. The only thing
+that could reach them was `/interregnum haunt dream`. The mod's best beat could not happen
+in play, and nothing said so — `haunt_check.sh` was green throughout, because it drives the
+command seam, which is exactly what it is for. **A check that covers a path does not tell
+you anything about whether anything else reaches it.**
+
+The same shape as the questions in "Waiting on owner" — a system built, verified and
+unreachable — with one difference that makes it mine rather than the owner's: the
+affordance is locked. `WORLD.md` names sleep. There was nothing to decide.
+
+### The two locked beats that would have cancelled each other
+
+The death stops the daylight cycle. That is locked and it is the entire announcement of the
+death. So if the god dies in the afternoon, night never comes — and "the dream arrives when
+you successfully sleep" would have made the Haunt unreachable in precisely the worlds it is
+about.
+
+`HauntSleepEvents` never looks at `CanPlayerSleepEvent.getVanillaProblem`. You lie down in a
+world where the sun has not moved since you did it, and the thing you cannot stop thinking
+about takes you anyway. The refusal is `OTHER_PROBLEM`, the one that carries no message,
+because the world does not narrate what it is doing to this player.
+
+Every other outcome leaves the event exactly as vanilla decided it. `TheHaunt.offer`
+already refuses a non-killer, a living god, a second dream and a player mid-conversation, so
+the handler adds no rule of its own.
+
+### What is and is not verified
+
+Not the trigger. A headless server has no player to right-click a bed, so that branch is not
+exercised here and is not claimed — it is registered as a fifth `VERIFY:` marker with what
+would clear it. Everything it calls is verified: `haunt_check.sh` drives `TheHaunt.offer`
+and asserts the ghost reaches its killer once and nobody else ever. The handler is three
+lines of adapter over that, which is the arrangement `Deicide` documents and the reason it
+is worth keeping exactly one implementation of a gate.
+
+193 self-test checks, 63 mutations, 37 live checks.
