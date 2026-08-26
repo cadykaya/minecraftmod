@@ -943,6 +943,57 @@ public final class SelfTest {
         check(perSchool.size() == com.cadykaya.interregnum.core.magic.School.values().length,
               "every school teaches at least one spell, so no god's world is a journey "
               + "toward nothing");
+
+        // QUELL, and the two things about it that nothing else in the kit would catch.
+        //
+        // The school first. It is the Quiet One's third, which means every existing
+        // Silence assertion above -- and both of the pair guards -- still pass with this
+        // one taught by the wrong god: Hush and Still are untouched, some school still
+        // teaches more than one spell, and every school still teaches at least one. A
+        // third spell in a school is exactly where "the pair is asserted, so the school
+        // is covered" stops being true.
+        check(com.cadykaya.interregnum.core.magic.Quell.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.SILENCE
+              && com.cadykaya.interregnum.core.magic.Spell.QUELL.school()
+                      == com.cadykaya.interregnum.core.magic.School.SILENCE,
+              "Quell is the Quiet One's, in both places that say so. A spell whose class "
+              + "and whose enum entry disagree about its god would be learned in one "
+              + "world and keyed to another");
+
+        // And that a quelling actually lasts. `holds` is the whole spell after the cast
+        // -- the projectile rule reads nothing else -- and a duration of zero leaves a
+        // spell that works at the instant it is cast and nowhere after it, which every
+        // check that reads the command's reply would still call a success.
+        long qCast = 1000L;
+        long qEnds = com.cadykaya.interregnum.core.magic.Quell.expiryAt(qCast);
+        check(com.cadykaya.interregnum.core.magic.Quell.holds(qEnds, qCast),
+              "a quelling holds at the moment it is cast");
+        check(com.cadykaya.interregnum.core.magic.Quell.holds(qEnds, qEnds - 1),
+              "and on the last tick before it lapses");
+        check(!com.cadykaya.interregnum.core.magic.Quell.holds(qEnds, qEnds),
+              "and not on the tick it expires -- an off-by-one here is a spell that "
+              + "outlives its own duration by a tick forever");
+        check(qEnds - qCast == com.cadykaya.interregnum.core.magic.Quell.DURATION_TICKS
+              && com.cadykaya.interregnum.core.magic.Quell.DURATION_TICKS > 0,
+              "a cast lasts its stated duration, and the duration is not nothing. Zero "
+              + "would leave a spell that succeeds at the instant of the cast and does "
+              + "nothing after it, which the command's reply cannot tell apart from the "
+              + "spell working");
+
+        // It is the longest of the three Silence spells, and it should be: it is aimed,
+        // it costs a cast per creature, and it does nothing at all to the seven other
+        // things in the room. Shorter than the silence, it would be strictly worse than
+        // the silence for the same price.
+        check(com.cadykaya.interregnum.core.magic.Quell.DURATION_TICKS
+                      > com.cadykaya.interregnum.core.magic.Hush.DURATION_TICKS,
+              "a quelling outlasts a silence. A silence covers a room for a cast; this "
+              + "covers one creature, so at the same duration it would be the same price "
+              + "for strictly less");
+        check(com.cadykaya.interregnum.core.magic.Quell.REACH
+                      < com.cadykaya.interregnum.core.magic.Hush.RADIUS,
+              "and it reaches less far, because it has to be aimed. At a range where a "
+              + "caster could not say which creature they meant, 'that one' stops being "
+              + "what the spell does");
     }
 
     /**

@@ -49,7 +49,9 @@ public enum Spell {
     /** The Quiet One's: a silence, in which nothing alerts and no fuse completes. */
     HUSH(School.SILENCE),
     /** The Quiet One's: things already in motion stop where they are. */
-    STILL(School.SILENCE);
+    STILL(School.SILENCE),
+    /** The Quiet One's: one creature's throwing arm, taken away and carried with it. */
+    QUELL(School.SILENCE);
 
     private final School school;
 

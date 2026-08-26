@@ -841,6 +841,27 @@ public final class InterregnumCommand {
 
         root = root.then(Commands.literal("cast")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("quell")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                        .executes(ctx -> {
+                                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                            var level = ctx.getSource().getLevel();
+                                            var cast = com.cadykaya.interregnum.system.magic.QuellSpell
+                                                    .cast(level, pos, grimoireOf(ctx, "who"));
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "cast=quell took=" + cast.took()
+                                                            + " subject=" + cast.subject()
+                                                            + " frayed=" + cast.frayed()
+                                                            + " refused=" + cast.refused()
+                                                            + " quelled=" + com.cadykaya.interregnum
+                                                                    .system.magic.Quelled.count(level)),
+                                                    false);
+                                            return cast.took() ? 1 : 0;
+                                        })))));
+
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("rewind")
                         .then(Commands.argument("who", StringArgumentType.string())
                                 .then(Commands.argument("pos", BlockPosArgument.blockPos())

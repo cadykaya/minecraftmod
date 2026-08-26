@@ -200,3 +200,6 @@ jobs:
 
       - name: A surge advances what grows where it lands, and spares what somebody planted
         run: ./tools/wildgrowth_check.sh
+
+      - name: A quelled blaze cannot ignite, wherever it goes; the one beside it still can
+        run: ./tools/quell_check.sh

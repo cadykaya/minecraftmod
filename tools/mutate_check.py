@@ -228,7 +228,24 @@ MUTATIONS = [
 
     ("magic: two spells of one school collapse onto the same key",
      f"{MAIN}/magic/Spell.java",
-     "    STILL(School.SILENCE);", "    STILL(School.WEIGHT);"),
+     "    STILL(School.SILENCE),", "    STILL(School.WEIGHT),"),
+
+    # Quell is the Quiet One's THIRD, so the school it names is now load-bearing in a way
+    # the first two were not: a School.SILENCE that is not Silence hands the Quiet One's
+    # verb out with somebody else's lesson, and every existing Silence assertion still
+    # passes because Hush and Still are untouched.
+    ("magic: the Quiet One's third spell is taught by the wrong god",
+     f"{MAIN}/magic/Quell.java",
+     "    public static final School SCHOOL = School.SILENCE;",
+     "    public static final School SCHOOL = School.TURNING;"),
+
+    # A quelling that lapses immediately is the failure nothing else here would see: the
+    # spell still "works" at the instant of the cast, and every check that reads the
+    # command's reply still passes.
+    ("magic: a quelling lapses the instant it is cast",
+     f"{MAIN}/magic/Quell.java",
+     "    public static long expiryAt(long nowTick) {\n        return nowTick + DURATION_TICKS;",
+     "    public static long expiryAt(long nowTick) {\n        return nowTick;"),
 
     # The Anchorite's pair is the worse one: Lighten and Drop-forge are opposites, so
     # collapsing them onto one key produces a zone that lifts the weight it is waiting

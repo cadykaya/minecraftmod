@@ -3709,3 +3709,50 @@ scene contains. Mutation run: deleting the ENFORCEMENT clause so the second drea
 immediately was caught by the `NOT_YET` count and by the opening tally.
 
 200 self-test checks, 66 mutations, 38 live checks, 20 fast-gate stages.
+
+---
+
+## A spell aimed at a creature
+
+*Quell*, the Quiet One's third. `WORLD.md`: *"strip one ability (a blaze that cannot
+ignite)"* — the verb and exactly one example, and the example decides the reading. Quell
+takes away the throwing arm: a projectile whose owner is quelled is refused entry to the
+world at the moment it would join it, so it is never seen at all.
+
+One rule, applied uniformly, no per-mob knowledge anywhere in it. The tempting version is a
+spell with a mode per mob — no teleport for an enderman, no climb for a spider — and that
+is four spells wearing one name. *"Strip ONE ability"* is singular, and one ability defined
+uniformly is the only reading where the word means anything.
+
+### The first one that is not a place
+
+Every zone spell so far is somewhere you stand. This is done to a creature and goes with
+it, so a blaze quelled in one room is still quelled in the next. `Quelled` is therefore the
+sibling of `Zones` rather than a user of it: keyed by entity id, no radius stored at all,
+swept from the read the same way. `Quell.REACH` decides who gets picked, once, and after
+that the spell has nothing to do with where anybody is.
+
+### Three controls, and the third is the interesting one
+
+A headless server has no player, so no blaze will ever shoot at anything. The projectiles
+in the check are summoned with a fixed `Owner`, which means every assertion is about an
+absence — and an absence needs a control or it is satisfied by the summon being broken.
+
+Two were obvious: a second blaze three blocks away still shoots, and a fireball with no
+owner still appears. The third was not. The claim that the quelling *follows the creature*
+is tested by teleporting the quelled blaze thirty blocks and finding it still cannot shoot
+— and on its own that is equally well explained by nothing being able to appear thirty
+blocks out. So the unquelled blaze's fireball is summoned forty-five blocks from the cast
+as well. A control per claim, not a control per check.
+
+Mutation run: making the cancel never fire was caught.
+
+### A rename nobody was bitten by
+
+26.x split the concrete projectiles into sub-packages — `projectile.arrow.AbstractArrow`,
+`projectile.hurtingprojectile.SmallFireball`, and so on. The base `Projectile` did not
+move, which is the only type this spell needed, so nothing broke. It went into
+`PLATFORM.md`'s rename table anyway, for whoever reaches for `SmallFireball` next and
+imports the path they remember.
+
+207 self-test checks, 68 mutations, 39 live checks, 20 fast-gate stages.

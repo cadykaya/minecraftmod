@@ -27,10 +27,10 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **38**, every one mutation-verified, all in CI |
+| Live-world checks | **39**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
-| Magic | **four schools, eight spells**, learned in their gods' worlds; command-only for now |
+| Magic | **four schools, nine spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 
 ### The audit, made permanent
@@ -707,6 +707,36 @@ world, which broke as soon as a second spell of any school opened one. Both are 
 signature: *a key that is unique today because only one thing uses it.* Zones are now keyed
 by `Spell`, and `still_check.sh` is the only place the difference has a symptom — it drops
 sand into a Hush and asserts it lands.
+
+### The first spell aimed at a creature
+
+***Quell*** — the Quiet One's third. `WORLD.md`: *"strip one ability (a blaze that cannot
+ignite)."* The example decides the reading: **Quell takes away the throwing arm.** A
+projectile whose owner is quelled is refused entry to the world, at the moment it would
+join it, so it is never seen at all. A blaze that cannot ignite is that rule applied to a
+blaze; a skeleton that cannot loose an arrow is the same rule, not a second case.
+
+It would have been easy to write this as a spell with a mode per mob — no teleport for an
+enderman, no climb for a spider — and that is four spells wearing one name. *"Strip ONE
+ability"* is singular, and one ability defined uniformly is the only reading where the
+word means anything. The kit has names left in it for the others.
+
+**It is the first spell in the mod that is not a place.** Hush and Still are rooms you
+make; this is done to a creature and travels with it, so a blaze quelled here is still
+quelled in the room it flies to. That is the whole reason both shapes exist, and it is why
+`Quelled` is keyed by entity id rather than by position — it is the sibling of `Zones`,
+not a user of it.
+
+`quell_check.sh` has three controls, which is one more than any other spell check and all
+three earn it: a second blaze **three blocks away** still shoots (so "no fireball" is not a
+broken summon, an unloaded chunk, or a mod that stopped every projectile in the game), a
+fireball with **no owner** still appears (so the rule is about being quelled and not about
+being a fireball), and the unquelled blaze's fireball appears **forty-five blocks out** (so
+the quelled blaze's silence thirty blocks from the cast is the spell and not the distance).
+Mutation run: making the cancel never fire was caught.
+
+Nothing audible is claimed. Same wall as Hush — the Quiet One's most characteristic effects
+live on a client and this container has none.
 
 ### The ageing table runs backwards too
 
@@ -2361,7 +2391,7 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
    is not mine to choose, because it decides whether the class is a private act or a
    public one. *No action needed until then; the clasts scatter and persist without it.*
 
-5. **How does a player cast a spell?** Eight spells exist and none can be triggered in
+5. **How does a player cast a spell?** Nine spells exist and none can be triggered in
    play — the command is the only way in. `WORLD.md` locks what a spell *is* (*"every
    spell is a world-verb"*) and is silent on the affordance, which makes it a mechanic
    under the standing rule and therefore proposed rather than picked.
@@ -2467,6 +2497,32 @@ question** — items 2 and 4 below are both unblocked — but item 1 cannot star
 bands 3 and 4, and whether Wardens can be killed — and all four are decided and written
 into [`WORLD.md`](WORLD.md). Anything genuinely new still comes back here first.)*
 
+**What do the six unnamed spells do?** `WORLD.md`'s school lists name twelve verbs and
+describe only six of them. The described ones are built — *Weather*, *Rewind*, *Lighten*,
+*Drop-forge*, *Bridgeroot*, *Wildgrowth*, *Hush*, *Still*, and now *Quell*, which the
+locked text pins down with *"a blaze that cannot ignite"*.
+
+*Loft* is described too — *"make a small structure weightless and carry it"* — and is
+unblocked; it is simply larger than a tick.
+
+**Six are bare names with nothing attached: *Hedge*, *Graft*, *Moor*, *Held-breath*,
+*Ripen*, *Rot*.** Deciding what one of those does is designing a mechanic, not
+implementing one, so they wait. Sketches to react to, each read off its school rather
+than invented next to it:
+
+| Spell | School | A shape that fits the school |
+|---|---|---|
+| *Hedge* | Verdancy | a living wall that grows where you draw it and thickens if struck |
+| *Graft* | Verdancy | join two plants, or a plant to a block, so one feeds the other |
+| *Moor* | Weight | the opposite of *Lighten*: fix a thing where it is, against any push |
+| *Held-breath* | Silence | your own sound taken away — nothing tracks you while you hold it |
+| *Ripen* | The Turning | age a living thing forward: crop, sapling, animal |
+| *Rot* | The Turning | age one forward past its end |
+
+None of these is more than a guess at the owner's intent, and *Rot* in particular could be
+the darkest verb in the mod or the least interesting one depending on what it may be aimed
+at. **Nothing is built from this table until it comes back.**
+
 ### [NEEDS PLAYTEST] (cannot be settled by argument)
 
 Deicide trigger reliability · clast scarcity · unraveling band pacing.
@@ -2525,25 +2581,29 @@ Everything else is unblocked. In order:
 4. ~~**The delivery scenes.**~~ **All four built**, recording `LETTER_DELIVERED` and
    teaching their god's school. Chapters 3–5 gate on that count.
 
-5. ~~**Magic.**~~ **Four schools, eight spells, two per school**, all learned in their
+5. ~~**Magic.**~~ **Four schools, nine spells**, all learned in their
    gods' worlds and all costing the overworld what they do not cost a living god's.
    *Weather* changes a block and *Rewind* changes it back; *Lighten* encloses a region and
    *Drop-forge* makes one where impacts count; *Bridgeroot* creates blocks and
-   *Wildgrowth* hurries the ones already there; *Hush* forbids and *Still* holds. Eight
-   different verbs, which is what shows the school system is a system rather than one
-   mechanism with four names.
+   *Wildgrowth* hurries the ones already there; *Hush* forbids, *Still* holds, and *Quell*
+   takes one creature's throwing arm and lets it keep it wherever it goes. Nine different
+   verbs, which is what shows the school system is a system rather than one mechanism with
+   four names.
 
    **Two things it is short of, one of them the owner's:**
 
    * **No way to cast in play.** Every spell is reachable only by command. `WORLD.md`
      locks what spells *are* and says nothing about the affordance that triggers one —
      item, key, gesture, spoken word — and that is a mechanic rather than a detail. This
-     is now the single biggest gap in the mod: eight spells exist and a player cannot
+     is now the single biggest gap in the mod: nine spells exist and a player cannot
      reach any of them. See "Waiting on owner".
-   * **Two spells per school.** `WORLD.md` names two more in each kit — *Hedge*, *Graft*,
-     *Loft*, *Moor*, *Quell*, *Held-breath*, *Ripen*, *Rot* — and says plainly that
-     *"full kits are design-phase work"*. Unblocked, and still the cheapest content left:
-     the machinery each would need is already built and proven.
+   * **The rest of the kits.** `WORLD.md` names two more in each of three kits — *Hedge*,
+     *Graft*, *Loft*, *Moor*, *Held-breath*, *Ripen*, *Rot* — and says plainly that
+     *"full kits are design-phase work"*. **Quell is built**; of the seven left, only
+     *Loft* (*"make a small structure weightless and carry it"*) carries a description in
+     `WORLD.md` at all. **The other six are bare names, and what they DO is the owner's
+     call** — see "Proposed, needs the owner's yes". Building *Loft* is unblocked and is
+     the cheapest content left.
 
 6. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
