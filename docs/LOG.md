@@ -3370,3 +3370,38 @@ Two of its own assertions needed fixing first, both about reading rather than th
 which read as "no dock" rather than "no answer".
 
 184 self-test checks, 61 mutations, 35 live checks.
+
+---
+
+## The way home
+
+`WORLD.md`: *"Travel between systems is only by ferry."* That was a one-way sentence —
+four crossing laws, four destinations, and no law whose destination was the overworld. A
+player who sailed to a god's world could hop between gods forever and never get back.
+
+The return is not a fifth law. `Law` refuses a law with no rules and says why: *"a crossing
+that refuses nothing is not a law"*. So a home law would need something to refuse, and the
+overworld has nobody left to refuse it — every other checklist is a god's policy about its
+own world, and inventing one for the world whose god this player killed would be inventing
+an authority the fiction has spent the whole game removing. `WORLD.md` also says what a
+checklist is for: *"teaches each world's rule before arrival"*, and the overworld's rule is
+the one the player already lives under.
+
+So `interregnum ferry home <keel>` is a mail service returning a vessel to the depot it
+left. `Voyages` files the leg on departure, keyed by the keel's arrival position, and
+spends it on use. A keel that never sailed is told *no return leg on file*.
+
+### The check went green and then two mutations walked through it
+
+The first version sailed one ferry out and home and asserted it landed where it started.
+Keying the record by *world* instead of by keel passed that. So did never deleting a spent
+leg. Both are properties of the relationship between instances, and one instance makes
+them unobservable.
+
+It now sails two ferries to one world from two origins before either returns, and asserts
+the returning one lands on its own coordinates and not the other's; and for the deletion it
+plants a fresh keel by hand on a landing a ferry has already left from — the actual hazard,
+a stale record attached to a position teleporting whatever stands there to a stranger's
+dock. Both mutations die against that, with the messages that name them. `LESSONS.md` #38.
+
+184 self-test checks, 61 mutations, 36 live checks.

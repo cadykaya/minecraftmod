@@ -157,8 +157,69 @@ public final class InterregnumCommand {
         }
         com.cadykaya.interregnum.system.ferry.Ferry
                 .place(ctx.getSource().getLevel(), cap.hull(), keel, to, arrival);
+        // The return leg, filed on departure. A mail service knows where its vessels came
+        // from; see Voyages for why the way home is a record rather than a fifth law.
+        com.cadykaya.interregnum.system.ferry.Voyages.get(ctx.getSource().getServer())
+                .departed(ctx.getSource().getLevel().dimension(), keel, target, arrival);
         ctx.getSource().sendSuccess(() -> Component.literal(
                 "ferry=sailed law=" + lawId + " to=" + target.identifier()
+                        + " total=" + cap.hull().manifest().total()), true);
+        return cap.hull().manifest().total();
+    }
+
+    /**
+     * Send a ferry back where it came from.
+     *
+     * A separate verb rather than a fifth law, and {@link
+     * com.cadykaya.interregnum.system.ferry.Voyages} carries the argument: every other
+     * crossing is a god's policy about its own world, and the overworld has nobody left
+     * to have one. This is a mail service returning a vessel to the depot it left.
+     *
+     * No checklist, therefore, and that is not an oversight -- there is no authority at
+     * the far end to run one. What a player brings home from a god's world is between
+     * them and the Wardenate.
+     */
+    private static int ferryHome(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        BlockPos keel = BlockPosArgument.getLoadedBlockPos(ctx, "keel");
+        net.minecraft.server.level.ServerLevel here = ctx.getSource().getLevel();
+        var voyages = com.cadykaya.interregnum.system.ferry.Voyages
+                .get(ctx.getSource().getServer());
+        var origin = voyages.originOf(here.dimension(), keel);
+        if (origin == null) {
+            // The bureaucratic answer, and the true one: this vessel is not on our books.
+            // A keel a player built themselves has never sailed, so it has no way home
+            // in the sense this verb means -- it is already there.
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "ferry=refused reason=no return leg on file"), false);
+            return 0;
+        }
+        var cap = com.cadykaya.interregnum.system.ferry.Ferry.capture(here, keel);
+        if (!cap.ok()) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "ferry=refused reason=" + cap.refusal()), false);
+            return 0;
+        }
+        net.minecraft.server.level.ServerLevel back =
+                ctx.getSource().getServer().getLevel(origin.level());
+        if (back == null) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "ferry=refused reason=no such origin " + origin.level().identifier()), false);
+            return 0;
+        }
+        // The same rule the far pad has, for the same reason: a hull put down on top of
+        // another hull silently replaces whatever shared a coordinate. A berth is a berth
+        // whichever direction you are going.
+        if (com.cadykaya.interregnum.system.ferry.FerryPad.occupied(back, origin.keel())) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "ferry=refused reason=berth occupied at " + origin.level().identifier()), false);
+            return 0;
+        }
+        com.cadykaya.interregnum.system.ferry.Ferry
+                .place(here, cap.hull(), keel, back, origin.keel());
+        voyages.arrivedHome(here.dimension(), keel);
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                "ferry=returned to=" + origin.level().identifier()
                         + " total=" + cap.hull().manifest().total()), true);
         return cap.hull().manifest().total();
     }
@@ -1044,6 +1105,9 @@ public final class InterregnumCommand {
                         .then(Commands.argument("keel", BlockPosArgument.blockPos())
                                 .then(Commands.argument("law", StringArgumentType.word())
                                         .executes(ctx -> ferryCheck(ctx, null, false)))))
+                .then(Commands.literal("home")
+                        .then(Commands.argument("keel", BlockPosArgument.blockPos())
+                                .executes(InterregnumCommand::ferryHome)))
                 .then(Commands.literal("sail")
                         .then(Commands.argument("keel", BlockPosArgument.blockPos())
                                 .then(Commands.argument("law", StringArgumentType.word())

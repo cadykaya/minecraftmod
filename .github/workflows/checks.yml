@@ -144,6 +144,9 @@ jobs:
       - name: A crossing lands on its world's own dock, and not on the ferry already there
         run: ./tools/pad_check.sh
 
+      - name: A ferry comes back to its own coordinates, and not to another ferry's
+        run: ./tools/return_check.sh
+
       - name: In the Anchorite's world, unanchored things rise
         run: ./tools/anchorite_check.sh
 

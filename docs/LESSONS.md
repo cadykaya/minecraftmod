@@ -1681,3 +1681,46 @@ hand-edit for exactly what it is.
 Related: [#15](#15-assert-the-setup-or-the-test-proves-whatever-absence-implies) — the
 same shape, one layer down. There the *setup* had silently not happened and the check read
 as if it had; here the *rewrite* silently does not happen and the gate reads as if it did.
+
+---
+
+## 38. One instance cannot test a per-instance property
+
+*Learned by watching two mutations walk straight through a check that had just gone green.*
+
+`Voyages` files a return leg for each ferry — where that vessel sailed from — keyed by the
+world and the keel's arrival position. `return_check.sh` sailed **one** ferry out, brought
+it home, and asserted it landed on the coordinates it left. Green, and it had been written
+carefully.
+
+Then the two mutations that matter both passed it:
+
+* **key the record by the world instead of by the keel.** With one ferry there is one
+  record either way, and it goes to the right place either way. The bug — a second
+  departure overwriting the first, so a returning vessel lands at a stranger's dock — has
+  no way to appear in a run with one vessel in it.
+* **never delete a spent leg.** Asking the same ferry to go home twice cannot see this,
+  because its own next departure overwrites its own key. The stale record only bites
+  something *else* that later stands where that ferry landed.
+
+Both are properties of the relationship **between instances**. A single instance makes them
+unobservable — not hard to observe, *unobservable*, the way a one-element list cannot tell
+you whether a sort is stable.
+
+### What the check has to look like instead
+
+Two ferries, sailed to the same world from different origins, before either comes back —
+and then an assertion that the returning one lands on **its own** coordinates and not the
+other's. Plus, for the deletion: a keel a player puts down by hand on a landing a ferry has
+already left from, which is the actual hazard the deletion exists for. Both mutations die
+against that version, with the messages that name them.
+
+> **The rule: before trusting a check of a per-thing property, count the things in it. If
+> there is one, the check cannot distinguish per-thing from per-anything, and the mutation
+> that collapses the key will pass.** The tell is a check whose failure message says "its
+> own" about a run containing exactly one candidate for "own".
+
+Related: [#5](#5-a-test-that-passes-either-way-is-not-a-test) is the general form; this is
+the specific shape it takes for anything keyed, pooled, or indexed — and the third time
+that shape has been paid for here, after one zone list per world and zones keyed by school
+([#34](#34-a-key-that-is-unique-because-only-one-thing-uses-it)).

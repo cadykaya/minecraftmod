@@ -27,11 +27,45 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **35**, every one mutation-verified, all in CI |
+| Live-world checks | **36**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, eight spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
+
+### The way home
+
+`WORLD.md`: *"Travel between systems is only by ferry."* Until this increment that was a
+one-way sentence — four crossing laws, four destinations, and no law whose destination was
+the overworld. A player who sailed to a god's world could hop between gods forever and
+never get back. Not a design decision; a missing half.
+
+**The return is not a fifth law, and the reason is the interesting part.** `Law` refuses a
+law with no rules and says why: *"a crossing that refuses nothing is not a law"* — a
+checklist that can never refuse anything can never be seen to be broken. So a home law
+would need something to refuse, and **the overworld has nobody left to refuse it.** Every
+other checklist is a god's policy about its own world; inventing one for the world whose god
+this player killed would be inventing an authority the fiction has spent the whole game
+removing. And `WORLD.md` says what a checklist is *for* — *"teaches each world's rule before
+arrival"* — and the overworld's rule is the one the player already lives under.
+
+So `interregnum ferry home <keel>` is a mail service returning a vessel to the depot it
+left. `Voyages` files the leg on departure, keyed by the keel's arrival position, and
+**spends it on use**. A keel that never sailed gets the answer a desk gives: *no return leg
+on file.*
+
+**The check passed, and then two mutations walked through it.** The first version sailed one
+ferry out and home and asserted it landed where it started. Keying the record by *world*
+instead of by keel passed that. So did never deleting a spent leg. Both are properties of
+the relationship between instances, and one instance makes them unobservable — the way a
+one-element list cannot tell you whether a sort is stable.
+
+The check now sails **two** ferries to one world from two origins before either returns, and
+asserts the returning one lands on its own coordinates rather than the other's; and for the
+deletion it plants a fresh keel by hand on a landing a ferry has already left from, which is
+the hazard the deletion actually exists for — a stale record attached to a position
+teleports whatever is standing there to a stranger's dock. Both mutations die against that.
+[`LESSONS.md` #38](LESSONS.md#38-one-instance-cannot-test-a-per-instance-property).
 
 ### The far pad
 
