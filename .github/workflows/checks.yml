@@ -141,3 +141,6 @@ jobs:
 
       - name: The overworld leaks another god's law, but only at the shrines
         run: ./tools/exodus_check.sh
+
+      - name: A god's letter can be delivered, and the scene still cannot buy forgiveness
+        run: ./tools/delivery_check.sh

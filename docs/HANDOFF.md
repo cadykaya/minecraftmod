@@ -27,9 +27,44 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **22**, every one mutation-verified, all in CI |
+| Live-world checks | **23**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
+
+### The first god's letter can be delivered
+
+`WORLD.md`: *"Each world's questline opens by delivering that god's letter. Their reaction
+to the news is their characterization."* The Verdant's is locked — *"the one who covered
+… delivered its letter it is immediately **defensive**: it assumes it is being blamed,
+before anyone has said anything"* — so the scene opens with it already mid-argument.
+Nobody has accused it of anything. Nobody has spoken. It has been rehearsing for an age
+and the players walked into the middle of it.
+
+The permitted comedy is the **system**: a god's answer to a bereavement is a coverage
+dispute — an arrangement, a handover that never happened, a duty nobody asked for back.
+Played entirely straight; the Verdant does not know it is being funny, and the grief in
+the letter is never the joke.
+
+**The name is not in the scene, and that is load-bearing.** The reveal `WORLD.md` builds
+on the letters is that the mail uses names the player has never heard, and
+`letters_check.py` asserts categorically that the three appear in their own letters and
+nowhere else in the shipped string table. A delivery scene is the single most tempting
+place to break that — the god is being handed a letter addressed to it — so the Verdant
+reacts to being addressed that way without repeating the word. *"Nobody has addressed me
+like that in a very long time"* does more than the name would.
+
+**No branch makes it comfortable, and that is arithmetic rather than restraint.** Killing
+a god drops every survivor by 45 and locks a permanent ceiling at −10. The most generous
+path here is worth +29 and lands at **−16**: measured live, not asserted in prose.
+
+**A hazard found while testing that, worth fixing before more god scenes exist.** The
+regard engine *clamps* to the ceiling, so an author can write `+25` into an option, a
+capped player silently receives `+0`, and the choice reads as consequential while doing
+nothing. `dialogue_check.py` already rejects `regard: 0` for exactly this reason —
+*"omit it rather than implying a consequence"* — and the clamped case is the same defect
+wearing a number. It cannot be caught statically, because whether a player is capped is
+runtime state. Not yet solved; recorded so the next god scene does not discover it the
+hard way.
 
 ### The overworld starts leaking somebody else's law
 
@@ -1300,7 +1335,29 @@ work flows to `claude/minecraft-mod-dev-rp0x8j` and PRs into `main`.
 
 ### Proposed, needs the owner's yes
 
-*(Nothing currently waiting. The statue proposal was answered — see below.)*
+**What is each god's portal logic?** This is the gate on the whole of item 1 in "What to
+do next", and it is the largest thing still unbuilt.
+
+`WORLD.md` locks the grammar — *"**surface · under-layer · far-layer**, joined by that
+world's own portal logic"*, and *"travel between systems is only by ferry; travel within a
+system is by its native portals"*. What it does not say is **what each god's portal is**,
+and that is a mechanic per god rather than a detail, so it is not mine to pick.
+
+Four candidates, one per god, each derived from the law that world already runs rather
+than invented alongside it. They are sketches to react to, not a recommendation:
+
+| God | Law | A portal shaped like that law |
+|---|---|---|
+| **The Anchorite** | weight | You do not build it, you **let go into it** — a shaft that takes anything unanchored, which in that world means everything. Going *down* into the place where down does not hold. |
+| **The Verdant** | growth | You **plant** it and wait. It opens when it is mature and closes when it is cut — the only portal in the mod with a lifespan. |
+| **The Hearth-Turner** | time | It is always there and only **open at one hour**, which in a world with a fixed sky means you cannot wait for it — you have to make the hour happen. |
+| **The Quiet One** | silence | It opens when **nothing near it makes a sound**, which is the only one of the four a player can close by accident. |
+
+Each is buildable on hooks this repo already has, and each would make its world's law
+something you use rather than something you observe. **Nothing is blocked behind this
+question** — items 2 and 4 below are both unblocked — but item 1 cannot start without it.
+
+*(The statue proposal was answered — see below.)*
 
 ### Answered this session
 
@@ -1374,16 +1431,17 @@ next to each, so the provenance travels with the decision.
 
    Also missing from every one of them: **terrain that is designed**. All four use
    vanilla noise with one fixed biome, and each file says so in its own javadoc.
-2. **Band 3 — EXODUS.** The same attribute work pointed at the overworld. A patch of
-   ground obeying somebody else's law is the same declaration as a dimension obeying it,
-   so building the Quiet One's silent hollow gets both the leak and the crossing for
-   one price. Band 4 (ATTRITION) wants a *"when was this last tended"* signal, for which
-   the chunk attachment used by placement tracking is the obvious home; it can follow.
-3. **Warden behaviour.** Still the cheapest real win. A posted Warden stands where it
-   was put and can be talked to; it does not yet **patrol**, **inspect a site**, or
-   **cite** anything. All four verbs are locked design on a mob that already exists,
-   already talks, and — as of the delegated decision — cannot be killed, which makes the
-   statue the only lever a player has and the behaviour worth more than it was.
+2. ~~**Band 3 — EXODUS.**~~ **Built.** Patches of overworld obeying another god's law,
+   anchored on the shrines. Three of the four laws leak; the Quiet One's needs
+   client-side audio suppression this container cannot verify, and is named as a gap
+   above rather than half-built. **Band 4 (ATTRITION) is the unbuilt half** and is
+   unblocked: it wants a *"when was this last tended"* signal, for which the chunk
+   attachment used by placement tracking is the obvious home.
+3. ~~**Warden behaviour.**~~ **Patrol and inspect are built** — `WardenPatrolGoal` walks a
+   fixed four-point beat, and `SiteReturn` files what it finds. **`cite` is the one verb
+   still missing, and it is blocked on the owner**: see "Waiting on owner" — a Warden
+   needs something to accuse you of, and the locked countermeasures are all about
+   casting, which does not exist yet.
 4. **More scenes.** Five exist (`warden_intake`, `warden_interrogation`, `shrine_keeper`,
    `shrine_keeper_intact`, `dream_audience`) and the machinery now has the range it was
    missing, so the shortage from here is content rather than plumbing. The four gods have

@@ -2212,3 +2212,72 @@ mutation cannot affect, purely because the same run drew an unlucky 5. The run e
 the sand table printed, so the assertions under test never executed. Reading only the exit
 code would have recorded them as verified. With the Verdant half now deterministic, the
 mutation reaches what it was aimed at.
+
+## The first god's letter can be delivered
+
+`WORLD.md`: *"Each world's questline opens by delivering that god's letter. Their reaction
+to the news is their characterization."* The Verdant's reaction is locked — *"the one who
+covered … delivered its letter it is immediately **defensive**: it assumes it is being
+blamed, before anyone has said anything"* — and the scene takes that literally. It opens
+mid-argument. Nobody has accused it of anything; nobody has spoken. The first line is a
+god defending an arrangement to people who have not mentioned it.
+
+The permitted comedy is the **system**, per the dread covenant: a god's answer to a
+bereavement is a coverage dispute. An arrangement, agreed by both parties, temporary. A
+handover that never happened because it was never asked for — *"that is what an unreturned
+duty means. It means the other party is content."* Played completely straight. The Verdant
+does not know it is being funny, and the grief in the letter is never the punchline.
+
+**The name stays out of it.** The reveal `WORLD.md` builds on the letters is that the mail
+uses names the player has never heard, and `letters_check.py` asserts categorically that
+the three appear in their own letters and nowhere else in the shipped string table. A
+delivery scene is the most tempting place in the entire mod to break that — the god is
+literally being handed a letter addressed to it. So the Verdant reacts to being addressed
+that way without ever repeating the word, which is the better beat regardless: *"Nobody has
+addressed me like that in a very long time."*
+
+The scene's one UNANIMOUS node is telling it the letter never mentions the arrangement at
+all — taking away the defence it has been holding for an age. Nobody should be able to do
+that alone, which is the same reasoning as the shrine-keeper's one cruelty.
+
+### The interesting part is the ceiling
+
+`RegardState.recordDeicide` drops every surviving god by 45 and locks a permanent cap at
+−10. The most generous path through this scene is worth +29, so it lands at **−16**: still
+hostile, still capped. There is no branch that makes the Verdant comfortable, and that is
+not restraint I exercised while writing lines — it is arithmetic the regard model imposes
+on any god scene written after a deicide. `tools/delivery_check.sh` measures it live:
+`VERDANT: -45 -> -16 (permanent cap -10)`.
+
+**Then I checked whether that assertion could actually fail, and it could not.** I had
+written it believing it would catch a later scene with one over-generous branch. Raising
+this scene's most generous option to +25 should have produced −1. It produced exactly
+−10: the engine clamps, so a scene physically cannot lift a god past its ceiling and the
+assertion cannot fail from the dialogue side. The header now says so. A check described as
+defending something it cannot defend is worse than no check, because the next person
+writing a god scene would trust it. What it does prove — that the clamp survives JSON,
+conversation runtime and saved data rather than only living inside `RegardState` — is
+real, and is what it now claims.
+
+The experiment turned up the opposite hazard, which is recorded in `HANDOFF.md` rather
+than fixed: an author writes `+25` into an option, a capped player silently receives `+0`,
+and the choice reads as consequential while doing nothing. `dialogue_check.py` already
+rejects `regard: 0` for that exact reason — *"omit it rather than implying a
+consequence"* — and the clamped case is the same defect wearing a number. It cannot be
+caught statically, because whether a player is capped is runtime state.
+
+### Two things the check caught about itself first
+
+It failed twice before it was right, both times loudly, both times for reasons worth
+keeping.
+
+**A guessed marker string.** The first version asserted `talk=started`. The engine prints
+`talk=open`. `LESSONS.md` #26 is exactly this, and the only reason it was not a silent
+no-op is that the assertion was positive — a negative one would have passed forever.
+
+**An untested precondition.** Bare `interregnum record deicide` records the milestone with
+no killer, so nobody's regard is touched. The first run came out at `KNOWN(29)` with no
+ceiling at all: the cap assertion — the one the file exists for — had nothing to test. It
+failed on the "could not read the cap" branch rather than passing green, which is the
+difference between a check that is wrong and a check that lies. Naming the killer is what
+puts the ceiling in play.
