@@ -711,7 +711,7 @@ public final class InterregnumCommand {
                                                             + " frayed=" + cast.frayed()
                                                             + " refused=" + cast.refused()
                                                             + " zones=" + com.cadykaya.interregnum
-                                                                    .system.magic.Zones.count(level)),
+                                                                    .system.magic.Zones.count(level, com.cadykaya.interregnum.core.magic.Lighten.SCHOOL)),
                                                     false);
                                             return cast.opened() ? 1 : 0;
                                         })))));
@@ -734,6 +734,23 @@ public final class InterregnumCommand {
                                                                     + " refused=" + cast.refused()), false);
                                                     return cast.grew() > 0 ? 1 : 0;
                                                 }))))));
+
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("hush")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                        .executes(ctx -> {
+                                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                            var level = ctx.getSource().getLevel();
+                                            var cast = com.cadykaya.interregnum.system.magic.HushSpell
+                                                    .cast(level, pos, grimoireOf(ctx, "who"));
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "cast=hush opened=" + cast.opened()
+                                                            + " frayed=" + cast.frayed()
+                                                            + " refused=" + cast.refused()), false);
+                                            return cast.opened() ? 1 : 0;
+                                        })))));
 
         // Teaching, the operator seam. In play a school is taught by a scene -- see the
         // `teaches` field on a dialogue node -- and this is the same path with a

@@ -156,3 +156,6 @@ jobs:
 
       - name: A grown span is continuous, stops where it should, and belongs to whoever grew it
         run: ./tools/bridgeroot_check.sh
+
+      - name: A creeper that cannot hiss cannot detonate
+        run: ./tools/hush_check.sh

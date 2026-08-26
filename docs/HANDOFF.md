@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **27**, every one mutation-verified, all in CI |
+| Live-world checks | **28**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 
@@ -95,6 +95,38 @@ being *crossed* (no CI run waits that out, and `/time add` moves dayTime while t
 reads gameTime — the arithmetic is covered in core, including both sides of the boundary),
 and the tick handler itself (it walks `level.players()` and a headless server has none, so
 the command seam runs — calling the *same* `Tending.tendAround`, not a copy).
+
+### Four schools, and the one whose combat use most obviously falls out of its world use
+
+***Hush*** — the Quiet One's, and the fourth. `WORLD.md`: *"true no-sound zone: sculk
+blind, mobs cannot alert, **a creeper that cannot hiss cannot detonate**."*
+
+A creeper's fuse **is** a sound. Take the sound away and the mechanism has nothing to
+complete. That is the mod's doctrine arriving at its most literal: Hush is not a defensive
+ability, it is silence — which happens to be fatal to a thing that kills by announcing
+itself. A player works that out about two seconds after being told what it does to sound,
+and that moment is worth more than any tooltip.
+
+**Two of the three clauses are enforced; the third is not claimed.** Mobs inside acquire
+no targets, and a creeper's fuse is wound back every tick so it can chase and loom and
+never arrive. The *audible* silence, and sculk going blind to it, are client-side — the
+same wall band 3 met, and for the same reason: the Quiet One's law is the one law whose
+most characteristic form lives on a client.
+
+The deliberate case needed a decision. A creeper struck with flint and steel sets an
+`ignited` flag with a public setter and **no public way to clear it**, so for that case the
+tick is cancelled outright — which freezes it, more than silence would do. The honest
+trade, because the alternative is a hole in a locked promise; and a lit creeper standing
+perfectly still in a silent field is, as it happens, exactly what this god should look
+like.
+
+**Zones are now keyed by school**, which the second spell to open one made necessary. A
+single pool would have meant every zone did everything — and from inside either spell that
+looks exactly like both of them working. `hush_check.sh` asserts a creeper in a *Lighten*
+field detonates normally.
+
+**All four questlines now open onto their school.** Weather changes a block, Lighten
+encloses, Bridgeroot creates, Hush forbids.
 
 ### Three spells, three shapes, and what you grow is yours
 

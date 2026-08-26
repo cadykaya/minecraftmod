@@ -1,5 +1,6 @@
 package com.cadykaya.interregnum.system.magic;
 
+import com.cadykaya.interregnum.core.magic.School;
 import com.cadykaya.interregnum.core.magic.Zone;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
@@ -30,11 +31,22 @@ import java.util.Map;
 public final class Zones {
     private Zones() {}
 
-    private static final Map<ResourceKey<Level>, List<Zone>> ACTIVE = new HashMap<>();
+/**
+     * Which spell opened a zone.
+     *
+     * Zones are keyed by school rather than pooled, because two spells now open them and
+     * they mean different things: standing in a Lighten field must not silence a creeper,
+     * and standing in a Hush must not make the gravel float. A single list would have
+     * made every zone do everything the moment the second spell shipped -- and it would
+     * have looked like the spells working, from inside either one.
+     */
+    private static final Map<ResourceKey<Level>, Map<School, List<Zone>>> ACTIVE =
+            new HashMap<>();
 
-    /** Open a zone. */
-    public static void open(ServerLevel level, Zone zone) {
-        ACTIVE.computeIfAbsent(level.dimension(), k -> new ArrayList<>()).add(zone);
+    /** Open a zone belonging to one school. */
+    public static void open(ServerLevel level, School school, Zone zone) {
+        ACTIVE.computeIfAbsent(level.dimension(), k -> new HashMap<>())
+                .computeIfAbsent(school, k -> new ArrayList<>()).add(zone);
     }
 
     /**
@@ -44,8 +56,12 @@ public final class Zones {
      * overwhelmingly common case of no zones at all in this world -- which is the
      * `isEmpty` early-out, and is why the map is keyed by dimension rather than scanned.
      */
-    public static boolean covering(ServerLevel level, BlockPos pos) {
-        List<Zone> zones = ACTIVE.get(level.dimension());
+    public static boolean covering(ServerLevel level, School school, BlockPos pos) {
+        Map<School, List<Zone>> bySchool = ACTIVE.get(level.dimension());
+        if (bySchool == null) {
+            return false;
+        }
+        List<Zone> zones = bySchool.get(school);
         if (zones == null || zones.isEmpty()) {
             return false;
         }
@@ -69,8 +85,12 @@ public final class Zones {
     }
 
     /** How many zones are in force here. For the command seam. */
-    public static int count(ServerLevel level) {
-        List<Zone> zones = ACTIVE.get(level.dimension());
+    public static int count(ServerLevel level, School school) {
+        Map<School, List<Zone>> bySchool = ACTIVE.get(level.dimension());
+        if (bySchool == null) {
+            return 0;
+        }
+        List<Zone> zones = bySchool.get(school);
         if (zones == null) {
             return 0;
         }

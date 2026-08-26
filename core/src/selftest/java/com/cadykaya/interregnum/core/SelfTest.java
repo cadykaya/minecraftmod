@@ -821,6 +821,30 @@ public final class SelfTest {
                       == com.cadykaya.interregnum.core.magic.School.WEIGHT,
               "Lighten belongs to the Anchorite's school, so learning the Turning does "
               + "not hand you the Anchorite's verbs");
+
+        // FOUR schools, four distinct owners. The failure this catches is two spells
+        // sharing one, which would make a single lesson open verbs from two gods and
+        // quietly collapse the reason there are four journeys.
+        var owners = new java.util.HashSet<com.cadykaya.interregnum.core.magic.School>();
+        owners.add(com.cadykaya.interregnum.core.magic.Lighten.SCHOOL);
+        owners.add(com.cadykaya.interregnum.core.magic.Hush.SCHOOL);
+        owners.add(com.cadykaya.interregnum.core.magic.Bridgeroot.SCHOOL);
+        owners.add(com.cadykaya.interregnum.core.magic.School.TURNING);   // Weather's
+        check(owners.size() == com.cadykaya.interregnum.core.magic.School.values().length,
+              "the four spells belong to four different schools. Two sharing one would "
+              + "make a single lesson hand out another god's verbs, and there would be "
+              + "no reason left for four journeys");
+
+        // A Hush reaches further than a Lighten, and lasts less long. Lighten is a tool
+        // you plan around; Hush is what you do when something has gone wrong.
+        var h = com.cadykaya.interregnum.core.magic.Hush.zoneAt(0, 64, 0, 0);
+        check(h.radius() > z.radius(),
+              "a silence is wider than a low-gravity field -- a room you cannot fit a "
+              + "fight inside is a room this spell does not help with");
+        check(com.cadykaya.interregnum.core.magic.Hush.DURATION_TICKS
+                      < com.cadykaya.interregnum.core.magic.Lighten.DURATION_TICKS,
+              "and it holds for less time, or every encounter becomes a place you stand "
+              + "until it is over");
     }
 
     /**

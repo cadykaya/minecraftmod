@@ -2850,3 +2850,53 @@ the same reason — client-side audio suppression this container cannot verify.
 170 self-test checks, 54 mutations. The two new core guards are an uncapped span, which
 makes the overworld's casting cost a rounding error, and one that starts under the
 caster's feet, which suffocates whoever cast it the first time they use it correctly.
+
+## Four schools, and the spell whose combat use most obviously falls out of its world use
+
+***Hush*** — the Quiet One's, and the last of the four. `WORLD.md`: *"true no-sound zone:
+sculk blind, mobs cannot alert, **a creeper that cannot hiss cannot detonate**."*
+
+That bolded clause is the whole spell and it is not a joke. A creeper's fuse **is** a
+sound. Take the sound away and the mechanism it belongs to has nothing to complete. The
+mod's doctrine — *"every spell is a world-verb… its combat use falls out of its world use,
+never the reverse"* — arrives here at its most literal: Hush is not a defensive ability, it
+is silence, and silence is fatal to a thing that kills by announcing itself. A player will
+work that out about two seconds after being told what it does to sound.
+
+**Two clauses enforced, one not claimed.** Nothing inside acquires a target, and a
+creeper's fuse is wound back each tick so it chases, looms, and never arrives — which
+feels far better than a creeper standing inert. The *audible* silence and sculk going
+blind are client-side and this container has no client, so they are stated as unbuilt
+rather than implemented on the strength of a comment. It is the same wall band 3 met: the
+Quiet One's law is the one law whose most characteristic form lives on a client.
+
+The deliberate case forced a decision worth recording. A creeper struck with flint and
+steel carries an `ignited` flag with a public setter and **no public way to clear it** —
+verified by reading the decompiled source rather than assuming. So for that one case the
+tick is cancelled outright, which freezes it: more than silence would do, and the honest
+trade, because the alternative is a hole in a locked promise. A lit creeper standing
+perfectly still in a silent field is also exactly what this god should look like.
+
+### The second zone made the first one wrong
+
+`Zones` held one list per world. That was correct while one spell opened zones and became
+wrong the moment a second did: standing in a Lighten field would have silenced creepers,
+and standing in a Hush would have made the gravel float.
+
+**And it would have looked like both spells working**, from inside either one. The failure
+has no symptom except in the case nobody thinks to try — a creeper inside the *wrong*
+zone — which is why `hush_check.sh` puts one there and asserts it detonates normally. Zones
+are now keyed by school, and the mutation that pools them again is caught by that
+assertion alone.
+
+### The control that had to come first
+
+The check asserts three creepers: inside a Hush, outside everything, and inside a Lighten
+field. The **outside** one is asserted first and deliberately so — without it, "nothing
+exploded inside the silence" is equally satisfied by creepers that never spawned, a chunk
+that never loaded, or a mod that quietly broke creepers everywhere. That last one would
+pass every other assertion in the file while being the worst possible outcome.
+
+173 self-test checks, 55 mutations. The new core guard is four spells belonging to four
+different schools: two sharing one would make a single lesson hand out another god's verbs,
+and there would be no reason left for four journeys.

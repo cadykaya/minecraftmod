@@ -2,25 +2,18 @@ package com.cadykaya.interregnum.system.magic;
 
 import com.cadykaya.interregnum.core.magic.Casting;
 import com.cadykaya.interregnum.core.magic.Grimoire;
-import com.cadykaya.interregnum.core.magic.Lighten;
+import com.cadykaya.interregnum.core.magic.Hush;
 import com.cadykaya.interregnum.system.ChapterSavedData;
 import com.cadykaya.interregnum.system.unraveling.Unraveling;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 
-/**
- * Casting {@link Lighten}. See that class for what the spell is and why it has a shape.
- *
- * The whole of this file is the two rules every spell shares — you must have been taught
- * it, and at home it costs — plus one line that opens the zone. That symmetry with
- * {@link Weather} is the point of having a second spell at all: it is what shows the
- * school system is a system rather than one hardcoded case.
- */
-public final class LightenSpell {
-    private LightenSpell() {}
+/** Casting {@link Hush}. See that class for what the spell is and what it does not claim. */
+public final class HushSpell {
+    private HushSpell() {}
 
-    /** What one cast did: whether it took, how many places it cost, and why not. */
+    /** What one cast did. */
     public record Cast(boolean opened, int frayed, String refused) {
         static Cast no(String why) {
             return new Cast(false, 0, why);
@@ -28,11 +21,11 @@ public final class LightenSpell {
     }
 
     public static Cast cast(ServerLevel level, BlockPos pos, Grimoire grimoire) {
-        if (!Casting.permitted(grimoire, Lighten.SCHOOL)) {
+        if (!Casting.permitted(grimoire, Hush.SCHOOL)) {
             return Cast.no("unlearned");
         }
-        Zones.open(level, Lighten.SCHOOL, Lighten.zoneAt(pos.getX(), pos.getY(), pos.getZ(),
-                level.getGameTime()));
+        Zones.open(level, Hush.SCHOOL,
+                Hush.zoneAt(pos.getX(), pos.getY(), pos.getZ(), level.getGameTime()));
         if (!Casting.drawsOnTheCorpse(level.dimension() == Level.OVERWORLD)) {
             return new Cast(true, 0, "");
         }

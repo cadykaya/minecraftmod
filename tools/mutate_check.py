@@ -221,6 +221,11 @@ MUTATIONS = [
      f"{MAIN}/magic/Bridgeroot.java",
      "        for (int i = 1; i <= reach; i++) {", "        for (int i = 0; i <= reach; i++) {"),
 
+    ("magic: two spells share a school, so one lesson hands out another god's verbs",
+     f"{MAIN}/magic/Hush.java",
+     "    public static final School SCHOOL = School.SILENCE;",
+     "    public static final School SCHOOL = School.WEIGHT;"),
+
     # The dead god's mail. The invariant here is about a SET -- three letters open with
     # a name, the fourth opens `To --` -- so nothing about an individual letter can
     # catch it going. If it goes, the mid-game's best reveal quietly stops being one and
