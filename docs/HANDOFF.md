@@ -2267,13 +2267,16 @@ overturn them on grounds rather than taste.
 `docs/HANDOFF.md`'s counts are guarded on every push by `ci_claims_check.py`, which
 counts the workflow rather than trusting the table. **The pull request description carries
 the same numbers and nothing checks it**, because it does not live in the repository — and
-it has now gone stale three times: at 48 commits and again at 67, both in the flattering
+it has now gone stale four times: at 48 commits and again at 67, both in the flattering
 direction, the second time claiming nothing was waiting on the owner while two decisions
-were; and again at 83, this time by simply falling behind — it still described four spells
-when there were eight, and 28 live checks when there were 32.
+were; again at 83, this time by simply falling behind — it still described four spells
+when there were eight, and 28 live checks when there were 32; and again at 96, the same
+way, still saying eight spells and five open questions when there were nine and seven.
 
-The third one is the more instructive. A description that overclaims gets caught by anyone
+The last two are the more instructive. A description that overclaims gets caught by anyone
 who reads the code; one that *underclaims* reads as modest and correct, and nobody looks.
+The failure repeats because it is not a mistake anybody makes — it is what happens when a
+document is edited only on purpose and the tree moves on its own.
 
 There is no fix available from CI. The mitigation is this note: **when the counts in the
 table above change, the PR description changes too**, by hand, and the "Waiting on you"
