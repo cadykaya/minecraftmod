@@ -40,6 +40,7 @@ fail() { echo "FAIL: $1"; exit 1; }
 SCENE=interregnum:verdant_delivery
 SCENE2=interregnum:anchorite_delivery
 SCENE3=interregnum:hearth_turner_delivery
+SCENE4=interregnum:quiet_one_delivery
 # UUID participants, because `interregnum regard` takes a player id and the whole point
 # of this file is reading the number back. Opaque string ids are fine for the table but
 # have no regard to inspect.
@@ -130,6 +131,31 @@ interregnum talk say $B accept
 interregnum talk say $C accept
 say AFTER_SCENE3
 interregnum talk status $A
+interregnum regard $A
+interregnum talk start $SCENE4 $A+$B+$C
+interregnum talk say $A wait
+interregnum talk say $B wait
+interregnum talk say $C wait
+interregnum talk say $A read_aloud
+interregnum talk say $B read_aloud
+interregnum talk say $C read_aloud
+interregnum talk say $A count_them
+interregnum talk say $B count_them
+interregnum talk say $C count_them
+interregnum talk say $A onward
+interregnum talk say $B onward
+interregnum talk say $C onward
+interregnum talk say $A sign_for_it
+interregnum talk say $B sign_for_it
+interregnum talk say $C sign_for_it
+interregnum talk say $A onward
+interregnum talk say $B onward
+interregnum talk say $C onward
+interregnum talk say $A come_back
+interregnum talk say $B come_back
+interregnum talk say $C come_back
+say AFTER_SCENE4
+interregnum talk status $A
 interregnum regard $A" \
     LOG=/tmp/delivery.log timeout 900 ./tools/server_smoke.sh > /tmp/dl.txt 2>&1 \
     || { tail -25 /tmp/dl.txt; fail "the run did not complete"; }
@@ -216,5 +242,33 @@ echo "  HEARTH_TURNER: $h_before -> $h_after   (permanent cap $h_cap)"
 [ "$h_after" -lt "$h_cap" ] || \
     fail "the Hearth-Turner finished at $h_after, at or past its permanent cap of $h_cap -- the static guard in dialogue_check.py and the running game disagree about what the best route is worth"
 
+# --- the fourth, where nothing in the text ever says it worked ---------------
+# The Quiet One never speaks. Every line in its scene is a description of what does not
+# happen, because the whole world is built on the difference between refusing LOUDLY --
+# which is what the Nether and the End do to a bed -- and declining to react at all.
+#
+# WHICH MAKES THIS THE ONE ASSERTION THAT SEES SOMETHING THE PLAYER CANNOT. Regard with
+# this god moves exactly as it does in the other three scenes, and nothing in the text
+# ever acknowledges it: you are treated differently afterwards by something that never
+# told you it noticed. That is the intended experience, and it is indistinguishable from
+# the consequences being silently broken unless a check reads the number.
+after4=$(sed -n '/AFTER_SCENE4/,$p' /tmp/dl.txt | grep -oE 'talk=[a-z]+' | head -1 || true)
+[ "$after4" = "talk=none" ] || {
+    sed -n '/AFTER_SCENE4/,$p' /tmp/dl.txt | grep -E 'talk=' | head -4 || true
+    fail "the Quiet One's table was still open after the last answer ('$after4') -- the scene did not reach an ending"; }
+
+q_before=$(sed -n '/AFTER_SCENE3/,/AFTER_SCENE4/p' /tmp/dl.txt | grep -oE 'QUIET_ONE=[A-Z]+\(-?[0-9]+\)' | head -1 | grep -oE '\(-?[0-9]+\)' | tr -d '()')
+q_after=$(sed -n '/AFTER_SCENE4/,$p' /tmp/dl.txt | grep -oE 'QUIET_ONE=[A-Z]+\(-?[0-9]+\)' | head -1 | grep -oE '\(-?[0-9]+\)' | tr -d '()')
+q_cap=$(sed -n '/AFTER_SCENE4/,$p' /tmp/dl.txt | grep -oE 'QUIET_ONE=[A-Z]+\(-?[0-9]+\)cap-?[0-9]+' | head -1 | grep -oE 'cap-?[0-9]+$' | sed 's/cap//')
+[ -n "$q_before" ] && [ -n "$q_after" ] && [ -n "$q_cap" ] || {
+    grep -oE 'QUIET_ONE=[A-Za-z]+\(-?[0-9]+\)(cap-?[0-9]+)?' /tmp/dl.txt | head -4 || true
+    fail "could not read the Quiet One's regard before and after its scene"; }
+
+echo "  QUIET_ONE: $q_before -> $q_after   (permanent cap $q_cap)"
+[ "$q_after" -gt "$q_before" ] || \
+    fail "the Quiet One's regard did not move ($q_before -> $q_after). Its scene deliberately never acknowledges the player, so a silently broken consequence here looks EXACTLY like the scene working as designed -- this is the only place in the mod where the check sees something the player is not shown, and it is the whole reason the assertion exists"
+[ "$q_after" -lt "$q_cap" ] || \
+    fail "the Quiet One finished at $q_after, at or past its permanent cap of $q_cap -- the static guard and the running game disagree about the best route"
+
 echo
-printf "OK: three gods' letters can be delivered, every scene plays to its end, and the most\n    generous path through any of them still leaves a god that will not have you\n"
+printf "OK: all four gods' letters can be delivered, every scene plays to its end, the most\n    generous path through any of them still leaves a god that will not have you, and the\n    one that never answers still forms an opinion\n"

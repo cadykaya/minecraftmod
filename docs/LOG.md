@@ -2530,3 +2530,50 @@ Live: `VERDANT -45 → -16`, `ANCHORITE -45 → -15`, `HEARTH_TURNER -45 → -15
 the static path arithmetic exactly. The Hearth-Turner's is the longest generous route in
 the mod — it runs through every optional beat rather than skipping any — which makes its
 scene the one most likely to wedge, and therefore the one worth walking end to end.
+
+## The fourth letter, delivered to something that will not say it arrived
+
+The Quiet One's scene, and the last of the four. It could not be written like the others.
+
+Its letter opens `To —` with no name at all, and `WORLD.md` locks the reason: whether the
+dead god never got close enough to have one for this god, or had one and struck it out,
+*"is never answered; the letter itself is the only evidence and it is ambiguous on
+purpose."* Every other delivery scene gets its god's side of the story. **This one cannot
+have one** — the moment the Quiet One explains itself, *"the one who never wrote back"*
+stops being a question about the dead god and becomes a fact about this one, and the
+mid-game's best ambiguity is spent for a line of dialogue.
+
+**So the god never speaks.** Not once. Every `speaker` line in the file is a description
+of what does not happen: the letter held out and neither taken nor refused, no gesture of
+declining, no turning away. That is the same joke the whole world is built on — the Nether
+and the End both refuse a bed *loudly*, and this world declines to react at all — and it
+makes the scene the players, in a silence, deciding what to do about it. A different shape
+from the other three rather than a fourth variation on them.
+
+The fourth transgression is **signing for the letter yourself**: recording a delivery as
+received when nothing acknowledged it, filing a receipt on behalf of somebody who will not
+speak. It is exactly the mod's procedural register, it is a real intrusion, and nobody
+should be able to decide alone that a silence counted as consent — so, UNANIMOUS. The
+alternative leaves the line blank, which is also a record: *"someone will read the gap one
+day and have to decide what it meant."*
+
+### The one assertion that sees something the player cannot
+
+Regard with this god moves through the scene exactly as it does in the other three, and
+**nothing in the text ever acknowledges it.** You are treated differently afterwards by
+something that never told you it noticed. That is the intended experience.
+
+It is also indistinguishable from the consequences being silently broken. Every other
+scene in the mod tells you when you have moved something — a line changes, a speaker opens
+differently. Here, a scene whose regard did nothing at all would read as the scene working
+perfectly, forever, to every player.
+
+So `delivery_check.sh` reads the number. Watched failing by stripping the positive regard
+out of the file: `QUIET_ONE: -45 -> -45`, where a working scene reads `-45 -> -15`. It is
+the only place in this repository where a check exists specifically to see something the
+player is deliberately not shown, and that is worth naming as a category rather than
+leaving as a detail.
+
+All four now measure live: `VERDANT -16`, `ANCHORITE -15`, `HEARTH_TURNER -15`,
+`QUIET_ONE -15`, each from a floor of −45, each matching its static path arithmetic, and
+none of them anywhere near the −10 ceiling that killing a god leaves behind.

@@ -1,0 +1,210 @@
+{
+  "_comment": [
+    "Delivering the dead god's letter to the Quiet One. The fourth and last.",
+    "",
+    "THE LOCKED SOURCE, the letter, which shipped long before this scene:",
+    "",
+    "  SUBJECT: UNRESPONSIVE -- further to previous",
+    "  'To --'",
+    "  'Further to previous. There is no previous on file that has been answered, so the",
+    "   office is unable to state which previous this is further to.'",
+    "  'The sun is turned daily. Attendance is recorded. The undersigned continues to",
+    "   write and has stopped stating why.'",
+    "",
+    "WORLD.md: 'The Quiet One has no name in the letters, and that is the whole character.",
+    "Three letters open with a name. The fourth opens `To --`. Whether the dead god never",
+    "got close enough to have one, or had one and struck it out, IS NEVER ANSWERED; the",
+    "letter itself is the only evidence and it is ambiguous on purpose.'",
+    "",
+    "SO THIS SCENE MUST NOT RESOLVE IT, and that is a hard constraint rather than a",
+    "preference. Every other delivery scene gets its god's side of the story. This one",
+    "cannot have one, because the moment the Quiet One explains itself the mid-game's best",
+    "ambiguity is spent and 'the one who never wrote back' stops being a question about the",
+    "DEAD GOD and becomes a fact about this one.",
+    "",
+    "THE GOD DOES NOT SPEAK. Not once. Every `speaker` line here is a description of what",
+    "does not happen -- which is the same joke its whole world is built on: the Nether and",
+    "the End both refuse a bed LOUDLY, and this world declines to react at all. The scene",
+    "is the players, in a silence, deciding what to do about it. That is a genuinely",
+    "different shape from the other three rather than a fourth variation, and it is the",
+    "only shape this god can have.",
+    "",
+    "THE FOURTH TRANSGRESSION. The others are: take away the Verdant's defence, tell the",
+    "Anchorite the job is over, ask the Hearth-Turner to let a record leave. Here it is",
+    "SIGNING FOR THE LETTER YOURSELF -- recording a delivery as received when nothing",
+    "acknowledged it. Filing a receipt on behalf of somebody who will not speak. It is",
+    "perfectly in the mod's procedural register, it is a real intrusion, and nobody should",
+    "be able to decide alone that a silence counted as consent. Hence UNANIMOUS.",
+    "",
+    "THE PAYOFF IS MECHANICAL AND UNSTATED. Regard with the Quiet One moves through this",
+    "scene exactly as it does in the other three -- and NOTHING IN THE TEXT EVER SAYS SO.",
+    "You are treated differently afterwards by something that never told you it noticed.",
+    "`tools/delivery_check.sh` asserts the number moved precisely because the scene will",
+    "not: it is the one place where a check can see something the player is not shown.",
+    "",
+    "Dread covenant, and it applies hardest here: 'the Quiet One's silence is never cute.'",
+    "Nothing in this file winks at the silence, plays it for a gag, or has a character",
+    "remark on how quiet it is as a joke. The permitted comedy is the SYSTEM -- an office",
+    "that continues to write and has stopped stating why."
+  ],
+  "id": "quiet_one_delivery",
+  "start": "arrival",
+  "nodes": [
+    {
+      "id": "arrival",
+      "speaker": "quiet_one",
+      "text_key": "interregnum.dlg.quiet_one_delivery.arrival",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "hold_it_out",
+          "text_key": "interregnum.dlg.quiet_one_delivery.arrival.hold_it_out",
+          "target": "offered"
+        },
+        {
+          "id": "wait",
+          "text_key": "interregnum.dlg.quiet_one_delivery.arrival.wait",
+          "target": "offered",
+          "regard": { "QUIET_ONE": 4 }
+        }
+      ]
+    },
+    {
+      "id": "offered",
+      "speaker": "quiet_one",
+      "text_key": "interregnum.dlg.quiet_one_delivery.offered",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "read_aloud",
+          "text_key": "interregnum.dlg.quiet_one_delivery.offered.read_aloud",
+          "target": "no_previous",
+          "regard": { "QUIET_ONE": 5 }
+        },
+        {
+          "id": "set_down",
+          "text_key": "interregnum.dlg.quiet_one_delivery.offered.set_down",
+          "target": "no_previous"
+        },
+        {
+          "id": "demand",
+          "text_key": "interregnum.dlg.quiet_one_delivery.offered.demand",
+          "target": "no_previous",
+          "regard": { "QUIET_ONE": -9 }
+        }
+      ]
+    },
+    {
+      "id": "no_previous",
+      "speaker": "quiet_one",
+      "text_key": "interregnum.dlg.quiet_one_delivery.no_previous",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "count_them",
+          "text_key": "interregnum.dlg.quiet_one_delivery.no_previous.count_them",
+          "target": "the_others",
+          "regard": { "QUIET_ONE": 7 }
+        },
+        {
+          "id": "let_it_be",
+          "text_key": "interregnum.dlg.quiet_one_delivery.no_previous.let_it_be",
+          "target": "receipt"
+        }
+      ]
+    },
+    {
+      "id": "the_others",
+      "speaker": "quiet_one",
+      "text_key": "interregnum.dlg.quiet_one_delivery.the_others",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "onward",
+          "text_key": "interregnum.dlg.quiet_one_delivery.the_others.onward",
+          "target": "receipt"
+        }
+      ]
+    },
+    {
+      "id": "receipt",
+      "speaker": "quiet_one",
+      "text_key": "interregnum.dlg.quiet_one_delivery.receipt",
+      "rule": "UNANIMOUS",
+      "options": [
+        {
+          "id": "sign_for_it",
+          "text_key": "interregnum.dlg.quiet_one_delivery.receipt.sign_for_it",
+          "target": "signed",
+          "regard": { "QUIET_ONE": 9 }
+        },
+        {
+          "id": "leave_unsigned",
+          "text_key": "interregnum.dlg.quiet_one_delivery.receipt.leave_unsigned",
+          "target": "unsigned",
+          "regard": { "QUIET_ONE": 5 }
+        }
+      ]
+    },
+    {
+      "id": "signed",
+      "speaker": "quiet_one",
+      "text_key": "interregnum.dlg.quiet_one_delivery.signed",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "onward",
+          "text_key": "interregnum.dlg.quiet_one_delivery.signed.onward",
+          "target": "leaving"
+        }
+      ]
+    },
+    {
+      "id": "unsigned",
+      "speaker": "quiet_one",
+      "text_key": "interregnum.dlg.quiet_one_delivery.unsigned",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "onward",
+          "text_key": "interregnum.dlg.quiet_one_delivery.unsigned.onward",
+          "target": "leaving"
+        }
+      ]
+    },
+    {
+      "id": "leaving",
+      "speaker": "quiet_one",
+      "text_key": "interregnum.dlg.quiet_one_delivery.leaving",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "come_back",
+          "text_key": "interregnum.dlg.quiet_one_delivery.leaving.come_back",
+          "target": "opened",
+          "regard": { "QUIET_ONE": 5 }
+        },
+        {
+          "id": "done",
+          "text_key": "interregnum.dlg.quiet_one_delivery.leaving.done",
+          "target": "closes",
+          "regard": { "QUIET_ONE": -6 }
+        }
+      ]
+    },
+    {
+      "id": "opened",
+      "speaker": "quiet_one",
+      "text_key": "interregnum.dlg.quiet_one_delivery.opened",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "closes",
+      "speaker": "quiet_one",
+      "text_key": "interregnum.dlg.quiet_one_delivery.closes",
+      "rule": "INITIATOR",
+      "options": []
+    }
+  ]
+}

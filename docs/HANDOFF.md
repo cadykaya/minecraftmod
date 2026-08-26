@@ -96,10 +96,37 @@ reads gameTime — the arithmetic is covered in core, including both sides of th
 and the tick handler itself (it walks `level.players()` and a headless server has none, so
 the command seam runs — calling the *same* `Tending.tendAround`, not a copy).
 
-### Three gods' letters can be delivered
+### All four gods' letters can be delivered
 
-The Verdant's, the Anchorite's and the Hearth-Turner's — and the set is the point:
-**three openings, three unbearable requests, one machinery.**
+**Four openings, four unbearable requests, one machinery** — and the fourth is the one
+that could not be written like the others.
+
+**The Quiet One never speaks.** Not once, in its whole scene. Every line is a description
+of what does not happen, because the world is built on the difference between refusing
+*loudly* — which is what the Nether and the End do to a bed — and declining to react at
+all. The scene is the players, in a silence, deciding what to do about it.
+
+It **must not resolve the ambiguity**, and that is a hard constraint. `WORLD.md`: whether
+the dead god never got close enough to have a name for this one, or had one and struck it
+out, *"is never answered; the letter itself is the only evidence and it is ambiguous on
+purpose."* The moment the Quiet One explains itself, *"the one who never wrote back"*
+stops being a question about the dead god and becomes a fact about this one.
+
+Its transgression is the fourth distinct kind: **signing for the letter yourself.**
+Recording a delivery as received when nothing acknowledged it — filing a receipt on behalf
+of somebody who will not speak. Nobody should be able to decide alone that a silence
+counted as consent.
+
+**The payoff is mechanical and never stated.** Regard with this god moves exactly as it
+does in the other three scenes and nothing in the text ever says so: you are treated
+differently afterwards by something that never told you it noticed. That is the intended
+experience, and it is *indistinguishable from the consequences being silently broken* —
+so `delivery_check.sh` reads the number. It is the one assertion in the mod that sees
+something the player deliberately cannot.
+
+The other three: take away the Verdant's defence, tell the Anchorite the job is over, ask
+the Hearth-Turner to let a record *leave*. None of the four is "be sad about your
+relative".
 
 The **Hearth-Turner** is locked as *"the one who kept every version of the argument…
 the exposition god, but earned: it is not telling you because the plot needs it told, it
