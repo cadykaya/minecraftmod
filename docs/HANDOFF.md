@@ -33,6 +33,48 @@ asserted against a running world rather than against its own source.
 | Magic | **four schools, eight spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 
+### A letter that can be opened
+
+`sealed_letter` had been `registerSimpleItem` since the first registry pass: **no
+behaviour at all.** The letters themselves were fine — written, loaded, validated, and
+readable through `interregnum letter read` — but the thing a player would be holding did
+nothing when they used it, so the mid-game's best reveal was reachable only by an operator.
+
+Unlike casting or attuning, the affordance was never an open question. You read a letter by
+opening it. `SealedLetterItem.use` prints the page; the stack already carried which letter
+it is, through a component that has existed all along.
+
+**One renderer, two callers.** `LetterPage.of` builds the page and both the item and the
+command go through it. The command used to render it inline, which was fine while nothing
+else could open a letter — and the moment the item could, it would have been two renderers
+to keep in step with only one of them reachable by a check. `mail_check.sh` now covers the
+item's page as a side effect of covering the command's.
+
+**The salutation is IN the letter and the page does not add one.** The obvious shape was to
+render `To <addressee>` above the body. Every letter's first body line already *is* its
+salutation — *"Ballast —"*, *"Rill —"*, and for the fourth, *"To —"* — so a rendered one
+would print the name twice, above the `To —` that is the point of the whole set. The
+`addressee` field is the machine-readable half of the same fact and earns its place
+elsewhere: `Post` enforces that exactly one letter in the set is unaddressed, which is an
+invariant about a SET and cannot be read off any single letter's text.
+
+**[VERIFY] — the right-click, not the page.** No client here, so no player can use an item
+on a headless server. The page it produces is verified, by `mail_check.sh`, through the
+command that now shares it.
+
+### I overwrote a file I thought I was creating
+
+Worth its own note because none of the usual defences caught it. The component this needed
+already existed, in a `ModComponents.java` I wrote from scratch and thereby replaced. The
+build stayed green (same component, same registration), the checks stayed green (they read
+letters through the command, which did not change), and `git status` said `M` rather than
+`??` — which I did not look at, because I believed I had just created the file.
+
+What was lost was a rule with no check behind it: *the component must never carry the
+addressee, because a stack in a hotbar is a string a player can see, and the names are
+meant to be unheard until the letter is opened.* Restored from git.
+[`LESSONS.md` #39](LESSONS.md#39-cat-is-not-a-way-to-create-a-file).
+
 ### The ghost could not reach anybody
 
 `WORLD.md`, locked, on the Haunt: *"dream-audiences: **sleep** sometimes routes the killer
@@ -2378,7 +2420,7 @@ Everything else is unblocked. In order:
    DATAGEN.md's item-model row and TEXTURING.md's paths are now **VERIFIED against
    26.2.0.67** — most of them by shapes this repo compiles and CI boots a server on.
 
-   **Five remain, and none of them is debt.** Each now says what evidence would clear it,
+   **Six remain, and none of them is debt.** Each now says what evidence would clear it,
    because "unverified" and "unverifiable here" were being conflated:
 
    * `MODELS.md` **render types** — every block here is an opaque cube and every item is
@@ -2392,6 +2434,9 @@ Everything else is unblocked. In order:
    * `PLATFORM.md` **`gradle.properties` values** — a standing caveat that the *names* are
      stable and the *build numbers* must be checked at setup. Policy; it should never be
      cleared.
+   * `SealedLetterItem` **the right-click that opens a letter** — the page it produces is
+     verified through the command that shares `LetterPage`; the use that reaches it is not,
+     because a headless server has no player to use an item.
    * `HauntSleepEvents` **the dream's trigger** — the branch that routes a sleeping killer
      to the ghost. Every rule it applies is verified through the command seam; the
      right-click that reaches it is not, because a headless server has no player to make

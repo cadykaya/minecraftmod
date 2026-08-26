@@ -319,5 +319,7 @@
   "interregnum.ferry.destination.quiet_one": "THE UNRESPONSIVE",
   "interregnum.ferry.destination.anchorite": "THE MASS AUTHORITY",
   "interregnum.ferry.destination.verdant": "THE GREEN AUTHORITY",
-  "interregnum.ferry.destination.hearth_turner": "THE TEMPORAL AUTHORITY"
+  "interregnum.ferry.destination.hearth_turner": "THE TEMPORAL AUTHORITY",
+  "interregnum.letter.unmarked": "The seal is intact and the docket line is blank. Whoever filed this did not record which one it was.",
+  "interregnum.letter.missing": "This is docketed %s. There is no such item in the register."
 }

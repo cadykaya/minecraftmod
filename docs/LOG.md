@@ -3533,3 +3533,46 @@ lines of adapter over that, which is the arrangement `Deicide` documents and the
 is worth keeping exactly one implementation of a gate.
 
 193 self-test checks, 63 mutations, 37 live checks.
+
+---
+
+## A letter that can be opened
+
+`sealed_letter` had been `registerSimpleItem` since the first registry pass: no behaviour
+at all. The letters themselves were fine — written, loaded, validated, readable through
+`interregnum letter read` — but the thing a player would be holding did nothing when they
+used it, so the mid-game's best reveal was reachable only by an operator. Unlike casting or
+attuning, the affordance was never an open question: you read a letter by opening it.
+
+One renderer, two callers. `LetterPage.of` builds the page and both the item and the
+command go through it. The command used to render it inline, which was fine while nothing
+else could open a letter — and the moment the item could, it would have been two renderers
+to keep in step with only one of them reachable by a check. `mail_check.sh` now covers the
+item's page as a side effect of covering the command's, and was re-run green.
+
+The page adds no salutation. Every letter's first body line already IS its salutation —
+"Ballast —", "Rill —", and for the fourth, "To —" — so a rendered `To <addressee>` would
+print the name twice above the line that is the point of the whole set. The `addressee`
+field is the machine-readable half of the same fact and earns its place in `Post`, which
+enforces that exactly one letter in the set is unaddressed: an invariant about a SET, which
+cannot be read off any single letter's text.
+
+### I overwrote a file I thought I was creating
+
+The component the item needed already existed, in a `ModComponents.java` I wrote from
+scratch and thereby replaced.
+
+Every usual defence missed it. The build stayed green — same component, same registration.
+The checks stayed green — they read letters through the command, which had not changed.
+And `git status` said `M` rather than `??`, which I did not look at, because I believed I
+had just created the file. What surfaced it was an unrelated symptom: I had also added a
+second `ModComponents.register(modBus)` beside the one already there, and the mod refused
+to load with "Cannot register DeferredRegister to more than one event bus". Chasing that
+duplicate led back to the file.
+
+What was lost was a rule with no check behind it — *the component must never carry the
+addressee, because a stack in a hotbar is a string a player can see, and the names are
+meant to be unheard until the letter is opened* — written in the one place a future author
+would be standing when they broke it. Restored from git. `LESSONS.md` #39.
+
+193 self-test checks, 63 mutations, 37 live checks.

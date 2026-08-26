@@ -1002,11 +1002,15 @@ public final class InterregnumCommand {
                                     ctx.getSource().sendSuccess(() -> Component.literal(
                                             "letter=" + letter.id() + " to="
                                                     + letter.addressee().orElse("--")), false);
-                                    ctx.getSource().sendSuccess(() -> Component.translatable(
-                                            letter.subjectKey()), false);
-                                    for (String key : letter.bodyKeys()) {
-                                        ctx.getSource().sendSuccess(
-                                                () -> Component.translatable(key), false);
+                                    // Through LetterPage, which is also what the item
+                                    // uses. This used to render the page itself, which
+                                    // was fine while nothing else could open a letter --
+                                    // and the moment the ITEM could, it would have been
+                                    // two renderers to keep in step, with only one of
+                                    // them reachable by a check.
+                                    for (Component line : com.cadykaya.interregnum.system
+                                            .letters.LetterPage.of(letter.id())) {
+                                        ctx.getSource().sendSuccess(() -> line, false);
                                     }
                                     return 1;
                                 })))

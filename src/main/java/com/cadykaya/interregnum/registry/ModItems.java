@@ -54,7 +54,13 @@ public final class ModItems {
      * which is also true of them as writing.
      */
     public static final DeferredItem<Item> SEALED_LETTER =
-            ITEMS.registerSimpleItem("sealed_letter", p -> p.stacksTo(1).fireResistant());
+            ITEMS.register("sealed_letter",
+                    key -> new com.cadykaya.interregnum.content.item.SealedLetterItem(
+                            new net.minecraft.world.item.Item.Properties()
+                                    .setId(net.minecraft.resources.ResourceKey.create(
+                                            net.minecraft.core.registries.Registries.ITEM, key))
+                                    .stacksTo(1)
+                                    .fireResistant()));
 
     /** A shard of the shattered god. Finite; attuning one makes a Theoclast. */
     public static final DeferredItem<Item> CLAST =

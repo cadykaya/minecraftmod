@@ -1724,3 +1724,55 @@ Related: [#5](#5-a-test-that-passes-either-way-is-not-a-test) is the general for
 the specific shape it takes for anything keyed, pooled, or indexed — and the third time
 that shape has been paid for here, after one zone list per world and zones keyed by school
 ([#34](#34-a-key-that-is-unique-because-only-one-thing-uses-it)).
+
+---
+
+## 39. `cat >` is not a way to create a file
+
+*Learned by overwriting a file that already existed, and nearly committing it.*
+
+Building a readable letter item needed a data component to say which letter a stack was.
+I wrote `ModComponents.java` from scratch: register, one component, done. It compiled, the
+server booted, the letters read correctly, and every check passed.
+
+`ModComponents.java` **already existed**, with the same component in it, and I had replaced
+it. The only reason I noticed is that a *different* symptom appeared — the mod refused to
+load with *"Cannot register DeferredRegister to more than one event bus"*, because I had
+also added a second `ModComponents.register(modBus)` next to the one that was already
+there. Chasing that duplicate is what led back to the file.
+
+### What was in it
+
+```java
+ * Deliberately NOT the addressee: the item must never carry `Rill`, because a stack in a
+ * hotbar is a string a player can see, and the whole point is that the names are unheard
+ * until the letter is opened. `tools/letters_check.py` would catch the name appearing in
+ * the lang file, and it would not catch it appearing in a component -- so the rule is
+ * kept here, in the one place that decides what an item knows about itself.
+```
+
+A rule with no check behind it, written down in the one place a future author would be
+standing when they broke it. Nothing in CI would have noticed it was gone — my version
+compiled, and the *behaviour* was identical.
+
+### Why the usual defences all missed
+
+- **The build was green.** Both versions register the same component the same way.
+- **The checks were green.** `mail_check.sh` reads letters through the command, and that
+  path never changed.
+- **`git status` said `M`, not `??`** — and I did not look, because I believed I had just
+  created the file.
+
+The one thing that would have caught it costs nothing: **look before writing.** The tool
+description for `Write` says a file must be read before it is overwritten, and `cat >` in a
+shell has no such guard — which is exactly why the habit has to sit with the author.
+
+> **The rule: before writing a whole file, check whether it is there.** `ls`, `git status`,
+> anything. A file you are "creating" that already exists is not a merge conflict and not a
+> compile error — it is a silent deletion of whatever reasoning was in it, and reasoning is
+> the thing this repository is mostly made of.
+
+Related: [#29](#29-git-checkout----on-a-tracked-file-is-not-an-undo-it-is-a-discard) is the same loss from the other direction —
+there a careless restore destroyed uncommitted work, here a careless create destroyed
+committed work. Both were quiet, and both were about a command that does exactly what it
+says.
