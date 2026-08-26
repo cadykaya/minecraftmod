@@ -3058,3 +3058,69 @@ proves the world still spares a build, `casting_check.sh` proves a caster may ai
 Either alone is satisfiable by getting it uniformly wrong.
 
 177 self-test checks, 56 mutations, 30 live checks.
+
+---
+
+## A spell that crushes nothing
+
+***Drop-forge*** — the Anchorite's second. `WORLD.md`: *"crafting by crushing."*
+
+The spell crushes nothing. It makes a few metres of ground somewhere an impact *means*
+something, and an impact is not something it provides: you go and get the weight, get it
+above the thing, and let it go. Cast into an empty room it does nothing at all for a
+minute and then lapses. Nothing here is aimable, which is the strongest reading available
+of the locked doctrine that a spell's combat use falls out of its world use.
+
+It completes its own school rather than adding to it. *Lighten* takes weight away so a
+thing can be moved; *Drop-forge* is what that thing is for once it is above where you want
+it. And the two cannot overlap — inside a Lighten nothing falls, so a forge under a
+low-gravity field is a forge with the hammer floating over it.
+
+### The fourth table, and the first that no world runs
+
+The unraveling loosens, the Turning weathers, attrition generalises, all on a clock. This
+one waits. It answers one question — what does this do under force? — and the world has
+two answers: rock **shatters** (stone, cobble, gravel, sand) and loose or soft matter
+**packs** (snow, ice, packed ice, blue ice). A block does one or the other and never both.
+`chance` is 1.0 throughout, which is the whole difference between an act and weather: a
+crush that failed 30% of the time would not read as a rate, it would read as broken.
+
+It bites down. Cobblestone crushes to gravel and gravel falls, so a weight dropped on a
+cobble floor makes the floor under itself fall, follows it, and crushes again until the
+chain or the zone runs out. Left in: bounded by the radius rather than by a special case,
+and the clearest possible demonstration of what the cast actually did.
+
+### The event, and the one place Pre will not do
+
+Every other falling-block handler here uses `EntityTickEvent.Pre` — the Anchorite's lift
+must set the delta before the entity moves, and Still must cancel the tick before it
+happens. This one cannot. `FallingBlockEntity.tick` calls `move`, which is what sets
+`onGround`, and then lands and discards itself, all in one tick — so `Pre` of the landing
+tick still sees a block in the air and `Pre` of the tick after never comes. `Post` is
+fired from `ServerLevel.tickNonPassenger` immediately after `tick()` returns,
+unconditionally, including for an entity that removed itself during it. Read out of the
+decompiled source rather than assumed, because the assumption was wrong.
+
+### Verification
+
+`dropforge_check.sh`, watched failing twice. Keying zones by school again leaves the
+Lighten column green and kills `FORGE_CRUSHED`: the forge hovers its own hammer, with no
+error anywhere. Adding a claim check to `Crush` kills only `CLAIMED_CRUSHED`.
+
+The control column matters as much as either. Twenty blocks from any spell, the same drop
+must leave the ground alone — without it, "the stone became cobblestone" is equally
+satisfied by the unraveling, the Turning's clock, or attrition, all three of which are
+converting blocks in that world while the check runs.
+
+`crushing_check.py` is the same lesson in a second place. The table's `_comment` said the
+only thing between a misfired drop and somebody's wall was that walls are not in this file
+— true, and enforced by nothing. It is enforced now: no block a player builds with may
+appear on the LEFT of an arrow, no ore either, and `chance` must be exactly 1.0. Both the
+worked-`from` rule and the chance rule were watched failing. What a crush PRODUCES is
+unconstrained on purpose; producing it is what the spell is for.
+
+And `CLAIMED_CRUSHED` is the LESSONS #35 principle applied one increment after it was
+learned: the ledger gates the world, not the caster, so a drop-forge crushes a wall its
+caster built. Written from what the spell is for, not from what `Crush` does.
+
+181 self-test checks, 59 mutations, 31 live checks.

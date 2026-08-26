@@ -165,3 +165,6 @@ jobs:
 
       - name: A stillness holds what is falling, and its own school-mate does not
         run: ./tools/still_check.sh
+
+      - name: A dropped weight crushes what it lands on, and only where somebody asked it to
+        run: ./tools/dropforge_check.sh

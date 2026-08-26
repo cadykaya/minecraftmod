@@ -772,6 +772,27 @@ public final class InterregnumCommand {
 
         root = root.then(Commands.literal("cast")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("dropforge")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                        .executes(ctx -> {
+                                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                            ServerLevel level = ctx.getSource().getLevel();
+                                            var cast = com.cadykaya.interregnum.system.magic.DropForgeSpell
+                                                    .cast(level, pos, grimoireOf(ctx, "who"));
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "cast=dropforge opened=" + cast.opened()
+                                                            + " frayed=" + cast.frayed()
+                                                            + " refused=" + cast.refused()
+                                                            + " zones=" + com.cadykaya.interregnum
+                                                                    .system.magic.Zones.count(level,
+                                                                            com.cadykaya.interregnum.core.magic.Spell.DROP_FORGE)),
+                                                    false);
+                                            return cast.opened() ? 1 : 0;
+                                        })))));
+
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("still")
                         .then(Commands.argument("who", StringArgumentType.string())
                                 .then(Commands.argument("pos", BlockPosArgument.blockPos())

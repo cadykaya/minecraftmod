@@ -40,3 +40,20 @@ minecraft:stripped_oak_log
 minecraft:water
 minecraft:ice
 minecraft:snow
+
+# Added for the crushing table (Drop-forge). Unlike everything above these were
+# NOT taken on trust: the table loaded on a live dedicated server -- "content: 15
+# crushing rule(s) loaded" -- and the loader decodes every id through the block
+# registry, so a typo here would have left the table EMPTY rather than partial.
+minecraft:deepslate
+minecraft:cobbled_deepslate
+minecraft:red_sandstone
+minecraft:red_sand
+minecraft:blackstone
+minecraft:tuff
+minecraft:calcite
+minecraft:snow_block
+minecraft:packed_ice
+minecraft:blue_ice
+minecraft:mud
+minecraft:packed_mud

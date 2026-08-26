@@ -849,6 +849,25 @@ public final class SelfTest {
         // Weather and Rewind are one table in two directions, so they must belong to the
         // same god. Split across two schools, half the Turning's kit would be taught by
         // somebody who does not own the law it reads.
+        // A forge is smaller than a room and lasts longer than one. Both directions
+        // matter and both are about what the spell ASKS OF YOU: a Lighten is used where
+        // you are standing, a Drop-forge has to be set up and then supplied, so it is
+        // narrow enough to be a workbench rather than a quarry and long enough to climb.
+        check(com.cadykaya.interregnum.core.magic.DropForge.RADIUS
+                      < com.cadykaya.interregnum.core.magic.Lighten.RADIUS,
+              "a drop-forge is a workbench, not a region. Cast over a hillside it would "
+              + "stop being an act and become a machine that processes terrain while "
+              + "nobody watches");
+        check(com.cadykaya.interregnum.core.magic.DropForge.DURATION_TICKS
+                      > com.cadykaya.interregnum.core.magic.Lighten.DURATION_TICKS,
+              "and it lasts longer, because it is the only spell in the kit that cannot "
+              + "do anything until the caster has gone and fetched something. A spell "
+              + "that expired during its own setup would read as broken, not as brief");
+        check(com.cadykaya.interregnum.core.magic.DropForge.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.WEIGHT,
+              "Drop-forge is the Anchorite's, so it is learned in the Anchorite's world "
+              + "and nowhere else");
+
         check(com.cadykaya.interregnum.core.magic.Rewind.SCHOOL
                       == com.cadykaya.interregnum.core.magic.School.TURNING,
               "Rewind belongs to the Turning, the same school as Weather -- they are one "
@@ -884,6 +903,19 @@ public final class SelfTest {
         check(perSchool.values().stream().anyMatch(n -> n > 1),
               "and at least one school does teach more than one spell, so the key is "
               + "guarding a collision that is real rather than hypothetical");
+        // The second pair, and a worse one. Lighten and Drop-forge are both the
+        // Anchorite's and both open zones, and they are OPPOSITES: inside a Lighten
+        // nothing falls, and a Drop-forge is ground where things land. Keyed by school
+        // they would have been the same zone, so casting either would have lifted the
+        // weight the other was waiting for -- a spell that silently cannot work.
+        check(com.cadykaya.interregnum.core.magic.Spell.LIGHTEN.school()
+                      == com.cadykaya.interregnum.core.magic.School.WEIGHT
+              && com.cadykaya.interregnum.core.magic.Spell.DROP_FORGE.school()
+                      == com.cadykaya.interregnum.core.magic.School.WEIGHT,
+              "Lighten and Drop-forge are both the Anchorite's, and both are zones. "
+              + "Keyed by school they would be one zone that both lifts falling blocks "
+              + "and waits for them to land, which is a spell that cannot work and "
+              + "never says so");
         check(perSchool.size() == com.cadykaya.interregnum.core.magic.School.values().length,
               "every school teaches at least one spell, so no god's world is a journey "
               + "toward nothing");

@@ -3,9 +3,11 @@ package com.cadykaya.interregnum.system.anchorite;
 import com.cadykaya.interregnum.core.exodus.Exodus;
 import com.cadykaya.interregnum.system.exodus.Leaks;
 import com.cadykaya.interregnum.system.magic.Zones;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import com.cadykaya.interregnum.Interregnum;
@@ -26,6 +28,19 @@ import com.cadykaya.interregnum.Interregnum;
 @EventBusSubscriber(modid = Interregnum.MOD_ID)
 public final class AnchoriteEvents {
     private AnchoriteEvents() {}
+
+    private static final Identifier CRUSHING_LISTENER =
+            Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "crushing");
+
+    /**
+     * The crushing table. It lives with the god whose law it is, the way the ageing table
+     * lives with the Hearth-Turner -- not with the spell that reaches it, because a
+     * table is a fact about a world and a spell is a way of asking.
+     */
+    @SubscribeEvent
+    public static void onAddReloadListeners(AddServerReloadListenersEvent event) {
+        event.addListener(CRUSHING_LISTENER, new CrushingLoader());
+    }
 
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Pre event) {

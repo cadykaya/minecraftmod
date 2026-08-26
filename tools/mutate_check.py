@@ -230,6 +230,24 @@ MUTATIONS = [
      f"{MAIN}/magic/Spell.java",
      "    STILL(School.SILENCE);", "    STILL(School.WEIGHT);"),
 
+    # The Anchorite's pair is the worse one: Lighten and Drop-forge are opposites, so
+    # collapsing them onto one key produces a zone that lifts the weight it is waiting
+    # for. Named separately from the Quiet One's because the assertion has to be about
+    # the PAIR -- an earlier version of this guard counted schools and survived moving a
+    # spell out of one, which is the whole reason both pairs are asserted by name.
+    ("magic: the Anchorite's two spells collapse onto the same key",
+     f"{MAIN}/magic/Spell.java",
+     "    DROP_FORGE(School.WEIGHT),", "    DROP_FORGE(School.SILENCE),"),
+    ("magic: a drop-forge reaches as far as a low-gravity field, and stops being a "
+     "workbench",
+     f"{MAIN}/magic/DropForge.java",
+     "    public static final int RADIUS = 3;",
+     "    public static final int RADIUS = 7;"),
+    ("magic: a drop-forge lapses before its caster can fetch anything to drop in it",
+     f"{MAIN}/magic/DropForge.java",
+     "    public static final long DURATION_TICKS = 20L * 60;",
+     "    public static final long DURATION_TICKS = 20L * 15;"),
+
     # The dead god's mail. The invariant here is about a SET -- three letters open with
     # a name, the fourth opens `To --` -- so nothing about an individual letter can
     # catch it going. If it goes, the mid-game's best reveal quietly stops being one and

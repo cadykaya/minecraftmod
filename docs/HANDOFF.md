@@ -27,11 +27,66 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **30**, every one mutation-verified, all in CI |
+| Live-world checks | **31**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
-| Magic | **four schools, six spells**, learned in their gods' worlds; command-only for now |
+| Magic | **four schools, seven spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
+
+### A spell that crushes nothing
+
+***Drop-forge*** — the Anchorite's second. `WORLD.md`: *"**Weight** (Anchorite): … *Drop-forge*
+— **crafting by crushing**."*
+
+The spell does not crush anything, and that is the design. It makes a few metres of ground
+somewhere an impact *means* something — and an impact is not something it provides. You
+have to go and get the weight, get it above the thing, and let it go. Cast into an empty
+room it does nothing at all, for a full minute, and then lapses.
+
+That is the strongest available reading of the locked doctrine that a spell's *"combat use
+falls out of its world use, never the reverse"*. There is nothing here to aim. What changes
+is what gravity is **for** inside a small patch of ground.
+
+**Its own school is the other half of it.** *Lighten* takes weight away so a thing can be
+moved; *Drop-forge* is what that thing is for once it is above where you want it. Lighten
+the anvil, walk it up, drop it — one motion, two spells. And they **cannot overlap**: inside
+a Lighten nothing falls, so a forge under a low-gravity field is a forge with the hammer
+floating over it. A player who tries both at once learns the Anchorite in four seconds.
+
+**The fourth table, and the first that nobody's world runs.** The unraveling loosens, the
+Turning weathers, attrition generalises — all three on a clock. Crushing waits. It answers
+one question, the way the other three do: *what does this do under force?* The world has two
+answers, so the table has two halves. **Rock shatters** — stone, cobble, gravel, sand.
+**Loose and soft matter packs** — snow, ice, packed ice, blue ice. A block does one or the
+other, never both, so the file can never become "crushing does whatever was convenient here".
+`chance` is 1.0 throughout, which is the difference between an act and weather.
+
+**It bites down, and that is left in.** Cobblestone crushes to gravel, and gravel falls — so
+a weight dropped on a cobble floor makes the floor beneath itself fall, follows it, and
+crushes again until the chain runs out or the drop leaves the zone. Bounded by the radius
+rather than by a special case, and the clearest possible demonstration of what the cast
+actually did.
+
+**The ledger question, one increment after getting it wrong.** A crush only ever happens
+because somebody cast a spell here and then fed it by hand, so `Crush` has no claim check at
+all: the ledger gates the world, not the caster. That is now the second place the principle
+is applied rather than the first place it was noticed, and `dropforge_check.sh` asserts it
+from the feature rather than from the code — a drop-forge crushes a wall its caster built.
+
+**A comment promoted to a guard.** The table's safety note used to end *"the only thing
+standing between a misfire and somebody's wall is that walls are not in this file"* — which
+is true, and was enforced by nothing. `crushing_check.py` now enforces it: no block a player
+builds with may appear on the LEFT of an arrow (the right may be anything, since producing
+it is the point), no ore either, and `chance` must be exactly 1.0, because a crush is an act
+and an act that sometimes does nothing reads as a broken spell rather than as a rate.
+Watched failing on a worked `from` and on a fractional chance.
+
+**Two mutations, both watched failing.** Keying zones by school again leaves `LIGHTEN_HELD`
+and `LIGHTEN_INTACT` green and kills `FORGE_CRUSHED` — the forge hovers its own hammer,
+exactly as predicted, and nothing anywhere reports an error. Adding a claim check to `Crush`
+kills only `CLAIMED_CRUSHED`. The check also carries a control column twenty blocks from any
+spell, without which "the stone became cobblestone" is equally satisfied by any of the three
+other block tables running in that same world while the check is going.
 
 ### The ledger gates the world, not the caster
 
