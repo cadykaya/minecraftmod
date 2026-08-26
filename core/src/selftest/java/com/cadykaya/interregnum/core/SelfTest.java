@@ -1035,6 +1035,73 @@ public final class SelfTest {
               + "spell that takes a specific building rather than a volume, so a reach "
               + "wider than a room would make 'that one' unanswerable");
 
+        // THE SPOKEN WORD. `WORLD.md` locks casting as something you say out loud in chat,
+        // which puts the whole affordance one method away from every sentence any player
+        // has ever typed. These are the guards on that.
+        var inc = com.cadykaya.interregnum.core.magic.Incantation.class;
+        check(com.cadykaya.interregnum.core.magic.Incantation
+                      .wordFor(com.cadykaya.interregnum.core.magic.Spell.DROP_FORGE)
+                      .equals("drop-forge")
+              && inc != null,
+              "a spell's word is its own name with underscores as hyphens, so the word a "
+              + "player types is the word the design document uses");
+
+        // Every word round-trips, and no two spells answer to the same one. Derived from
+        // the enum rather than listed, so a new spell is speakable the moment it exists --
+        // and this is what would catch two of them colliding.
+        var words = new java.util.HashSet<String>();
+        boolean roundTrips = true;
+        for (var sp : com.cadykaya.interregnum.core.magic.Spell.values()) {
+            String w = com.cadykaya.interregnum.core.magic.Incantation.wordFor(sp);
+            words.add(w);
+            if (com.cadykaya.interregnum.core.magic.Incantation.of(w) != sp) {
+                roundTrips = false;
+            }
+        }
+        check(roundTrips && words.size()
+                      == com.cadykaya.interregnum.core.magic.Spell.values().length,
+              "every spell has a word, every word names it back, and no two spells answer "
+              + "to the same one -- a collision would make one of them uncastable with "
+              + "nothing anywhere reporting which");
+
+        // THE ONE THAT PROTECTS CHAT. A substring match would make every conversation
+        // about magic a hazard, and the first thing anybody would learn is to stop
+        // discussing it. Both halves are here: a sentence containing the word, and a
+        // longer word that merely begins with it.
+        check(com.cadykaya.interregnum.core.magic.Incantation
+                      .of("I said weather and nothing happened") == null
+              && com.cadykaya.interregnum.core.magic.Incantation.of("weatherproof") == null
+              && com.cadykaya.interregnum.core.magic.Incantation.of("hushed") == null,
+              "talking about a spell is not casting it. The whole message has to BE the "
+              + "word -- chat is where players discuss the game, and a magic system that "
+              + "fires on a substring is one nobody can talk near");
+        check(com.cadykaya.interregnum.core.magic.Incantation.of("  HUSH ")
+                      == com.cadykaya.interregnum.core.magic.Spell.HUSH,
+              "and case and surrounding space are forgiven, because a capital at the start "
+              + "of a line is something a player gets for free rather than something they "
+              + "meant");
+        check(com.cadykaya.interregnum.core.magic.Incantation.of(null) == null
+              && com.cadykaya.interregnum.core.magic.Incantation.of("") == null
+              && com.cadykaya.interregnum.core.magic.Incantation.of("   ") == null,
+              "nothing said is nothing cast");
+
+        // Aimed or not is a real division, not per-spell taste: a spell that makes a place
+        // you are standing in centres on you, and a spell you do something to centres on
+        // what you are looking at. Asserted as a partition so that collapsing it either
+        // way fails -- a silence you can stand outside and shoot into is a bubble.
+        check(!com.cadykaya.interregnum.core.magic.Incantation
+                      .aimed(com.cadykaya.interregnum.core.magic.Spell.HUSH)
+              && !com.cadykaya.interregnum.core.magic.Incantation
+                      .aimed(com.cadykaya.interregnum.core.magic.Spell.LIGHTEN)
+              && com.cadykaya.interregnum.core.magic.Incantation
+                      .aimed(com.cadykaya.interregnum.core.magic.Spell.WEATHER)
+              && com.cadykaya.interregnum.core.magic.Incantation
+                      .aimed(com.cadykaya.interregnum.core.magic.Spell.QUELL),
+              "a room you stand in centres on the speaker and a thing you name centres on "
+              + "what they are looking at. A silence you could aim would be a bubble you "
+              + "could stand outside of and shoot into, which is the one thing a silence "
+              + "must not be");
+
         // THE SERVER-REAL MANIFESTATION. `WORLD.md` calls it "a credibility problem" and
         // explicitly not a sanity bar, and the entire difference between those two things
         // is a rate. Both bounds below are the design rather than tuning taste.

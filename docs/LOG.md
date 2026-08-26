@@ -3916,3 +3916,46 @@ distinction is written into the file next to the proposal.
 
 `WORLD.md` now carries twelve `[LOCKED — owner delegated; decided here.]` entries.
 "Waiting on owner" is empty for the first time since it was written.
+
+---
+
+## The word casts the spell
+
+Ten spells had existed and been verified for a long time, and a player could reach none of
+them: the command was the only way in. `WORLD.md`'s newly locked affordance — *casting is a
+spoken word* — is now built, and it closes what the status table had been calling the
+single biggest gap in the mod.
+
+The word is the spell's own name. No invented incantation, and the third reason is the one
+that would not have been visible a day ago: an invented word needs a language, the only
+language this world has is the dead god's script, and reading raw god-script was locked
+*this session* as something that marks the reader. An incantation drawn from it would have
+made every cast an exposure — a collision between two decisions taken an hour apart.
+
+Nothing is cancelled. The message goes to chat exactly as typed, spell or not, because the
+locked reason casting is speech at all is that the offence is **audible**: a Warden in the
+room has witnessed it, a bystander can repeat what you said, and casting quietly in a cellar
+becomes a real choice. Swallowing the word to keep the channel tidy would leave a keybind
+that happens to be typed.
+
+### Two assertions where one looked sufficient
+
+The rule that protects chat is that the **whole message** must be the word — otherwise
+*"I hushed the room and it still blew up"* silences somebody, and the first thing anyone
+learns is to stop discussing magic. The check asserts it twice: the outcome (`NOT_A_WORD`)
+and the world (the block somebody was *talking about* is unchanged).
+
+That looked redundant until the mutation run. Matching a substring instead of the whole
+message was caught **only by the world assertion** — the outcome one still passed, because
+other messages in the same run produce `NOT_A_WORD` legitimately and `grep` cannot tell
+which line it came from. A presence assertion over a shared outcome string proves nothing
+about the case you care about.
+
+### The check was wrong first, and it was the check
+
+`stone_bricks` ages to *cracked*, not *mossy*, and two of the four schools were never
+taught to the speaker. Both failures were mine in the check rather than in the code, and
+both were visible in one run because the spell reported what it actually did. Worth noting
+only because the reflex on a red check is to look at the code first.
+
+223 self-test checks, 77 mutations, 42 live checks, 20 fast-gate stages.

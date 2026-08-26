@@ -416,6 +416,30 @@ public final class InterregnumCommand {
         return 1;
     }
 
+    /** `speak <who> <from> <toward> <said>`. See {@link com.cadykaya.interregnum.system.magic.Speech}. */
+    private static int speak(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        String who = StringArgumentType.getString(ctx, "who");
+        java.util.UUID uuid;
+        try {
+            uuid = java.util.UUID.fromString(who);
+        } catch (IllegalArgumentException e) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "spoke=refused reason=not a player id"), false);
+            return 0;
+        }
+        BlockPos from = BlockPosArgument.getLoadedBlockPos(ctx, "from");
+        BlockPos toward = BlockPosArgument.getLoadedBlockPos(ctx, "toward");
+        String said = StringArgumentType.getString(ctx, "said");
+        var heard = com.cadykaya.interregnum.system.magic.Speech.speak(
+                ctx.getSource().getLevel(), from, toward, uuid, said, grimoireOf(ctx, "who"));
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                "spoke=" + heard.outcome()
+                        + " spell=" + heard.spell()
+                        + " detail=" + heard.detail()), false);
+        return heard.outcome() == com.cadykaya.interregnum.system.magic.Speech.Outcome.CAST ? 1 : 0;
+    }
+
     /** `cast loft lift|place <who> <pos>`. See {@link LoftSpell}. */
     private static int loft(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
                             boolean lifting)
@@ -887,6 +911,20 @@ public final class InterregnumCommand {
                                                             + " refused=" + cast.refused()), false);
                                             return cast.opened() ? 1 : 0;
                                         })))));
+
+        // The affordance itself. `speak` is what hearing the word does, and it is the one
+        // seam between chat and the ten spells -- so a headless server can exercise every
+        // decision in it, which is the whole reason the decisions live in `Speech`.
+        root = root.then(Commands.literal("speak")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("who", StringArgumentType.string())
+                        .then(Commands.argument("from", BlockPosArgument.blockPos())
+                                .then(Commands.argument("toward", BlockPosArgument.blockPos())
+                                        // Greedy, because the point of the check is words
+                                        // that are NOT single tokens: a sentence with a
+                                        // spell word inside it must cast nothing.
+                                        .then(Commands.argument("said", StringArgumentType.greedyString())
+                                                .executes(InterregnumCommand::speak))))));
 
         // Loft is the only spell with two verbs, because carrying is the one thing in the
         // kit that has a middle: you pick a structure up, you walk, you put it down.

@@ -27,10 +27,10 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **41**, every one mutation-verified, all in CI |
+| Live-world checks | **42**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
-| Magic | **four schools, ten spells**, learned in their gods' worlds; command-only for now |
+| Magic | **four schools, ten spells**, learned in their gods' worlds and **cast by saying the word** |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 
 ### The audit, made permanent
@@ -737,6 +737,49 @@ Mutation run: making the cancel never fire was caught.
 
 Nothing audible is claimed. Same wall as Hush — the Quiet One's most characteristic effects
 live on a client and this container has none.
+
+### Casting is a spoken word
+
+Ten spells existed, verified, for a long time, and **a player could reach none of them** —
+the command was the only way in. That is over. You say *weather*, and the block you are
+looking at ages.
+
+**The word is the spell's own name.** No invented incantation, for three reasons in order
+of weight. It is the *register*: this world runs on dockets and statements, magic here is
+not mystical but **stated**, and a Warden's citation can quote you verbatim. An invented
+word would need a language, and the only language this world has is the god-script — which
+`WORLD.md` now locks as a hazard to read, so an incantation drawn from it would make every
+cast an exposure, a collision nobody designed. And it is discoverable: being taught a school
+tells you its verbs, and there is nothing else to look up.
+
+**Nothing is cancelled — the word goes to chat exactly as typed.** The obvious
+implementation swallows it to keep the channel tidy and destroys the feature: the locked
+reason casting is speech is that the offence is *audible*. A Warden in the room has
+witnessed it, a bystander can repeat what you said, and casting quietly in a cellar becomes
+a real choice. A word nobody else sees is a keybind with extra steps.
+
+**The whole message, or nothing.** `Incantation.of` matches the entire trimmed message and
+never a substring. Not fussiness: chat is where players talk *about* the game, and
+*"I hushed the room and it still blew up"* must not silence anybody. A magic system that
+fires on a substring turns every conversation about magic into a hazard, and the first thing
+anyone would learn is to stop discussing it.
+
+**Aimed or not is a real division.** A spell that makes a place you are standing in centres
+on the speaker — *Hush*, *Still*, *Lighten*. A spell you do something to centres on what
+you are looking at. *Drop-forge* is the exception among the zones and earns it: it is ground
+you prepare and then go and fetch a weight for, and one centred on the caster would be a
+forge you are standing in the middle of.
+
+**The spells do not know how they were triggered, and must not learn.** Every
+`*Spell.cast(...)` takes the arguments it took before `Speech` existed. That is not
+tidiness — `WORLD.md` marks the affordance **[NEEDS PLAYTEST]** in as many words, because
+typing a word to cast may simply feel bad and nobody can find that out in a container with
+no client. The cost of being wrong is one file.
+
+`speech_check.sh` reads the *world* rather than the command's reply. Mutation run: matching
+a substring instead of the whole message was caught — and caught by the world assertion,
+not the outcome one, because other messages in the run produce `NOT_A_WORD` legitimately.
+Two assertions where one looked sufficient.
 
 ### The one spell with a middle
 
@@ -2613,10 +2656,9 @@ Everything else is unblocked. In order:
 
    * **No way to cast in play.** Every spell is reachable only by command. `WORLD.md`
      locks what spells *are* and says nothing about the affordance that triggers one —
-     item, key, gesture, spoken word — and it is **decided**: a spoken word, in chat, in
-     earshot. See [`WORLD.md`](WORLD.md) "Casting is a spoken word". Ten spells exist and
-     a player still cannot reach any of them until this is built, which makes it the
-     single biggest gap in the mod and the first thing to build.
+     item, key, gesture, spoken word — decided, and **built**: you say the word, in chat,
+     in front of whoever is there. See "Casting is a spoken word" below. Ten spells are
+     now reachable in play, which closes what was the single biggest gap in the mod.
    * **The rest of the kits.** *Hedge*, *Graft*, *Moor*, *Held-breath*, *Ripen*, *Rot* —
      six names that carried no description, **now defined** in [`WORLD.md`](WORLD.md) under
      "The six that were only names". Unblocked, and the cheapest content left: the

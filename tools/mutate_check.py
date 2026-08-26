@@ -270,6 +270,22 @@ MUTATIONS = [
     ("haunt: every interval manifests, so the ghost is a metronome",
      f"{MAIN}/haunt/Manifestation.java",
      "    public static final int ODDS = 90;", "    public static final int ODDS = 1;"),
+    # The spoken word sits one method away from every sentence any player types.
+    ("magic: a message CONTAINING a spell word casts it",
+     f"{MAIN}/magic/Incantation.java",
+     "            if (wordFor(s).equals(word)) {", "            if (word.contains(wordFor(s))) {"),
+    ("magic: a word that merely BEGINS with a spell word casts it",
+     f"{MAIN}/magic/Incantation.java",
+     "            if (wordFor(s).equals(word)) {", "            if (word.startsWith(wordFor(s))) {"),
+    ("magic: a spell's word keeps the enum's underscore instead of a hyphen",
+     f"{MAIN}/magic/Incantation.java",
+     "        return spell.name().toLowerCase(Locale.ROOT).replace('_', '-');",
+     "        return spell.name().toLowerCase(Locale.ROOT);"),
+    # A silence you can aim is a bubble you can stand outside of and shoot into.
+    ("magic: every spell is aimed, so a silence is a bubble",
+     f"{MAIN}/magic/Incantation.java",
+     "            case HUSH, STILL, LIGHTEN -> false;", "            case HUSH, STILL, LIGHTEN -> true;"),
+
     ("haunt: the world asks on every tick rather than on the interval",
      f"{MAIN}/haunt/Manifestation.java",
      "        return Math.floorMod(gameTime, INTERVAL_TICKS) == 0;",

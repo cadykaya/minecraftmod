@@ -209,3 +209,6 @@ jobs:
 
       - name: The dead god moves one door beside its killer and never the one across the field
         run: ./tools/manifest_check.sh
+
+      - name: The word casts the spell, and talking about the spell does not
+        run: ./tools/speech_check.sh
