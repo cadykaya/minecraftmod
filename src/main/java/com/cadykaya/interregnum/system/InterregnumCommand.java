@@ -81,8 +81,15 @@ public final class InterregnumCommand {
      * while `sail` refused (or worse, the reverse) would make the checklist a lie,
      * and the checklist is the entire teaching mechanism.
      */
+    /**
+     * @param pad where to put the hull down, or null to use the destination's own dock.
+     * @param sail whether this is a crossing at all. A null pad used to mean "only
+     *        check" -- which stopped working the moment a null pad became a legitimate
+     *        way to say "sail to the dock", so the two questions are now two parameters
+     *        rather than one overloaded one.
+     */
     private static int ferryCheck(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
-                                  BlockPos pad) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+                                  BlockPos pad, boolean sail) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         BlockPos keel = BlockPosArgument.getLoadedBlockPos(ctx, "keel");
         String lawId = StringArgumentType.getString(ctx, "law");
         var law = com.cadykaya.interregnum.system.ferry.FerryLaws.of(lawId);
@@ -109,7 +116,7 @@ public final class InterregnumCommand {
             }
             return 0;
         }
-        if (pad == null) {
+        if (!sail) {
             ctx.getSource().sendSuccess(() -> Component.literal(
                     "ferry=clear law=" + lawId + " total=" + cap.hull().manifest().total()), false);
             return 1;
@@ -129,8 +136,27 @@ public final class InterregnumCommand {
                     "ferry=refused reason=no such destination " + target.identifier()), false);
             return 0;
         }
+        // No pad named: go where the dock is. WORLD.md says a crossing arrives "at the
+        // far pad", and until there was one the arrival position was an argument an
+        // operator typed -- a mail service whose destination is a parameter is not one.
+        // The three-argument form stays for the nudge case, where a hull is moved a few
+        // blocks inside one world and there is no dock involved.
+        BlockPos arrival = pad != null
+                ? pad
+                : com.cadykaya.interregnum.system.ferry.FerryPad.ensure(to);
+        if (arrival == null) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "ferry=refused reason=no pad in " + target.identifier()), false);
+            return 0;
+        }
+        if (pad == null && com.cadykaya.interregnum.system.ferry.FerryPad
+                .occupied(to, arrival)) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "ferry=refused reason=berth occupied at " + target.identifier()), false);
+            return 0;
+        }
         com.cadykaya.interregnum.system.ferry.Ferry
-                .place(ctx.getSource().getLevel(), cap.hull(), keel, to, pad);
+                .place(ctx.getSource().getLevel(), cap.hull(), keel, to, arrival);
         ctx.getSource().sendSuccess(() -> Component.literal(
                 "ferry=sailed law=" + lawId + " to=" + target.identifier()
                         + " total=" + cap.hull().manifest().total()), true);
@@ -1017,13 +1043,18 @@ public final class InterregnumCommand {
                 .then(Commands.literal("check")
                         .then(Commands.argument("keel", BlockPosArgument.blockPos())
                                 .then(Commands.argument("law", StringArgumentType.word())
-                                        .executes(ctx -> ferryCheck(ctx, null)))))
+                                        .executes(ctx -> ferryCheck(ctx, null, false)))))
                 .then(Commands.literal("sail")
                         .then(Commands.argument("keel", BlockPosArgument.blockPos())
                                 .then(Commands.argument("law", StringArgumentType.word())
+                                        // Two arguments: sail to that world's dock.
+                                        .executes(ctx -> ferryCheck(ctx, null, true))
+                                        // Three: put it down exactly there. Kept for the
+                                        // nudge, which moves a hull inside one world.
                                         .then(Commands.argument("pad", BlockPosArgument.blockPos())
                                                 .executes(ctx -> ferryCheck(ctx,
-                                                        BlockPosArgument.getLoadedBlockPos(ctx, "pad"))))))));
+                                                        BlockPosArgument.getLoadedBlockPos(ctx, "pad"),
+                                                        true)))))));
 
         root = root.then(Commands.literal("haunt")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))

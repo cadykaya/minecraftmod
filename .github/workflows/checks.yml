@@ -141,6 +141,9 @@ jobs:
       - name: The ferry's checklist teaches four worlds' rules before departure
         run: ./tools/inspection_check.sh
 
+      - name: A crossing lands on its world's own dock, and not on the ferry already there
+        run: ./tools/pad_check.sh
+
       - name: In the Anchorite's world, unanchored things rise
         run: ./tools/anchorite_check.sh
 

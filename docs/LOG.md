@@ -3322,3 +3322,51 @@ and called a stable page unstable.
 `useWithoutItem` hands you a plain `Player`. Row added to PLATFORM.md.
 
 184 self-test checks, 61 mutations, 34 live checks.
+
+---
+
+## The far pad
+
+`WORLD.md`: *"a keel block captures the structure, validates it against the destination's
+law, and re-places it at **the far pad**."* There was no pad. The arrival position was a
+command argument an operator typed, so the ferry did not go anywhere in particular — it
+went wherever you said, and a mail service whose destination is a parameter is not one.
+
+The same dock, four times, in whatever was to hand: an identical seven-by-seven apron, an
+identical three-by-three landing, four corner posts, and only the material different. The
+Post does not redesign its dock per god — that is the joke the rest of the bureaucracy
+runs on, said in blocks — and the standard dock is the only navigational aid any of these
+worlds has. The Hearth-Turner's arrives already cracked, because in that world a new
+object would be the one thing without a past.
+
+Not claimed: the ledger records what a *player* placed and nobody placed this, so the
+Verdant grows over its dock and the Turning ages it. `FerryPad.ensure` rebuilds a dock
+whose landing has gone, which reads as the last of the Post still doing its job.
+
+The berth is not a queue. A second crossing to a world whose dock already carries a ferry
+is refused; without it the second hull lands on the first and silently replaces whatever
+shared a coordinate. One dock per world is the design, a queue would be a mechanic, and
+inventing one is not mine to do.
+
+### A position derived from a world it had already changed
+
+The first version asked the surface heightmap where the ground was. That works exactly
+once: building the dock RAISES the surface, so the second crossing measured a different
+height, found no landing there, and built a second dock a block above the first. Three
+crossings, three docks, and every one of them "working".
+
+`ensure` now scans the column for its own landing material before computing anything,
+which is immune to that by construction — and also survives a player building on the
+apron or the Verdant growing over it.
+
+The check found it on its first real run, which is the only reason it is a paragraph here
+rather than a bug in a released mod. `pad_check.sh` counts landing blocks with `fill ...
+replace`: exactly 13 per world sailed to, and **zero in a world no ferry has visited**,
+which is what stops a pad built eagerly everywhere from satisfying the first two counts.
+Watched failing on the heightmap version and again with the berth guard removed.
+
+Two of its own assertions needed fixing first, both about reading rather than the mod: the
+`fill` volume asked for 58089 blocks against a 32768 ceiling and was refused outright,
+which read as "no dock" rather than "no answer".
+
+184 self-test checks, 61 mutations, 35 live checks.

@@ -27,11 +27,56 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **34**, every one mutation-verified, all in CI |
+| Live-world checks | **35**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, eight spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
+
+### The far pad
+
+`WORLD.md`: *"a keel block captures the structure, validates it against the destination's
+law, and re-places it at **the far pad**."* There was no pad. The arrival position was a
+command argument an operator typed — so the ferry did not go anywhere in particular, it
+went wherever you said, and a mail service whose destination is a parameter is not one.
+
+**The same dock, four times, in whatever was to hand.** Every pad is the identical
+seven-by-seven apron with the identical three-by-three landing and four corner posts. Only
+the material differs, and it differs because the Post built each one out of what that world
+had — stone and polished andesite for the Quiet One, polished deepslate and deepslate tiles
+for the Anchorite, mossy cobble and mossy brick for the Verdant, stone brick and *cracked*
+stone brick for the Hearth-Turner, which arrives already old because in that world a new
+thing would be the only object without a past.
+
+That an institution does not redesign its dock per god is the joke the rest of the
+bureaucracy runs on, said in blocks. It is also the only navigational aid any of these
+worlds has: you can step off a ferry in a world where nothing answers and still know where
+the landing square is.
+
+**Not claimed, and rebuilt when it has gone.** The ledger records what a *player* placed,
+and nobody placed this — so the Verdant grows over its dock and the Turning ages it, which
+is correct and in character and not survivable for a landing square a crossing has to find.
+`FerryPad.ensure` rebuilds a dock whose landing has gone, which reads as the last of the
+Post still doing its job.
+
+**The berth is not a queue.** A second crossing to a world whose dock already has a ferry on
+it is refused. Without that it comes down *on* the first and silently replaces whatever
+shared a coordinate — a hull deleted by another hull, reported nowhere. One dock per world
+is the design; a queue would be a mechanic, and inventing one is not mine to do.
+
+**The bug the check caught, and it is worth keeping.** The first version asked the surface
+heightmap where the ground was. That works exactly once: building the dock *raises* the
+surface, so the second crossing measured a different height, found no landing there, and
+built a second dock one block above the first. **A position derived from the world cannot be
+derived from a world the thing has already changed.** `ensure` now scans the column for its
+own landing material before computing anything, which is immune by construction — and it
+also survives a player building on the apron, or the Verdant growing over it.
+
+`pad_check.sh` counts landing blocks with `fill ... replace` over a volume far bigger than a
+dock: exactly 13 in each world sailed to (nine plus four posts), and **zero in a world no
+ferry has been to**, which is what stops a pad built eagerly everywhere from satisfying the
+first two counts. Watched failing on the heightmap version (three docks, three crossings)
+and again with the berth guard removed.
 
 ### The first thing in the mod a player can touch
 
