@@ -26,12 +26,51 @@ asserted against a running world rather than against its own source.
 | Textures / models / data | Phase-1 set, all resolving in a live server |
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
-| Doc set | **complete** — 15 documents, see [`INDEX.md`](INDEX.md) |
+| Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
 | Live-world checks | **38**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, eight spells**, learned in their gods' worlds; command-only for now |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
+
+### The audit, made permanent
+
+Three consecutive passes each found a system **built, verified, green in CI, and
+unreachable in play** — the Haunt's dream, the sealed letter, the warning steles. Finding
+the fourth by hand was not a plan.
+
+**Why every check was green, and rightly so.** `haunt_check.sh` drove the command seam;
+`mail_check.sh` read the letters out of the data. Both were correct and both were complete
+about what they cover. **A check that covers a path says nothing about whether anything
+else reaches it** — and no test this project knows how to write would have told the
+difference, because "is there a right-click handler that calls this" is not a property of
+the thing being called.
+
+So the route is written down and the writing is checked.
+[`REACHABILITY.md`](REACHABILITY.md) lists every registered block, item and entity with
+how a player touches it and a status from a fixed set — `PLAY`, `OP`, `SCENERY`, or
+`BLOCKED: <question>`. `reachability_check.py` enforces three things and refuses to
+pretend to a fourth:
+
+* every registered id appears in the table;
+* nothing appears in the table that is not registered — the direction a table goes stale,
+  when content is deleted and its row survives promising a player something that is gone;
+* every status is from the set, so "reached by" cannot decay into prose.
+
+**It does not check whether a status is true**, and says so in its own docstring. Nothing
+static can: `PLAY` is a claim about a handler somewhere and a wrong one is precisely the
+bug. What it enforces is that somebody had to write the claim down, which is the whole of
+what was missing all three times.
+
+Watched failing three ways: an item registered and undocumented, a row for something that
+does not exist, and a free-text status.
+
+**One finding recorded rather than fixed.** `shrine_stone_carved`'s javadoc says it carries
+*"a band of the dead god's script"* and nothing can read it — and unlike the steles, making
+it readable would be the wrong move. `WORLD.md` marks the whole reading lane **[PROPOSED]**:
+raw god-script read without transcription *marks* the reader. Shipping plain readable
+inscriptions would settle that in the safe direction, which is the owner's to settle. It is
+in "Waiting on owner" now.
 
 ### The steles say something
 
@@ -2265,6 +2304,18 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
    Either is a small build once chosen. Choosing is the owner's, because it decides what
    the Wardenate is *for*. *No action needed until then; patrol and inspect ship without
    it.*
+
+5. **Is reading the shrines' god-script dangerous, and what is the safe path?**
+   `shrine_stone_carved` carries *"a band of the dead god's script"* and nothing can read
+   it. `WORLD.md` marks the lane **[PROPOSED]**: *"raw god-script (letters, shrine
+   inscriptions) read without transcription at the ferry's desk MARKS the reader —
+   visions, afflictions, manifestation exposure. Knowledge-as-hazard; the codex desk is
+   the safe path."* Building plain readable inscriptions would settle it in the safe
+   direction by default, so it is not built. Either answer is small once chosen: a
+   readable inscription with a consequence, or one without. The warning steles were the
+   different case and are built — they are civic notices posted for the public, nothing
+   proposes a hazard for reading one, and a shipped line of dialogue already promised
+   they could be read. *No action needed until then.*
 
 5. **How does a player attune a clast?** They exist now — seven in a world, three in the
    crater and one at each shrine as it is found — and nothing can be done with one.

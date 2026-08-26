@@ -25,6 +25,7 @@ is *always true*.
 | write recipes, loot tables, tags, advancements | [`DATAGEN.md`](DATAGEN.md) | ~175 |
 | write a test, a probe, or any tool that measures | [`VERIFICATION.md`](VERIFICATION.md) | ~216 |
 | invent any part of the setting, or judge one | [`AESTHETIC.md`](AESTHETIC.md) | ~164 |
+| add a block, item or entity — or ask how a player reaches one | [`REACHABILITY.md`](REACHABILITY.md) | grows |
 | find out whether we already learned something the hard way | [`LESSONS.md`](LESSONS.md) | grows |
 | find out what happened and when | [`LOG.md`](LOG.md) | grows |
 
@@ -32,7 +33,7 @@ is *always true*.
 
 | Kind | Documents | Rule |
 |---|---|---|
-| **Living** | `HANDOFF.md`, `LESSONS.md`, `LOG.md` | Update them *as you work*, not at the end. A lesson written three sessions late has already cost its price twice. |
+| **Living** | `HANDOFF.md`, `LESSONS.md`, `LOG.md`, `REACHABILITY.md` | Update them *as you work*, not at the end. A lesson written three sessions late has already cost its price twice. |
 | **Doctrine** | `ARTSTYLE.md`, `PALETTE.md`, `AESTHETIC.md`, `VERIFICATION.md` | Change only with a reason written into the diff. These exist to constrain decisions; a doctrine edited to permit what you wanted to do anyway is not doctrine. |
 | **Reference** | `PLATFORM.md`, `ARCHITECTURE.md`, `MODELS.md`, `TEXTURING.md`, `WORLDGEN.md`, `DATAGEN.md` | Correct them the moment reality disagrees. A reference doc that is wrong is worse than one that is missing. |
 

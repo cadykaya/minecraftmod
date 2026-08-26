@@ -3624,3 +3624,44 @@ Watched failing on both mutations that matter: the light read at the stele (0 of
 steles readable) and the position hash collapsed to a constant (six steles, one notice).
 
 200 self-test checks, 66 mutations, 38 live checks.
+
+---
+
+## The audit, made permanent
+
+Three consecutive passes each found a system built, verified, green in CI, and unreachable
+in play: the Haunt's dream, the sealed letter, the warning steles. Finding the fourth by
+hand was not a plan.
+
+Every check was green throughout, and rightly so. `haunt_check.sh` drove the command seam;
+`mail_check.sh` read the letters out of the data. Both were correct and complete about what
+they cover. **A check that covers a path says nothing about whether anything else reaches
+it** — and no test this project knows how to write would have told the difference, because
+"is there a right-click handler that calls this" is not a property of the thing being
+called.
+
+So the route is written down and the writing is checked. `docs/REACHABILITY.md` lists every
+registered block, item and entity with how a player touches it and a status from a fixed
+set — `PLAY`, `OP`, `SCENERY`, `BLOCKED: <question>`. `reachability_check.py` enforces that
+every registered id appears, that nothing appears which is not registered (the direction a
+table goes stale: content deleted, row left behind promising something gone), and that
+every status is from the set.
+
+It does not check whether a status is TRUE, and says so in its own docstring. Nothing
+static can — `PLAY` is a claim about a handler somewhere, and a wrong one is precisely the
+bug this is about. What it enforces is that somebody had to write the claim down, which is
+the whole of what was missing all three times.
+
+Watched failing three ways: an item registered and undocumented, a row for something that
+does not exist, and a free-text status.
+
+### One finding recorded rather than fixed
+
+`shrine_stone_carved`'s javadoc says it carries *"a band of the dead god's script"* and
+nothing can read it. Unlike the steles, making it readable would be the wrong move:
+`WORLD.md` marks the whole reading lane **[PROPOSED]** — raw god-script read without
+transcription *marks* the reader, and the codex desk is the safe path. Shipping plain
+readable inscriptions would settle that in the safe direction by default. Sixth question in
+"Waiting on owner".
+
+200 self-test checks, 66 mutations, 38 live checks, 20 fast-gate stages.
