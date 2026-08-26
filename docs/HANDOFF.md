@@ -2377,154 +2377,85 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
 
 ## Waiting on owner
 
-**Seven open decisions, numbered here and nowhere else.** This list is the one place that
-counts them, because it is the list an owner reads to decide. Everything answered has been
-moved to "Answered this session" below rather than left struck through in the middle of the
-numbering -- five entries in a row used to be numbered `5.` and the section could not be
-counted at all.
+**Nothing. All seven are decided.**
 
-Between them these seven gate **everything the mod has built past the deicide**. None
-blocks another. Nothing here has been guessed at.
+The owner handed the whole list back: *"i think i trust you to come up with fun creative
+and most importantly interesting answers for these, do you truly need me for them?"* — and
+the honest answer was no. The standing rule that sent them here in the first place (*new
+scope is the owner's call*) was written for questions about what the world **is**: the
+roster, whether a Warden can die, what the last letter turns out to be. Those had no answer
+derivable from anything already written.
 
-1. **What is each god's portal logic?** *(The largest thing unbuilt, and the only
-   question with a build blocked behind it.)* `WORLD.md` locks the grammar -- *surface ·
-   under-layer · far-layer, joined by that world's own portal logic* -- and never says
-   what a portal **is**. Four sketches, one per god, each read off the law that world
-   already runs: see the table in
-   ["Proposed, needs the owner's yes"](#proposed-needs-the-owners-yes). No
-   recommendation -- they are four different games.
+These seven were not that. `WORLD.md` already locked what a spell is, what a portal system
+is, what the letters are. What was missing every time was the **affordance** — how a player
+reaches a thing already decided — and an affordance is craft. The rule had gone stale, and
+kept collecting questions it was never meant to hold.
 
-2. **How does a player tell the ferry where to go?** The keel now inspects — touch it and
-   it hands back the checklist for all four crossings, which is the locked half. What it
-   cannot do is *sail*, because nothing in `WORLD.md` says how the destination is named,
-   and the options say different things about what the ferry is:
+All seven are now written into [`WORLD.md`](WORLD.md) marked
+`[LOCKED — owner delegated; decided here.]`, so the provenance travels with the decision.
+Presented before building and approved: *"It all looks good."*
 
-   * **the keel cycles through the four**, shift-click to change. Simplest, and it makes
-     the ferry a menu — the least interesting reading, and the only one that needs no
-     other system to exist.
-   * **it goes where the letter in your hand is addressed.** `WORLD.md`: *"the remaining
-     gods … are reachable only by the dead god's sealed mail-ferry, and **the route to
-     them is its unanswered correspondence**"*, and *"you are the only one carrying their
-     mail"*. This is that sentence made mechanical: you cannot reach a god you are not
-     carrying mail for, the letters become the map, and the fourth letter's `To —` becomes
-     a genuine navigational problem rather than a sad detail. It also makes the *"where
-     does a player find the mail"* question above load-bearing instead of flavour.
-   * **a destination is written on the keel**, by hand, like a shipping label. Fits the
-     bureaucracy hardest and is the most fiddly to use.
+| # | Question | Decided |
+|---|---|---|
+| 1 | Each god's portal logic | **Each god's portal is opened by the school that god teaches.** Not four mechanisms — one rule with four faces, and it means you cannot go deeper into a god's system until that god has taught you |
+| 2 | How the ferry is told where to go | **It sails where the letter in your hand is addressed.** No letter, no voyage — and the last letter's `To —` becomes the final act |
+| 3 | Where the mail comes from | **Returned undelivered**, held by a shrine-keeper who has been waiting to give it to somebody. The god *did* write |
+| 4 | Attuning a clast | **A rite at a shrine, witnessed by the keeper** — so standing with the villages gates the class |
+| 5 | Casting a spell | **A spoken word**, in chat, in earshot of anyone present. The offence is the act |
+| 6 | Reading raw god-script | **Dangerous, and "marks" means the ghost gets louder** — it raises the server-real manifestation rate. Nothing else |
+| 7 | The six unnamed spells | All six defined. *Held-breath* costs you your voice and therefore your spells; *Rot* is never aimed at a creature |
 
-   The second is what I would build, and it is not mine to choose: it decides whether the
-   letters are the plot or a collectible. *No action needed until then; the inspection
-   ships without it.*
+**The one that also answers itself:** casting being audible gives the Wardenate something
+legible to cite, which settles the smaller citation question below in the same stroke.
 
-3. **Where does a player find the dead god's mail?** The letters exist, and one item
-   carries them, and nothing in the world produces one. `WORLD.md` says *you are the only
-   one left carrying their mail* and never says how you came to be carrying it — and the
-   options are not interchangeable, because each says something different about the dead
-   god:
-
-   * **In the shrine chests**, beside the heart. Implies it never sent them: four letters
-     written and filed and never posted, which makes the Quiet One's *"the one who never
-     wrote back"* retroactively crueller — nobody ever had the chance.
-   * **At the crater**, in what is left of its desk. Same implication, but the player has
-     to have killed it first, so the mail is something you find while standing in the
-     hole you made.
-   * **Returned undelivered**, handed over by the shrine-keeper. Implies it *did* send
-     them and they came back, which is a different and sadder story, and gives the
-     keeper a reason to have been waiting for somebody.
-
-   I have not picked one because the choice is the story, not the plumbing. *No action
-   needed until then; the letters and the item ship without it.*
-4. **How does a player attune a clast?** They exist now — seven in a world, three in the
-   crater and one at each shrine as it is found — and nothing can be done with one.
-   `WORLD.md` locks *"anyone may attune one"* and says nothing about how, which makes the
-   affordance a mechanic rather than a detail, exactly like the casting question below.
-   The obvious candidates: **use the item** (right-click, irreversible, and the item is
-   consumed); **a rite at a shrine**, which would tie the class to the places the pieces
-   came from and give the shrine-keeper something to witness; or **at the crater only**,
-   which makes every Theoclast return to the scene. The second is the one I would build —
-   it is the only one that makes the shrines matter after they have been looted — and it
-   is not mine to choose, because it decides whether the class is a private act or a
-   public one. *No action needed until then; the clasts scatter and persist without it.*
-
-5. **How does a player cast a spell?** Ten spells exist and none can be triggered in
-   play — the command is the only way in. `WORLD.md` locks what a spell *is* (*"every
-   spell is a world-verb"*) and is silent on the affordance, which makes it a mechanic
-   under the standing rule and therefore proposed rather than picked.
-
-   Three that fit what already exists:
-
-   * a **focus item** per school, given when the god teaches you — the lesson gets a
-     physical receipt, and losing it means something;
-   * a **spoken word** in chat, which suits a mod whose entire register is procedure and
-     correspondence, and whose Wardens would then have something legible to cite;
-   * **nothing held at all** — you know it, so you do it, targeting from where you look.
-
-   The first is the most conventional, the second is the most *this mod*, the third is
-   the least work. Nothing is blocked behind this: the spells are built and verified
-   either way, and an operator can already cast them.
-6. **Is reading the shrines' god-script dangerous, and what is the safe path?**
-   `shrine_stone_carved` carries *"a band of the dead god's script"* and nothing can read
-   it. `WORLD.md` marks the lane **[PROPOSED]**: *"raw god-script (letters, shrine
-   inscriptions) read without transcription at the ferry's desk MARKS the reader —
-   visions, afflictions, manifestation exposure. Knowledge-as-hazard; the codex desk is
-   the safe path."* Building plain readable inscriptions would settle it in the safe
-   direction by default, so it is not built. Either answer is small once chosen: a
-   readable inscription with a consequence, or one without. The warning steles were the
-   different case and are built — they are civic notices posted for the public, nothing
-   proposes a hazard for reading one, and a shipped line of dialogue already promised
-   they could be read. *No action needed until then.*
-
-7. **What do the six unnamed spells do?** Every spell `WORLD.md` describes is built.
-   What is left is six bare names -- *Hedge*, *Graft*, *Moor*, *Held-breath*, *Ripen*,
-   *Rot* -- with nothing attached to any of them, so deciding what one does is designing
-   a mechanic rather than implementing one. Sketches in
-   ["Proposed, needs the owner's yes"](#proposed-needs-the-owners-yes). *No action
-   needed until then; the ten built spells ship without it.*
+**What is still genuinely the owner's:** vetoes, and **playtest feel**. This container has
+no game client, so it cannot tell whether typing a word to cast is satisfying or irritating
+— which is why decision 5 is built as one seam over spells that do not know how they were
+triggered. Swapping it later costs the seam and nothing else.
 
 ### Also open, and smaller
 
-**What should a Warden be able to cite you for?** — and **this question has changed
-   since it was written.** It used to end "before magic exists", on the grounds that
-   WORLD.md's locked countermeasures are all about *casting* and casting did not exist.
-   **It does now**: four schools, and an overworld ban with a real cost behind it. So the
-   original locked answer is available, and the two magic-free offences below are
-   alternatives rather than the only options.
+**Where does everything the Anchorite's world lets go of end up?** *"They do not stop"*
+leaves a question the mod never answers: **where do they go?** If everything that rises out
+of that world is *received* somewhere — a counter, a ledger, a clerk who will return your
+property once you have described it correctly — then items could rise, the law would be
+literally true, and losing your inventory would be the start of an errand rather than the
+end of a session. The Anchorite's Warden dockets already read `SUBJECT: MASS AUTHORITY`; an
+authority that catches everything the world lets go of is the same joke as the rest of the
+mod, and the retrieval scene would be one of the few places a player *wants* to talk to
+bureaucracy. Costs a room, an inventory, and a conversation.
 
-   Two locked offences need no magic:
+**Not built, and not built until asked** — unlike the seven above, this one *reverses a
+ruling the owner already gave* (*"I dont want death to cost the whole inventory"*), and a
+delegation to decide open questions is not permission to reopen closed ones.
 
-   * **the sleep code** — *phantoms punish sleeplessness | a citation for a sleep-code
-     violation*. Buildable today, and it has the right absurdity: the Wardenate is still
-     enforcing bedtime for a god that is not watching.
-   * **permitted airspace** — *the height limit | permitted airspace*. The better joke,
-     because the enforcement mechanism (the hard limit) died with the god while the
-     policy did not. But nothing currently raises the limit, so nobody can break it, and
-     choosing a lower licensed ceiling would be inventing a rule the world never had.
 
-   Either is a small build once chosen. Choosing is the owner's, because it decides what
-   the Wardenate is *for*. *No action needed until then; patrol and inspect ship without
-   it.*
+### Settled by decision 5 rather than answered separately
 
-**Where does everything the Anchorite's world lets go of end up?** The answer above --
-only falling blocks rise, not your inventory -- keeps the owner's ruling and leaves the law
-half-stated. There is a version that keeps it whole *without* the punishment, worth
-recording before it is forgotten.
+**What should a Warden be able to cite you for?** This used to be its own open question,
+because `WORLD.md`'s locked countermeasures are all about *casting* and there was no way to
+catch anybody casting. **Making the spell a spoken word answers it.** The offence is
+audible, it happens in front of witnesses, and a Warden standing in the room has grounds
+without any new mechanic — which is exactly what the locked countermeasures assumed and
+nothing could previously deliver.
 
-*"They do not stop"* leaves a question the mod never answers: **where do they go?** If
-everything that rises out of that world is *received* somewhere — a counter, a ledger, a
-clerk who will return your property once you have described it correctly — then items could
-rise, the law would be literally true, and losing your inventory would be the start of an
-errand rather than the end of a session. The Anchorite's Warden dockets already read
-`SUBJECT: MASS AUTHORITY`; an authority that catches everything the world lets go of is the
-same joke as the rest of the mod, and the retrieval scene would be one of the few places a
-player *wants* to talk to bureaucracy. Costs a room, an inventory, and a conversation.
-**Not built, and not built until asked** — it reverses a ruling the owner already gave.
+The two magic-free alternatives stay on the shelf rather than being built: the **sleep
+code** (the Wardenate still enforcing bedtime for a god that is not watching) and
+**permitted airspace** (the better joke — the enforcement mechanism died with the god while
+the policy did not, but nothing currently raises the height limit, so nobody can break it).
+Both remain available as second and third offences once `cite` exists.
 
 ### Not a decision -- a gap this container cannot close
 
 **Playtesting, and looking at the Warden.** This container has no game client, so two
-   things about the model are unverifiable here and are not claimed: how it looks
-   **animated**, and how it looks **lit**. `tools/entity_view.py` covers shape and paint;
-   it cannot cover those. The render has been sent for review.
+things about the model are unverifiable here and are not claimed: how it looks
+**animated**, and how it looks **lit**. `tools/entity_view.py` covers shape and paint; it
+cannot cover those. The render has been sent for review.
+
+**And now one more, which decision 5 created:** whether **typing a word to cast** is
+satisfying or irritating. It cannot be settled here at all. The affordance is one seam over
+spells that do not know how they were triggered, so if it plays badly the swap is cheap —
+but somebody has to play it.
 
 **Answered:** license is **MIT** (`LICENSE`, `gradle.properties`). `main` branch exists;
 work flows to `claude/minecraft-mod-dev-rp0x8j` and PRs into `main`.
@@ -2533,29 +2464,17 @@ work flows to `claude/minecraft-mod-dev-rp0x8j` and PRs into `main`.
 
 ### Proposed, needs the owner's yes
 
-**What is each god's portal logic?** This is the gate on the whole of item 1 in "What to
-do next", and it is the largest thing still unbuilt.
+*(Empty. Everything that was here has been decided — see*
+*["Waiting on owner"](#waiting-on-owner) above and the*
+*`[LOCKED — owner delegated; decided here.]` entries in [`WORLD.md`](WORLD.md).*
+*The portal table and the six spell definitions now live there, where a decision belongs,*
+*rather than here where a proposal does.)*
 
-`WORLD.md` locks the grammar — *"**surface · under-layer · far-layer**, joined by that
-world's own portal logic"*, and *"travel between systems is only by ferry; travel within a
-system is by its native portals"*. What it does not say is **what each god's portal is**,
-and that is a mechanic per god rather than a detail, so it is not mine to pick.
-
-Four candidates, one per god, each derived from the law that world already runs rather
-than invented alongside it. They are sketches to react to, not a recommendation:
-
-| God | Law | A portal shaped like that law |
-|---|---|---|
-| **The Anchorite** | weight | You do not build it, you **let go into it** — a shaft that takes anything unanchored, which in that world means everything. Going *down* into the place where down does not hold. |
-| **The Verdant** | growth | You **plant** it and wait. It opens when it is mature and closes when it is cut — the only portal in the mod with a lifespan. |
-| **The Hearth-Turner** | time | It is always there and only **open at one hour**, which in a world with a fixed sky means you cannot wait for it — you have to make the hour happen. |
-| **The Quiet One** | silence | It opens when **nothing near it makes a sound**, which is the only one of the four a player can close by accident. |
-
-Each is buildable on hooks this repo already has, and each would make its world's law
-something you use rather than something you observe. **Nothing is blocked behind this
-question** — items 2 and 4 below are both unblocked — but item 1 cannot start without it.
-
-*(The statue proposal was answered — see below.)*
+**One thing remains proposed and is deliberately not in that list**: the Anchorite's
+lost-property office — see ["Also open, and smaller"](#also-open-and-smaller). It is
+different in kind from the seven, because it *reverses a ruling the owner already gave*
+rather than filling a gap they never ruled on. A delegation to answer open questions is not
+permission to reopen closed ones.
 
 ### Answered this session
 
@@ -2654,15 +2573,15 @@ next to each, so the provenance travels with the decision.
 **Three things on this list ARE waiting on the owner** — see "Waiting on owner" below.
 Everything else is unblocked. In order:
 
-1. **The systems, not just the surfaces.** *(Top item, and the largest thing unbuilt —
-   but its first step is the owner's.)* All four destination *surfaces* exist and each has
-   a law that earns it. What does not exist is what `WORLD.md` locks: each god holds a
-   **system** of connected dimensions — *surface · under-layer · far-layer, joined by that
-   world's own portal logic*. The four surfaces are still reachable only by command.
+1. **The systems, not just the surfaces.** *(The largest thing unbuilt, and no longer
+   blocked.)* All four destination *surfaces* exist and each has a law that earns it. What
+   does not exist is what `WORLD.md` locks: each god holds a **system** of connected
+   dimensions — *surface · under-layer · far-layer, joined by that world's own portal
+   logic*. The four surfaces are still reachable only by command.
 
-   **What each god's portal IS is a mechanic per god, and it is proposed rather than
-   built** — see "Proposed, needs the owner's yes". Nothing else on this list is blocked
-   behind it.
+   **The portal logic is decided**: *each god's portal is opened by the school that god
+   teaches* — see [`WORLD.md`](WORLD.md). That makes this a build rather than a question,
+   and it is the biggest one on this list.
 
    Also missing from all four: **terrain that is designed.** They use vanilla noise with
    one fixed biome, and each file says so in its own javadoc.
@@ -2694,15 +2613,16 @@ Everything else is unblocked. In order:
 
    * **No way to cast in play.** Every spell is reachable only by command. `WORLD.md`
      locks what spells *are* and says nothing about the affordance that triggers one —
-     item, key, gesture, spoken word — and that is a mechanic rather than a detail. This
-     is now the single biggest gap in the mod: ten spells exist and a player cannot
-     reach any of them. See "Waiting on owner".
-   * **The rest of the kits.** **Every spell `WORLD.md` describes is now built.** What is
-     left is six bare names — *Hedge*, *Graft*, *Moor*, *Held-breath*, *Ripen*, *Rot* —
-     with nothing attached to any of them. **What they DO is the owner's call**, because
-     deciding is designing a mechanic rather than implementing one; sketches are in
-     "Proposed, needs the owner's yes". *"Full kits are design-phase work"* is the locked
-     line, and this is where the design phase needs the designer.
+     item, key, gesture, spoken word — and it is **decided**: a spoken word, in chat, in
+     earshot. See [`WORLD.md`](WORLD.md) "Casting is a spoken word". Ten spells exist and
+     a player still cannot reach any of them until this is built, which makes it the
+     single biggest gap in the mod and the first thing to build.
+   * **The rest of the kits.** *Hedge*, *Graft*, *Moor*, *Held-breath*, *Ripen*, *Rot* —
+     six names that carried no description, **now defined** in [`WORLD.md`](WORLD.md) under
+     "The six that were only names". Unblocked, and the cheapest content left: the
+     machinery each needs is already built and proven. *Held-breath* should wait for the
+     casting affordance, because taking your voice away only costs something once your
+     voice is what casts.
 
 6. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and

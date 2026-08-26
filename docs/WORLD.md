@@ -31,6 +31,32 @@ own world — are reachable only by the dead god's sealed mail-ferry, and the ro
 is its unanswered correspondence. You killed them. You are also the only one carrying
 their mail.
 
+### How you come to be carrying it — **returned undelivered**
+
+**[LOCKED — owner delegated; decided here.]** The letters are not in the shrine chests and
+not in the crater. **They came back.** Every one of them was sent, none was answered, and
+they have been sitting with a shrine-keeper ever since, waiting for somebody to give them
+to.
+
+The three candidates each said something different about the dead god, which is why this
+was a story decision and not a plumbing one. Unsent letters in a chest would mean it never
+tried — four letters written, filed, and never posted. This means **it did try.** It wrote,
+it waited, and the post came back, and it went on hiding its heart in anonymous shrines
+anyway.
+
+Three things fall out of it:
+
+- **The Quiet One's silence becomes a decision.** *"The one who never wrote back"* stops
+  being an absence and becomes a choice somebody made, repeatedly, while letters kept
+  arriving. That is a much crueller character and a much better one.
+- **The keeper has been waiting for somebody.** They are the last person the dead god's
+  correspondence passed through, and they have been holding it since. It gives them a
+  reason to exist that is not the shrine, and a scene that is theirs.
+- **Handing it over is a transfer of office, not a pickup.** You do not find the mail. It
+  is *given* to you, by someone who has been keeping it, once the job has fallen to you —
+  which is the only version where the word the ghost uses for you is already true before
+  it says it.
+
 ### Vanilla's rules were the dead god's policy
 
 **[LOCKED]** — the retcon that makes this Minecraft-shaped rather than generic fantasy:
@@ -150,6 +176,29 @@ system under one god):
 Each god's system expresses its law at every layer. Travel between systems is only by
 ferry; travel within a system is by its native portals.
 
+#### Each god's portal is opened by the school that god teaches
+
+**[LOCKED — owner delegated; decided here.]** The grammar above named *"that world's own
+portal logic"* and never said what a portal **is**. Four sketches existed, one per god,
+each read off the law that world already runs — and the answer turned out not to be four
+mechanisms but **one rule with four faces**.
+
+| God | Law | Its portal | Opened with |
+|---|---|---|---|
+| **The Anchorite** | weight | A shaft you do not build but **let go into** — it takes anything unanchored, which there means everything. Going *down*, into the place where down does not hold. | *Lighten* / *Loft* — you have to make yourself or your way weightless |
+| **The Verdant** | growth | You **plant** it and wait. It opens when mature and closes when cut: the only portal in the mod with a lifespan. | *Bridgeroot* / *Wildgrowth* — or patience, which is worse there |
+| **The Hearth-Turner** | time | Always present, open **at one hour only** — and the sky is fixed, so you cannot wait for it. You have to *make* the hour happen. | *Weather* / *Rewind* — the school is the clock |
+| **The Quiet One** | silence | Opens when **nothing near it makes a sound**. The only one of the four a player can close by accident. | *Hush* — and *Held-breath*, for the last few steps |
+
+**Why this and not four unrelated mechanisms.** It means you cannot go deeper into a god's
+system until that god has taught you, which is exactly the progression already locked in
+*"schools, learned in their worlds"* — the reason to cross is that the verbs are over
+there, and now the reason to cross *again* is that the verbs are the doors. A portal per
+god was four ideas; a portal each god's own school opens is one.
+
+It also puts the schools' second and third spells to work. *Held-breath* stops being a
+stealth trick and becomes how you finish a walk to a door that closes if you cough.
+
 ### The pantheon — **four, and everyone calls them something different**
 
 **[LOCKED — owner delegated the roster; decided here.]** The count stays at **four**.
@@ -213,6 +262,34 @@ its surroundings. The Wardens' law is right, and the player can *discover* it is
 Off-world, living gods replenish what casting spends: legal, sustainable. The ban forces
 travel by law *and* economics.
 
+### Casting is a spoken word
+
+**[LOCKED — owner delegated; decided here.]** Not a focus item, not a keybind. **You say
+the word, out loud, in chat, and everyone in earshot sees you say it.**
+
+A focus item would be smoother to use and it is the wrong answer, because the interesting
+property of this mod's magic is not that it is powerful — it is that it is **illegal at
+home**. A ban nobody can catch you breaking is a lore note. Speech is the only affordance
+where the act of casting is *itself* evidence: a Warden standing in the room has now
+witnessed the offence, a bystander can repeat what you said, and doing it quietly in a
+cellar becomes a real choice rather than a flavour one.
+
+It also fits the register. This is a world whose institutions run on dockets, statements
+and correspondence; a magic system where the spell is a **word you are on record as having
+said** belongs to it in a way a wand never would.
+
+Three consequences, all wanted:
+
+- **You can be overheard.** By a Warden, or by another player who will remember.
+- **You cannot cast silently** — which is what makes *Held-breath* interesting rather than
+  a stealth trinket: while you hold it you have no voice, so you have no spells.
+- **The Wardenate finally has something legible to cite.** See the citations below.
+
+**[NEEDS PLAYTEST], and more than most:** typing to cast may simply feel bad. The
+affordance is therefore built as one seam over the existing spells — every spell is
+reachable by command today and none of them knows how it was triggered — so swapping this
+for a focus item later costs the seam and nothing else.
+
 ### Schools, one per god, learned in their worlds
 
 Samples — all implementable on verified hooks (entity attributes, spawn/ability events,
@@ -229,14 +306,51 @@ block-conversion registries). Full kits are design-phase work.
 - **The Turning** (Hearth-Turner): *Weather* — age blocks: instant mossy/cracked/oxidized —
   **magic as a builder's palette** · *Rewind* — repair by un-aging · *Ripen* · *Rot*.
 
+#### The six that were only names
+
+**[LOCKED — owner delegated; decided here.]** The lists above describe six of their twelve
+verbs and leave six bare. All six described ones are built; here is what the rest are. Each
+is read off its school rather than invented beside it, and two were decided rather than
+sketched because they interlock with decisions elsewhere on this page.
+
+| Spell | School | What it does |
+|---|---|---|
+| *Hedge* | Verdancy | A living wall that grows where you draw it and **thickens where it is struck**. The only defence in the mod improved by being attacked. |
+| *Graft* | Verdancy | Join two growing things, or a growing thing to a block, so one feeds the other — and a plant lives somewhere it could not. |
+| *Moor* | Weight | The exact opposite of *Lighten*: fix a thing where it is, against any push. Not water, not pistons, not the Anchorite's own law. |
+| *Held-breath* | Silence | Your own sound, taken away. Nothing tracks you while you hold it — **and you cannot cast, because casting is a spoken word.** Power for silence, exactly. |
+| *Ripen* | The Turning | Age a living thing forward: crop, sapling, animal. The kind half of the school. |
+| *Rot* | The Turning | Age a thing forward **past its end**: compost, spoil, collapse. **Never aimed at a player or a mob.** |
+
+*Held-breath* and *Rot* are the two that were decided rather than sketched. The first
+because the casting affordance makes silence cost something real. The second because the
+obvious reading of *"age it past its end"* is an instant-kill, and **every spell is a
+world-verb** rules that out — so it ages the things that *have* an end and leaves creatures
+alone. A school that broke the doctrine would take the doctrine with it.
+
 **Reuse note [LOCKED]:** the block-aging registry powering the Turning **is the same
 system that runs the unraveling.** One mechanism; a school and an apocalypse.
 
 ### Reading is dangerous
 
-**[PROPOSED]** The Thaumcraft lane: raw god-script (letters, shrine inscriptions) read
-without transcription at the ferry's desk *marks* the reader — visions, afflictions,
-manifestation exposure. Knowledge-as-hazard; the codex desk is the safe path.
+**[LOCKED — owner delegated; decided here.]** The Thaumcraft lane is in. Raw god-script
+(letters, shrine inscriptions) read without transcription at the ferry's desk *marks* the
+reader. Knowledge-as-hazard; the codex desk is the safe path.
+
+**And "marks" means one specific thing: the ghost gets louder.** Reading raw script raises
+your manifestation rate — the server-real one, the door that moves while somebody else is
+standing there. Nothing else changes. No affliction bar, no debuff, no visions system to
+build.
+
+That is the whole hazard and it is enough, because of what it makes the hazard *be*: you
+read the dead god's own handwriting without going through the desk, and the dead god
+notices you have been reading its mail. The punishment for knowing too much is being
+**known**. It also means the risk lands on the one axis the mod already treats as a
+credibility problem rather than a health bar — the more you read, the harder your account
+of your own world is to defend.
+
+The safe path costs time and a trip to the desk. The unsafe path costs nothing at all,
+which is exactly why people will take it.
 
 ---
 
@@ -254,6 +368,19 @@ The overflow detonates outward, scattering **splinters** at shrines and the crat
   mod owns the word.
 - The shattered god-pieces are **clasts** (item). Anyone may attune one; **clasts are
   finite** — the class is a server negotiation. **[NEEDS PLAYTEST]** count.
+- **How you attune one** **[LOCKED — owner delegated; decided here.]** — **a rite at a
+  shrine, and the keeper has to agree to witness it.** Not a right-click, and not the
+  crater. Two things fall out of that and both are the reason:
+
+  **The shrines keep mattering after they are looted.** Every other use of a shrine is
+  extractive — take the heart, take the clast, leave. This is the one thing you can only
+  do *there*, and it means a stripped shrine is still somewhere you have to go back to.
+
+  **Becoming a Theoclast is a public act with a gatekeeper who has an opinion of you.**
+  The keeper is the villages, and the villages keep a file. Standing that was previously
+  a matter of prices and greetings now decides whether you can hold the class at all —
+  which is the first time regard gates something a player actually wants, and it makes
+  *"the class is a server negotiation"* literally true: the negotiation is with a person.
 - **The killer**: the First Theoclast. Unique, involuntary, permanent. Carries the full
   weight and the Haunt. The server's pseudo-main-character, by design — owner has
   explicitly blessed asymmetric multiplayer here.
@@ -441,6 +568,20 @@ furnished from real blocks; a keel block captures the structure, validates it ag
 destination's law, and re-places it at the far pad. **The validation checklist teaches each
 world's rule before arrival** — the Quiet One's crossing: no note blocks, no jukebox,
 muffle your animals.
+
+### It sails where the letter in your hand is addressed
+
+**[LOCKED — owner delegated; decided here.]** No menu on the keel, no destination written
+by hand. **You hold a letter, and the ferry reads it.** No letter, no voyage.
+
+This is *"the route to them is its unanswered correspondence"* and *"you are the only one
+carrying their mail"* stopping being flavour and becoming the navigation. You cannot reach
+a god you are not carrying mail for. The letters **are** the map.
+
+And it makes the last letter a problem instead of a note. The dead god's final document is
+addressed `To —`, and a ferry that goes where the letter says cannot be told where to go
+with that one in your hand. **Finding out who it was for is the last act**, and the ferry
+refusing to sail is how the game asks the question.
 
 ---
 

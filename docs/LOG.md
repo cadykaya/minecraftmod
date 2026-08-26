@@ -3859,3 +3859,60 @@ the state it was already in, so the method returns MOVED and changes nothing, wa
 with exactly that message.
 
 217 self-test checks, 73 mutations, 41 live checks, 20 fast-gate stages.
+
+---
+
+## Seven decisions, handed back
+
+The owner read the seven open questions and handed the whole list back: *"i think i trust
+you to come up with fun creative and most importantly interesting answers for these, do you
+truly need me for them?"*
+
+The honest answer was no, and the reason is worth keeping. The standing rule that sent them
+here — *new scope is the owner's call* — was written for questions about what the world
+**is**: the god roster, whether a Warden can die, what the last letter turns out to be.
+Those had no answer derivable from anything already written, and guessing at one would have
+been inventing the setting.
+
+These seven were not that. `WORLD.md` already locked what a spell is, what a portal system
+is, what the letters are. What was missing every time was the **affordance** — how a player
+reaches a thing already decided. That is craft, not setting. The rule had gone stale and
+kept collecting questions it was never meant to hold.
+
+All seven are now in `WORLD.md` marked `[LOCKED — owner delegated; decided here.]`,
+presented before building and approved.
+
+### The two that turned out to be one answer
+
+**Portals.** Four sketches existed, one per god, each read off that world's law. The answer
+was not to pick four mechanisms but to notice they were already one: *each god's portal is
+opened by the school that god teaches.* You cannot go deeper into a god's system until that
+god has taught you — which is the progression `WORLD.md` already wanted from *"schools,
+learned in their worlds"*, arriving a second time. The reason to cross is that the verbs are
+over there; the reason to cross again is that the verbs are the doors.
+
+**Casting, and what a Warden may cite you for.** These were two questions and are one.
+Casting is a **spoken word**, in chat, in earshot — not because that is smoothest (a focus
+item is smoother) but because the interesting property of this magic is that it is
+*illegal at home*, and a ban nobody can catch you breaking is a lore note. Speech makes the
+act of casting its own evidence. The citation question then answers itself, and
+*Held-breath* stops being a stealth trinket: while you hold it you have no voice, so you
+have no spells.
+
+### The one that made last tick's work load-bearing
+
+Reading raw god-script **marks** the reader, and "marks" means one thing: **the ghost gets
+louder.** It raises the server-real manifestation rate and nothing else — no affliction bar,
+no visions system. The punishment for knowing too much is being *known*, and the machinery
+was finished an hour earlier.
+
+### The one that stayed the owner's
+
+The Anchorite's lost-property office is still proposed and still not built, and now for a
+sharper reason than before: it *reverses a ruling the owner already gave* — *"I dont want
+death to cost the whole inventory"* — rather than filling a gap they never ruled on. **A
+delegation to answer open questions is not permission to reopen closed ones**, and that
+distinction is written into the file next to the proposal.
+
+`WORLD.md` now carries twelve `[LOCKED — owner delegated; decided here.]` entries.
+"Waiting on owner" is empty for the first time since it was written.
