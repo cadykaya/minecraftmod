@@ -22,6 +22,16 @@ public enum Milestone {
      * is exactly what a milestone is, and there is only ever one killer to haunt.
      */
     HAUNT_OPENED,
+    /**
+     * The dead god came back a second time, and said what it actually wanted.
+     *
+     * Separate from {@link #HAUNT_OPENED} because the two dreams are gated on
+     * different things -- the first on being the killer, the second on the world
+     * having reached ENFORCEMENT -- and one flag cannot say which of them has
+     * happened. Like HAUNT_OPENED it is not a chapter prerequisite: the Haunt
+     * escalates alongside the chapters, never in front of them.
+     */
+    HAUNT_RETURNED,
     /** The ferry was recommissioned and made one crossing. */
     FIRST_CROSSING,
     /** A god's letter was delivered. Repeatable across gods; see LettersDelivered. */

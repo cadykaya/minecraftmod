@@ -1819,6 +1819,38 @@ this scene has. `tools/haunt_check.sh`, four mutations, four caught.
 `Milestone.HAUNT_OPENED` is deliberately **not** a chapter prerequisite: the Haunt is
 a thread, not a gate, and a killer who never sleeps must not stall the whole world.
 
+### The Haunt comes back
+
+`WORLD.md` locks the dream-audiences as *"rage, then bargaining, then the discovery that
+the ghost **needs** its killer"*, and the first dream is only the bargaining. The second
+one exists now: `dream_audience_two`, gated on **ENFORCEMENT** rather than on time or on
+nights slept.
+
+The gate and the subject are the same fact, which is why it is the right gate. ENFORCEMENT
+means the deicide happened *and* a Warden has spoken to somebody — so the player has met
+one, and the scene is about them: the god wrote the policy the Wardens are still enforcing
+and it cannot amend the policy, because amending an order turns out to require being alive.
+Under that is the ask, and the ask is very small: **the god cannot see its own estate any
+more and would like to be told what the world is doing.** It never raises its voice at the
+killer. A ghost that shouted would be a boss; this is a bereavement.
+
+`TheHaunt.offer` takes no "which dream" parameter and must not: which one is due is a fact
+about the world, not a caller's choice — a sleeping player cannot pick, so neither can the
+command. `force` re-issues whichever is *currently* due; it is not a way to replay an
+earlier scene out of order.
+
+`Outcome.NOT_YET` is new and is not `ALREADY` dressed differently: nothing has been spent,
+the world simply has not got there. Collapsing them would let an operator reading the log
+believe a lost scene had been delivered.
+
+**How the first dream went is read back as regard, not as a flag.** The opening line has
+two `text_variants` on `THE_GHOST` — a killer the god resents gets a colder room. Only the
+*wording* moves; no option is hidden by standing, because a player who timed out of the
+first dream holds no record at all and a gated option would be a dead end rather than a
+scene. `tools/haunt_check.sh` walks both dreams and asserts the cold opening specifically:
+both scenes open on "Executor", which is the point of the word and useless as an assertion.
+Mutation run: dropping the ENFORCEMENT clause was caught.
+
 ### Conversations have consequences
 
 Every scene used to resolve and change nothing. `RegardState` sat in `core/`, fully

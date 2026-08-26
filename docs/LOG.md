@@ -3665,3 +3665,47 @@ readable inscriptions would settle that in the safe direction by default. Sixth 
 "Waiting on owner".
 
 200 self-test checks, 66 mutations, 38 live checks, 20 fast-gate stages.
+
+---
+
+## The ghost comes back
+
+Second dream-audience. `WORLD.md` locks the dream-audiences, plural, as the relationship
+channel and as *"rage, then bargaining, then the discovery that the ghost needs its
+killer"* — the first dream is only the bargaining, and it ends with the god saying it will
+ask again. This is it asking again.
+
+Gated on **ENFORCEMENT**, and the gate is also the subject: ENFORCEMENT is exactly "the
+deicide happened and a Warden has spoken to somebody", so a player who reaches this scene
+has met one, and the scene is about the god watching its own enforcement continue past its
+ability to amend it. The ask underneath is deliberately tiny — it cannot see the estate any
+more and wants to be told what the world is doing. It never raises its voice at the killer.
+
+`TheHaunt.offer` gained no parameter. Which dream is due is a fact about the world, not a
+caller's choice: a sleeping player cannot pick one, so neither can the command. `force`
+re-issues whichever is currently due rather than replaying an earlier scene.
+
+**`NOT_YET` is a separate outcome from `ALREADY`.** They read the same from outside — no
+dream happened — and they are opposite facts: one means the scene is spent, the other that
+nothing has been spent and the world has not got there. An operator reading a log that
+collapsed them would think a lost scene had been delivered.
+
+### The state that was already there
+
+How the first dream went is not stored as a flag. It is stored as regard, and the opening
+line of the second dream reads it back through `text_variants` on `THE_GHOST`: a killer the
+god resents gets a colder room. Two new milestones were not needed and one boolean would
+have been worse than what already existed.
+
+Only the *wording* moves. Nothing is hidden by standing here, and that is a rule rather
+than a shrug: a player whose first dream timed out holds no record at all, so an option
+gated on standing would be a dead end wearing a scene's clothes.
+
+### An assertion that would have passed on the wrong scene
+
+Both dreams open on "Executor" — that is the point of the word, and it makes it useless to
+assert on. The check looks for the cold variant's own sentence instead, which no other
+scene contains. Mutation run: deleting the ENFORCEMENT clause so the second dream arrives
+immediately was caught by the `NOT_YET` count and by the opening tally.
+
+200 self-test checks, 66 mutations, 38 live checks, 20 fast-gate stages.

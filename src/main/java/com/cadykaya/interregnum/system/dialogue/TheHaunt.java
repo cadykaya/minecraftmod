@@ -6,6 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 
 import com.cadykaya.interregnum.Interregnum;
+import com.cadykaya.interregnum.core.chapter.Chapter;
 import com.cadykaya.interregnum.core.chapter.Milestone;
 import com.cadykaya.interregnum.system.ChapterSavedData;
 
@@ -35,6 +36,19 @@ public final class TheHaunt {
     public static final Identifier DREAM =
             Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "dream_audience");
 
+    /**
+     * The second dream: the ghost, back, saying what it actually wanted.
+     *
+     * Gated on the chapter rather than on wall-clock time or on how many nights have
+     * passed, because WORLD.md locks the Haunt as escalating *with chapter* -- and
+     * because a beat about the Wardens still enforcing is nonsense to a player who
+     * has never met one. ENFORCEMENT is exactly "the deicide happened AND a Warden
+     * has spoken to somebody", so the prerequisite for the scene and the subject of
+     * the scene are the same fact.
+     */
+    public static final Identifier DREAM_TWO =
+            Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "dream_audience_two");
+
     /** Why the dream did or did not happen. Every branch below names one. */
     public enum Outcome {
         OPENED,
@@ -42,8 +56,16 @@ public final class TheHaunt {
         NO_GHOST,
         /** Only its killer can be haunted. Everyone else sleeps fine. */
         NOT_THE_KILLER,
-        /** It has already happened once, and once is what "first" means. */
+        /** The dream that is due has already happened, and it happens once. */
         ALREADY,
+        /**
+         * The first dream is spent and the second is not due yet.
+         *
+         * Distinct from {@link #ALREADY} because it is not the same answer: nothing
+         * has been used up, the world simply has not got there. Collapsing the two
+         * would make an operator reading the log believe a scene had been consumed.
+         */
+        NOT_YET,
         /** They are mid-conversation; the dream would trample it. */
         BUSY,
         /** The scene is missing from the datapack. */
@@ -51,12 +73,18 @@ public final class TheHaunt {
     }
 
     /**
-     * Offer the first dream-audience to this player, if it is theirs to have.
+     * Offer whichever dream-audience is due to this player, if any is theirs to have.
+     *
+     * There is no "which dream" parameter, and there should not be: which one is due
+     * is a fact about the world, not a choice the caller gets to make. A sleeping
+     * player cannot pick, so neither can the command.
      *
      * @param force skip the once-only check -- the operator is deliberately
-     *              re-issuing a scene that was lost. Everything else still applies:
-     *              a non-killer cannot be handed the ghost's private conversation by
-     *              an admin with good intentions.
+     *              re-issuing a scene that was lost. It re-issues the dream that is
+     *              CURRENTLY due, which is the one that can have been lost; it is not
+     *              a way to run an earlier scene again out of order. Everything else
+     *              still applies: a non-killer cannot be handed the ghost's private
+     *              conversation by an admin with good intentions.
      */
     public static Outcome offer(MinecraftServer server, UUID player, boolean force) {
         ChapterSavedData data = ChapterSavedData.get(server);
@@ -66,8 +94,15 @@ public final class TheHaunt {
         if (!player.equals(data.killer())) {
             return Outcome.NOT_THE_KILLER;
         }
-        if (!force && data.has(Milestone.HAUNT_OPENED)) {
-            return Outcome.ALREADY;
+        // Which dream is due. The second one needs the first to have happened AND the
+        // world to have reached ENFORCEMENT; short of that the first is still the
+        // answer, and once it has been had there is simply nothing to offer yet.
+        boolean returning = data.has(Milestone.HAUNT_OPENED)
+                && data.chapter().band >= Chapter.ENFORCEMENT.band;
+        Identifier scene = returning ? DREAM_TWO : DREAM;
+        Milestone marks = returning ? Milestone.HAUNT_RETURNED : Milestone.HAUNT_OPENED;
+        if (!force && data.has(marks)) {
+            return returning ? Outcome.ALREADY : Outcome.NOT_YET;
         }
         String id = player.toString();
         if (Conversations.of(id) != null) {
@@ -78,13 +113,16 @@ public final class TheHaunt {
             return Outcome.BUSY;
         }
         try {
-            Conversations.open(server, DREAM, List.of(id), null);
+            Conversations.open(server, scene, List.of(id), null);
         } catch (IllegalArgumentException e) {
             LOG.error("The dream-audience could not open: {}", e.getMessage());
             return Outcome.NO_SCENE;
         }
-        data.record(Milestone.HAUNT_OPENED);
-        LOG.info("The dead god has spoken to {} for the first time.", player);
+        // Recorded on OPENING, not on reaching an ending, and deliberately: the beat
+        // is that the god got its audience. Walking out of it is an answer, and an
+        // answer must not buy the scene back.
+        data.record(marks);
+        LOG.info("The dead god has spoken to {}: {}.", player, scene);
         return Outcome.OPENED;
     }
 }
