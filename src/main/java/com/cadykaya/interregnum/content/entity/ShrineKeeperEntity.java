@@ -49,6 +49,15 @@ public class ShrineKeeperEntity extends PathfinderMob {
     public static final Identifier INTACT =
             Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "shrine_keeper_intact");
 
+    /**
+     * The returned mail, which outranks both of the above.
+     *
+     * `WORLD.md`, locked: the letters were sent, none was answered, and a shrine-keeper has
+     * been holding them ever since -- waiting for somebody to give them to.
+     */
+    public static final Identifier MAIL =
+            Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "keeper_mail");
+
     /** How far to look for the box this keeper is attending. */
     private static final int BOX_RANGE = 4;
 
@@ -146,7 +155,33 @@ public class ShrineKeeperEntity extends PathfinderMob {
      * the wrong thing" is a question an operator will have long before that.
      */
     public Identifier openingScene() {
+        if (mailDue()) {
+            return MAIL;
+        }
         return boxUntouched() ? INTACT : LEDGER;
+    }
+
+    /**
+     * Is this keeper still holding the dead god's returned correspondence?
+     *
+     * Two conditions and both are load-bearing. The god has to be **dead**, because until
+     * it is there is nothing to hand over and no vacancy to hand it over for -- a keeper
+     * offering the post to a passer-by on a Tuesday would give away the whole opening.
+     * And the mail must not have changed hands, which is server-wide and once: there is
+     * one set of letters in a world, the way there are seven clasts, and a keeper who
+     * could produce another set on request would make the mail scenery.
+     *
+     * It takes precedence over both other openings, which is the right order of business.
+     * A person holding a box they have been keeping for years does not open with the
+     * housekeeping.
+     */
+    private boolean mailDue() {
+        if (!(level() instanceof net.minecraft.server.level.ServerLevel server)) {
+            return false;
+        }
+        var data = com.cadykaya.interregnum.system.ChapterSavedData.get(server.getServer());
+        return !data.mechanicsDormant()
+                && !data.has(com.cadykaya.interregnum.core.chapter.Milestone.MAIL_RECEIVED);
     }
 
     private boolean boxUntouched() {

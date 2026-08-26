@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **42**, every one mutation-verified, all in CI |
+| Live-world checks | **43**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, ten spells**, learned in their gods' worlds and **cast by saying the word** |
@@ -737,6 +737,45 @@ Mutation run: making the cancel never fire was caught.
 
 Nothing audible is claimed. Same wall as Hush — the Quiet One's most characteristic effects
 live on a client and this container has none.
+
+### The post comes back, and somebody has been holding it
+
+Four letters had been written, validated and readable for a long time, and **nothing in the
+world produced one.** Now a shrine-keeper does.
+
+`WORLD.md`, locked: the letters were sent, none was answered, and they came back. The keeper
+has been holding them since — and the scene is that wait ending.
+
+**The keeper does not know the player killed anything.** Nobody does; the Deicide
+advancement is hidden and never reaches chat. So they are not accusing and not thanking.
+They are doing the one thing left in the job description: the post came back, the post has
+to go somewhere, and here is a person. *"Because you're here and nobody else is, and that's
+the whole of the criteria."* The player knows exactly why it is being handed to them and
+the keeper does not, and the scene runs on that gap.
+
+**It outranks both other openings.** `openingScene()` picks the mail ahead of the ledger and
+the intact scenes, because somebody holding a box they have kept for years does not open
+with the housekeeping. Two conditions, both load-bearing: the god must be dead (no vacancy
+before that, and a keeper handing out the round on a Tuesday gives away the opening), and
+the mail must not have changed hands already.
+
+**Refusing does not spend it.** The milestone hangs on the *accepting* node. There is one
+set of letters in a world — the same rule the clasts run on — so a refusal that marked
+`MAIL_RECEIVED` would destroy the mail permanently and silently, and the keeper would go
+back to talking about the offering box forever. `dialogue_check.py` cannot catch that: a
+milestone on a terminal `declined` node is perfectly valid data. The live check is what
+catches it, and the mutation run proves so.
+
+**Handed to the initiator, not the table — the opposite rule from `teach`.** A god
+addressing a room teaches the room, and a lesson is not diminished by being heard twice. A
+hand-over is not that: four physical letters, and a keeper holding out an envelope is
+holding it out to *somebody*. The two effects disagree on purpose, and the disagreement is
+the difference between an audience and a transaction.
+
+**[VERIFY] the letters arriving in an inventory.** A headless server has no players, so the
+hand-over has nobody to hand to; `Conversations` logs that case and records the milestone
+anyway, which is what keeps the beat once-only. Every decision *around* the transfer is
+checked. Clearing it needs one player and a client.
 
 ### Casting is a spoken word
 

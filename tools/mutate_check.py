@@ -270,6 +270,13 @@ MUTATIONS = [
     ("haunt: every interval manifests, so the ghost is a metronome",
      f"{MAIN}/haunt/Manifestation.java",
      "    public static final int ODDS = 90;", "    public static final int ODDS = 1;"),
+    # The mail must not gate a chapter: refusing the post is an answer, and an answer must
+    # not be able to freeze the world from a dialogue option.
+    ("chapter: taking the returned post is a prerequisite for the exodus",
+     f"{MAIN}/chapter/Chapter.java",
+     "            case EXODUS -> Set.of(Milestone.DEICIDE, Milestone.WARDEN_CONTACT,\n                                  Milestone.FIRST_CROSSING);",
+     "            case EXODUS -> Set.of(Milestone.DEICIDE, Milestone.WARDEN_CONTACT,\n                                  Milestone.FIRST_CROSSING, Milestone.MAIL_RECEIVED);"),
+
     # The spoken word sits one method away from every sentence any player types.
     ("magic: a message CONTAINING a spell word casts it",
      f"{MAIN}/magic/Incantation.java",

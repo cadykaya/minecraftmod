@@ -212,3 +212,6 @@ jobs:
 
       - name: The word casts the spell, and talking about the spell does not
         run: ./tools/speech_check.sh
+
+      - name: The dead god's returned post changes hands, once, and survives being refused
+        run: ./tools/handover_check.sh

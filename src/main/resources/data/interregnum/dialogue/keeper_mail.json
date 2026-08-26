@@ -1,0 +1,153 @@
+{
+  "_comment": [
+    "The keeper hands over the dead god's returned correspondence.",
+    "",
+    "WORLD.md, locked: the letters were sent, none was answered, and they came back. A",
+    "shrine-keeper has been holding them ever since, waiting for somebody to give them to.",
+    "This scene is that wait ending.",
+    "",
+    "THE KEEPER DOES NOT KNOW THE PLAYER KILLED ANYTHING. Nobody does -- the Deicide",
+    "advancement is hidden and never reaches chat, and that is the mod's central beat. So",
+    "the keeper is not accusing and not thanking. They are doing the one thing left in the",
+    "job description: the post came back, the post has to go somewhere, and here is a",
+    "person. The player knows exactly why it is being handed to them and the keeper does",
+    "not, and the whole scene runs on that gap.",
+    "",
+    "THEY NEVER SAY 'GOD'. The keeper's register is the box, the ledger, the round, the",
+    "returns -- the vocabulary of somebody who has kept a small building tidy for a long",
+    "time. Elevating it would make them a priest, and WORLD.md's villages are not that.",
+    "",
+    "Dread covenant: no joke lands on the keeper's diligence. What is allowed to be funny",
+    "is the shape of the bureaucracy around a bereavement nobody has told them about.",
+    "",
+    "The milestone MAIL_RECEIVED hangs on the terminal accepting node -- Conversations",
+    "reads it and puts four letters in the initiator's hands. Refusing does NOT mark it,",
+    "so the keeper is still holding them the next time anybody asks."
+  ],
+  "id": "keeper_mail",
+  "start": "returns",
+  "nodes": [
+    {
+      "id": "returns",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_mail.returns",
+      "rule": "INITIATOR",
+      "_variant_comment": "The keeper IS the villages, so VILLAGES standing is what reaches this scene. The letters are handed over in all three wordings, because the keeper's job does not depend on liking you -- what changes is how much of the box they open in front of you.",
+      "text_variants": [
+        {
+          "text_key": "interregnum.dlg.keeper_mail.returns.wary",
+          "standing_at_most": {
+            "VILLAGES": "RESENTED"
+          }
+        },
+        {
+          "text_key": "interregnum.dlg.keeper_mail.returns.trusted",
+          "standing_at_least": {
+            "VILLAGES": "TRUSTED"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "whose",
+          "text_key": "interregnum.dlg.keeper_mail.returns.whose",
+          "target": "filed"
+        },
+        {
+          "id": "how_long",
+          "text_key": "interregnum.dlg.keeper_mail.returns.how_long",
+          "target": "waiting"
+        },
+        {
+          "id": "not_mine",
+          "text_key": "interregnum.dlg.keeper_mail.returns.not_mine",
+          "target": "declined",
+          "regard": {
+            "VILLAGES": -4
+          }
+        }
+      ]
+    },
+    {
+      "id": "filed",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_mail.filed",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "sent",
+          "text_key": "interregnum.dlg.keeper_mail.filed.sent",
+          "target": "waiting"
+        }
+      ]
+    },
+    {
+      "id": "waiting",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_mail.waiting",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "take",
+          "text_key": "interregnum.dlg.keeper_mail.waiting.take",
+          "target": "handed",
+          "regard": {
+            "VILLAGES": 8
+          }
+        },
+        {
+          "id": "why_me",
+          "text_key": "interregnum.dlg.keeper_mail.waiting.why_me",
+          "target": "because"
+        },
+        {
+          "id": "no",
+          "text_key": "interregnum.dlg.keeper_mail.waiting.no",
+          "target": "declined",
+          "regard": {
+            "VILLAGES": -4
+          }
+        }
+      ]
+    },
+    {
+      "id": "because",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_mail.because",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "fine",
+          "text_key": "interregnum.dlg.keeper_mail.because.fine",
+          "target": "handed",
+          "regard": {
+            "VILLAGES": 6
+          }
+        },
+        {
+          "id": "still_no",
+          "text_key": "interregnum.dlg.keeper_mail.because.still_no",
+          "target": "declined",
+          "regard": {
+            "VILLAGES": -4
+          }
+        }
+      ]
+    },
+    {
+      "id": "handed",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_mail.handed",
+      "rule": "INITIATOR",
+      "milestone": "MAIL_RECEIVED",
+      "options": []
+    },
+    {
+      "id": "declined",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.keeper_mail.declined",
+      "rule": "INITIATOR",
+      "options": []
+    }
+  ]
+}

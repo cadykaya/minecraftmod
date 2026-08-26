@@ -32,6 +32,18 @@ public enum Milestone {
      * escalates alongside the chapters, never in front of them.
      */
     HAUNT_RETURNED,
+    /**
+     * The dead god's returned mail changed hands.
+     *
+     * `WORLD.md`, locked: the letters were sent, none was answered, and a shrine-keeper has
+     * been holding them ever since. This records the moment they stop being the keeper's
+     * problem and start being yours.
+     *
+     * Server-wide, once, forever -- and that is the mechanic rather than a convenience.
+     * There is one set of letters in a world, the way there are seven clasts: a keeper who
+     * could produce another set on request would make the mail scenery.
+     */
+    MAIL_RECEIVED,
     /** The ferry was recommissioned and made one crossing. */
     FIRST_CROSSING,
     /** A god's letter was delivered. Repeatable across gods; see LettersDelivered. */

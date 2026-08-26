@@ -1035,6 +1035,30 @@ public final class SelfTest {
               + "spell that takes a specific building rather than a volume, so a reach "
               + "wider than a room would make 'that one' unanswerable");
 
+        // THE RETURNED MAIL is not a chapter prerequisite, and that is deliberate in the
+        // same way HAUNT_OPENED is not: a player who tells the keeper to find somebody
+        // else must not be able to stall the whole world's progression from a dialogue
+        // option. It gates the ferry in practice -- no letter, no voyage -- and that is a
+        // consequence of what the ferry reads, not a rule in the chapter machine.
+        // Asserted behaviourally rather than by reading `Chapter.requires()`, which is
+        // package-private: two worlds that differ ONLY in whether the post was taken must
+        // reach the same chapter.
+        var tookIt = new com.cadykaya.interregnum.core.chapter.ChapterState();
+        var refusedIt = new com.cadykaya.interregnum.core.chapter.ChapterState();
+        for (var m : com.cadykaya.interregnum.core.chapter.Milestone.values()) {
+            if (m != com.cadykaya.interregnum.core.chapter.Milestone.SUCCESSION) {
+                tookIt.record(m);
+                if (m != com.cadykaya.interregnum.core.chapter.Milestone.MAIL_RECEIVED) {
+                    refusedIt.record(m);
+                }
+            }
+        }
+        check(tookIt.chapter() == refusedIt.chapter(),
+              "a world where the post was refused reaches the same chapter as one where it "
+              + "was taken. Refusing is an answer, and an answer must not freeze the world "
+              + "-- the ferry declines to sail without a letter, which is a consequence of "
+              + "what the ferry reads rather than a clause in the chapter machine");
+
         // THE SPOKEN WORD. `WORLD.md` locks casting as something you say out loud in chat,
         // which puts the whole affordance one method away from every sentence any player
         // has ever typed. These are the guards on that.

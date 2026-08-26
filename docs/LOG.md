@@ -3959,3 +3959,53 @@ both were visible in one run because the spell reported what it actually did. Wo
 only because the reflex on a red check is to look at the code first.
 
 223 self-test checks, 77 mutations, 42 live checks, 20 fast-gate stages.
+
+---
+
+## Somebody has been holding the post
+
+Four letters, written and validated and readable since early on, and **nothing in the world
+produced one**. A shrine-keeper does now.
+
+`WORLD.md`, locked this session: the letters were sent, none was answered, and they came
+back. The keeper has been holding them ever since. The scene is that wait ending — and the
+thing that makes it work is that **the keeper does not know the player killed anything.**
+Nobody does; the advancement is hidden and never reaches chat. So they are not accusing and
+not thanking, they are doing the one thing left in the job description. *"Because you're
+here and nobody else is, and that's the whole of the criteria. It wasn't a long
+instruction."*
+
+### The rule that disagrees with the rule next to it
+
+A node that teaches gives to **everybody at the table**, because a god addressing a room
+teaches the room and a lesson is not diminished by being heard twice. A node that hands
+over the mail gives to **the initiator only**. Four physical letters, and a keeper holding
+out an envelope is holding it out to somebody; splitting them across whoever happened to be
+standing nearby would make the mail a loot drop.
+
+The two effects sit ten lines apart and contradict each other on purpose. Written down in
+both, because a reader who found only one would fix it.
+
+### The check that the data check cannot be
+
+`MAIL_RECEIVED` hangs on the *accepting* node. Put it on the refusal instead and the mail is
+destroyed permanently and silently: there is one set of letters in a world, the keeper stops
+offering, and the game goes back to talking about the offering box forever.
+
+`dialogue_check.py` passes that mutation without complaint, and correctly — a milestone on a
+terminal `declined` node is valid data, and no schema can know which ending is the one that
+means yes. The live check caught it, with the message that names the consequence.
+
+### Two runs lost to output plumbing
+
+`talk scene` replies with `sendSuccess(..., false)`, which reaches the rcon reply and not
+the server log, so the `say` markers and the answers were in different files with no way to
+line them up. Rewritten to read the four answers positionally. Then the rcon reply turned
+out to indent every line by two spaces, so an anchored `^scene=` matched nothing — and
+because the guard for "no answers at all" was itself written against the same wrong file,
+the whole check exited silently with status 1 and printed nothing.
+
+A check that can fail without saying anything is worse than one that fails loudly for the
+wrong reason. The guard now reports what it found.
+
+224 self-test checks, 78 mutations, 43 live checks, 20 fast-gate stages.

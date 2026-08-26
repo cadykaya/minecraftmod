@@ -7,6 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 
 import com.cadykaya.interregnum.content.dialogue.DialogueLoader;
@@ -22,6 +23,9 @@ import com.cadykaya.interregnum.system.RegardSavedData;
 import com.cadykaya.interregnum.core.regard.RegardEffects;
 import com.cadykaya.interregnum.core.regard.RegardState;
 import com.cadykaya.interregnum.system.regard.RegardNotices;
+import com.cadykaya.interregnum.system.letters.Letters;
+import com.cadykaya.interregnum.registry.ModComponents;
+import com.cadykaya.interregnum.registry.ModItems;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -336,6 +340,7 @@ public final class Conversations {
         record(server, r);
         mark(server, table);
         teach(server, table);
+        hand(server, table);
         pushStances(server, table, r);
         push(server, table);                   // the next beat -- or the last line
         if (table.conversation.ended()) {
@@ -401,6 +406,66 @@ public final class Conversations {
             store.touch();
             LOG.info("A conversation taught {} to {} listener(s)", node.teaches(), taught);
         }
+    }
+
+    /**
+     * Some beats put something in your hands.
+     *
+     * `WORLD.md`, locked: the dead god's letters were sent, none was answered, and a
+     * shrine-keeper has been holding them ever since. *"You do not find the mail. It is
+     * GIVEN to you, by someone who has been keeping it."* This is that sentence.
+     *
+     * <h2>To the INITIATOR, and not to the table -- the opposite of {@link #teach}</h2>
+     *
+     * Teaching goes to everybody present, because a god addressing a room teaches the room
+     * and a lesson is not diminished by being heard twice. A hand-over is not that. There
+     * are four letters in a world, they are physical, and a keeper holding out an envelope
+     * is holding it out to <b>somebody</b>. Splitting them across whoever happened to be
+     * standing nearby would make the mail a loot drop.
+     *
+     * The two rules disagree on purpose, and the disagreement is the distinction between
+     * an audience and a transaction.
+     *
+     * <h2>Keyed to a milestone rather than a new node field</h2>
+     *
+     * The node marks {@link Milestone#MAIL_RECEIVED} and this reads that. A fourth kind of
+     * node effect would have been one more thing every scene author has to know about, for
+     * a beat that happens exactly once in the whole game -- and the milestone had to exist
+     * regardless, because *"once, forever, server-wide"* is precisely the rule the mail
+     * needs. One set of letters in a world, the way there are seven clasts.
+     */
+    private static void hand(MinecraftServer server, Table table) {
+        var node = table.conversation.current();
+        if (node == null || node.milestone() != Milestone.MAIL_RECEIVED) {
+            return;
+        }
+        ServerPlayer to = null;
+        try {
+            to = server.getPlayerList().getPlayer(
+                    java.util.UUID.fromString(table.conversation.initiator()));
+        } catch (IllegalArgumentException e) {
+            // not a player id -- a headless check driving the scene by command. The
+            // milestone is still recorded, which is what makes the beat once-only.
+        }
+        if (to == null) {
+            LOG.info("The mail changed hands with nobody there to take it; "
+                    + "the milestone stands and the letters were not issued.");
+            return;
+        }
+        int given = 0;
+        for (var letter : Letters.post().letters().values()) {
+            ItemStack stack = new ItemStack(ModItems.SEALED_LETTER.get());
+            stack.set(ModComponents.LETTER.get(), letter.id());
+            // Straight to the inventory, or on the floor at their feet if it is full.
+            // A letter that silently evaporated because somebody was carrying cobblestone
+            // would be the one unrecoverable failure in the whole chain -- there is no
+            // second set.
+            if (!to.getInventory().add(stack)) {
+                to.drop(stack, false);
+            }
+            given++;
+        }
+        LOG.info("The keeper handed {} letter(s) to {}.", given, to.getUUID());
     }
 
     /**
