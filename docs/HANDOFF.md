@@ -173,7 +173,7 @@ existed for a long time. The only thing that could reach them was
 said so — `haunt_check.sh` was green throughout, because it drives the command seam, which
 is exactly what it is for.
 
-This is the same shape as the four questions in "Waiting on owner" — a system built and
+This is the same shape as the seven questions in "Waiting on owner" — a system built and
 verified and unreachable — with one difference that makes it mine rather than the owner's:
 **the affordance is locked.** `WORLD.md` names sleep. There was nothing to decide.
 
@@ -202,7 +202,7 @@ hold them.
 ### More of the world to lose
 
 Nineteen conversions where there were nine. Bands 1 and 2 are the only part of this mod a
-player can reach today — everything past the deicide is behind one of the five questions in
+player can reach today — everything past the deicide is behind one of the seven questions in
 "Waiting on owner" — so the unraveling is where content is worth adding, and it was thin: a
 thin place took away four kinds of ground plant, and the overworld cracked five kinds of
 block.
@@ -2377,33 +2377,44 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
 
 ## Waiting on owner
 
-1. ~~**"Warden" collides with vanilla's Warden."**~~ **Decided — the name stays.** The
-   owner delegated this one. See [`WORLD.md`](WORLD.md) *"Warden is not its name — it is
-   its rank"*: the collision only bites if *Warden* is what the thing **is**, and it
-   never was. A Warden never calls itself a Warden in any line shipped — it says *"this
-   unit"*, every time — and the word appears in exactly three places, all of them the
-   Wardenate's own paperwork. So it is a rank an office grants, not a species, and the
-   unit now has its own four-voices row like the Theoclast and the four gods: *this
-   unit* / **Warden** / *a docket* (villagers) / *a posting* (Theoclasts). No code
-   change, no id change; the lore was already correct and had not been read.
+**Seven open decisions, numbered here and nowhere else.** This list is the one place that
+counts them, because it is the list an owner reads to decide. Everything answered has been
+moved to "Answered this session" below rather than left struck through in the middle of the
+numbering -- five entries in a row used to be numbered `5.` and the section could not be
+counted at all.
 
-2. ~~**Should the Anchorite's law lift dropped items too?**~~ **Answered: no.** The
-   owner's words: *"I dont want death to cost the whole inventory."* Only
-   `FallingBlockEntity` rises — sand, red sand, gravel, anvils, exactly the set the
-   ferry's boarding notice names. Dropped items, players and mobs are untouched, which
-   is what already ships, so this needed no code change.
+Between them these seven gate **everything the mod has built past the deicide**. None
+blocks another. Nothing here has been guessed at.
 
-   **[PROPOSED — not built, owner's call]** There is a version that keeps the law
-   whole without the punishment, and it is worth recording before it is forgotten.
-   *"They do not stop"* leaves a question the mod never answers: **where do they go?**
-   If everything that rises out of that world is *received* somewhere — a counter, a
-   ledger, a clerk who will return your property once you have described it correctly
-   — then items could rise, the law would be literally true, and losing your inventory
-   would be the start of an errand rather than the end of a session. The Anchorite's
-   Warden dockets already read `SUBJECT: MASS AUTHORITY`; an authority that catches
-   everything the world lets go of is the same joke as the rest of the mod, and the
-   retrieval scene would be one of the few places a player *wants* to talk to
-   bureaucracy. Costs a room, an inventory, and a conversation. Not built.
+1. **What is each god's portal logic?** *(The largest thing unbuilt, and the only
+   question with a build blocked behind it.)* `WORLD.md` locks the grammar -- *surface ·
+   under-layer · far-layer, joined by that world's own portal logic* -- and never says
+   what a portal **is**. Four sketches, one per god, each read off the law that world
+   already runs: see the table in
+   ["Proposed, needs the owner's yes"](#proposed-needs-the-owners-yes). No
+   recommendation -- they are four different games.
+
+2. **How does a player tell the ferry where to go?** The keel now inspects — touch it and
+   it hands back the checklist for all four crossings, which is the locked half. What it
+   cannot do is *sail*, because nothing in `WORLD.md` says how the destination is named,
+   and the options say different things about what the ferry is:
+
+   * **the keel cycles through the four**, shift-click to change. Simplest, and it makes
+     the ferry a menu — the least interesting reading, and the only one that needs no
+     other system to exist.
+   * **it goes where the letter in your hand is addressed.** `WORLD.md`: *"the remaining
+     gods … are reachable only by the dead god's sealed mail-ferry, and **the route to
+     them is its unanswered correspondence**"*, and *"you are the only one carrying their
+     mail"*. This is that sentence made mechanical: you cannot reach a god you are not
+     carrying mail for, the letters become the map, and the fourth letter's `To —` becomes
+     a genuine navigational problem rather than a sad detail. It also makes the *"where
+     does a player find the mail"* question above load-bearing instead of flavour.
+   * **a destination is written on the keel**, by hand, like a shipping label. Fits the
+     bureaucracy hardest and is the most fiddly to use.
+
+   The second is what I would build, and it is not mine to choose: it decides whether the
+   letters are the plot or a collectible. *No action needed until then; the inspection
+   ships without it.*
 
 3. **Where does a player find the dead god's mail?** The letters exist, and one item
    carries them, and nothing in the world produces one. `WORLD.md` says *you are the only
@@ -2423,40 +2434,7 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
 
    I have not picked one because the choice is the story, not the plumbing. *No action
    needed until then; the letters and the item ship without it.*
-4. **What should a Warden be able to cite you for?** — and **this question has changed
-   since it was written.** It used to end "before magic exists", on the grounds that
-   WORLD.md's locked countermeasures are all about *casting* and casting did not exist.
-   **It does now**: four schools, and an overworld ban with a real cost behind it. So the
-   original locked answer is available, and the two magic-free offences below are
-   alternatives rather than the only options.
-
-   Two locked offences need no magic:
-
-   * **the sleep code** — *phantoms punish sleeplessness | a citation for a sleep-code
-     violation*. Buildable today, and it has the right absurdity: the Wardenate is still
-     enforcing bedtime for a god that is not watching.
-   * **permitted airspace** — *the height limit | permitted airspace*. The better joke,
-     because the enforcement mechanism (the hard limit) died with the god while the
-     policy did not. But nothing currently raises the limit, so nobody can break it, and
-     choosing a lower licensed ceiling would be inventing a rule the world never had.
-
-   Either is a small build once chosen. Choosing is the owner's, because it decides what
-   the Wardenate is *for*. *No action needed until then; patrol and inspect ship without
-   it.*
-
-5. **Is reading the shrines' god-script dangerous, and what is the safe path?**
-   `shrine_stone_carved` carries *"a band of the dead god's script"* and nothing can read
-   it. `WORLD.md` marks the lane **[PROPOSED]**: *"raw god-script (letters, shrine
-   inscriptions) read without transcription at the ferry's desk MARKS the reader —
-   visions, afflictions, manifestation exposure. Knowledge-as-hazard; the codex desk is
-   the safe path."* Building plain readable inscriptions would settle it in the safe
-   direction by default, so it is not built. Either answer is small once chosen: a
-   readable inscription with a consequence, or one without. The warning steles were the
-   different case and are built — they are civic notices posted for the public, nothing
-   proposes a hazard for reading one, and a shipped line of dialogue already promised
-   they could be read. *No action needed until then.*
-
-5. **How does a player attune a clast?** They exist now — seven in a world, three in the
+4. **How does a player attune a clast?** They exist now — seven in a world, three in the
    crater and one at each shrine as it is found — and nothing can be done with one.
    `WORLD.md` locks *"anyone may attune one"* and says nothing about how, which makes the
    affordance a mechanic rather than a detail, exactly like the casting question below.
@@ -2484,29 +2462,66 @@ To pause it: ask, or disable the Routine from the claude.ai Routines UI.
    The first is the most conventional, the second is the most *this mod*, the third is
    the least work. Nothing is blocked behind this: the spells are built and verified
    either way, and an operator can already cast them.
-5. **How does a player tell the ferry where to go?** The keel now inspects — touch it and
-   it hands back the checklist for all four crossings, which is the locked half. What it
-   cannot do is *sail*, because nothing in `WORLD.md` says how the destination is named,
-   and the options say different things about what the ferry is:
+6. **Is reading the shrines' god-script dangerous, and what is the safe path?**
+   `shrine_stone_carved` carries *"a band of the dead god's script"* and nothing can read
+   it. `WORLD.md` marks the lane **[PROPOSED]**: *"raw god-script (letters, shrine
+   inscriptions) read without transcription at the ferry's desk MARKS the reader —
+   visions, afflictions, manifestation exposure. Knowledge-as-hazard; the codex desk is
+   the safe path."* Building plain readable inscriptions would settle it in the safe
+   direction by default, so it is not built. Either answer is small once chosen: a
+   readable inscription with a consequence, or one without. The warning steles were the
+   different case and are built — they are civic notices posted for the public, nothing
+   proposes a hazard for reading one, and a shipped line of dialogue already promised
+   they could be read. *No action needed until then.*
 
-   * **the keel cycles through the four**, shift-click to change. Simplest, and it makes
-     the ferry a menu — the least interesting reading, and the only one that needs no
-     other system to exist.
-   * **it goes where the letter in your hand is addressed.** `WORLD.md`: *"the remaining
-     gods … are reachable only by the dead god's sealed mail-ferry, and **the route to
-     them is its unanswered correspondence**"*, and *"you are the only one carrying their
-     mail"*. This is that sentence made mechanical: you cannot reach a god you are not
-     carrying mail for, the letters become the map, and the fourth letter's `To —` becomes
-     a genuine navigational problem rather than a sad detail. It also makes the *"where
-     does a player find the mail"* question above load-bearing instead of flavour.
-   * **a destination is written on the keel**, by hand, like a shipping label. Fits the
-     bureaucracy hardest and is the most fiddly to use.
+7. **What do the six unnamed spells do?** Every spell `WORLD.md` describes is built.
+   What is left is six bare names -- *Hedge*, *Graft*, *Moor*, *Held-breath*, *Ripen*,
+   *Rot* -- with nothing attached to any of them, so deciding what one does is designing
+   a mechanic rather than implementing one. Sketches in
+   ["Proposed, needs the owner's yes"](#proposed-needs-the-owners-yes). *No action
+   needed until then; the ten built spells ship without it.*
 
-   The second is what I would build, and it is not mine to choose: it decides whether the
-   letters are the plot or a collectible. *No action needed until then; the inspection
-   ships without it.*
+### Also open, and smaller
 
-5. **Playtesting, and looking at the Warden.** This container has no game client, so two
+**What should a Warden be able to cite you for?** — and **this question has changed
+   since it was written.** It used to end "before magic exists", on the grounds that
+   WORLD.md's locked countermeasures are all about *casting* and casting did not exist.
+   **It does now**: four schools, and an overworld ban with a real cost behind it. So the
+   original locked answer is available, and the two magic-free offences below are
+   alternatives rather than the only options.
+
+   Two locked offences need no magic:
+
+   * **the sleep code** — *phantoms punish sleeplessness | a citation for a sleep-code
+     violation*. Buildable today, and it has the right absurdity: the Wardenate is still
+     enforcing bedtime for a god that is not watching.
+   * **permitted airspace** — *the height limit | permitted airspace*. The better joke,
+     because the enforcement mechanism (the hard limit) died with the god while the
+     policy did not. But nothing currently raises the limit, so nobody can break it, and
+     choosing a lower licensed ceiling would be inventing a rule the world never had.
+
+   Either is a small build once chosen. Choosing is the owner's, because it decides what
+   the Wardenate is *for*. *No action needed until then; patrol and inspect ship without
+   it.*
+
+**Where does everything the Anchorite's world lets go of end up?** The answer above --
+only falling blocks rise, not your inventory -- keeps the owner's ruling and leaves the law
+half-stated. There is a version that keeps it whole *without* the punishment, worth
+recording before it is forgotten.
+
+*"They do not stop"* leaves a question the mod never answers: **where do they go?** If
+everything that rises out of that world is *received* somewhere — a counter, a ledger, a
+clerk who will return your property once you have described it correctly — then items could
+rise, the law would be literally true, and losing your inventory would be the start of an
+errand rather than the end of a session. The Anchorite's Warden dockets already read
+`SUBJECT: MASS AUTHORITY`; an authority that catches everything the world lets go of is the
+same joke as the rest of the mod, and the retrieval scene would be one of the few places a
+player *wants* to talk to bureaucracy. Costs a room, an inventory, and a conversation.
+**Not built, and not built until asked** — it reverses a ruling the owner already gave.
+
+### Not a decision -- a gap this container cannot close
+
+**Playtesting, and looking at the Warden.** This container has no game client, so two
    things about the model are unverifiable here and are not claimed: how it looks
    **animated**, and how it looks **lit**. `tools/entity_view.py` covers shape and paint;
    it cannot cover those. The render has been sent for review.
@@ -2544,6 +2559,15 @@ question** — items 2 and 4 below are both unblocked — but item 1 cannot star
 
 ### Answered this session
 
+- **The "Warden" name collision**: **the name stays**, owner-delegated. The collision
+  only bites if *Warden* is what the thing **is**, and it never was -- a Warden never
+  calls itself one in any shipped line, it says *"this unit"* every time, and the word
+  appears only in the Wardenate's own paperwork. A rank an office grants, not a species,
+  with its own four-voices row: *this unit* / **Warden** / *a docket* / *a posting*.
+- **Does the Anchorite's law lift dropped items?**: **no.** The owner's words: *"I dont
+  want death to cost the whole inventory."* Only `FallingBlockEntity` rises -- exactly
+  the set the ferry's boarding notice names. There is a proposed version that keeps the
+  law whole without the punishment; it is in "Also open, and smaller" above.
 - **The god roster**: **four, and everyone calls them something different.** The
   pantheon inherits the Theoclast's four-voices doctrine — the dead god's letters use pet
   names (Rill, Ballast, Ash) that no other voice uses, and **the Quiet One has none**.
