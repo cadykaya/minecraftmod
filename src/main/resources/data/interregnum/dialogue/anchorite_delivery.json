@@ -216,7 +216,8 @@
       "speaker": "anchorite",
       "text_key": "interregnum.dlg.anchorite_delivery.opened",
       "rule": "INITIATOR",
-      "options": []
+      "options": [],
+      "milestone": "LETTER_DELIVERED"
     },
     {
       "id": "closes",

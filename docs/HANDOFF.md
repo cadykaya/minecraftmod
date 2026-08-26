@@ -96,6 +96,28 @@ reads gameTime — the arithmetic is covered in core, including both sides of th
 and the tick handler itself (it walks `level.players()` and a headless server has none, so
 the command seam runs — calling the *same* `Tending.tendAround`, not a copy).
 
+### Delivering a letter now moves the world
+
+`LETTER_DELIVERED` had been in `core` since the chapter machine was written — counted by
+`ChapterState`, gating chapters 3 to 5 in `Chapter` — and a grep for it across the whole
+game module returned nothing. All four delivery scenes shipped, each the opening of a
+god's questline, each walked end to end by a live check, and delivering all four advanced
+the world by exactly nothing.
+
+Every check passed and every one was true: the scene played, the regard moved, the ceiling
+held. None of them asked whether the rest of the system noticed, because a check written
+alongside a feature inherits that feature's scope. `LESSONS.md` #32.
+
+**A node may now carry a `milestone`**, and arriving at it records that milestone. It
+hangs on the *node* rather than the option deliberately: "the letter was delivered" is a
+fact about the conversation having arrived somewhere, not about which sentence got it
+there — three routes into one ending should record one delivery, and the route where the
+players refuse the errand should record none. `dialogue_check.py` refuses a milestone on a
+non-terminal node for the same reason, and derives the valid names from core's enum rather
+than keeping a copy.
+
+`delivery_check.sh` now reads the count: **`letters delivered: 0 -> 4`.**
+
 ### All four gods' letters can be delivered
 
 **Four openings, four unbearable requests, one machinery** — and the fourth is the one
@@ -1575,38 +1597,41 @@ Done this pass: the ferry (capture, four destination laws, the `ferry_keel` bloc
 are locked in [`WORLD.md`](WORLD.md) with `[LOCKED — owner delegated; decided here.]`
 next to each, so the provenance travels with the decision.
 
-**Nothing on this list is waiting on the owner.** In order, all unblocked:
+**Two things on this list ARE waiting on the owner** — see "Waiting on owner" below.
+Everything else is unblocked. In order:
 
-1. **The systems, not just the surfaces.** All four destination *surfaces* now exist and
-   each has a law that earns it. What does not exist is what `WORLD.md` actually locks:
-   each god holds a **system** of connected dimensions — *surface · under-layer ·
-   far-layer, joined by that world's own portal logic*. Right now there are four lonely
-   surfaces reachable only by command, so `FIRST_CROSSING` and `LETTER_DELIVERED` are
-   still unreachable and chapters 3–5 are still gated. **The portal logic is the next
-   real gate**, and it is bigger than any single world was.
+1. **The systems, not just the surfaces.** *(Top item, and the largest thing unbuilt —
+   but its first step is the owner's.)* All four destination *surfaces* exist and each has
+   a law that earns it. What does not exist is what `WORLD.md` locks: each god holds a
+   **system** of connected dimensions — *surface · under-layer · far-layer, joined by that
+   world's own portal logic*. The four surfaces are still reachable only by command.
 
-   Also missing from every one of them: **terrain that is designed**. All four use
-   vanilla noise with one fixed biome, and each file says so in its own javadoc.
-2. ~~**Band 4 — ATTRITION.**~~ **Built**, both halves — see below. What remains of it
-   is content rather than machinery: the table covers ores, the four common tree species,
-   biome ground and flowers, and could grow indefinitely.
+   **What each god's portal IS is a mechanic per god, and it is proposed rather than
+   built** — see "Proposed, needs the owner's yes". Nothing else on this list is blocked
+   behind it.
 
-3. ~~**Band 3 — EXODUS.**~~ **Built.** Patches of overworld obeying another god's law,
-   anchored on the shrines. Three of the four laws leak; the Quiet One's needs
-   client-side audio suppression this container cannot verify, and is named as a gap
-   above rather than half-built. **Band 4 (ATTRITION) is the unbuilt half** and is
-   unblocked: it wants a *"when was this last tended"* signal, for which the chunk
-   attachment used by placement tracking is the obvious home.
-4. ~~**Warden behaviour.**~~ **Patrol and inspect are built** — `WardenPatrolGoal` walks a
-   fixed four-point beat, and `SiteReturn` files what it finds. **`cite` is the one verb
-   still missing, and it is blocked on the owner**: see "Waiting on owner" — a Warden
-   needs something to accuse you of, and the locked countermeasures are all about
-   casting, which does not exist yet.
-5. **More scenes.** Nine exist (`warden_intake`, `warden_interrogation`, `shrine_keeper`,
-   `shrine_keeper_intact`, `dream_audience`) and the machinery now has the range it was
-   missing, so the shortage from here is content rather than plumbing. The four gods have
-   regard lines but no scenes; the roster decision gives each of them four names to be
-   called by, which is the material those scenes were short of.
+   Also missing from all four: **terrain that is designed.** They use vanilla noise with
+   one fixed biome, and each file says so in its own javadoc.
+
+2. ~~**Bands 3 and 4.**~~ **Both built.** The exodus leaks three of the four laws into
+   the overworld (the Quiet One's needs client-side audio this container cannot verify,
+   and is named as a gap above). Attrition has both halves — the tending signal and the
+   generalisation table. What remains of either is *content*: more conversions, more
+   leaking laws. Machinery is done.
+
+3. ~~**Warden behaviour.**~~ **Patrol and inspect are built.** `WardenPatrolGoal` walks a
+   fixed four-point beat; `SiteReturn` files what it finds. **`cite` is the one verb still
+   missing and it waits on the owner**: a Warden needs something to accuse you of, and the
+   locked countermeasures are all about casting, which does not exist yet.
+
+4. ~~**The delivery scenes.**~~ **All four built**, and reaching an accepting ending now
+   records `LETTER_DELIVERED` — which it did not until recently, so all four could be
+   delivered and the world would not move. Chapters 3–5 gate on that count.
+
+   **What scenes are actually short of now** is the *middle* of each questline. Every god
+   has an opening and none has a second beat: delivering the letter opens a conversation
+   that promises more and there is nothing behind it yet.
+
 5. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and
    everything it would render is already proven server-side. Chat works meanwhile.

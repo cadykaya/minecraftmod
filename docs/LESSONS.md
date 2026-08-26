@@ -1383,3 +1383,55 @@ The tell is specific and worth learning to feel: **if you can state what the num
 means but not how far the honest value ranges, you are guessing.** "Tended ground reads
 zero ticks ago" was a true sentence about an idealised world and a false one about a
 server that schedules commands.
+
+## 32. Four scenes shipped and the thing they exist to produce was never recorded
+
+`LETTER_DELIVERED` has been in `core` since the chapter machine was written. `ChapterState`
+counts it. `Chapter` gates chapters 3, 4 and 5 on the count. And a grep for it across the
+entire game module returned **nothing**.
+
+So all four delivery scenes shipped, each one the opening of a god's questline, each one
+walked end to end by a live check that asserted the scene reached its ending and the god's
+regard moved — and delivering all four letters advanced the world by exactly nothing.
+
+Every check passed. They were all true. The scene *did* play to its end; the regard *did*
+move; the ceiling *did* hold. Nothing any of them asserted was wrong, and the feature was
+missing its entire point.
+
+### Why the checks could not see it
+
+Each assertion was written while building the thing it asserts, and it asked *did the
+thing I just built do what I built it to do*. The scene plays: yes. The regard lands: yes.
+Nobody asked the question that spans two increments — **does the rest of the system
+notice?** — because at no point was that the thing being built.
+
+That is the specific blind spot: a check written alongside a feature inherits the
+feature's scope. It cannot ask about the seam between this feature and the one written
+last month, because that seam was not on the author's mind, and it is exactly where things
+fail to connect.
+
+The tell was available and I walked past it twice. `HANDOFF.md` said *"`FIRST_CROSSING`
+and `LETTER_DELIVERED` are still unreachable"*, and I read that line while writing three of
+the four scenes, and took it as describing the state before the scenes existed rather than
+as a claim to verify.
+
+### What it cost, and what fixed it
+
+Nothing, because it was found before anyone played it — by re-reading the roadmap
+sceptically rather than by any check. That is the uncomfortable part: **the thing that
+caught it was doubt, not machinery.**
+
+The machinery now exists. A node may carry a `milestone`; arriving at it records that
+milestone. It hangs on the node rather than the option because "the letter was delivered"
+is a fact about the conversation having *arrived* somewhere, not about which sentence
+somebody picked — three routes into one ending should record one delivery, not three. And
+`delivery_check.sh` now reads the count: `letters delivered: 0 -> 4`.
+
+> **The rule: for every state a feature is supposed to produce, assert the state — not the
+> feature.** "The scene played correctly" and "the world is different afterwards" are
+> different claims, and only the second one is what the feature is for. When a system
+> exists to move a number that something else reads, the check belongs on the number.
+
+Related: [#16](#16-a-check-on-the-shape-of-data-cannot-tell-you-the-data-does-anything) is
+the same gap one level down — there, data that validated but did nothing; here, behaviour
+that ran correctly and connected to nothing.

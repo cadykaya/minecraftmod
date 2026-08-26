@@ -1,5 +1,6 @@
 package com.cadykaya.interregnum.core.dialogue;
 
+import com.cadykaya.interregnum.core.chapter.Milestone;
 import com.cadykaya.interregnum.core.regard.RegardState;
 
 import java.util.List;
@@ -13,10 +14,25 @@ import java.util.Objects;
  * institution has an opinion about -- see {@link TextVariant}. The node keeps a single
  * {@code textKey} as the line everybody else reads, so a node with no variants behaves
  * exactly as it always did.
+ *
+ * <h2>A node may mark a milestone, and an OPTION may not</h2>
+ *
+ * {@code milestone} is null on almost every node. Where it is set, reaching that node
+ * records the milestone in the world's chapter state -- which is how the four delivery
+ * scenes make `LETTER_DELIVERED` mean anything, and therefore how chapters 3 to 5 become
+ * reachable at all.
+ *
+ * It hangs on the NODE rather than on the option that leads there, and the distinction is
+ * not stylistic. "The letter was delivered" is a fact about the conversation having
+ * ARRIVED somewhere, not about which sentence somebody picked to get there: a scene with
+ * three routes into its accepting ending should record one delivery, not three, and it
+ * should record none at all down the route where the players refuse the errand. Putting
+ * it on the option would make the milestone a property of a choice, and then every new
+ * branch into the same ending would be a chance to forget it.
  */
 public record DialogueNode(String id, String speaker, String textKey,
                            ResolutionRule rule, List<DialogueOption> options,
-                           List<TextVariant> textVariants) {
+                           List<TextVariant> textVariants, Milestone milestone) {
     public DialogueNode {
         Objects.requireNonNull(id);
         Objects.requireNonNull(speaker);
@@ -26,10 +42,22 @@ public record DialogueNode(String id, String speaker, String textKey,
         textVariants = List.copyOf(textVariants);
     }
 
+    /** A node that marks nothing. Almost every node is this. */
+    public DialogueNode(String id, String speaker, String textKey,
+                        ResolutionRule rule, List<DialogueOption> options,
+                        List<TextVariant> textVariants) {
+        this(id, speaker, textKey, rule, options, textVariants, null);
+    }
+
     /** A node whose line is the same for everybody. Most nodes are this. */
     public DialogueNode(String id, String speaker, String textKey,
                         ResolutionRule rule, List<DialogueOption> options) {
-        this(id, speaker, textKey, rule, options, List.of());
+        this(id, speaker, textKey, rule, options, List.of(), null);
+    }
+
+    /** Does arriving here record something permanent about the world? */
+    public boolean marks() {
+        return milestone != null;
     }
 
     public boolean terminal() {

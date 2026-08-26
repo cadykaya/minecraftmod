@@ -182,6 +182,15 @@ MUTATIONS = [
      f"{MAIN}/attrition/Attrition.java",
      "        return band >= BAND;", "        return true;"),
 
+    # A node may mark the world. The dangerous direction is not a scene forgetting to
+    # mark -- a live check catches that -- it is EVERY node marking, which would advance
+    # the chapter on every line anybody speaks and end the progression before the first
+    # scene did. And the count must accumulate: four gods, four letters, and a delivery
+    # recorded as a flag could never tell one god answered from all four.
+    ("dialogue: every node marks the world, so the chapter advances on every line",
+     f"{MAIN}/dialogue/DialogueNode.java",
+     "        return milestone != null;", "        return true;"),
+
     # The dead god's mail. The invariant here is about a SET -- three letters open with
     # a name, the fourth opens `To --` -- so nothing about an individual letter can
     # catch it going. If it goes, the mid-game's best reveal quietly stops being one and

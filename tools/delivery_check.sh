@@ -62,6 +62,7 @@ COMMANDS="forceload add -16 -16 15 15
 wait 3
 execute positioned 0 -60 0 run interregnum record deicide $A
 say BEFORE_SCENE
+interregnum status
 interregnum regard $A
 interregnum talk start $SCENE $A+$B+$C
 interregnum talk say $A letter
@@ -156,7 +157,8 @@ interregnum talk say $B come_back
 interregnum talk say $C come_back
 say AFTER_SCENE4
 interregnum talk status $A
-interregnum regard $A" \
+interregnum regard $A
+interregnum status" \
     LOG=/tmp/delivery.log timeout 900 ./tools/server_smoke.sh > /tmp/dl.txt 2>&1 \
     || { tail -25 /tmp/dl.txt; fail "the run did not complete"; }
 
@@ -270,5 +272,25 @@ echo "  QUIET_ONE: $q_before -> $q_after   (permanent cap $q_cap)"
 [ "$q_after" -lt "$q_cap" ] || \
     fail "the Quiet One finished at $q_after, at or past its permanent cap of $q_cap -- the static guard and the running game disagree about the best route"
 
+# --- and delivering actually MOVES THE WORLD ---------------------------------
+# The gap this half was written for. `LETTER_DELIVERED` existed in core, `ChapterState`
+# counted letters, and `Chapter` gated the back half of the game on the count -- and
+# nothing anywhere recorded one. All four letters could be delivered and the world would
+# not move. Four scenes shipped and the milestone they exist to produce was never set.
+#
+# Nothing failed, because nothing was looking: the scenes played, the regard moved, every
+# assertion above passed. Only the count is evidence.
+letters_before=$(sed -n '/BEFORE_SCENE/,/AFTER_SCENE$/p' /tmp/dl.txt | grep -oE 'letters=[0-9]+' | head -1 | cut -d= -f2)
+letters_after=$(sed -n '/AFTER_SCENE4/,$p' /tmp/dl.txt | grep -oE 'letters=[0-9]+' | head -1 | cut -d= -f2)
+[ -n "$letters_before" ] && [ -n "$letters_after" ] || {
+    grep -oE 'letters=[0-9]+|chapter=[A-Z]+' /tmp/dl.txt | head -6 || true
+    fail "the status probe does not report a letter count -- this assertion has nothing to read, so nothing below it is evidence that delivering a letter does anything at all"; }
+
+echo "  letters delivered: $letters_before -> $letters_after"
+[ "$letters_before" = "0" ] || \
+    fail "the world already had $letters_before letter(s) delivered before any scene ran -- the control does not exist"
+[ "$letters_after" = "4" ] || \
+    fail "four delivery scenes were played to their accepting endings and the world records $letters_after letter(s) delivered. The milestone is what Chapter gates the back half of the game on, so a scene that does not record it is a questline opener that opens nothing -- and every other assertion in this file passes while it is broken"
+
 echo
-printf "OK: all four gods' letters can be delivered, every scene plays to its end, the most\n    generous path through any of them still leaves a god that will not have you, and the\n    one that never answers still forms an opinion\n"
+printf "OK: all four gods' letters can be delivered, every scene plays to its end, the most\n    generous path through any of them still leaves a god that will not have you, the one\n    that never answers still forms an opinion, and the world counts every delivery\n"

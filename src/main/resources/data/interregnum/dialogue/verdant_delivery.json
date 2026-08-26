@@ -53,7 +53,9 @@
           "id": "listen",
           "text_key": "interregnum.dlg.verdant_delivery.covered.listen",
           "target": "arrangement",
-          "regard": { "VERDANT": 4 }
+          "regard": {
+            "VERDANT": 4
+          }
         },
         {
           "id": "letter",
@@ -64,7 +66,9 @@
           "id": "accuse",
           "text_key": "interregnum.dlg.verdant_delivery.covered.accuse",
           "target": "arrangement",
-          "regard": { "VERDANT": -8 }
+          "regard": {
+            "VERDANT": -8
+          }
         }
       ]
     },
@@ -83,7 +87,9 @@
           "id": "press",
           "text_key": "interregnum.dlg.verdant_delivery.arrangement.press",
           "target": "handover",
-          "regard": { "VERDANT": -6 }
+          "regard": {
+            "VERDANT": -6
+          }
         }
       ]
     },
@@ -110,7 +116,9 @@
           "id": "wait",
           "text_key": "interregnum.dlg.verdant_delivery.reads.wait",
           "target": "called_me_that",
-          "regard": { "VERDANT": 6 }
+          "regard": {
+            "VERDANT": 6
+          }
         },
         {
           "id": "ask",
@@ -129,7 +137,9 @@
           "id": "condolence",
           "text_key": "interregnum.dlg.verdant_delivery.called_me_that.condolence",
           "target": "not_about_it",
-          "regard": { "VERDANT": 8 }
+          "regard": {
+            "VERDANT": 8
+          }
         },
         {
           "id": "business",
@@ -140,7 +150,9 @@
           "id": "blame",
           "text_key": "interregnum.dlg.verdant_delivery.called_me_that.blame",
           "target": "closes",
-          "regard": { "VERDANT": -14 }
+          "regard": {
+            "VERDANT": -14
+          }
         }
       ]
     },
@@ -154,13 +166,17 @@
           "id": "say_it",
           "text_key": "interregnum.dlg.verdant_delivery.not_about_it.say_it",
           "target": "undefended",
-          "regard": { "VERDANT": -4 }
+          "regard": {
+            "VERDANT": -4
+          }
         },
         {
           "id": "let_it_stand",
           "text_key": "interregnum.dlg.verdant_delivery.not_about_it.let_it_stand",
           "target": "terms",
-          "regard": { "VERDANT": 5 }
+          "regard": {
+            "VERDANT": 5
+          }
         }
       ]
     },
@@ -187,13 +203,17 @@
           "id": "accept",
           "text_key": "interregnum.dlg.verdant_delivery.terms.accept",
           "target": "opened",
-          "regard": { "VERDANT": 10 }
+          "regard": {
+            "VERDANT": 10
+          }
         },
         {
           "id": "decline",
           "text_key": "interregnum.dlg.verdant_delivery.terms.decline",
           "target": "closes",
-          "regard": { "VERDANT": -6 }
+          "regard": {
+            "VERDANT": -6
+          }
         }
       ]
     },
@@ -202,7 +222,8 @@
       "speaker": "verdant",
       "text_key": "interregnum.dlg.verdant_delivery.opened",
       "rule": "INITIATOR",
-      "options": []
+      "options": [],
+      "milestone": "LETTER_DELIVERED"
     },
     {
       "id": "closes",

@@ -65,7 +65,9 @@
           "id": "wait",
           "text_key": "interregnum.dlg.quiet_one_delivery.arrival.wait",
           "target": "offered",
-          "regard": { "QUIET_ONE": 4 }
+          "regard": {
+            "QUIET_ONE": 4
+          }
         }
       ]
     },
@@ -79,7 +81,9 @@
           "id": "read_aloud",
           "text_key": "interregnum.dlg.quiet_one_delivery.offered.read_aloud",
           "target": "no_previous",
-          "regard": { "QUIET_ONE": 5 }
+          "regard": {
+            "QUIET_ONE": 5
+          }
         },
         {
           "id": "set_down",
@@ -90,7 +94,9 @@
           "id": "demand",
           "text_key": "interregnum.dlg.quiet_one_delivery.offered.demand",
           "target": "no_previous",
-          "regard": { "QUIET_ONE": -9 }
+          "regard": {
+            "QUIET_ONE": -9
+          }
         }
       ]
     },
@@ -104,7 +110,9 @@
           "id": "count_them",
           "text_key": "interregnum.dlg.quiet_one_delivery.no_previous.count_them",
           "target": "the_others",
-          "regard": { "QUIET_ONE": 7 }
+          "regard": {
+            "QUIET_ONE": 7
+          }
         },
         {
           "id": "let_it_be",
@@ -136,13 +144,17 @@
           "id": "sign_for_it",
           "text_key": "interregnum.dlg.quiet_one_delivery.receipt.sign_for_it",
           "target": "signed",
-          "regard": { "QUIET_ONE": 9 }
+          "regard": {
+            "QUIET_ONE": 9
+          }
         },
         {
           "id": "leave_unsigned",
           "text_key": "interregnum.dlg.quiet_one_delivery.receipt.leave_unsigned",
           "target": "unsigned",
-          "regard": { "QUIET_ONE": 5 }
+          "regard": {
+            "QUIET_ONE": 5
+          }
         }
       ]
     },
@@ -182,13 +194,17 @@
           "id": "come_back",
           "text_key": "interregnum.dlg.quiet_one_delivery.leaving.come_back",
           "target": "opened",
-          "regard": { "QUIET_ONE": 5 }
+          "regard": {
+            "QUIET_ONE": 5
+          }
         },
         {
           "id": "done",
           "text_key": "interregnum.dlg.quiet_one_delivery.leaving.done",
           "target": "closes",
-          "regard": { "QUIET_ONE": -6 }
+          "regard": {
+            "QUIET_ONE": -6
+          }
         }
       ]
     },
@@ -197,7 +213,8 @@
       "speaker": "quiet_one",
       "text_key": "interregnum.dlg.quiet_one_delivery.opened",
       "rule": "INITIATOR",
-      "options": []
+      "options": [],
+      "milestone": "LETTER_DELIVERED"
     },
     {
       "id": "closes",

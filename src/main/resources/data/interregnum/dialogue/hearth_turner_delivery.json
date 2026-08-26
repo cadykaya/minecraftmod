@@ -64,7 +64,9 @@
           "id": "how",
           "text_key": "interregnum.dlg.hearth_turner_delivery.already_have_it.how",
           "target": "which_version",
-          "regard": { "HEARTH_TURNER": 4 }
+          "regard": {
+            "HEARTH_TURNER": 4
+          }
         }
       ]
     },
@@ -78,7 +80,9 @@
           "id": "show_me",
           "text_key": "interregnum.dlg.hearth_turner_delivery.which_version.show_me",
           "target": "showing",
-          "regard": { "HEARTH_TURNER": 5 }
+          "regard": {
+            "HEARTH_TURNER": 5
+          }
         },
         {
           "id": "skip",
@@ -97,7 +101,9 @@
           "id": "keep_going",
           "text_key": "interregnum.dlg.hearth_turner_delivery.showing.keep_going",
           "target": "the_wrong_one",
-          "regard": { "HEARTH_TURNER": 7 }
+          "regard": {
+            "HEARTH_TURNER": 7
+          }
         },
         {
           "id": "enough",
@@ -129,7 +135,9 @@
           "id": "give_it",
           "text_key": "interregnum.dlg.hearth_turner_delivery.too_late.give_it",
           "target": "handed",
-          "regard": { "HEARTH_TURNER": 9 }
+          "regard": {
+            "HEARTH_TURNER": 9
+          }
         },
         {
           "id": "leave_it",
@@ -174,13 +182,17 @@
           "id": "accept",
           "text_key": "interregnum.dlg.hearth_turner_delivery.terms.accept",
           "target": "opened",
-          "regard": { "HEARTH_TURNER": 5 }
+          "regard": {
+            "HEARTH_TURNER": 5
+          }
         },
         {
           "id": "decline",
           "text_key": "interregnum.dlg.hearth_turner_delivery.terms.decline",
           "target": "closes",
-          "regard": { "HEARTH_TURNER": -6 }
+          "regard": {
+            "HEARTH_TURNER": -6
+          }
         }
       ]
     },
@@ -189,7 +201,8 @@
       "speaker": "hearth_turner",
       "text_key": "interregnum.dlg.hearth_turner_delivery.opened",
       "rule": "INITIATOR",
-      "options": []
+      "options": [],
+      "milestone": "LETTER_DELIVERED"
     },
     {
       "id": "closes",

@@ -333,12 +333,42 @@ public final class Conversations {
     private static Resolution resolveAndShow(MinecraftServer server, Table table) {
         Resolution r = table.conversation.resolve(table.roll);
         record(server, r);
+        mark(server, table);
         pushStances(server, table, r);
         push(server, table);                   // the next beat -- or the last line
         if (table.conversation.ended()) {
             close(table);
         }
         return r;
+    }
+
+    /**
+     * Some beats are not only said, they HAPPEN.
+     *
+     * A node may carry a milestone; arriving at it records that milestone in the world's
+     * chapter state. Today that is how the four delivery scenes make `LETTER_DELIVERED`
+     * mean anything -- which is not decoration, because `Chapter` gates the back half of
+     * the game on it. Before this the milestone existed in `core`, `ChapterState` counted
+     * letters, and nothing anywhere ever recorded one: all four letters could be
+     * delivered and the world would not move.
+     *
+     * Called AFTER `record` and BEFORE the node is shown, so the line a player reads is
+     * the line of a world in which the thing has already happened.
+     *
+     * `ChapterState.record` is idempotent for non-repeatable milestones and counts
+     * repeats for `LETTER_DELIVERED`, which is exactly the behaviour a scene wants:
+     * walking the Verdant's ending twice is one god answered, not two. That is core's
+     * rule, tested without a game, and this seam does not second-guess it.
+     */
+    private static void mark(MinecraftServer server, Table table) {
+        var node = table.conversation.current();
+        if (node == null || !node.marks()) {
+            return;
+        }
+        ChapterSavedData data = ChapterSavedData.get(server);
+        data.record(node.milestone());
+        LOG.info("A conversation marked {}: chapter is now {} (band {})",
+                node.milestone(), data.chapter(), data.band());
     }
 
     /**

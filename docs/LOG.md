@@ -2577,3 +2577,55 @@ leaving as a detail.
 All four now measure live: `VERDANT -16`, `ANCHORITE -15`, `HEARTH_TURNER -15`,
 `QUIET_ONE -15`, each from a floor of −45, each matching its static path arithmetic, and
 none of them anywhere near the −10 ceiling that killing a god leaves behind.
+
+## Delivering a letter now moves the world
+
+`LETTER_DELIVERED` has been in `core` since the chapter machine was written. `ChapterState`
+counts it. `Chapter` gates chapters 3, 4 and 5 on the count. A grep for it across the
+entire game module returned nothing.
+
+So all four delivery scenes shipped — each the opening of a god's questline, each walked
+end to end by a live check asserting the scene reached its ending and the god's regard
+moved — and delivering all four letters advanced the world by exactly nothing.
+
+Every check passed, and every one of them was true. The scene did play to its end. The
+regard did move. The ceiling did hold. Nothing any assertion claimed was wrong, and the
+feature was missing its entire point.
+
+**The blind spot is worth naming.** Each check was written while building the thing it
+asserts, so it asked *did the thing I just built do what I built it to do*. Nobody asked
+the question that spans two increments — does the rest of the system notice? — because at
+no point was that the thing being built. A check written alongside a feature inherits the
+feature's scope, and the seam between this feature and one written a month ago is exactly
+where things fail to connect.
+
+The tell was there and I walked past it twice: `HANDOFF.md` said *"`FIRST_CROSSING` and
+`LETTER_DELIVERED` are still unreachable"*, and I read that line while writing three of the
+four scenes and took it as history rather than as a claim to check. It was found by
+re-reading the roadmap sceptically, which is to say by doubt rather than by machinery.
+`LESSONS.md` #32.
+
+### The mechanism
+
+A node may carry a `milestone`; arriving at it records that milestone in the world's
+chapter state. It hangs on the **node** rather than on the option that leads there, and
+that is not stylistic: "the letter was delivered" is a fact about the conversation having
+*arrived* somewhere, not about which sentence somebody picked to get there. Three routes
+into one accepting ending should record one delivery, not three, and the route where the
+players refuse the errand should record none at all. On the option, the milestone would be
+a property of a choice, and every new branch into the same ending would be a fresh chance
+to forget it.
+
+`dialogue_check.py` refuses a milestone on a non-terminal node for the same reason, and
+**derives the valid names from core's enum** rather than keeping a list. The two lists
+above it — institutions and standings — are hand-kept with a comment asking the next
+person to remember, which is the older convention here and not the better one: this
+session has spent most of its length finding out what silently-rotted copies cost.
+
+Core gained the guard and the mutation that matters, which is not "a scene forgot to mark"
+— a live check catches that — but **every node marking**, which would advance the chapter
+on every line anybody speaks and end the progression before the first scene did.
+
+Live: `letters delivered: 0 -> 4`. Watched failing by stripping the marks back out, which
+is the state the repository was actually in: `0 -> 0`, with every other assertion in the
+file still passing.

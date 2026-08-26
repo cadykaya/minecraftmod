@@ -22,6 +22,25 @@ INSTITUTIONS = {"WARDENATE", "VILLAGES", "VERDANT", "ANCHORITE",
 # nobody was supposed to see yet appears for everyone. That is the one bug a
 # playtester cannot report, because it looks exactly like the game working.
 STANDINGS = {"HATED", "RESENTED", "WARY", "KNOWN", "TRUSTED", "BELOVED"}
+def _milestones():
+    """Read core's Milestone enum rather than keeping a copy of it here.
+
+    `INSTITUTIONS` and `STANDINGS` above are hand-kept lists with a comment asking the
+    next person to remember, and that is the older convention. It is not the better one:
+    a copy of a list is a claim that rots silently, and this repository has spent a whole
+    session finding out what silently-rotted claims cost. Adding a milestone to core and
+    forgetting this line would leave every scene using it rejected at load with the check
+    saying nothing -- so the list is derived, and a reshaped enum fails loudly below
+    instead of validating against names that no longer exist.
+    """
+    src = os.path.join(REPO, "core/src/main/java/com/cadykaya/interregnum/core/chapter/"
+                             "Milestone.java")
+    body = open(src).read()
+    body = body[body.index("enum Milestone"):]
+    return set(re.findall(r"^\s{4}([A-Z][A-Z_]*),?\s*$", body, re.M))
+
+
+MILESTONES = _milestones()
 END = "$end"
 fails = []
 
@@ -35,6 +54,19 @@ def check_file(path, lang):
     byid = {n["id"]: n for n in d["nodes"]}
     if d["start"] not in byid: fails.append(f"{name}: start '{d['start']}' missing")
     for n in d["nodes"]:
+        if not MILESTONES:
+            fails.append("could not read core's Milestone enum -- it has been reshaped, "
+                         "so no scene's milestone is being validated at all")
+        if "milestone" in n and n["milestone"] not in MILESTONES:
+            fails.append(f"{name}/{n['id']}: unknown milestone {n.get('milestone')!r}. "
+                         f"The runtime decodes these through core's enum and rejects the "
+                         f"whole file, so a typo here does not mark the world late -- it "
+                         f"deletes the scene.")
+        if "milestone" in n and n.get("options"):
+            fails.append(f"{name}/{n['id']}: marks {n['milestone']} but is not terminal. "
+                         f"A milestone is a fact about the conversation having ARRIVED "
+                         f"somewhere; hanging one on a node the players can still walk "
+                         f"out of records it for a scene that has not finished.")
         if n.get("rule") not in RULES:
             fails.append(f"{name}/{n['id']}: unknown rule {n.get('rule')!r}")
         if n.get("text_key") not in lang:

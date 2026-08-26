@@ -4,9 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Map;
 
 import com.cadykaya.interregnum.core.dialogue.DialogueGraph;
+import com.cadykaya.interregnum.core.chapter.Milestone;
 import com.cadykaya.interregnum.core.dialogue.DialogueNode;
 import com.cadykaya.interregnum.core.dialogue.DialogueOption;
 import com.cadykaya.interregnum.core.dialogue.ResolutionRule;
@@ -109,7 +111,8 @@ public final class DialogueDefs {
     }
 
     public record NodeDef(String id, String speaker, String textKey, String rule,
-                          List<OptionDef> options, List<VariantDef> textVariants) {
+                          List<OptionDef> options, List<VariantDef> textVariants,
+                          Optional<String> milestone) {
         public static final Codec<NodeDef> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.STRING.fieldOf("id").forGetter(NodeDef::id),
                 Codec.STRING.fieldOf("speaker").forGetter(NodeDef::speaker),
@@ -118,14 +121,22 @@ public final class DialogueDefs {
                 OptionDef.CODEC.listOf().optionalFieldOf("options", List.of())
                         .forGetter(NodeDef::options),
                 VariantDef.CODEC.listOf().optionalFieldOf("text_variants", List.of())
-                        .forGetter(NodeDef::textVariants)
+                        .forGetter(NodeDef::textVariants),
+                // Decoded through the enum rather than kept as a string: a typo'd
+                // milestone is a loud load failure instead of a scene that silently
+                // records nothing, and a scene that silently records nothing is the
+                // worst available outcome -- the world simply never advances and
+                // nobody finds out for a hundred hours.
+                Codec.STRING.optionalFieldOf("milestone").forGetter(NodeDef::milestone)
         ).apply(i, NodeDef::new));
 
         DialogueNode toNode() {
             return new DialogueNode(id, speaker, textKey,
                     ResolutionRule.valueOf(rule),
                     options.stream().map(OptionDef::toOption).toList(),
-                    textVariants.stream().map(VariantDef::toVariant).toList());
+                    textVariants.stream().map(VariantDef::toVariant).toList(),
+                    milestone.map(m -> Milestone.valueOf(
+                            m.toUpperCase(java.util.Locale.ROOT))).orElse(null));
         }
     }
 

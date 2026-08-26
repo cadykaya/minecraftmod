@@ -738,6 +738,45 @@ public final class SelfTest {
               + "meets one god's law for as long as they walk");
 
         attrition();
+        marking();
+    }
+
+    /**
+     * A node may mark the world. Almost none do, and that asymmetry is the guard: the
+     * failure worth catching is not "this node forgot to mark", it is "every node marks",
+     * which would advance the chapter on every line anybody says.
+     */
+    static void marking() {
+        var opts = java.util.List.<com.cadykaya.interregnum.core.dialogue.DialogueOption>of();
+        var plain = new com.cadykaya.interregnum.core.dialogue.DialogueNode(
+                "n", "who", "key",
+                com.cadykaya.interregnum.core.dialogue.ResolutionRule.INITIATOR, opts);
+        check(!plain.marks(),
+              "an ordinary node marks nothing. If nodes marked by default the chapter "
+              + "would advance on every line anybody spoke, and the whole progression "
+              + "would be over before the first scene ended");
+        check(plain.milestone() == null, "an ordinary node carries no milestone");
+
+        var marker = new com.cadykaya.interregnum.core.dialogue.DialogueNode(
+                "n", "who", "key",
+                com.cadykaya.interregnum.core.dialogue.ResolutionRule.INITIATOR, opts,
+                java.util.List.of(), Milestone.LETTER_DELIVERED);
+        check(marker.marks() && marker.milestone() == Milestone.LETTER_DELIVERED,
+              "a node given a milestone reports it -- this is how a delivery scene makes "
+              + "LETTER_DELIVERED mean anything, and Chapter gates the back half of the "
+              + "game on that count");
+
+        // The count is what a chapter gate reads, so repeats must accumulate. Four gods,
+        // four letters: a delivery system that recorded "some letter was delivered" as a
+        // single fact could never tell one god answered from all four.
+        var st = new ChapterState();
+        st.record(Milestone.DEICIDE);
+        st.record(Milestone.LETTER_DELIVERED);
+        st.record(Milestone.LETTER_DELIVERED);
+        check(st.lettersDelivered() == 2,
+              "delivering two letters counts two. LETTER_DELIVERED is the one repeatable "
+              + "milestone and the count is what the chapter gates read; collapsing it to "
+              + "a flag would make one god answered indistinguishable from all four");
     }
 
     /**
