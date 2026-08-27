@@ -955,6 +955,45 @@ public final class InterregnumCommand {
                                             return cast.worked() ? 1 : 0;
                                         })))));
 
+        // Graft. Two positions, and unlike Bridgeroot's they are not the ends of a line --
+        // they are the two things being joined. `graft tend` forces the clock, because a
+        // check cannot wait ten ticks and then be sure the tick it wanted was the one that
+        // fired.
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("graft")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("stock", BlockPosArgument.blockPos())
+                                        .then(Commands.argument("scion", BlockPosArgument.blockPos())
+                                                .executes(ctx -> {
+                                                    BlockPos stock = BlockPosArgument.getLoadedBlockPos(ctx, "stock");
+                                                    BlockPos scion = BlockPosArgument.getLoadedBlockPos(ctx, "scion");
+                                                    var level = ctx.getSource().getLevel();
+                                                    var cast = com.cadykaya.interregnum.system.magic
+                                                            .GraftSpell.cast(level, stock, scion,
+                                                                    grimoireOf(ctx, "who"));
+                                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                                            "cast=graft outcome=" + cast.outcome()
+                                                                    + " frayed=" + cast.frayed()
+                                                                    + " joins=" + com.cadykaya.interregnum
+                                                                            .system.magic.Grafts.get(level).count()), false);
+                                                    return cast.took() ? 1 : 0;
+                                                }))))));
+
+        root = root.then(Commands.literal("graft")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("tend")
+                        .executes(ctx -> {
+                            var level = ctx.getSource().getLevel();
+                            int restored = com.cadykaya.interregnum.system.magic
+                                    .GraftSpell.tend(level);
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                    "graft=tended restored=" + restored
+                                            + " joins=" + com.cadykaya.interregnum.system.magic
+                                                    .Grafts.get(level).count()), false);
+                            return restored;
+                        })));
+
         // Hedge. Takes BOTH positions, like `cast bridgeroot`, because a wall is drawn
         // between where you are and what you are looking at. `hedge strike` is the other
         // half -- a headless server has nobody to swing at a wall, and the thickening is

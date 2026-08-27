@@ -63,7 +63,9 @@ public enum Spell {
     /** The Hearth-Turner's: one thing carried past its end, and never a creature. */
     ROT(School.TURNING),
     /** The Verdant's: a living wall that comes back thicker where it is cut. */
-    HEDGE(School.VERDANCY);
+    HEDGE(School.VERDANCY),
+    /** The Verdant's: two positions joined, so one keeps the other alive. */
+    GRAFT(School.VERDANCY);
 
     private final School school;
 

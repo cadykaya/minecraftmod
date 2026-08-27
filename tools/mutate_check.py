@@ -437,6 +437,17 @@ MUTATIONS = [
      f"{MAIN}/magic/Hedge.java",
      "        for (int i = 1; i <= reach; i++) {", "        for (int i = 0; i <= reach; i++) {"),
 
+    # Graft. A join with no distance is a plant joined to itself -- a graft nothing could
+    # ever cut -- and a clock that fires every tick makes a held plant into a hard one.
+    ("magic: a plant may be grafted to itself, so the join can never be cut",
+     f"{MAIN}/magic/Graft.java",
+     "        return span > 0 && span <= MAX_SPAN;",
+     "        return span <= MAX_SPAN;"),
+    ("magic: grafts are tended every tick, so a held plant reads as an unbreakable one",
+     f"{MAIN}/magic/Graft.java",
+     "    public static final int TENDED_EVERY = 10;",
+     "    public static final int TENDED_EVERY = 1;"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.

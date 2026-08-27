@@ -27,10 +27,10 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **56**, every one mutation-verified, all in CI |
+| Live-world checks | **57**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
-| Magic | four schools, **fifteen spells built** of sixteen named; the Turning is complete |
+| Magic | **four schools, sixteen spells — the kit is complete**, all learned in their gods' worlds and cast by saying the word |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 | World-systems | **all four gods have two layers**, each joined by that god's own portal; no god has a far-layer |
 
@@ -2801,7 +2801,7 @@ Everything else is unblocked. In order:
 4. ~~**The delivery scenes.**~~ **All four built**, recording `LETTER_DELIVERED` and
    teaching their god's school. Chapters 3–5 gate on that count.
 
-5. ~~**Magic.**~~ **Four schools, fifteen spells built**, all learned in their
+5. ~~**Magic.**~~ **Four schools, all sixteen spells built**, all learned in their
    gods' worlds and all costing the overworld what they do not cost a living god's.
    *Weather* changes a block and *Rewind* changes it back; *Lighten* encloses a region and
    *Drop-forge* makes one where impacts count; *Bridgeroot* creates blocks and
@@ -2812,8 +2812,9 @@ Everything else is unblocked. In order:
    would move it, including its own god's; and *Ripen* carries one living thing forward to
    what it was becoming and stops there; and *Rot* carries one past it, which is where
    the Turning's own chain finally ends; and *Hedge* draws a living wall that comes back
-   thicker where it is cut. Fifteen different verbs, which is what shows the school system
-   is a system rather than one mechanism with four names.
+   thicker where it is cut; and *Graft* joins two positions so one keeps the other alive.
+   Sixteen different verbs, which is what shows the school system is a system rather than
+   one mechanism with four names.
 
    **Two things it is short of, one of them the owner's:**
 
@@ -2856,12 +2857,16 @@ Everything else is unblocked. In order:
      the one they started on; the block they struck really is gone, because the promise is
      *improved by being attacked*, not *unattackable*. `tools/hedge_check.sh`.
 
-     **One left: *Graft* (Verdancy).** *"Join two growing things, or a growing thing to a
-     block, so one feeds the other — and a plant lives somewhere it could not."* It is the
-     last spell and the only one that needs something the mod has never had: **a link
-     between two positions.** Every other spell acts on a place, a volume, a thing or a
-     person; this one acts on a *relationship*, and it will want a ledger of pairs and a
-     rule for what a fed plant can survive that it otherwise could not.
+     ***Graft* is built, and the kit is complete.** It was left until last because it is the
+     only spell that needed something the mod had never had — **a link between two
+     positions.** Everything else acts on a place, a volume, a thing or a person; this acts
+     on a relationship, and it is the first ledger of *pairs* here. A plant lives somewhere
+     it could not for exactly as long as the thing feeding it stands, and it loses to
+     anything anybody builds in its place. `tools/graft_check.sh`.
+
+     **All sixteen spells are built, in four complete schools.** What remains for magic is
+     not verbs — it is tuning, and every duration in the kit is marked `[NEEDS PLAYTEST]`
+     in its own class, which is not something this container can settle.
 
 6. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and

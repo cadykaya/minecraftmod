@@ -167,6 +167,10 @@ public final class Speech {
             // Like Bridgeroot, and for the same reason: a wall is drawn BETWEEN where you
             // are and what you are looking at, so it needs both.
             case HEDGE -> String.valueOf(HedgeSpell.cast(level, from, at, g).grew());
+            // Two positions, like Bridgeroot and Hedge -- but here they are not the ends
+            // of a line, they are the two things being joined. The caster's own position
+            // is the STOCK, which is the plant they are standing over.
+            case GRAFT -> String.valueOf(GraftSpell.cast(level, from, at, g).outcome());
         };
     }
 }

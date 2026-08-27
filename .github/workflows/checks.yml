@@ -254,3 +254,6 @@ jobs:
 
       - name: A hedge comes back thicker where it is cut, and only where somebody grew one
         run: ./tools/hedge_check.sh
+
+      - name: A graft keeps a plant somewhere it could not live, for exactly as long as its stock stands
+        run: ./tools/graft_check.sh

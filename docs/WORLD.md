@@ -448,6 +448,21 @@ of **wait**, and a patient attacker beats them. This one makes patience the wron
 which is the Verdant's law read as a defence rather than as a hazard: the same sentence,
 pointed at somebody else.
 
+**Built: *Graft*, and with it all sixteen.** It was last because it needed something no
+other verb here did: **a link between two positions.** Everything else acts on a place, a
+volume, a thing or a person; this acts on a relationship, and neither end does anything
+alone.
+
+It does not make the ground suitable and does not make the plant hardier. It makes something
+**else** responsible — so the world removes a plant with no business being where it is, and
+the graft puts it back, for exactly as long as the stock stands. Cut the stock and the scion
+is on its own, which is to say gone. Build in the scion's place and the graft loses: a spell
+that overwrote somebody's block on a timer would eat other people's work, which is the one
+shape this mod refuses everywhere else.
+
+**The kit is complete: four schools, four verbs each, sixteen in all.** What remains is
+tuning, and every duration in it is marked `[NEEDS PLAYTEST]` where it lives.
+
 *Held-breath* and *Rot* are the two that were decided rather than sketched. The first
 because the casting affordance makes silence cost something real. The second because the
 obvious reading of *"age it past its end"* is an instant-kill, and **every spell is a

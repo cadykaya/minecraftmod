@@ -4928,3 +4928,69 @@ hitting an oak would make it thicker, which is a different spell and a much wors
 *Graft*, and it is the only spell that needs something this mod has never had: **a link
 between two positions**. Everything else acts on a place, a volume, a thing or a person.
 That one acts on a relationship.
+
+---
+
+## Graft — the last of the sixteen, and the only one that joins two things
+
+`WORLD.md`, locked: *"Join two growing things, or a growing thing to a block, so one feeds
+the other — and **a plant lives somewhere it could not**."*
+
+### Why it was last
+
+Every other spell in the kit acts on a **place** (*Lighten*, *Hush*), a **volume**
+(*Wildgrowth*), a **thing** (*Moor*, *Quell*) or a **person** (*Held-breath*). This one acts
+on the fact that two positions are joined. It needed a ledger of **pairs**, and nothing else
+in the mod ever wanted one — everything else persisted here is a *set*: positions somebody
+planted, positions that are hedge, letters that have been copied, people who have attuned.
+Building it for the first spell that asked would have been building it on speculation.
+
+### What the spell does, precisely
+
+It does not make the ground suitable and it does not make the plant hardier. It makes
+something **else** responsible for keeping the plant alive, which is what a graft is. The
+world removes a scion that has no business being where it is; the graft puts it back, on a
+ten-tick clock, for as long as the stock stands.
+
+Three ways it ends, and all three are somebody else's doing rather than a timer: **cut the
+stock** and the scion is on its own; **build in the scion's place** and the graft loses,
+because a spell that overwrote a block a person put down would eat other people's work on a
+timer; **let the world have the stock** — the Verdant grows over it, the Turning ages it,
+attrition takes it — and it stops feeding. A graft is exactly as durable as the least
+protected end of it.
+
+### The check found a platform fact that turned out to be the implementation
+
+The control was *wheat on bare stone with no graft*, and the assertion was that it would die
+on its own. **It did not.** `/setblock` places with flag 2 — clients only — and then calls
+`updateNeighboursOnBlockSet`, which pokes the *neighbours* and never asks the new block
+whether it can survive. A plant with no business being somewhere sits there quite happily
+until something makes it look.
+
+That is a better fact than the one the check was hunting, because it is also the answer to a
+problem the spell had. `setBlockAndUpdate` makes the block it just placed ask *can I survive
+here?* and get told no in the same instant — so a graft built on it would spend its life
+re-placing a block that removes itself. A flicker rather than a plant. `GraftSpell.place`
+now uses flag 2 deliberately, and the scion stands until something else looks and the graft
+puts it back, which is the difference between a plant nothing is holding up and a plant that
+is **being held up**.
+
+The control became the right shape as a result: cut both, tend, and see which one comes
+back.
+
+### A mutation that was a no-op, and stayed as a note
+
+A guard claimed `floorMod` was load-bearing in the tending interval and a mutation was
+written to prove it. It was not caught — because at `== 0`, `floorMod` and `%` agree for
+negative inputs as well as positive ones. The mutation was wrong, not the guard.
+
+Both were corrected rather than deleted: the mutation is gone, and the guard and the class
+now say that `floorMod` is a **habit** here rather than a fix, and that the two differ
+everywhere except the case being tested. Rule 5 of this project is *never invent a lesson* —
+the near-miss was inventing a rationale, and the mutation runner caught it.
+
+### The kit is complete
+
+**Four schools, four verbs each, sixteen in all**, every one learned in its god's world and
+cast by saying its word. What remains for magic is tuning, and every duration in it is
+marked `[NEEDS PLAYTEST]` where it lives — which is not something this container can settle.

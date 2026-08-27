@@ -1963,5 +1963,52 @@ public final class SelfTest {
         check(com.cadykaya.interregnum.core.magic.Hedge.MAX_LENGTH
                       < com.cadykaya.interregnum.core.magic.Bridgeroot.MAX_SPAN,
               "which is that comparison made rather than asserted");
+
+        // GRAFT, the last of the sixteen. WORLD.md: "join two growing things, or a growing
+        // thing to a block, so one feeds the other -- and A PLANT LIVES SOMEWHERE IT COULD
+        // NOT."
+        check(com.cadykaya.interregnum.core.magic.Graft.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.VERDANCY
+              && com.cadykaya.interregnum.core.magic.Spell.GRAFT.school()
+                      == com.cadykaya.interregnum.core.magic.School.VERDANCY,
+              "Graft is the Verdant's, and the last spell in the kit");
+
+        // A GRAFT IS A RELATIONSHIP, so the one thing it cannot be is a thing joined to
+        // itself: cutting the stock IS cutting the scion, and nothing could ever end it.
+        check(!com.cadykaya.interregnum.core.magic.Graft.reaches(0, 0, 0),
+              "a plant cannot be grafted to itself. That is not a short graft, it is a "
+              + "join nothing could ever cut");
+        check(com.cadykaya.interregnum.core.magic.Graft.reaches(1, 0, 0),
+              "and the shortest real one is a block away");
+        int span = com.cadykaya.interregnum.core.magic.Graft.MAX_SPAN;
+        check(com.cadykaya.interregnum.core.magic.Graft.reaches(span, 0, 0)
+              && !com.cadykaya.interregnum.core.magic.Graft.reaches(span + 1, 0, 0),
+              "the reach has an edge exactly where it says it does");
+        check(com.cadykaya.interregnum.core.magic.Graft.reaches(span, span, span)
+              && !com.cadykaya.interregnum.core.magic.Graft.reaches(span, span, span + 1),
+              "and it is Chebyshev, like every other distance in this mod -- the corner "
+              + "of the cube is in reach and one step past it is not");
+
+        // THE CLOCK. Every other spell in the kit is an event; this one has to KEEP being
+        // true, so it is the only thing in the magic system with a timer.
+        check(com.cadykaya.interregnum.core.magic.Graft.due(0)
+              && com.cadykaya.interregnum.core.magic.Graft.due(
+                      com.cadykaya.interregnum.core.magic.Graft.TENDED_EVERY)
+              && !com.cadykaya.interregnum.core.magic.Graft.due(1),
+              "the joins are looked at on their own interval and not every tick");
+        check(com.cadykaya.interregnum.core.magic.Graft.TENDED_EVERY > 1,
+              "and not on every tick, which is a feel decision as much as a cost one: a "
+              + "scion restored on the next LOOK reads as a plant being held there by "
+              + "something, and one restored instantly reads as an invulnerable block");
+        // Negative game time lands on the interval too. `floorMod` is used for the habit
+        // rather than for a difference: at `== 0` it and `%` agree exactly, and a mutation
+        // asserting otherwise was written, run, and found to be a no-op. Recorded here
+        // rather than deleted, because the next person to reach for this comparison should
+        // know the two are the same at zero and differ everywhere else.
+        check(com.cadykaya.interregnum.core.magic.Graft.due(-10),
+              "the interval holds on the far side of zero");
+
+        check(com.cadykaya.interregnum.core.magic.Graft.MAX_JOINS > 1,
+              "a world may hold more than one graft");
     }
 }
