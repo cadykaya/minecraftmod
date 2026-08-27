@@ -99,7 +99,9 @@ public final class Incantation {
      */
     public static boolean aimed(Spell spell) {
         return switch (spell) {
-            case HUSH, STILL, LIGHTEN -> false;
+            // ...and Held-breath, which is the plainest case of all: the subject is the
+            // speaker, and there is nothing to look at.
+            case HUSH, STILL, LIGHTEN, HELD_BREATH -> false;
             default -> true;
         };
     }

@@ -4597,3 +4597,67 @@ and a `readLetter` that ignored the Post.
 
 Both sources are readable, both mark, one can be made safe and one cannot, and the safe path
 costs what the locked line says it costs.
+
+---
+
+## Held-breath — the spell that takes the school away
+
+`WORLD.md`, locked: *"Your own sound, taken away. Nothing tracks you while you hold it —
+**and you cannot cast, because casting is a spoken word.** Power for silence, exactly."*
+
+### It could not have been written before the spoken word was
+
+`WORLD.md` lists three things that fall out of casting being *a word you are on record as
+having said*, and the second is this spell: *"you cannot cast silently — which is what makes
+Held-breath interesting rather than a stealth trinket: while you hold it you have no voice,
+so you have no spells."*
+
+A stealth ability with no cost is a trinket. This one takes the school away for as long as
+it lasts — **including the word that would end it.** You do not put it down; you wait. That
+is why the whole feature is fifteen seconds, the shortest of the four Silence spells: the
+others cost a cast, and this one costs every cast with no way out.
+
+### The refusal is at the mouth, not in the spells
+
+`Speech.speak` returns `NO_VOICE` after recognising the word and before dispatching it. The
+order is the fiction: they said a real word they know, and had no voice to say it with.
+Checking earlier would make an unlearned word and a held breath indistinguishable; checking
+later would mean the spell happened and was then undone.
+
+Nothing about any spell changed. The claim is not that the spells stopped working — it is
+that nothing was said.
+
+### The one place a game event is cancelled on purpose
+
+`SilenceEvents`, three increments ago, was explicit that it must **never** cancel the
+vibration it listens to: observing a noise must not stop the noise, or a portal would deafen
+the sculk sensors near it and standing beside a door would be a stealth ability.
+
+Here the cancellation *is* the spell. The vibration a footstep would have posted is not
+suppressed for a listener — it is never made, by the person who is not making a sound. Same
+API, opposite intent, and the difference is which end of the noise it happens at.
+
+It follows that the Quiet One's door does not hear a breath-holder walk in. That door needs
+five seconds of unbroken silence and a step posts an event every time, so the interlock
+`WORLD.md` names when it calls this spell *"for the last few steps"* is now literal: the
+breath lasts fifteen seconds, which is those five and about ten to walk in on.
+
+### The compiler found the new spell before the check did
+
+`Speech.dispatch` is a switch over `Spell` and its javadoc has always said why: *"ten cases
+the compiler will complain about if a spell is added, versus a map that silently has no
+entry for the eleventh."* Adding `HELD_BREATH` to the enum broke the build immediately, at
+the one place that had to know about it. That comment was written eleven spells ago against
+a hypothetical, and this is the hypothetical.
+
+A second, smaller version of the same: an existing mutation quoted the line
+`case HUSH, STILL, LIGHTEN -> false;` from `Incantation`, which this increment edited. The
+mutation runner reported it as a stale pattern rather than a passing test, which is the
+behaviour worth having — a mutation whose text no longer appears is a guard that has
+stopped guarding.
+
+### What is left of the kits
+
+Five: *Hedge*, *Graft*, *Moor*, *Ripen*, *Rot*. *Moor* is the natural next — it is *Lighten*
+with the sign flipped, and the Anchorite's law already has one `lift` that three callers
+share.

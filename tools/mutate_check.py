@@ -380,6 +380,21 @@ MUTATIONS = [
      "        return Math.max(0, TAKES_TICKS - (now - lodgedAt));",
      "        return TAKES_TICKS - (now - lodgedAt);"),
 
+    # Held-breath. Its cost is the point -- "power for silence, exactly" -- so the
+    # mutations are the two ways of losing the trade.
+    ("magic: a held breath outlasts every other silence, so having no spells is a sentence",
+     f"{MAIN}/magic/HeldBreath.java",
+     "    public static final long DURATION_TICKS = 20L * 15;",
+     "    public static final long DURATION_TICKS = 20L * 90;"),
+    ("magic: a held breath is over before the Quiet One's door can open",
+     f"{MAIN}/magic/HeldBreath.java",
+     "    public static final long DURATION_TICKS = 20L * 15;",
+     "    public static final long DURATION_TICKS = 20L * 2;"),
+    ("magic: Held-breath is aimed, so it becomes a silence you inflict on somebody",
+     f"{MAIN}/magic/Incantation.java",
+     "            case HUSH, STILL, LIGHTEN, HELD_BREATH -> false;",
+     "            case HUSH, STILL, LIGHTEN -> false;"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.
@@ -410,7 +425,8 @@ MUTATIONS = [
     # A silence you can aim is a bubble you can stand outside of and shoot into.
     ("magic: every spell is aimed, so a silence is a bubble",
      f"{MAIN}/magic/Incantation.java",
-     "            case HUSH, STILL, LIGHTEN -> false;", "            case HUSH, STILL, LIGHTEN -> true;"),
+     "            case HUSH, STILL, LIGHTEN, HELD_BREATH -> false;",
+     "            case HUSH, STILL, LIGHTEN, HELD_BREATH -> true;"),
 
     ("haunt: the world asks on every tick rather than on the interval",
      f"{MAIN}/haunt/Manifestation.java",

@@ -388,6 +388,13 @@ sketched because they interlock with decisions elsewhere on this page.
 | *Ripen* | The Turning | Age a living thing forward: crop, sapling, animal. The kind half of the school. |
 | *Rot* | The Turning | Age a thing forward **past its end**: compost, spoil, collapse. **Never aimed at a player or a mob.** |
 
+**Built: *Held-breath*.** It refuses every spoken word while it holds — **including its
+own**, so a breath cannot be put down early; you wait it out. Fifteen seconds, the shortest
+of the four Silence spells, because the others cost a cast and this one costs every cast.
+It suppresses the caster's own game events, which is the same server-side vibration the
+Quiet One's door listens for — so a breath-holder walks into that door without closing it,
+which is what *"for the last few steps"* has always meant.
+
 *Held-breath* and *Rot* are the two that were decided rather than sketched. The first
 because the casting affordance makes silence cost something real. The second because the
 obvious reading of *"age it past its end"* is an instant-kill, and **every spell is a

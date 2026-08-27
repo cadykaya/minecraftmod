@@ -66,7 +66,21 @@ public final class Speech {
          * They still said it out loud, and everybody still heard them say it. That is the
          * joke and it is also correct: knowing the word is not knowing the spell.
          */
-        UNLEARNED
+        UNLEARNED,
+        /**
+         * They are holding their breath, and a spell is a word.
+         *
+         * `WORLD.md`, on what falls out of casting being *a word you are on record as
+         * having said*: *"you cannot cast silently — which is what makes Held-breath
+         * interesting rather than a stealth trinket: while you hold it you have no voice,
+         * so you have no spells."*
+         *
+         * The refusal lives HERE, at the mouth, and not in each spell. That is the whole
+         * claim: it is not that the spells stop working, it is that nothing was said.
+         * Which is also why a breath cannot be put down early — ending it would take a
+         * word, and the word is the thing that has been taken.
+         */
+        NO_VOICE
     }
 
     /** What one spoken word did. {@code detail} is the spell's own reply, for the log. */
@@ -92,6 +106,14 @@ public final class Speech {
         }
         if (!Casting.permitted(grimoire, spell.school())) {
             return Heard.no(Outcome.UNLEARNED);
+        }
+        // BEFORE THE SPELL IS DISPATCHED AND AFTER THE WORD IS RECOGNISED, and the order
+        // is the fiction. They said a real word they know; they simply had no voice to say
+        // it with. Checking earlier would make an unlearned word and a held breath
+        // indistinguishable, and checking later would mean the spell happened and was
+        // then undone.
+        if (Holding.holds(level, who)) {
+            return new Heard(Outcome.NO_VOICE, spell, "");
         }
         BlockPos at = Incantation.aimed(spell) ? toward : from;
         String detail = dispatch(level, from, at, who, spell, grimoire);
@@ -128,6 +150,11 @@ public final class Speech {
             case LOFT -> Lofted.get(level.getServer()).held(who) == null
                     ? "lift " + LoftSpell.lift(level, at, who, g).refusal()
                     : "place " + LoftSpell.place(level, at, who, g).refusal();
+            // The subject is always the speaker. `WORLD.md`: "your own sound" -- a version
+            // that could be aimed would be a silence you inflict, which is a different
+            // spell and a much worse one.
+            case HELD_BREATH -> String.valueOf(
+                    HeldBreathSpell.cast(level, from, who, g).held());
         };
     }
 }

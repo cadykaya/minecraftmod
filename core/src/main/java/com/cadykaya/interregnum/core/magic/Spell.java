@@ -53,7 +53,9 @@ public enum Spell {
     /** The Quiet One's: one creature's throwing arm, taken away and carried with it. */
     QUELL(School.SILENCE),
     /** The Anchorite's: a small structure, weightless, picked up and set down again. */
-    LOFT(School.WEIGHT);
+    LOFT(School.WEIGHT),
+    /** The Quiet One's: your own sound, taken away -- and your voice with it. */
+    HELD_BREATH(School.SILENCE);
 
     private final School school;
 

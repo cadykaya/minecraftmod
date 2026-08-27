@@ -239,3 +239,6 @@ jobs:
 
       - name: The codex desk takes time, and a copy in the Post makes that letter safe for everybody
         run: ./tools/desk_check.sh
+
+      - name: A held breath takes the voice that would end it, and gives it back on its own
+        run: ./tools/breath_check.sh

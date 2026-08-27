@@ -27,10 +27,10 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **51**, every one mutation-verified, all in CI |
+| Live-world checks | **52**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
-| Magic | **four schools, ten spells**, learned in their gods' worlds and **cast by saying the word** |
+| Magic | four schools, **eleven of twelve spells**, learned in their gods' worlds and **cast by saying the word** |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 | World-systems | **all four gods have two layers**, each joined by that god's own portal; no god has a far-layer |
 
@@ -2801,14 +2801,15 @@ Everything else is unblocked. In order:
 4. ~~**The delivery scenes.**~~ **All four built**, recording `LETTER_DELIVERED` and
    teaching their god's school. Chapters 3–5 gate on that count.
 
-5. ~~**Magic.**~~ **Four schools, ten spells**, all learned in their
+5. ~~**Magic.**~~ **Four schools, eleven of twelve spells**, all learned in their
    gods' worlds and all costing the overworld what they do not cost a living god's.
    *Weather* changes a block and *Rewind* changes it back; *Lighten* encloses a region and
    *Drop-forge* makes one where impacts count; *Bridgeroot* creates blocks and
    *Wildgrowth* hurries the ones already there; *Hush* forbids, *Still* holds, *Quell*
    takes one creature's throwing arm and lets it keep it wherever it goes, and *Loft*
-   picks a small building up and carries it. Ten different verbs, which is what shows the
-   school system is a system rather than one mechanism with four names.
+   picks a small building up and carries it; and *Held-breath* takes your own sound away
+   and your voice with it. Eleven different verbs, which is what shows the school system is
+   a system rather than one mechanism with four names.
 
    **Two things it is short of, one of them the owner's:**
 
@@ -2817,12 +2818,21 @@ Everything else is unblocked. In order:
      item, key, gesture, spoken word — decided, and **built**: you say the word, in chat,
      in front of whoever is there. See "Casting is a spoken word" below. Ten spells are
      now reachable in play, which closes what was the single biggest gap in the mod.
-   * **The rest of the kits.** *Hedge*, *Graft*, *Moor*, *Held-breath*, *Ripen*, *Rot* —
-     six names that carried no description, **now defined** in [`WORLD.md`](WORLD.md) under
-     "The six that were only names". Unblocked, and the cheapest content left: the
-     machinery each needs is already built and proven. *Held-breath* should wait for the
-     casting affordance, because taking your voice away only costs something once your
-     voice is what casts.
+   * **The rest of the kits.** *Hedge*, *Graft*, *Moor*, *Ripen*, *Rot* — five names left,
+     all **defined** in [`WORLD.md`](WORLD.md) under "The six that were only names".
+     Unblocked, and the cheapest content left: the machinery each needs is already built
+     and proven.
+
+     ***Held-breath* is built**, and it was the one that had to wait: taking your voice
+     away only costs something once your voice is what casts. It now refuses every spoken
+     word — including its own, so a breath cannot be put down early — and suppresses the
+     caster's game events, which is what makes it *"for the last few steps"* at the Quiet
+     One's door. `tools/breath_check.sh`.
+
+     Of the five remaining, ***Moor*** is the natural next: it is *Lighten* with the sign
+     flipped, the Anchorite's law already has one `lift` that three callers share, and a
+     thing that cannot be pushed is the plainest possible counterpart to a thing that
+     cannot be held down.
 
 6. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and

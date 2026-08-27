@@ -955,6 +955,39 @@ public final class InterregnumCommand {
                                             return cast.worked() ? 1 : 0;
                                         })))));
 
+        // Held-breath. The only cast whose subject is the caster, so it takes a `who` and
+        // a position and nothing to aim at -- the position is only where the fraying lands.
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("held_breath")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                        .executes(ctx -> {
+                                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                            var level = ctx.getSource().getLevel();
+                                            java.util.UUID uuid;
+                                            try {
+                                                uuid = java.util.UUID.fromString(
+                                                        StringArgumentType.getString(ctx, "who"));
+                                            } catch (IllegalArgumentException e) {
+                                                ctx.getSource().sendSuccess(() -> Component.literal(
+                                                        "cast=held_breath refused=not a player id"), false);
+                                                return 0;
+                                            }
+                                            var cast = com.cadykaya.interregnum.system.magic
+                                                    .HeldBreathSpell.cast(level, pos, uuid,
+                                                            grimoireOf(ctx, "who"));
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "cast=held_breath held=" + cast.held()
+                                                            + " frayed=" + cast.frayed()
+                                                            + " refused=" + cast.refused()
+                                                            + " left=" + com.cadykaya.interregnum
+                                                                    .system.magic.Holding.left(level, uuid)
+                                                            + " holding=" + com.cadykaya.interregnum
+                                                                    .system.magic.Holding.held()), false);
+                                            return cast.held() ? 1 : 0;
+                                        })))));
+
         root = root.then(Commands.literal("cast")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("lighten")

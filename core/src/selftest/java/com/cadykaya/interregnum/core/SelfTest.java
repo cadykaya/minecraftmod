@@ -1753,5 +1753,51 @@ public final class SelfTest {
                       .remaining(1000, 1000 + takes * 10) == 0,
               "and a finished desk reports nothing left rather than a negative number -- "
               + "which is what somebody would otherwise write a second condition around");
+
+        // HELD-BREATH. WORLD.md: "your own sound, taken away. Nothing tracks you while you
+        // hold it -- and you cannot cast, because casting is a spoken word. Power for
+        // silence, exactly."
+        check(com.cadykaya.interregnum.core.magic.HeldBreath.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.SILENCE
+              && com.cadykaya.interregnum.core.magic.Spell.HELD_BREATH.school()
+                      == com.cadykaya.interregnum.core.magic.School.SILENCE,
+              "Held-breath is the Quiet One's, in the enum and in its own class. Two ways "
+              + "of saying which school a spell belongs to that disagreed would leave it "
+              + "learnable from one god and castable by another");
+
+        // IT IS NOT AIMED. The subject is the speaker: a version that could be pointed at
+        // somebody would be a silence you inflict, which is a different spell and the one
+        // every complaint about stealth would be about.
+        check(!com.cadykaya.interregnum.core.magic.Incantation
+                      .aimed(com.cadykaya.interregnum.core.magic.Spell.HELD_BREATH),
+              "Held-breath is cast on the caster and has nothing to look at");
+        check(com.cadykaya.interregnum.core.magic.Incantation
+                      .of("held-breath") == com.cadykaya.interregnum.core.magic.Spell.HELD_BREATH,
+              "and its word is the enum name with the underscore made a hyphen, like every "
+              + "other word in the kit -- a spell nobody can pronounce is a spell nobody "
+              + "can cast, and this is the first two-part name in the list");
+
+        // THE SHORTEST SILENCE SPELL, and it has to be: the others cost a cast and this
+        // one costs EVERY cast, with no way to end it early because ending it takes a word.
+        long breath = com.cadykaya.interregnum.core.magic.HeldBreath.DURATION_TICKS;
+        check(breath < com.cadykaya.interregnum.core.magic.Hush.DURATION_TICKS
+              && breath < com.cadykaya.interregnum.core.magic.Quell.DURATION_TICKS,
+              "a held breath is shorter than any other silence. A minute of having no "
+              + "spells and no way to stop is not a trade, it is a punishment for having "
+              + "tried the spell once");
+        check(breath > com.cadykaya.interregnum.core.portal.Stillness.STILL_TICKS,
+              "and it is longer than the Quiet One's door needs to open. WORLD.md names "
+              + "this spell 'for the last few steps' at exactly that door; a breath that "
+              + "ran out before the silence had held would be for nothing");
+
+        check(com.cadykaya.interregnum.core.magic.HeldBreath.expiryAt(1000)
+                      == 1000 + breath,
+              "a breath held now runs out a full duration from now");
+        check(com.cadykaya.interregnum.core.magic.HeldBreath.holds(1000, 1000),
+              "it is still held on the exact tick it expires -- the same off-by-one every "
+              + "other duration here avoids, and here it would land on the last tick of a "
+              + "silence somebody spent a spell on");
+        check(!com.cadykaya.interregnum.core.magic.HeldBreath.holds(1000, 1001),
+              "and not one tick later");
     }
 }
