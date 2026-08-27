@@ -2062,3 +2062,50 @@ different bugs that the original probe set could not tell apart.
 Related: [#30](#30-the-world-stopped-and-the-check-reported-that-the-mod-was-broken) — the
 same shape exactly, one level up: there the whole server had stopped ticking, here one
 chunk had never started.
+
+---
+
+## 46. A sabotage the check does not notice is a finding about the code
+
+`moor_check.sh` was watched failing, as every check here is, by breaking the thing it
+tests. The first sabotage — `MoorEvents` no longer pinning a moored thing's position — went
+red at the right assertion with the right message.
+
+The second sabotage removed the *other* half of the same rule: the clause in the Anchorite's
+law that refuses to lift a moored thing. **The check stayed green.**
+
+That is not a hole in the check. It is the check reporting, accurately, that two mechanisms
+were doing one job and only one of them was load-bearing.
+
+### Why both existed
+
+`WORLD.md` names three forces a mooring resists — *"not water, not pistons, not the
+Anchorite's own law"* — and the third one has a natural home in the law itself, so it was
+written there. Separately, the spell pins position every tick, because that is what refuses
+the other two.
+
+A pin defeats a lift. Removing the exception changed nothing, and running with **both**
+removed failed exactly as removing the pin alone had. One mechanism; one of them decorative.
+
+### What was done about it, and why not simply delete
+
+Deleting was the obvious answer and it is the wrong one. The pin wins today because two
+`EntityTickEvent.Pre` subscribers happen to run in the order that suits us, and **subscriber
+order at equal priority is not a contract.** Flip it and the lift lands after the pin, in
+the one world the locked clause is about.
+
+So the exception stays, moved from the event handler into `Anchorite.lift` itself — where
+all three of that law's callers get it — and labelled in place as **insurance, not the
+mechanism**, with the sabotage that proved it recorded beside it.
+
+> **The rule: when a sabotage does not go red, do not reach for a better assertion first.**
+> Ask why the code survived it. Two paths to one outcome is the common answer, and the
+> follow-up question — *which one is actually holding, and what happens the day it stops* —
+> is worth more than the assertion would have been.
+
+The check now says which half a green run covers. A later reader who assumes a passing
+`moor_check.sh` proves both would be wrong in exactly the way this lesson exists to prevent.
+
+Related: [#43](#43-execute-in-dimension-does-not-scope-a-bare-entity-selector) — its
+mirror image. There a probe passed for the wrong reason; here a probe *failed to fail* for
+the right one, and the difference is that this one was worth keeping.

@@ -955,6 +955,27 @@ public final class InterregnumCommand {
                                             return cast.worked() ? 1 : 0;
                                         })))));
 
+        // Moor, shaped exactly like `cast quell` because the two spells are.
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("moor")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                        .executes(ctx -> {
+                                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                            var level = ctx.getSource().getLevel();
+                                            var cast = com.cadykaya.interregnum.system.magic
+                                                    .MoorSpell.cast(level, pos, grimoireOf(ctx, "who"));
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "cast=moor took=" + cast.took()
+                                                            + " subject=" + cast.subject()
+                                                            + " frayed=" + cast.frayed()
+                                                            + " refused=" + cast.refused()
+                                                            + " moored=" + com.cadykaya.interregnum
+                                                                    .system.magic.Moored.count(level)), false);
+                                            return cast.took() ? 1 : 0;
+                                        })))));
+
         // Held-breath. The only cast whose subject is the caster, so it takes a `who` and
         // a position and nothing to aim at -- the position is only where the fraying lands.
         root = root.then(Commands.literal("cast")

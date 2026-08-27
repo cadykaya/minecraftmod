@@ -55,7 +55,9 @@ public enum Spell {
     /** The Anchorite's: a small structure, weightless, picked up and set down again. */
     LOFT(School.WEIGHT),
     /** The Quiet One's: your own sound, taken away -- and your voice with it. */
-    HELD_BREATH(School.SILENCE);
+    HELD_BREATH(School.SILENCE),
+    /** The Anchorite's: one thing fixed where it is, against any push. */
+    MOOR(School.WEIGHT);
 
     private final School school;
 

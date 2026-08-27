@@ -4661,3 +4661,72 @@ stopped guarding.
 Five: *Hedge*, *Graft*, *Moor*, *Ripen*, *Rot*. *Moor* is the natural next — it is *Lighten*
 with the sign flipped, and the Anchorite's law already has one `lift` that three callers
 share.
+
+---
+
+## Moor — three named forces, one rule
+
+`WORLD.md`, locked: *"The exact opposite of *Lighten*: fix a thing where it is, against any
+push. **Not water, not pistons, not the Anchorite's own law.**"*
+
+### The list looked like three mechanisms and is one
+
+Water pushes entities. A piston pushes what stands in front of it. The Anchorite's law
+lifts a falling block — which is an entity too. So a moored thing is **an entity fixed in
+place**, and one rule — its position does not change — refuses all three without knowing
+what any of them is. Two of the three named forces are never mentioned anywhere in the
+code, which is how you can tell the rule is the right one.
+
+It is aimed at one thing rather than cast on a room, and that is what makes it the opposite
+of *Lighten* rather than a second one. It gives the Weight school the same pairing Silence
+already has in *Hush* and *Quell*: a place you change, and a thing you change. It reaches
+exactly as far as *Quell*, because giving two spells of the same shape different arms would
+be a small cruelty.
+
+A minute — the longest duration in the mod, on the least dramatic spell in it. Everything
+else in the kit is something you do *during* a moment; an anchor is a thing you set and stop
+thinking about, and one that lapsed while you relied on it would be a delay.
+
+### The third clause is the one worth the spell
+
+In that god's world unanchored things rise *and they do not stop* — the ferry's boarding
+notice has promised it since before the world existed, and a falling block that gets away
+climbs past the build height and is gone. *Moor* is the school's answer to the law of the
+god that teaches it: the way to keep something where nothing stays put is to have learned
+from the thing that keeps nothing.
+
+### A sabotage that did not go red
+
+The check was watched failing twice, as everything here is. Removing the position pin went
+red at the right assertion. Removing **the other half** — the clause in the Anchorite's law
+that refuses to lift a moored thing — left the check green.
+
+That was not a hole in the check. It was the check reporting accurately that two mechanisms
+were doing one job and only one was load-bearing. Running with both removed failed exactly
+as removing the pin alone had, which settled it.
+
+Deleting the redundant half was the obvious answer and the wrong one. The pin wins today
+because two `EntityTickEvent.Pre` subscribers happen to run in the order that suits us, and
+**subscriber order at equal priority is not a contract.** Flip it and the lift lands after
+the pin, in the one world the locked clause is about.
+
+So the exception stays — moved out of the event handler and into `Anchorite.lift` itself,
+where all three of that law's callers get it, and labelled in place as *insurance, not the
+mechanism*. The check now says which half a green run covers.
+[LESSONS #46](LESSONS.md#46-a-sabotage-the-check-does-not-notice-is-a-finding-about-the-code):
+when a sabotage does not go red, ask why the code survived it before reaching for a better
+assertion.
+
+### One smaller thing
+
+The first version of the check dropped sand with `setblock` and cast on it a second later.
+`setblock` over air *does* make a falling block — on a scheduled block tick, not the same
+one — so the cast had to wait, and by then the Anchorite's law had carried it eight blocks
+up, well outside the spell's reach of five. The cast truthfully reported nothing there.
+`summon` adds an entity synchronously, so the next command in the same tick finds it.
+
+### Where the kit stands
+
+Twelve spells built. Four left: *Hedge* and *Graft* (Verdancy), *Ripen* and *Rot* (The
+Turning). The last pair is cheaper — both are the ageing table aimed at living things, and
+that table is built, loaded and driven by two checks already.

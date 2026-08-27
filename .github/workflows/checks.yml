@@ -242,3 +242,6 @@ jobs:
 
       - name: A held breath takes the voice that would end it, and gives it back on its own
         run: ./tools/breath_check.sh
+
+      - name: A moored thing is not moved by water, and not by the Anchorite's own law
+        run: ./tools/moor_check.sh

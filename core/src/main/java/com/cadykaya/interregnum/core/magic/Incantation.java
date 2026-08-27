@@ -102,6 +102,9 @@ public final class Incantation {
             // ...and Held-breath, which is the plainest case of all: the subject is the
             // speaker, and there is nothing to look at.
             case HUSH, STILL, LIGHTEN, HELD_BREATH -> false;
+            // Moor IS aimed, and is the pair to Quell in the other school: a place you
+            // change against a thing you change. It falls through to the default below
+            // rather than being listed, which is the point of having a default at all.
             default -> true;
         };
     }

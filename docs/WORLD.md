@@ -395,6 +395,14 @@ It suppresses the caster's own game events, which is the same server-side vibrat
 Quiet One's door listens for — so a breath-holder walks into that door without closing it,
 which is what *"for the last few steps"* has always meant.
 
+**Built: *Moor*.** The three forces it resists turned out to be one rule: water pushes
+entities, a piston pushes what stands in front of it, and the Anchorite's law lifts a
+falling block — which is an entity too. So a moored thing is an entity fixed in place, and
+*its position does not change* refuses all three without knowing what any of them is. It is
+aimed at one thing, which is what makes it the opposite of *Lighten* rather than a second
+one, and it holds for a minute — the longest duration in the mod, on the least dramatic
+spell in it, because an anchor that lapses while you are relying on it is a delay.
+
 *Held-breath* and *Rot* are the two that were decided rather than sketched. The first
 because the casting affordance makes silence cost something real. The second because the
 obvious reading of *"age it past its end"* is an instant-kill, and **every spell is a

@@ -155,6 +155,7 @@ public final class Speech {
             // spell and a much worse one.
             case HELD_BREATH -> String.valueOf(
                     HeldBreathSpell.cast(level, from, who, g).held());
+            case MOOR -> MoorSpell.cast(level, at, g).subject();
         };
     }
 }

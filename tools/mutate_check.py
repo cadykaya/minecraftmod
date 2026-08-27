@@ -395,6 +395,17 @@ MUTATIONS = [
      "            case HUSH, STILL, LIGHTEN, HELD_BREATH -> false;",
      "            case HUSH, STILL, LIGHTEN -> false;"),
 
+    # Moor. Its two failure modes: an anchor that is not aimed (which makes it a second
+    # Lighten) and one that lets go while you are relying on it.
+    ("magic: Moor is cast on the ground, so the Anchorite has three zones and no anchor",
+     f"{MAIN}/magic/Incantation.java",
+     "            case HUSH, STILL, LIGHTEN, HELD_BREATH -> false;",
+     "            case HUSH, STILL, LIGHTEN, HELD_BREATH, MOOR -> false;"),
+    ("magic: a mooring lapses sooner than the field it is meant to resist",
+     f"{MAIN}/magic/Moor.java",
+     "    public static final long DURATION_TICKS = 20L * 60;",
+     "    public static final long DURATION_TICKS = 20L * 10;"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.

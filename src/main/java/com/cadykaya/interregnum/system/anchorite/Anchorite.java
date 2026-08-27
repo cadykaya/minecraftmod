@@ -96,6 +96,25 @@ public final class Anchorite {
      * only applied at spawn would be a law with exceptions nobody could predict.
      */
     public static void lift(Entity entity) {
+        // MOOR IS THE LAW'S ONE EXCEPTION, and it is here rather than in any handler so
+        // that all three callers get it: the god's own world, a band-3 patch of overworld,
+        // and a Lighten zone. `WORLD.md` names the spell as fixing a thing "against any
+        // push -- not water, not pistons, NOT THE ANCHORITE'S OWN LAW", and this is the
+        // clause said in the place the law is.
+        //
+        // IT IS INSURANCE, NOT THE MECHANISM, and the difference was found by a sabotage
+        // that no check noticed. `MoorEvents` pins a moored thing's position every tick
+        // and would defeat a lift on its own -- which it does today only because two
+        // `EntityTickEvent.Pre` subscribers happen to run in the order that suits us, and
+        // subscriber order at equal priority is not a contract. Deleting this line changes
+        // nothing observable now and changes everything the day that order flips.
+        //
+        // No live check can tell the two apart, and `tools/moor_check.sh` says so where it
+        // asserts. See docs/LESSONS.md.
+        if (entity.level() instanceof net.minecraft.server.level.ServerLevel level
+                && com.cadykaya.interregnum.system.magic.Moored.holds(level, entity.getUUID())) {
+            return;
+        }
         entity.setNoGravity(true);
         var move = entity.getDeltaMovement();
         double up = Math.min(move.y + RISE, MAX_RISE);

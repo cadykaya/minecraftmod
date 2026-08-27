@@ -1799,5 +1799,40 @@ public final class SelfTest {
               + "silence somebody spent a spell on");
         check(!com.cadykaya.interregnum.core.magic.HeldBreath.holds(1000, 1001),
               "and not one tick later");
+
+        // MOOR. WORLD.md: "the exact opposite of Lighten: fix a thing where it is, against
+        // any push. Not water, not pistons, not the Anchorite's own law."
+        check(com.cadykaya.interregnum.core.magic.Moor.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.WEIGHT
+              && com.cadykaya.interregnum.core.magic.Spell.MOOR.school()
+                      == com.cadykaya.interregnum.core.magic.School.WEIGHT,
+              "Moor is the Anchorite's, in the enum and in its own class -- and it has to "
+              + "be, because the law it defeats is that god's own");
+
+        // AIMED, and that is what makes it the opposite of Lighten rather than a second
+        // one. Lighten is a room and everything in it is subject; this is one thing.
+        check(com.cadykaya.interregnum.core.magic.Incantation
+                      .aimed(com.cadykaya.interregnum.core.magic.Spell.MOOR),
+              "Moor is aimed at a thing. A version cast on the ground under you would be a "
+              + "zone, and this school already has two");
+        check(com.cadykaya.interregnum.core.magic.Moor.REACH
+                      == com.cadykaya.interregnum.core.magic.Quell.REACH,
+              "and it reaches exactly as far as Quell. The two are the same shape of spell "
+              + "in different schools -- a place you change against a thing you change -- "
+              + "and giving them different arms would be a small cruelty");
+
+        // THE LONGEST DURATION IN THE MOD, on the least dramatic spell in it.
+        long moor = com.cadykaya.interregnum.core.magic.Moor.DURATION_TICKS;
+        check(moor > com.cadykaya.interregnum.core.magic.Lighten.DURATION_TICKS
+              && moor > com.cadykaya.interregnum.core.magic.Quell.DURATION_TICKS
+              && moor > com.cadykaya.interregnum.core.magic.Hush.DURATION_TICKS,
+              "a mooring outlasts every other spell. Everything else in the kit is "
+              + "something you do DURING a moment; an anchor is a thing you set and stop "
+              + "thinking about, and one that lapsed while you relied on it would be a "
+              + "delay rather than an anchor");
+        check(com.cadykaya.interregnum.core.magic.Moor.expiryAt(1000) == 1000 + moor
+              && com.cadykaya.interregnum.core.magic.Moor.holds(1000, 1000)
+              && !com.cadykaya.interregnum.core.magic.Moor.holds(1000, 1001),
+              "and it holds on the exact tick it lets go, like every other duration here");
     }
 }
