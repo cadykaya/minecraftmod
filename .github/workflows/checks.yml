@@ -218,3 +218,6 @@ jobs:
 
       - name: The ferry goes where the letter says, and nothing but the post moves it
         run: ./tools/carry_check.sh
+
+      - name: The villages decide who may hold the class, and the reply that was waiting has a Theoclast
+        run: ./tools/rite_check.sh

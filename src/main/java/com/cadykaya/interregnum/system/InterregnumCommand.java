@@ -334,8 +334,13 @@ public final class InterregnumCommand {
                                             return 1;
                                         }))))
                 .then(Commands.literal("show")
+                        // No tags named: what this player ACTUALLY sees, their real tags
+                        // looked up by the id they are seated under -- the same way their
+                        // standing already is. Naming tags overrides that, for the
+                        // "what would a Theoclast see here?" question an operator asks
+                        // about somebody who is not one.
                         .then(Commands.argument("who", StringArgumentType.string())
-                                .executes(ctx -> show(ctx, java.util.Set.of()))
+                                .executes(ctx -> show(ctx, null))
                                 .then(Commands.argument("tags", StringArgumentType.string())
                                         .executes(ctx -> show(ctx, java.util.Set.of(
                                                 StringArgumentType.getString(ctx, "tags")
@@ -417,6 +422,15 @@ public final class InterregnumCommand {
         // is no client here, and `show` is the only way to see what a player sees.
         // `peek` so that merely LOOKING at a conversation never creates a record.
         com.cadykaya.interregnum.core.regard.RegardState regard = null;
+        java.util.Set<String> seen = tags;
+        try {
+            if (seen == null) {
+                seen = com.cadykaya.interregnum.system.dialogue.PlayerTags.of(
+                        ctx.getSource().getServer(), java.util.UUID.fromString(who));
+            }
+        } catch (IllegalArgumentException e) {
+            seen = java.util.Set.of();
+        }
         try {
             regard = RegardSavedData.get(ctx.getSource().getServer())
                     .peek(java.util.UUID.fromString(who));
@@ -424,7 +438,7 @@ public final class InterregnumCommand {
             // not a player id; no record to consult, and no gate to satisfy
         }
         for (String line
-                : ConversationView.plain(ConversationView.render(t, who, tags, regard))) {
+                : ConversationView.plain(ConversationView.render(t, who, seen, regard))) {
             ctx.getSource().sendSuccess(() -> Component.literal("show| " + line), false);
         }
         return 1;
@@ -1300,6 +1314,32 @@ public final class InterregnumCommand {
                                                 .executes(ctx -> ferryCheck(ctx,
                                                         BlockPosArgument.getLoadedBlockPos(ctx, "pad"),
                                                         true)))))));
+
+        // The rite, reachable without a player to hold anything out. Every decision is in
+        // `Rite.offer`; the keeper's interaction is a few lines over it.
+        root = root.then(Commands.literal("rite")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("who", StringArgumentType.string())
+                        .executes(ctx -> {
+                            String who = StringArgumentType.getString(ctx, "who");
+                            java.util.UUID uuid;
+                            try {
+                                uuid = java.util.UUID.fromString(who);
+                            } catch (IllegalArgumentException e) {
+                                ctx.getSource().sendSuccess(() -> Component.literal(
+                                        "rite=refused reason=not a player id"), false);
+                                return 0;
+                            }
+                            var server = ctx.getSource().getServer();
+                            var outcome = com.cadykaya.interregnum.system.clast.Rite
+                                    .offer(server, uuid);
+                            int n = com.cadykaya.interregnum.system.clast.Theoclasts
+                                    .get(server).count();
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                    "rite=" + outcome + " theoclasts=" + n), false);
+                            return outcome == com.cadykaya.interregnum.system.clast
+                                    .Rite.Outcome.ATTUNED ? 1 : 0;
+                        })));
 
         root = root.then(Commands.literal("haunt")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))

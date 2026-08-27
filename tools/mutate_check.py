@@ -270,6 +270,18 @@ MUTATIONS = [
     ("haunt: every interval manifests, so the ghost is a metronome",
      f"{MAIN}/haunt/Manifestation.java",
      "    public static final int ODDS = 90;", "    public static final int ODDS = 1;"),
+    # The rite is the first gate standing actually closes. Both edges get a mutation,
+    # because a bar nobody can be under and a bar nobody can clear look identical from
+    # one player's side.
+    ("clast: the villages vouch for a stranger they have never dealt with",
+     f"{MAIN}/clast/Attunement.java",
+     "        if (regard == null) {\n            return Verdict.REFUSED;\n        }",
+     "        if (regard == null) {\n            return Verdict.WITNESSED;\n        }"),
+    ("clast: the bar is raised out of reach of anything a player can do",
+     f"{MAIN}/clast/Attunement.java",
+     "    public static final Standing BAR = Standing.KNOWN;",
+     "    public static final Standing BAR = Standing.BELOVED;"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.

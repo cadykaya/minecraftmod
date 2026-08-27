@@ -569,7 +569,7 @@ destination's law, and re-places it at the far pad. **The validation checklist t
 world's rule before arrival** — the Quiet One's crossing: no note blocks, no jukebox,
 muffle your animals.
 
-### It sails where the letter in your hand is addressed
+### It sails where the letter in your hand belongs
 
 **[LOCKED — owner delegated; decided here.]** No menu on the keel, no destination written
 by hand. **You hold a letter, and the ferry reads it.** No letter, no voyage.
@@ -578,10 +578,25 @@ This is *"the route to them is its unanswered correspondence"* and *"you are the
 carrying their mail"* stopping being flavour and becoming the navigation. You cannot reach
 a god you are not carrying mail for. The letters **are** the map.
 
-And it makes the last letter a problem instead of a note. The dead god's final document is
-addressed `To —`, and a ferry that goes where the letter says cannot be told where to go
-with that one in your hand. **Finding out who it was for is the last act**, and the ferry
-refusing to sail is how the game asks the question.
+**Routed by the letter's id, and NOT by its addressee.** This paragraph replaces one that
+said the opposite, and the correction is kept in view because the wrong version is the more
+appealing one.
+
+The wrong version: the ferry sails where the letter is *addressed*, so the one that opens
+`To —` cannot be routed, the boat does not move, and *who was it for* becomes a question
+the mechanism asks rather than a line of text. It reads beautifully. **The unaddressed
+letter is the Quiet One's** — see "The Quiet One has no name in the letters" above, which
+is the whole character — so that rule would have made a god's world permanently
+unreachable, silently, by the only affordance there is for reaching one.
+
+The blank envelope is a fact about a god, not a defect in a document, and the ferry treats
+it like any other letter. `letters_check.py` enforces the fact the correct version rests
+on: every letter names a crossing and every crossing has a letter.
+
+**[OPEN — not a decision, an idea without a mechanism.]** The endgame beat that version
+was reaching for — *finding out who the last letter was for* — is still wanted and no
+longer has a mechanism. Nothing is built for it and nothing should be until there is one
+that does not strand a world.
 
 ---
 

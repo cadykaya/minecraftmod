@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **44**, every one mutation-verified, all in CI |
+| Live-world checks | **45**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, ten spells**, learned in their gods' worlds and **cast by saying the word** |
@@ -737,6 +737,46 @@ Mutation run: making the cancel never fire was caught.
 
 Nothing audible is claimed. Same wall as Hush — the Quiet One's most characteristic effects
 live on a client and this container has none.
+
+### The Theoclast class exists
+
+`WORLD.md`, locked: *"a rite at a shrine, and the keeper has to agree to witness it."* Hold
+a clast out to a shrine-keeper and that is the rite — the same empty-hand / full-hand split
+the ferry keel uses.
+
+**The first time regard gates something a player wants.** Standing has decided prices,
+greetings and which replies are offered; none of those is a door. This one is: below the
+bar you are carrying a piece of a god you cannot use, and the way through is to go and be
+somebody the villages will vouch for. The keeper **is** the villages, so the question was
+always answerable — there was just nothing to ask it about.
+
+The bar is `KNOWN`, the first band above indifference, and low on purpose: the scarce
+thing is the clast (seven in a world, ever) and gating a rare item behind a long errand as
+well would turn *"the class is a server negotiation"* into a chore against a meter. A
+stranger is refused because an institution's opinion of somebody it has never dealt with
+is an **absence** — and asking uses `peek`, so being refused does not bring a file into
+existence.
+
+**The clast is consumed only on success.** A rite that ate one for saying no would destroy
+one of seven irreplaceable objects in exchange for the word no.
+
+**And the note in `PlayerTags` came true.** That class returned nothing and said why:
+*"the only tag any written scene uses is `class/theoclast`, and the Theoclast class does
+not exist yet… when attunement lands, it lands here, and every scene already written starts
+offering its gated lines with no edit to the scenes."* The Warden's intake scene has carried
+a Theoclast-only reply since long before anybody could see it. It appears now, and not one
+line of that scene changed.
+
+**One signature had to invert to make it visible.** `PlayerTags.of` took a `ServerPlayer`;
+what a player IS turns out to be a property of their **record**, not of a body — and the
+only thing that can ask on a headless server is `talk show`, which has an id. A tag lookup
+that needed a body would have made the whole class invisible to every check, exactly as it
+was invisible to this one until the primary form became `(server, uuid)`.
+
+`rite_check.sh` asserts both edges of the gate and shows the same scene to two players, one
+attuned and one not — because "the option is visible" is equally satisfied by a gate that
+has stopped gating, and from the attuned player's side those look identical. Mutations:
+witnessing a stranger, and raising the bar out of reach.
 
 ### The ferry reads the letter
 
@@ -2518,7 +2558,7 @@ Presented before building and approved: *"It all looks good."*
 | # | Question | Decided |
 |---|---|---|
 | 1 | Each god's portal logic | **Each god's portal is opened by the school that god teaches.** Not four mechanisms — one rule with four faces, and it means you cannot go deeper into a god's system until that god has taught you |
-| 2 | How the ferry is told where to go | **It sails where the letter in your hand is addressed.** No letter, no voyage — and the last letter's `To —` becomes the final act |
+| 2 | How the ferry is told where to go | **It sails where the letter in your hand belongs.** No letter, no voyage. (Routed by the letter's id — *not* its addressee; see the correction in [`WORLD.md`](WORLD.md)) |
 | 3 | Where the mail comes from | **Returned undelivered**, held by a shrine-keeper who has been waiting to give it to somebody. The god *did* write |
 | 4 | Attuning a clast | **A rite at a shrine, witnessed by the keeper** — so standing with the villages gates the class |
 | 5 | Casting a spell | **A spoken word**, in chat, in earshot of anyone present. The offence is the act |

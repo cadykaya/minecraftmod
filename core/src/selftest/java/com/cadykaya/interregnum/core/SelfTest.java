@@ -1059,6 +1059,37 @@ public final class SelfTest {
               + "-- the ferry declines to sail without a letter, which is a consequence of "
               + "what the ferry reads rather than a clause in the chapter machine");
 
+        // THE RITE. The first gate in the mod that standing actually closes, so both edges
+        // of it are asserted -- a bar nobody can be under is not a bar.
+        var stranger = com.cadykaya.interregnum.core.clast.Attunement.judge(null, false);
+        check(stranger == com.cadykaya.interregnum.core.clast.Attunement.Verdict.REFUSED,
+              "the villages will not vouch for somebody they have never dealt with. An "
+              + "institution's opinion of a stranger is an absence rather than a nought, "
+              + "and a player who walked past every village must not be able to hold the "
+              + "class");
+
+        var known = new com.cadykaya.interregnum.core.regard.RegardState(false);
+        known.adjust(com.cadykaya.interregnum.core.clast.Attunement.WITNESS, 20);
+        check(com.cadykaya.interregnum.core.clast.Attunement.judge(known, false)
+                      == com.cadykaya.interregnum.core.clast.Attunement.Verdict.WITNESSED,
+              "and they will for somebody they think well of. If nothing moves the "
+              + "verdict then the keeper agreeing is decoration");
+        check(com.cadykaya.interregnum.core.clast.Attunement.judge(known, true)
+                      == com.cadykaya.interregnum.core.clast.Attunement.Verdict.ALREADY,
+              "a clast attunes a person, and a person who is attuned is attuned");
+
+        // The bar is the first band ABOVE indifference, and deliberately not a high one:
+        // the scarce thing is the clast -- seven in a world, ever -- and gating a rare
+        // item behind a long errand as well would turn a negotiation between players into
+        // a chore against a meter, which is the one shape regard rules out.
+        var indifferent = new com.cadykaya.interregnum.core.regard.RegardState(false);
+        check(com.cadykaya.interregnum.core.clast.Attunement.judge(indifferent, false)
+                      == com.cadykaya.interregnum.core.clast.Attunement.Verdict.REFUSED
+              && com.cadykaya.interregnum.core.clast.Attunement.BAR
+                      == com.cadykaya.interregnum.core.regard.Standing.KNOWN,
+              "somebody the villages have a file on but no opinion of is still refused, "
+              + "and the bar is the first band above indifference rather than a high one");
+
         // ROUTING. The rule that nearly shipped inverted: an unaddressed letter must sail
         // like any other, because the unaddressed one is the QUIET ONE'S and routing on
         // the addressee would have made that god's world permanently unreachable by the

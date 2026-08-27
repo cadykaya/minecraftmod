@@ -4087,3 +4087,58 @@ Grepping for the string finds the readers. It does not find which of them read t
 every one that greps it, before pushing. `check_all.sh` cannot see this; it is the fast
 gate, and the live checks are the ones that talk to a server. Four checks touch the ferry
 and running all four costs six minutes.
+
+---
+
+## The class exists
+
+Hold a clast out to a shrine-keeper and that is the rite. `WORLD.md`, locked this session:
+*"a rite at a shrine, and the keeper has to agree to witness it."*
+
+**The first time regard gates something a player wants.** Standing has decided prices,
+greetings and which replies get offered; none of those is a door. This one is. The keeper
+is the villages, so the question was always answerable -- there was nothing to ask it about
+until now.
+
+The bar is `KNOWN` and low on purpose: the scarce thing is the clast, seven in a world
+ever, and gating a rare item behind a long errand as well would turn "a server negotiation"
+into a chore against a meter. A stranger is refused because an institution's opinion of
+somebody it has never dealt with is an absence -- and asking uses `peek`, so a refusal does
+not create the file.
+
+### A note in the source came true
+
+`PlayerTags` has returned nothing since it was written, with a comment saying exactly why:
+the only tag any scene used was `class/theoclast`, no clast could be attuned, and nobody
+could truthfully hold it. It ended: *when attunement lands, it lands here, and every scene
+already written starts offering its gated lines with no edit to the scenes.*
+
+That is what happened. The Warden's intake scene has carried a Theoclast-only reply --
+*"Say nothing. The warmth in your chest says it for you."* -- since long before anything
+could be attuned. It appears now. Not one line of that scene changed.
+
+### The signature had to invert
+
+It did not appear at first, and the reason is worth keeping. `PlayerTags.of` took a
+`ServerPlayer`, and the only thing that can ask on a headless server is `talk show`, which
+has a uuid and no body. So the class was real, stored, and invisible to every check.
+
+What a player IS turns out to be a property of their **record**: `Theoclasts` is keyed by
+uuid, saved with the world, true of them whether or not they are online. The `(server,
+uuid)` form is now primary and the `ServerPlayer` one is a wrapper. `talk show` with no
+tags named now reports what that player actually sees, the same way it already reported
+their actual standing.
+
+### Two checks caught me in one tick
+
+The first assertion looked for the option's **id** in `talk show` output. `show` prints
+what a player reads -- the id is how the scene refers to an option and the text is the only
+thing that ever reaches anybody. Cost one run.
+
+Then `failpath_check.py` refused the fix: a failure message had `peek` in backticks inside
+a double-quoted string, which bash would have run. On the failure path only, so it would
+have surfaced as a corrupted message at exactly the moment somebody needed to read it.
+That check has been in the gate since LESSONS #28 and this is the first time it has caught
+something written after it.
+
+230 self-test checks, 81 mutations, 45 live checks, 20 fast-gate stages.

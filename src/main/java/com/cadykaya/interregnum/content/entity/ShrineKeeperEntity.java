@@ -127,10 +127,41 @@ public class ShrineKeeperEntity extends PathfinderMob {
 
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (player instanceof ServerPlayer initiator) {
-            Conversations.address(initiator, this, openingScene());
+        if (!(player instanceof ServerPlayer initiator)) {
+            return InteractionResult.SUCCESS;
         }
+        // A clast held out is a request, not a conversation. Same split as the ferry
+        // keel's: ask with an empty hand, act with a full one.
+        net.minecraft.world.item.ItemStack held = initiator.getItemInHand(hand);
+        if (held.is(com.cadykaya.interregnum.registry.ModItems.CLAST.get())) {
+            rite(initiator, held);
+            return InteractionResult.SUCCESS;
+        }
+        Conversations.address(initiator, this, openingScene());
         return InteractionResult.SUCCESS;
+    }
+
+    /**
+     * Somebody holds a clast out and asks to be witnessed.
+     *
+     * The clast is consumed **only** on success. There are seven in a world, ever, and a
+     * rite that ate one for being refused would destroy an irreplaceable object in
+     * exchange for the word no.
+     *
+     * The keeper's answer is a system message rather than a scene, and that is the
+     * register: this is a person being asked for a favour in a doorway, not an audience.
+     * A refusal never explains itself -- "get to KNOWN with the villages" is not a
+     * sentence anybody in this world would say, and the keeper is not a quest marker.
+     */
+    private void rite(ServerPlayer who, net.minecraft.world.item.ItemStack clast) {
+        var outcome = com.cadykaya.interregnum.system.clast.Rite
+                .offer(who.level().getServer(), who.getUUID());
+        if (outcome == com.cadykaya.interregnum.system.clast.Rite.Outcome.ATTUNED) {
+            clast.shrink(1);
+        }
+        who.sendSystemMessage(net.minecraft.network.chat.Component.translatable(
+                        "interregnum.rite." + outcome.name().toLowerCase(java.util.Locale.ROOT))
+                .withStyle(net.minecraft.ChatFormatting.GRAY));
     }
 
     /**

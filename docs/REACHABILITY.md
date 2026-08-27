@@ -61,7 +61,7 @@ writing it here is what makes it so.
 |---|---|---|
 | `god_heart` | found in shrine loot, once per world; **picking it up is the deicide** | `PLAY` |
 | `sealed_letter` | **given by a shrine-keeper**, once the god is dead — the returned post they have been holding. Used to read the letter it carries, and **held out to a ferry keel to sail that god's crossing** | `PLAY` |
-| `clast` | scattered at the crater and at shrines when the god shatters; can be picked up and held. **Nothing can be done with one** | `BLOCKED: how a clast is attuned` |
+| `clast` | scattered at the crater and at shrines when the god shatters. **Held out to a shrine-keeper** it is a rite: if the villages think well enough of you, it attunes you and is consumed | `PLAY` |
 
 ## Entities
 
