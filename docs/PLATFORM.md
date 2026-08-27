@@ -15,7 +15,7 @@
 |---|---|
 | **Game** | Minecraft: Java Edition **26.2** ("Chaos Cubed", released June 2026) |
 | **Loader** | **NeoForge** 26.2.x |
-| **Java** | **JDK 21** |
+| **Java** | **JDK 25** |
 | **Build** | Gradle with **ModDevGradle** (MDG) 2.0.x |
 
 The owner's instruction was "whatever version you think is best, same with mod loader," so
@@ -91,9 +91,22 @@ Minecraft `1.21.11` — which is the same idea one scheme earlier.)
 
 ## Toolchain
 
-**Java 21.** NeoForge officially supports JDK 21. Not 17, not 25 — the game and loader are
-compiled against 21 and a mismatched toolchain produces class-file-version errors that read
-as unrelated failures.
+**Java 25.** Verified against the real toolchain, not a search result: MDG's
+`createMinecraftArtifacts` requests `languageVersion=25` for Minecraft 26.2 and fails
+outright without it.
+
+> **This document previously said Java 21, and was wrong.** Every pre-2026 source says 21,
+> because 21 was correct for the entire 1.21 line. The version-scheme change came with a
+> Java bump. See `docs/LESSONS.md` #6 — it is the second time a confidently-remembered
+> platform fact about this project turned out to be a version behind.
+
+This image ships JDK 21, so `settings.gradle` applies the **foojay resolver** and Gradle
+downloads a JDK 25 toolchain on demand. Without it the build fails with
+*"Cannot find a Java installation ... matching {languageVersion=25}"*.
+
+`core/` still compiles under 21 (`tools/check_all.sh` uses the system `javac` directly) —
+it is loader-independent and deliberately stays on the lower baseline so the fast offline
+checks need no toolchain download.
 
 **ModDevGradle (MDG), not NeoGradle.** MDG 2.0.x is the modern plugin and the one to use
 for a new project; NeoGradle (7.1.x) is the older path, still maintained, mostly of
@@ -105,27 +118,34 @@ interest to projects migrating. Both were current as of mid-2026.
 NeoForge version index at setup time. Do not paste a build number out of this document and
 assume it exists.
 
-```properties
-# toolchain
-neogradle.subsystems.parchment.minecraftVersion=26.2
-minecraft_version=26.2
-neo_version=26.2.<CHECK>          # e.g. 26.2.0.x -- look it up, do not guess
-neo_version_range=[26.2,)
-loader_version_range=[4,)
+All values below are **verified against the real registries**, not remembered:
 
-# mod
-mod_id=<TBD>
-mod_name=<TBD>
-mod_license=<TBD>
+```properties
+minecraft_version=26.2
+neo_version=26.2.0.67       # confirmed <latest> AND <release> on maven.neoforged.net
+mod_id=interregnum
+mod_name=INTERREGNUM
 mod_version=0.1.0
-mod_group_id=com.cadykaya.<TBD>
+mod_license=MIT
+mod_group_id=com.cadykaya.interregnum
 mod_authors=cadykaya
 ```
 
-**`mod_id` is effectively permanent.** It is the namespace on every resource location, every
-texture path, every registry key, every save-game reference. Renaming it after a world has
-been saved orphans every block placed in it. Decide it once, deliberately, at the same time
-the mod's subject is decided — see the open question in `HANDOFF.md`.
+| Thing | Value | How it was verified |
+|---|---|---|
+| Minecraft | `26.2` | boots; `Done (0.28s)` on a dedicated server |
+| NeoForge | `26.2.0.67` | `<latest>`/`<release>` in maven-metadata; pom returns 200 |
+| ModDevGradle | `2.0.144` | `<latest>` on the NeoForged maven (a search said 2.0.141) |
+| Java | `25` | MDG demands `languageVersion=25`; build fails without it |
+| Gradle | `8.14.3` | shipped in this image; works |
+| Parchment | **none** | `parchment-26.2` does not exist on maven.parchmentmc.org yet |
+| resource pack format | `88` | `SharedConstants.RESOURCE_PACK_FORMAT_MAJOR` |
+| data pack format | `107` | `SharedConstants.DATA_PACK_FORMAT_MAJOR` |
+
+**`mod_id` is effectively permanent, and it is decided: `interregnum`.** It is the
+namespace on every resource location, every texture path, every registry key, every
+save-game reference. Renaming it after a world has been saved orphans every block placed
+in it. Locked by the owner alongside the subject — see `WORLD.md`.
 
 Constraints: lowercase, `[a-z0-9_]`, no leading digit, and short — it prefixes every asset
 path you will ever type.
@@ -162,6 +182,65 @@ cat /root/.ccr/README.md
 
 Never disable TLS verification and never unset `HTTPS_PROXY` to work around it. A build
 that only succeeds with security off is not a build.
+
+---
+
+## Things 26.x renamed, and where each one bit
+
+This table exists because the facts in it were already known to this repository and got
+re-broken anyway. Each row was learned once, written into a commit message or a comment in
+one file, and then not found again by the next person who needed it — which for a solo
+autonomous build means me, an hour later.
+
+A rename is the worst kind of churn to carry in your head, because the old name is not an
+error you can see. In Java it is a compile failure and you find out immediately. In a
+**command string handed to a server** it is a runtime rejection: one line in a log, the
+command silently does nothing, and every assertion downstream keeps running against a
+world that is not the one you asked for.
+
+| Was | Is, in 26.x | Where it bit |
+|---|---|---|
+| `doDaylightCycle` | `advance_time` | `deicide_check.sh` — the sun would not stop |
+| `randomTickSpeed` | `random_tick_speed` | `exodus_check.sh` — vanilla's growth never switched off, and the failure message described a world state that had been rejected two minutes earlier |
+| *(whole gamerule set)* | snake_case, behind a registry | assume every rule you remember is renamed |
+| `ChunkPos#asLong` | `ChunkPos.pack(x, z)` | `LeakEvents`, and it is a record now — `x()`/`z()` |
+| `ServerPlayer#getServer()` | gone — take it off the level | the deicide handler |
+| `ItemStack.is(Item)` | takes a `Predicate<Holder<Item>>` | the heart pickup |
+| `LivingEntity#displayClientMessage(Component, boolean)` | gone — `ServerPlayer#sendSystemMessage(Component)` | `FerryKeelBlock`. It compiles as a missing symbol rather than a wrong one, so this is the cheap kind: `javac` finds it. Worth the row anyway because the replacement is on a *different type* — you have to narrow to `ServerPlayer`, which a block's `useWithoutItem` hands you as a plain `Player` |
+| `net.minecraft.world.entity.projectile.*` for the concrete projectiles | **split into sub-packages** — `projectile.arrow.AbstractArrow`, `projectile.hurtingprojectile.{Fireball,SmallFireball,LargeFireball,WitherSkull,DragonFireball}`, `projectile.throwableitemprojectile.*`. The base `projectile.Projectile` did **not** move | `QuellEvents`, which only needed the base type and so was never bitten. The row is here for whoever reaches for `SmallFireball` next and imports the 1.21 path from memory |
+| `BiomeSpecialEffects` fog/sky/water-fog/ambient-sound fields | **moved out of the biome** into `EnvironmentAttributes` — `SKY_COLOR`, `FOG_COLOR`, `WATER_FOG_COLOR`, `AMBIENT_SOUNDS`, `BACKGROUND_MUSIC`, set with `Biome.BiomeBuilder#setAttribute` | `ModBiomes`. The record still exists and still compiles, carrying **water and vegetation colours only** — so a biome ported from any pre-26 guide builds cleanly and has no sky |
+
+### Two 26.x facts that are not renames, and cost a check each
+
+Neither is a moved symbol, so nothing static catches either. Both are recorded because the
+symptom in each case was a **passing probe**.
+
+| Fact | Consequence |
+|---|---|
+| **`execute in <dimension>` does not scope a bare entity selector.** `@e[tag=x]` with no positional constraint matches across worlds; `positioned <x> <y> <z>` plus `distance=..N` forces the test that makes the level matter | An entity probe that names a dimension must also name a place in it. Verified directly: one item summoned in the overworld was seen by `execute in interregnum:mass_authority if entity @e[tag=probe]`, and not seen by the same command with a position. See [LESSONS #43](LESSONS.md#43-execute-in-dimension-does-not-scope-a-bare-entity-selector) |
+| **`/setblock` never asks the block it placed whether it can survive.** It places with flag 2 (clients only) and then calls `updateNeighboursOnBlockSet`, which pokes the *neighbours* | A plant with no business being where it is sits there until something else makes it look — so "place an impossible plant and watch it die" does not work as a control, and placing one with flag 2 is how a spell keeps one alive without it removing itself in the same instant. Found by `graft_check.sh`, used by `GraftSpell.place` |
+| **`/setblock <pos> <block> replace` posts NO game event; `destroy` does.** `replace` writes the block and nothing else; `destroy` calls `Level.destroyBlock`, which posts `block_destroy` at the position | The only command-driven vibration a check can rely on. A "noise" made with `replace` is silent to everything that listens the way sculk listens, and a check built on one tests nothing |
+| **`forceload add` takes BLOCK coordinates, and a loaded chunk is not a ticking chunk.** `-16 -16 47 47` is blocks −16..47. `fill` and `setblock` load a chunk on demand, so blocks outside the forceloaded region read and write correctly while nothing in them ever ticks | An entity-driven live check must keep every probe inside the region. A block assertion passing says nothing about whether that chunk is alive. See [LESSONS #45](LESSONS.md#45-a-loaded-chunk-is-not-a-ticking-chunk-and-forceload-counts-in-blocks) |
+| **`NoAI:1b` stops the movement system, not just the wandering.** `LivingEntity.aiStep` calls `travel()` only `if (canSimulateMovement() && isEffectiveAi())`, and `Mob.isEffectiveAi()` is `super && !isNoAi()`. So a `NoAI` mob has no gravity, never lands, and **`onGround` stays `false` for ever** | It is the wrong marker for any physics test. A dropped item falls, lands, reports the ground honestly and does not wander. See [LESSONS #44](LESSONS.md#44-noai1b-freezes-a-mob-so-completely-that-it-never-touches-the-ground) |
+
+One more that is a lookup rather than a trap: **`BlockTags` has no `SAPLINGS`** in 26.x —
+it is `BlockItemTags.SAPLINGS.block()`. The constant a pre-26 guide would have you write
+does not exist, so `javac` catches this one.
+
+**Server-side "did something just happen here"**: `VanillaGameEvent` (NeoForge, `NeoForge.EVENT_BUS`) fires on the server for every vanilla `GameEvent` — the vibration a sculk sensor listens for — carrying the level, the event holder, an exact `Vec3` position and the causing entity. It is cancellable, and cancelling it stops vanilla posting the event to nearby listeners, so **observe without cancelling** unless deafening real sculk sensors is the intent. This is the only server-truthful model of a noise the game has; the sound system is client-side and a headless server never hears it.
+
+**Cross-dimension travel**, for whoever needs it next: `Entity#teleport(TeleportTransition)`.
+It **destroys the entity and builds a new one** on the far side (`getType().create` +
+`restoreFrom`), so the returned reference is a different object — but the **UUID is
+preserved**, because `restoreFrom` round-trips through `saveWithoutId`. Anything keyed on
+the entity leaks one entry per crossing; anything keyed on the UUID survives it, which is
+usually what you want and occasionally exactly what you do not. `TeleportTransition` takes
+the destination level, position, delta, rotation and a post-transition hook —
+`PLACE_PORTAL_TICKET` is the one that keeps the arrival chunk loaded.
+
+`tools/renames_check.py` enforces the shell half of this table on every push, because a
+dead gamerule name in a `COMMANDS` string is invisible until a check goes red for the
+wrong reason. It cannot enforce the Java half and does not try: `javac` already does.
 
 ---
 

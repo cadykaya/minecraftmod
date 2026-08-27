@@ -1,0 +1,65 @@
+{
+  "_comment": [
+    "The dead god's unanswered correspondence. Four letters, one per god, each opening",
+    "that world's questline when it is delivered.",
+    "",
+    "THREE OPEN WITH A NAME. THE FOURTH OPENS `To --`. That is locked in WORLD.md and",
+    "enforced in core/ by Post, because no single letter can be checked against it: an",
+    "unaddressed letter is legal (exactly one must be) and an addressed one is legal too.",
+    "The invariant only exists once you have all four.",
+    "",
+    "The names -- Rill, Ballast, Ash -- appear NOWHERE else in the mod, and a check",
+    "enforces that. The payoff is that you spend a hundred hours calling it The Verdant,",
+    "open the mail you are carrying, and read 'Rill --'. If the name has leaked into a",
+    "villager's line or a Warden docket somewhere, the reveal is already spent.",
+    "",
+    "VOICE. The dead god speaks in procedure, because that is where the Wardens got it:",
+    "every flat authorised line a unit has said all game is inherited. So these are not",
+    "laments. They are correspondence between colleagues who have stopped speaking, filed",
+    "by somebody who only has one register and is using it to say something else.",
+    "",
+    "They may NOT explain the plot. A letter that told you what happened would make the",
+    "search retroactively pointless -- the same constraint the last letter is built on."
+  ],
+  "letters": [
+    {
+      "id": "anchorite",
+      "addressee": "Ballast",
+      "subject_key": "interregnum.letter.anchorite.subject",
+      "body_keys": [
+        "interregnum.letter.anchorite.1",
+        "interregnum.letter.anchorite.2",
+        "interregnum.letter.anchorite.3"
+      ]
+    },
+    {
+      "id": "verdant",
+      "addressee": "Rill",
+      "subject_key": "interregnum.letter.verdant.subject",
+      "body_keys": [
+        "interregnum.letter.verdant.1",
+        "interregnum.letter.verdant.2",
+        "interregnum.letter.verdant.3"
+      ]
+    },
+    {
+      "id": "hearth_turner",
+      "addressee": "Ash",
+      "subject_key": "interregnum.letter.hearth_turner.subject",
+      "body_keys": [
+        "interregnum.letter.hearth_turner.1",
+        "interregnum.letter.hearth_turner.2",
+        "interregnum.letter.hearth_turner.3"
+      ]
+    },
+    {
+      "id": "quiet_one",
+      "subject_key": "interregnum.letter.quiet_one.subject",
+      "body_keys": [
+        "interregnum.letter.quiet_one.1",
+        "interregnum.letter.quiet_one.2",
+        "interregnum.letter.quiet_one.3"
+      ]
+    }
+  ]
+}

@@ -86,18 +86,21 @@ lesson, which is about people rather than tooling:
 
 ## The providers
 
-`VERIFY:` all names. The *set* is stable; the identifiers are not.
+The *set* is stable; the identifiers are not. **The output paths below marked
+VERIFIED are read off this repo's own `src/generated/resources`** on 26.2.0.67 -- and note
+the singular directory names, which is the trap: `loot_table/`, not `loot_tables/`.
 
 | Provider | Emits | Notes |
 |---|---|---|
 | Recipe | `data/<ns>/recipe/` | shaped, shapeless, smelting, and custom types |
-| Loot table | `data/<ns>/loot_table/` | block drops, chests, entity drops |
+| Loot table | `data/<ns>/loot_table/` **VERIFIED** | singular. Ours emits `loot_table/blocks/` and `loot_table/chests/` |
 | Tag | `data/<ns>/tags/` | **the most important one — see below** |
 | Advancement | `data/<ns>/advancement/` | also the progression/trigger system |
 | Block state + model | `assets/<ns>/blockstates`, `models/block` | mostly one-liners off vanilla parents |
-| Item model | `assets/<ns>/models/item` | `VERIFY:` — highest-churn area, see `MODELS.md` |
+| Item model | `assets/<ns>/items` **+** `assets/<ns>/models/item` **VERIFIED** | **two files**, not one — the definition and the model. A block item needs only the first. See [`MODELS.md`](MODELS.md) |
 | Language | `assets/<ns>/lang/en_us.json` | generate it; see below |
-| Worldgen | `data/<ns>/worldgen/` | via a registry-dump provider |
+| Worldgen | `data/<ns>/worldgen/` **VERIFIED** | ours emits `worldgen/configured_feature/` and `worldgen/placed_feature/` |
+| Biome modifier | `data/<ns>/neoforge/biome_modifier/` **VERIFIED** | NeoForge, not vanilla; see [`WORLDGEN.md`](WORLDGEN.md) |
 
 Providers declare dependencies on each other (tags before recipes that reference them);
 respect that or you get nondeterministic output.
@@ -123,8 +126,15 @@ An untranslated key renders in-game as the raw key (`block.modid.thing`), which 
 exactly like a bug because it is one.
 
 Generating `en_us.json` means **a block cannot exist without a name** — the provider walks
-the registry, so a missing entry is a build failure rather than a screenshot. `VERIFY:` the
-provider name, but insist on the property: **it must fail on a missing key, not skip it.**
+the registry, so a missing entry is a build failure rather than a screenshot. Insist on the
+property whatever the provider is called: **it must fail on a missing key, not skip it.**
+
+**What this repo actually does, which is not that.** `en_us.json` here is hand-written,
+because most of its content is *prose* -- dialogue lines, the seventy regard notices -- and
+a registry-walking provider has nothing to say about those. The property is kept by checks
+instead: `registry_check.py` fails if any block, item or entity has no name, and
+`dialogue_check.py` and `regard_lines_check.py` fail if any key a scene or a band crossing
+references is missing. Same guarantee, arrived at from the other end.
 
 ---
 
@@ -152,7 +162,7 @@ provider name, but insist on the property: **it must fail on a missing key, not 
 ## Running it
 
 ```sh
-./gradlew runData          # VERIFY: task name
+gradle runServerData       # VERIFIED 26.2.0.67 -- NOT `runData`, which does not exist
 git status                 # inspect what moved -- ALWAYS
 git diff --stat
 ```

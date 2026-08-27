@@ -240,8 +240,12 @@ skip is a naming rule, not a hole.
 
 ## Where textures live
 
-`VERIFY:` paths against a real NeoForge project at setup — the item-model layout in
-particular changed during the 1.21 line.
+**VERIFIED against 26.2.0.67.** These are the paths this repo ships from and
+`tools/registry_check.py` resolves on every push — every block, item and entity texture
+below is one CI proves a live server and a model reference can find. The item-model
+layout that changed during the 1.21 line is the **two-file split**, settled in
+[`MODELS.md`](MODELS.md): a definition under `assets/<ns>/items/` and, for flat items
+only, a model under `assets/<ns>/models/item/`.
 
 ```
 src/main/resources/assets/<mod_id>/

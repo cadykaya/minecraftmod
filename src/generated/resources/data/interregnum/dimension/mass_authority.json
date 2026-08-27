@@ -1,0 +1,11 @@
+{
+  "type": "interregnum:mass_authority",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "interregnum:old_heavy"
+    },
+    "settings": "minecraft:overworld"
+  }
+}

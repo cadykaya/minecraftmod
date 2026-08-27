@@ -1,0 +1,209 @@
+{
+  "_comment": [
+    "The shrine-keeper, still doing the accounts.",
+    "",
+    "This is the dread covenant's permitted comedy and none of the forbidden kind:",
+    "the joke is the SYSTEM -- an offering ledger that must be reconciled quarterly,",
+    "reconciled for a report, filed for a reader who is dead -- and the keeper is",
+    "played completely straight. Nobody here is stupid. The keeper knows. Everyone",
+    "knows. The quarter closes anyway.",
+    "",
+    "It is also the mod's first consequence conversation: the shortfall in the box is",
+    "the players' own looting, which is how the god died. They are being asked, very",
+    "politely, to help with the paperwork for their own deicide. Nobody says that.",
+    "",
+    "Rules used: INITIATOR for the keeper's beats, VOTE where the group decides how to",
+    "treat a person, UNANIMOUS on the one cruelty -- telling them there is no reader --",
+    "because that is irreversible and nobody should be able to do it alone.",
+    "",
+    "Regard: the keeper's scene moves VILLAGES, because it is the people's scene. Refusing the 'authorised holder' label costs nothing with the villages and earns a little with the Wardenate -- an honest answer on the record is exactly what they want, and it is the one place in this scene where the two institutions disagree. Telling the keeper there is nothing on the other end of the slot is the expensive one, and pressing it after they answer is the most expensive thing a player can do here."
+  ],
+  "id": "shrine_keeper",
+  "start": "ledger",
+  "nodes": [
+    {
+      "id": "ledger",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.ledger",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "restore",
+          "text_key": "interregnum.dlg.shrine_keeper.ledger.restore",
+          "target": "restore"
+        },
+        {
+          "id": "admit",
+          "text_key": "interregnum.dlg.shrine_keeper.ledger.admit",
+          "target": "admit"
+        },
+        {
+          "id": "whose",
+          "text_key": "interregnum.dlg.shrine_keeper.ledger.whose",
+          "target": "report"
+        }
+      ],
+      "_variant_comment": "The keeper IS the villages -- there is no separate village institution to meet, only its people, and this is one of them. So VILLAGES standing is the one that reaches this scene. The shortfall is identical in all three wordings, because the shortfall is a fact; what changes is how much of the register the keeper reads aloud before getting to it.",
+      "text_variants": [
+        {
+          "text_key": "interregnum.dlg.keeper.ledger.known_of",
+          "standing_at_most": {
+            "VILLAGES": "RESENTED"
+          }
+        },
+        {
+          "text_key": "interregnum.dlg.keeper.ledger.welcome",
+          "standing_at_least": {
+            "VILLAGES": "TRUSTED"
+          }
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.report",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "pressed",
+          "text_key": "interregnum.dlg.shrine_keeper.report.pressed",
+          "target": "stop"
+        },
+        {
+          "id": "enough",
+          "text_key": "interregnum.dlg.shrine_keeper.report.enough",
+          "target": "admit"
+        }
+      ]
+    },
+    {
+      "id": "stop",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.stop",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "then_help",
+          "text_key": "interregnum.dlg.shrine_keeper.stop.then_help",
+          "target": "restore"
+        },
+        {
+          "id": "then_tell",
+          "text_key": "interregnum.dlg.shrine_keeper.stop.then_tell",
+          "target": "truth",
+          "regard": {
+            "VILLAGES": -4
+          }
+        }
+      ]
+    },
+    {
+      "id": "restore",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.restore",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "give",
+          "text_key": "interregnum.dlg.shrine_keeper.restore.give",
+          "target": "close_signed",
+          "regard": {
+            "VILLAGES": 8
+          }
+        },
+        {
+          "id": "renege",
+          "text_key": "interregnum.dlg.shrine_keeper.restore.renege",
+          "target": "close_unsigned",
+          "regard": {
+            "VILLAGES": -6
+          }
+        }
+      ]
+    },
+    {
+      "id": "admit",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.admit",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "accept_label",
+          "text_key": "interregnum.dlg.shrine_keeper.admit.accept_label",
+          "target": "close_signed",
+          "regard": {
+            "VILLAGES": 5,
+            "WARDENATE": -4
+          },
+          "_comment": "A COURTESY, and courtesies are the thing standing takes away first. Writing a theft up as an authorised withdrawal is the keeper being kind on the record; somebody the villages already resent does not get offered it, and is left with telling the truth or refusing the label. Nothing is removed from the scene -- the node still has two replies and both lead somewhere -- which is the rule: standing costs you the easy way out, never the content.",
+          "standing_at_least": {
+            "VILLAGES": "WARY"
+          }
+        },
+        {
+          "id": "refuse_label",
+          "text_key": "interregnum.dlg.shrine_keeper.admit.refuse_label",
+          "target": "close_unsigned",
+          "regard": {
+            "VILLAGES": 3,
+            "WARDENATE": 2
+          }
+        },
+        {
+          "id": "tell_truth",
+          "text_key": "interregnum.dlg.shrine_keeper.admit.tell_truth",
+          "target": "truth",
+          "regard": {
+            "VILLAGES": -10
+          }
+        }
+      ]
+    },
+    {
+      "id": "truth",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.truth",
+      "rule": "UNANIMOUS",
+      "options": [
+        {
+          "id": "press",
+          "text_key": "interregnum.dlg.shrine_keeper.truth.press",
+          "target": "remarks",
+          "regard": {
+            "VILLAGES": -12
+          }
+        },
+        {
+          "id": "relent",
+          "text_key": "interregnum.dlg.shrine_keeper.truth.relent",
+          "target": "close_unsigned",
+          "regard": {
+            "VILLAGES": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "remarks",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.remarks",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "close_signed",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.close_signed",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "close_unsigned",
+      "speaker": "keeper",
+      "text_key": "interregnum.dlg.shrine_keeper.close_unsigned",
+      "rule": "INITIATOR",
+      "options": []
+    }
+  ]
+}

@@ -62,7 +62,19 @@ up in cost, in worldgen time, and in ways to be wrong.
 
 ## Adding to existing biomes: biome modifiers
 
-`VERIFY:` — this is a NeoForge mechanism and its JSON shape is loader-specific.
+**VERIFIED against 26.2.0.67**, from the modifier this repo actually ships
+(`src/generated/resources/data/interregnum/neoforge/biome_modifier/add_shrines.json`),
+which is written by `runServerData` and loaded by a live server every CI run:
+
+```json
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": "interregnum:shrine",
+  "step": "surface_structures"
+}
+```
+
 
 To put your ore in vanilla stone, **do not edit the vanilla biome.** Editing it means
 fighting every other mod that also edits it, and last-loaded wins. NeoForge provides
@@ -88,7 +100,9 @@ configured feature.** Ore in one place and ore in another are one *what* and two
 Placement modifiers run **in sequence**, each transforming the set of positions, and the
 order is the semantics. Putting the cheap filter last means the expensive one ran on every
 candidate. Getting height and count the wrong way round changes both the distribution and
-the cost. `VERIFY:` the modifier names, but the ordering principle holds everywhere:
+the cost. The principle holds everywhere, and the names are **VERIFIED against
+26.2.0.67** from this repo's own placed feature: `minecraft:rarity_filter`,
+`minecraft:in_square`, `minecraft:height_range`, `minecraft:biome`.
 
 > **Cheapest and most eliminating first.** Rarity, then count, then height, then the
 > per-position predicates.
@@ -100,7 +114,9 @@ feature that scans a large area, or one placed with a high count and rejected la
 chunk-loading stutter that will be blamed on the pack rather than on you.
 
 Structures are worse — they run over large areas and can pin chunks. **Measure generation
-time before shipping anything ambitious.** `VERIFY:` the current profiling command.
+time before shipping anything ambitious.** **VERIFIED against 26.2.0.67**
+(`PerfCommand`): `/perf start` then `/perf stop` writes a profiling report. `/debug start`
+and `/debug stop` are the separate, coarser tick profiler.
 
 ---
 
@@ -130,13 +146,41 @@ expensive is everything that makes it worth visiting.
 
 ### The `dimension_type` fields that shape the whole feel
 
-`VERIFY:` names. Conceptually: build height and minimum Y (the volume you get to design
-in), whether there is a ceiling, whether there is skylight, ambient light level, fixed time
-of day, whether water evaporates, and the coordinate scale relative to the overworld.
+**VERIFIED against 26.2.0.67**, read from the vanilla `dimension_type` JSON in the
+game jar rather than from memory -- and worth reading closely, because **this is one of
+the places 26.2 moved the furniture** and a pre-2026 answer is confidently wrong.
+
+Still top-level, as you would expect: `min_y`, `height`, `logical_height`, `has_ceiling`,
+`has_skylight`, `has_ender_dragon_fight`, `ambient_light`, `coordinate_scale`,
+`infiniburn`, `monster_spawn_light_level`, `monster_spawn_block_light_limit`.
+
+**Gone from the top level**, and this is the part that matters: the old booleans
+(`ultra_warm`, `natural`, `bed_works`, `respawn_anchor_works`, `piglin_safe`, `has_raids`)
+no longer exist as fields. They live in a namespaced **`attributes`** map:
+
+| what you want | 26.2 attribute |
+|---|---|
+| water evaporates, lava flows fast | `minecraft:gameplay/water_evaporates`, `minecraft:gameplay/fast_lava` |
+| beds work / explode | `minecraft:gameplay/bed_rule` |
+| respawn anchors work | `minecraft:gameplay/respawn_anchor_works` |
+| piglins zombify | `minecraft:gameplay/piglins_zombify` |
+| raids can start | `minecraft:gameplay/can_start_raid` |
+| snow golems melt | `minecraft:gameplay/snow_golem_melts` |
+| a floor on sky light | `minecraft:gameplay/sky_light_level` |
+| sky, fog, cloud colour and height | `minecraft:visual/*` |
+| ambient sound and background music | `minecraft:audio/*` |
+
+`fixed_time` is also gone: time of day is now **`default_clock`** plus a **`timelines`**
+tag (the overworld's is `#minecraft:in_overworld`).
 
 **These do more for identity than any texture.** A ceiling and no skylight makes a place
-feel like the Nether before a single block is placed. Fixed time of day removes the day
-cycle as a pacing device — that is a design decision, not a setting.
+feel like the Nether before a single block is placed.
+
+**For this mod specifically** the `attributes` map is a gift, and the section of
+[`WORLD.md`](WORLD.md) on the god-worlds should be read next to it: each crossing teaches
+one world's rule before arrival, and rules like the Quiet One's silence are
+`minecraft:audio/*` and `minecraft:gameplay/sky_light_level` entries rather than code.
+Removing the day cycle is `default_clock` -- a design decision expressed as data.
 
 ### Before you add a dimension, answer this
 
@@ -188,7 +232,7 @@ src/main/resources/data/<mod_id>/
     biome/  configured_feature/  placed_feature/
     noise_settings/  density_function/  structure/  structure_set/
   dimension/  dimension_type/
-  neoforge/biome_modifier/          VERIFY: exact path
+  neoforge/biome_modifier/          VERIFIED: this exact path, 26.2.0.67
 ```
 
 **Generate these with datagen rather than hand-writing them** — see

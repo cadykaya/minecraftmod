@@ -1,0 +1,81 @@
+plugins {
+    id 'java'
+    id 'net.neoforged.moddev' version '2.0.144'
+}
+
+version = project.mod_version
+group = project.mod_group_id
+base { archivesName = project.mod_id }
+
+// Java 25: Minecraft 26.2 requires it. (Java 21 was correct for the 1.21 line and
+// is what every pre-2026 tutorial says -- see docs/LESSONS.md #6.) The toolchain is
+// downloaded by the foojay resolver configured in settings.gradle if absent.
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(25) }
+}
+
+// core/ compiles into the mod jar directly. See settings.gradle for why this is a
+// srcDir rather than a project dependency.
+sourceSets.main.java.srcDirs += ['core/src/main/java']
+
+// Generated resources live in their own tree so that "written by a person" and
+// "written by runServerData" are visible at a glance in any diff. Both are
+// committed and both ship (docs/DATAGEN.md).
+sourceSets.main.resources.srcDirs += ['src/generated/resources']
+
+neoForge {
+    version = project.neo_version
+
+    // No Parchment: maven.parchmentmc.org publishes no parchment-26.2 artifact yet
+    // (checked 2026-08-25). Add it here when it exists -- it only improves parameter
+    // names, so its absence costs readability and nothing else.
+
+    runs {
+        client { client() }
+        server { server() }
+        // `gradle runServerData` regenerates every JSON this mod ships. Output goes
+        // to src/main/resources and is committed; check_all.sh fails if it is stale.
+        //
+        // The run type is serverData, not data: MDG's types are
+        // [client, clientData, serverData, gameTestServer, server, junit], and our
+        // providers subscribe to GatherDataEvent.Server. A clientData run would be
+        // needed for models/lang if those were generated, which they are not yet
+        // (docs/MODELS.md: the item-model system's 26.x shape is still unverified).
+        serverData {
+            serverData()
+            // --mod is REQUIRED: without it the gatherer logs
+            // "Initializing Data Gatherer for mods []" and generates nothing while
+            // failing with an unrelated-looking RejectedExecutionException.
+            programArguments.addAll '--mod', project.mod_id, '--all',
+                    '--output', file('src/generated/resources').absolutePath,
+                    '--existing', file('src/main/resources').absolutePath
+        }
+    }
+
+    mods {
+        "$project.mod_id" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+dependencies {
+    // (none yet -- core is compiled in via srcDirs above)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 25
+}
+
+processResources {
+    // NB: do not name this `expand` -- it shadows the expand() method called below
+    // and fails with "No signature of method: LinkedHashMap.call()".
+    def props = [
+        mod_id: project.mod_id, mod_name: project.mod_name, mod_version: project.mod_version,
+        mod_license: project.mod_license, mod_authors: project.mod_authors,
+        minecraft_version: project.minecraft_version, neo_version: project.neo_version,
+    ]
+    inputs.properties(props)
+    filesMatching(['META-INF/neoforge.mods.toml']) { expand(props) }
+}

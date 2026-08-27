@@ -1,0 +1,25 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven {
+            name = 'NeoForged'
+            url = 'https://maven.neoforged.net/releases'
+        }
+    }
+}
+
+// Minecraft 26.2 runs on Java 25 and this image ships Java 21, so Gradle has to be
+// able to fetch a JDK for its toolchains. Without this, MDG fails with
+// "Cannot find a Java installation ... matching {languageVersion=25}".
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
+
+rootProject.name = 'interregnum'
+
+// core/ is loader-independent game logic with no Minecraft on its classpath. It is
+// a subproject so it can be compiled and self-tested on its own (fast, offline),
+// and the root project also compiles its sources directly into the mod jar -- see
+// the srcDirs line in build.gradle. That keeps the package boundary real without
+// dragging jar-in-jar packaging in before anything needs it.
+include 'core'

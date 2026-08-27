@@ -1,0 +1,231 @@
+{
+  "_comment": [
+    "Delivering the dead god's letter to the Anchorite. The second god-questline opener.",
+    "",
+    "THE LOCKED SOURCE IS THE LETTER ITSELF, which shipped before this scene existed:",
+    "",
+    "  SUBJECT: MASS AUTHORITY -- no matter arising",
+    "  'There is no matter arising. I have checked the register twice and there is nothing",
+    "   I am required to raise with you, which is why this has taken the form it has. The",
+    "   undersigned has no procedure for the other kind.'",
+    "  'You held the corner of it while I set the rest. I do not think either of us has",
+    "   said so since. Filed for the record, in case there is one.'",
+    "",
+    "So the relationship is not an estrangement at all -- it is a shared piece of WORK,",
+    "long ago, that neither of them ever acknowledged. The dead god wanted to say thank",
+    "you and could only do it by filing a form that exists for saying nothing.",
+    "",
+    "THE ANCHORITE IS THE OPPOSITE OF THE VERDANT AND THAT IS THE DESIGN. The Verdant",
+    "opens mid-argument, defending an arrangement nobody mentioned. This one does not",
+    "defend anything, because it has not been thinking about the falling-out at all. It",
+    "has been holding something. It asks what the load is before it asks who you are,",
+    "because that is the only question it has.",
+    "",
+    "WHAT IT HAS BEEN HOLDING, and this is the scene: 'you held the corner of it while I",
+    "set the rest.' Nobody ever came back and said the setting was finished. So it did not",
+    "let go. Its whole world is a place where unanchored things rise and do not stop --",
+    "already built, already the law the ferry's boarding notice promises -- and the reason",
+    "is that the only thing it is still holding down is that one corner.",
+    "",
+    "The UNANIMOUS node is telling it the setter is dead and it can put the corner down.",
+    "That is a mercy and it is also the end of the only job it has had for an age, which is",
+    "why nobody gets to do it alone. Same reasoning as the shrine-keeper's one cruelty and",
+    "the Verdant's.",
+    "",
+    "THE NAME IS NOT IN THIS FILE. `tools/letters_check.py` asserts categorically that the",
+    "three names appear in their own letters and nowhere else in the shipped string table.",
+    "A delivery scene is the most tempting place in the mod to break that. The Anchorite",
+    "notices the salutation without repeating it, which is the stronger beat regardless.",
+    "",
+    "Dread covenant: the grief is sincere and is never the punchline. What is allowed to be",
+    "funny is the SYSTEM -- a register checked twice, a form that exists for reporting the",
+    "absence of business, an authority with no procedure for gratitude. Nobody winks.",
+    "",
+    "Regard: ANCHORITE throughout. As with the Verdant there is no path that makes it",
+    "comfortable, and for the same reason: a deicide locks every surviving god at a",
+    "permanent ceiling. The most generous route here is worth +30 against a floor of -45."
+  ],
+  "id": "anchorite_delivery",
+  "start": "weighing",
+  "nodes": [
+    {
+      "id": "weighing",
+      "speaker": "anchorite",
+      "text_key": "interregnum.dlg.anchorite_delivery.weighing",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "letter",
+          "text_key": "interregnum.dlg.anchorite_delivery.weighing.letter",
+          "target": "reads"
+        },
+        {
+          "id": "who",
+          "text_key": "interregnum.dlg.anchorite_delivery.weighing.who",
+          "target": "holding"
+        },
+        {
+          "id": "heavy",
+          "text_key": "interregnum.dlg.anchorite_delivery.weighing.heavy",
+          "target": "holding",
+          "regard": {
+            "ANCHORITE": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "holding",
+      "speaker": "anchorite",
+      "text_key": "interregnum.dlg.anchorite_delivery.holding",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "letter",
+          "text_key": "interregnum.dlg.anchorite_delivery.holding.letter",
+          "target": "reads"
+        }
+      ]
+    },
+    {
+      "id": "reads",
+      "speaker": "anchorite",
+      "text_key": "interregnum.dlg.anchorite_delivery.reads",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "wait",
+          "text_key": "interregnum.dlg.anchorite_delivery.reads.wait",
+          "target": "no_matter_arising",
+          "regard": {
+            "ANCHORITE": 5
+          }
+        },
+        {
+          "id": "explain",
+          "text_key": "interregnum.dlg.anchorite_delivery.reads.explain",
+          "target": "no_matter_arising",
+          "regard": {
+            "ANCHORITE": -4
+          }
+        }
+      ]
+    },
+    {
+      "id": "no_matter_arising",
+      "speaker": "anchorite",
+      "text_key": "interregnum.dlg.anchorite_delivery.no_matter_arising",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "thanks",
+          "text_key": "interregnum.dlg.anchorite_delivery.no_matter_arising.thanks",
+          "target": "the_corner",
+          "regard": {
+            "ANCHORITE": 7
+          }
+        },
+        {
+          "id": "form",
+          "text_key": "interregnum.dlg.anchorite_delivery.no_matter_arising.form",
+          "target": "the_corner"
+        },
+        {
+          "id": "nothing",
+          "text_key": "interregnum.dlg.anchorite_delivery.no_matter_arising.nothing",
+          "target": "closes",
+          "regard": {
+            "ANCHORITE": -12
+          }
+        }
+      ]
+    },
+    {
+      "id": "the_corner",
+      "speaker": "anchorite",
+      "text_key": "interregnum.dlg.anchorite_delivery.the_corner",
+      "rule": "UNANIMOUS",
+      "options": [
+        {
+          "id": "put_it_down",
+          "text_key": "interregnum.dlg.anchorite_delivery.the_corner.put_it_down",
+          "target": "let_go",
+          "regard": {
+            "ANCHORITE": 9
+          }
+        },
+        {
+          "id": "say_nothing",
+          "text_key": "interregnum.dlg.anchorite_delivery.the_corner.say_nothing",
+          "target": "still_holding"
+        }
+      ]
+    },
+    {
+      "id": "let_go",
+      "speaker": "anchorite",
+      "text_key": "interregnum.dlg.anchorite_delivery.let_go",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "onward",
+          "text_key": "interregnum.dlg.anchorite_delivery.let_go.onward",
+          "target": "terms"
+        }
+      ]
+    },
+    {
+      "id": "still_holding",
+      "speaker": "anchorite",
+      "text_key": "interregnum.dlg.anchorite_delivery.still_holding",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "onward",
+          "text_key": "interregnum.dlg.anchorite_delivery.still_holding.onward",
+          "target": "terms"
+        }
+      ]
+    },
+    {
+      "id": "terms",
+      "speaker": "anchorite",
+      "text_key": "interregnum.dlg.anchorite_delivery.terms",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "accept",
+          "text_key": "interregnum.dlg.anchorite_delivery.terms.accept",
+          "target": "opened",
+          "regard": {
+            "ANCHORITE": 5
+          }
+        },
+        {
+          "id": "decline",
+          "text_key": "interregnum.dlg.anchorite_delivery.terms.decline",
+          "target": "closes",
+          "regard": {
+            "ANCHORITE": -6
+          }
+        }
+      ]
+    },
+    {
+      "id": "opened",
+      "speaker": "anchorite",
+      "text_key": "interregnum.dlg.anchorite_delivery.opened",
+      "rule": "INITIATOR",
+      "options": [],
+      "milestone": "LETTER_DELIVERED",
+      "teaches": "WEIGHT"
+    },
+    {
+      "id": "closes",
+      "speaker": "anchorite",
+      "text_key": "interregnum.dlg.anchorite_delivery.closes",
+      "rule": "INITIATOR",
+      "options": []
+    }
+  ]
+}

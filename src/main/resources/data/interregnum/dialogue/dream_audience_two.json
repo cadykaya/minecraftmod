@@ -1,0 +1,222 @@
+{
+  "_comment": [
+    "The second dream-audience: the ghost, back, saying what it actually wanted.",
+    "",
+    "WORLD.md locks the dream-audiences as the relationship channel and as 'rage, then",
+    "bargaining, then the discovery that the ghost NEEDS its killer'. The first dream was",
+    "the bargaining, dressed as an estate handover. This is where the need surfaces, and",
+    "it surfaces as the smallest possible ask: the god cannot see its own estate any more",
+    "and would like to be told what the world is doing.",
+    "",
+    "It is gated on ENFORCEMENT, so the player has met a Warden. That is why the Wardens",
+    "are what the god talks about: it wrote the policy they are still enforcing and it",
+    "cannot amend it, because amending an order requires being alive. The rage in this",
+    "scene is not aimed at the killer at any point. That is deliberate -- a ghost that",
+    "shouted at the player would be a boss, and this is a bereavement.",
+    "",
+    "Dread covenant: the grief is sincere and is never the punchline. What is allowed to",
+    "be funny is the administrative register and the god's pettiness about small things.",
+    "The ghost never quips about the dying.",
+    "",
+    "TEXT VARIANTS on the opening, gated on THE_GHOST: how the first dream went is not",
+    "stored as a flag, it is stored as regard, and the ghost's tone reading it back is",
+    "the whole reason regard is bands rather than a boolean. Somebody who was cruel in",
+    "the first dream gets a colder room. Nothing is HIDDEN by standing here -- only the",
+    "wording moves -- because a player who timed out of the first dream holds no record",
+    "at all, and an option they cannot see would be a dead end rather than a scene.",
+    "",
+    "Note again: no number for the family, and no explanation of 'Executor'."
+  ],
+  "id": "dream_audience_two",
+  "start": "return",
+  "nodes": [
+    {
+      "id": "return",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_two.return",
+      "rule": "INITIATOR",
+      "text_variants": [
+        {
+          "text_key": "interregnum.dlg.dream_two.return.cold",
+          "standing_at_most": {
+            "THE_GHOST": "RESENTED"
+          }
+        },
+        {
+          "text_key": "interregnum.dlg.dream_two.return.warm",
+          "standing_at_least": {
+            "THE_GHOST": "KNOWN"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "how",
+          "text_key": "interregnum.dlg.dream_two.return.how",
+          "target": "blind"
+        },
+        {
+          "id": "sorry",
+          "text_key": "interregnum.dlg.dream_two.return.sorry",
+          "target": "blind",
+          "regard": {
+            "THE_GHOST": 5
+          }
+        },
+        {
+          "id": "off",
+          "text_key": "interregnum.dlg.dream_two.return.off",
+          "target": "refused",
+          "regard": {
+            "THE_GHOST": -6
+          }
+        }
+      ]
+    },
+    {
+      "id": "blind",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_two.blind",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "what",
+          "text_key": "interregnum.dlg.dream_two.blind.what",
+          "target": "sight"
+        },
+        {
+          "id": "wardens",
+          "text_key": "interregnum.dlg.dream_two.blind.wardens",
+          "target": "wardens"
+        }
+      ]
+    },
+    {
+      "id": "sight",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_two.sight",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "on",
+          "text_key": "interregnum.dlg.dream_two.sight.on",
+          "target": "wardens"
+        }
+      ]
+    },
+    {
+      "id": "wardens",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_two.wardens",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "call_off",
+          "text_key": "interregnum.dlg.dream_two.wardens.call_off",
+          "target": "cannot"
+        },
+        {
+          "id": "why",
+          "text_key": "interregnum.dlg.dream_two.wardens.why",
+          "target": "mourning"
+        }
+      ]
+    },
+    {
+      "id": "cannot",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_two.cannot",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "on",
+          "text_key": "interregnum.dlg.dream_two.cannot.on",
+          "target": "ask"
+        }
+      ]
+    },
+    {
+      "id": "mourning",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_two.mourning",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "on",
+          "text_key": "interregnum.dlg.dream_two.mourning.on",
+          "target": "ask"
+        }
+      ]
+    },
+    {
+      "id": "ask",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_two.ask",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "yes",
+          "text_key": "interregnum.dlg.dream_two.ask.yes",
+          "target": "kept",
+          "regard": {
+            "THE_GHOST": 14
+          }
+        },
+        {
+          "id": "price",
+          "text_key": "interregnum.dlg.dream_two.ask.price",
+          "target": "nothing",
+          "regard": {
+            "THE_GHOST": -4
+          }
+        },
+        {
+          "id": "no",
+          "text_key": "interregnum.dlg.dream_two.ask.no",
+          "target": "refused",
+          "regard": {
+            "THE_GHOST": -10
+          }
+        }
+      ]
+    },
+    {
+      "id": "nothing",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_two.nothing",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "fine",
+          "text_key": "interregnum.dlg.dream_two.nothing.fine",
+          "target": "kept",
+          "regard": {
+            "THE_GHOST": 10
+          }
+        },
+        {
+          "id": "no",
+          "text_key": "interregnum.dlg.dream_two.nothing.no",
+          "target": "refused",
+          "regard": {
+            "THE_GHOST": -8
+          }
+        }
+      ]
+    },
+    {
+      "id": "kept",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_two.kept",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "refused",
+      "speaker": "ghost",
+      "text_key": "interregnum.dlg.dream_two.refused",
+      "rule": "INITIATOR",
+      "options": []
+    }
+  ]
+}

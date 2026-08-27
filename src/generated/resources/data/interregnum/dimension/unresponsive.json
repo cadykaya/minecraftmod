@@ -1,0 +1,11 @@
+{
+  "type": "interregnum:unresponsive",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "interregnum:unanswered"
+    },
+    "settings": "minecraft:overworld"
+  }
+}

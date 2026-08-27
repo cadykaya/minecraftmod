@@ -84,7 +84,9 @@ holds the wiring, the content holds the behaviour.
 
 ## Registration
 
-`VERIFY:` names and signatures.
+**VERIFIED against 26.2.0.67**, and not from memory: every shape below is one this repo
+compiles and CI boots a server on. See `registry/ModBlocks.java`, `ModItems.java`,
+`ModComponents.java`, `ModAttachments.java`.
 
 Registration is **deferred**: you declare what you want during construction and the loader
 creates it when the registry is ready. The pattern is one `DeferredRegister` per registry
@@ -119,6 +121,13 @@ Putting a handler on the wrong bus means it silently never fires. **This is the 
 common "my code doesn't run" cause after the client/server split**, and it produces no
 error at all — the game just behaves as though the handler is not there.
 
+> **Corrected against 26.2.0.67.** `@EventBusSubscriber` no longer takes a `bus` parameter
+> — its only members are `value()` (a `Dist[]`) and `modid()`. **Which bus a handler lands
+> on is inferred from the event type**, so `GatherDataEvent.Server` routes to the mod bus
+> on its own and nothing needs to say so. Every pre-2026 tutorial writes
+> `bus = Bus.MOD`, and that no longer compiles. The distinction between the buses is still
+> real and still matters; only the way you *declare* it changed.
+
 **Handler discipline:**
 
 - Game-bus handlers run **very often**. A hot handler doing allocation or a lookup per tick
@@ -131,8 +140,39 @@ error at all — the game just behaves as though the handler is not there.
 
 ## State
 
-`VERIFY:` names — this is the area NeoForge has reworked most (capabilities → data
-attachments).
+**VERIFIED against 26.2.0.67.** This was the area flagged as most reworked, and the
+rework is real: **capabilities are gone as the place you hang arbitrary data.** Data
+attachments replaced them, and both halves of the modern shape are exercised here.
+
+**Attachments** (data on an entity, chunk or level) are a registry like any other:
+
+```java
+DeferredRegister<AttachmentType<?>> ATTACHMENTS =
+        DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MOD_ID);
+// read back with chunk.hasData(TYPE) / chunk.getData(TYPE)
+```
+
+`registry/ModAttachments.java` holds the mod's one attachment — the per-chunk record of
+player-placed blocks that the unraveling, the ferry and three of the four god-worlds all
+consult. It is the single most load-bearing piece of state in the mod.
+
+**Data components** (data on an item stack) are a separate registry, and the two are
+easy to confuse because both are "arbitrary data on a thing":
+
+```java
+DeferredRegister<DataComponentType<?>> COMPONENTS =
+        DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MOD_ID);
+
+DataComponentType.<String>builder()
+        .persistent(Codec.STRING)                    // survives save/load
+        .networkSynchronized(ByteBufCodecs.STRING_UTF8)  // reaches the client
+        .build();
+```
+
+`registry/ModComponents.java` holds the mod's one component: which of the dead god's
+letters a sealed letter is. **A component that is `persistent` but not
+`networkSynchronized` exists on the server and is invisible to the client**, which for a
+tooltip is a bug that looks like a rendering problem.
 
 **Where state belongs, in order of preference:**
 
@@ -171,7 +211,32 @@ real and common mod-caused framerate collapse.
 
 ## Networking
 
-`VERIFY:` the payload/handler registration shape.
+**VERIFIED against the 26.2.0.67 sources**, and flagged honestly: **this mod does not
+send a packet yet.** Everything below was read out of `PayloadRegistrar`,
+`RegisterPayloadHandlersEvent`, `IPayloadHandler` and `CustomPacketPayload` rather than
+compiled here, so it is a weaker claim than the two sections above — where the shapes are
+ones CI boots a server on.
+
+A payload is a record carrying a `Type` (an id) and a `StreamCodec`, registered on the
+mod bus during startup:
+
+```java
+@SubscribeEvent
+static void onRegisterPayloads(RegisterPayloadHandlersEvent event) {
+    PayloadRegistrar registrar = event.registrar("1");    // a version string
+    registrar.playToServer(MyPayload.TYPE, MyPayload.CODEC, MyPayload::handle);
+}
+```
+
+The directions are named rather than inferred — `playToServer`, `playToClient`,
+`playBidirectional`, and `commonToServer` / `commonToClient` for the configuration
+phase. Play payloads take a `StreamCodec<? super RegistryFriendlyByteBuf, T>`; common
+ones take a plain `FriendlyByteBuf`, because registries are not available that early.
+
+A handler is `void handle(T payload, IPayloadContext context)`. **The context's
+`player()` is who to trust and the packet is not**, and `enqueueWork` is how you get back
+onto the main thread — a handler runs on the network thread, so touching the world
+directly from one is a race, not a shortcut.
 
 Packets are typed payloads with an id, a codec, and a handler, registered during startup.
 Two rules, both security-shaped:

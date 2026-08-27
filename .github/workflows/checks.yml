@@ -1,0 +1,259 @@
+# The gate, enforced. tools/check_all.sh is the single source of truth for what
+# "green" means -- this workflow deliberately runs that one script rather than
+# re-listing the checks here, so CI and a local run can never disagree.
+#
+# No Minecraft toolchain is needed yet: everything checked so far is pure Python
+# and dependency-free Java. When the NeoForge module lands this job gains a Gradle
+# step; the script stays the entry point.
+name: checks
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Report versions
+        run: |
+          java -version
+          javac -version
+          python3 --version
+
+      # Runs: palette law, dialogue data, client-leak boundary, core self-test,
+      # core mutation check, generated-asset staleness, doc links.
+      - name: Run all checks
+        run: ./tools/check_all.sh
+
+  # The fast job above needs no Minecraft. This one does: it builds the mod jar
+  # against real NeoForge and boots a dedicated server to prove the mod actually
+  # LOADS. A jar that compiles is not a mod that works -- registration on the wrong
+  # bus, a bad pack.mcmeta, or a missing model all compile perfectly.
+  game:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Cache Gradle and the Minecraft artifacts
+        uses: actions/cache@v4
+        with:
+          # neoformruntime holds the decompiled/recompiled Minecraft; without it
+          # every run pays several minutes to rebuild it from scratch.
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.gradle/jdks
+          key: gradle-${{ runner.os }}-${{ hashFiles('gradle.properties', 'build.gradle', 'settings.gradle') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Build the mod
+        run: gradle --no-daemon --console=plain build
+
+      - name: Regenerate data and fail if the committed output is stale
+        run: |
+          # The cache is DELETED first, and that is the whole guard rather than
+          # housekeeping. Datagen's HashCache skips writing a file whose newly
+          # generated hash matches the cached one without ever looking at the file on
+          # disk, so a hand-edited generated file that got committed would survive
+          # this step and the diff below would come back clean. Proven, not assumed:
+          # a `_hand_edited` key added to a loot table was still there after a green
+          # `runServerData`. See docs/LESSONS.md #37.
+          #
+          # With no cache every file is rewritten, so the diff sees a hand-edit for
+          # what it is. The directory is gitignored, so it cannot come back.
+          rm -rf src/generated/resources/.cache
+          gradle --no-daemon --console=plain runServerData
+          git diff --exit-code -- src/generated/resources \
+            || { echo "::error::Generated data is stale, or a generated file was edited by hand. Run 'gradle runServerData' and commit."; exit 1; }
+
+      - name: Boot a dedicated server and check its log
+        run: ./tools/server_smoke.sh
+
+      - name: Place the shrine in a live world and verify what it built
+        run: ./tools/worldgen_check.sh
+
+      - name: Verify chapter state survives a server restart
+        run: ./tools/persistence_check.sh
+
+      - name: Kill the god and check the world notices
+        run: ./tools/deicide_check.sh
+
+      - name: The heart is findable once and only once
+        run: ./tools/heart_check.sh
+
+      - name: The ground gives way without eating anyone's house
+        run: ./tools/crater_check.sh
+
+      - name: Every Warden statue opens its eyes
+        run: ./tools/statue_check.sh
+
+      - name: A woken statue puts a Warden in the world
+        run: ./tools/warden_post_check.sh
+
+      - name: The world remembers what people built
+        run: ./tools/claim_check.sh
+
+      - name: The overworld spends itself, and stops where it must
+        run: ./tools/unravel_check.sh
+
+      - name: A Warden exists, and cannot attack anyone
+        run: ./tools/warden_check.sh
+
+      - name: Three people can argue in front of a Warden
+        run: ./tools/talk_check.sh
+
+      - name: People carry what they said, and a deicide leaves a mark
+        run: ./tools/regard_check.sh
+
+      - name: The dead god reaches its killer, once
+        run: ./tools/haunt_check.sh
+
+      - name: The ferry lifts what was built and leaves the ground where it is
+        run: ./tools/ferry_check.sh
+
+      - name: The Quiet One's world is a separate place with its own floor
+        run: ./tools/crossing_check.sh
+
+      - name: Four god-worlds, four biomes, and only one of them grows anything
+        run: ./tools/worlds_check.sh
+
+      - name: The ferry's checklist teaches four worlds' rules before departure
+        run: ./tools/inspection_check.sh
+
+      - name: A crossing lands on its world's own dock, and not on the ferry already there
+        run: ./tools/pad_check.sh
+
+      - name: A ferry comes back to its own coordinates, and not to another ferry's
+        run: ./tools/return_check.sh
+
+      - name: The god shatters into a finite number of pieces, and no shrine pays twice
+        run: ./tools/clast_check.sh
+
+      - name: A warning stele says something, the same thing twice, and nothing in the dark
+        run: ./tools/stele_check.sh
+
+      - name: In the Anchorite's world, unanchored things rise
+        run: ./tools/anchorite_check.sh
+
+      - name: A Warden walks a fixed beat, and two of them keep step
+        run: ./tools/patrol_check.sh
+
+      - name: The Verdant's world grows faster than the overworld
+        run: ./tools/verdant_check.sh
+
+      - name: The Hearth-Turner's world keeps every past
+        run: ./tools/turning_check.sh
+
+      - name: The dead god's mail loads, and the fourth letter opens To --
+        run: ./tools/mail_check.sh
+
+      - name: The overworld leaks another god's law, but only at the shrines
+        run: ./tools/exodus_check.sh
+
+      - name: A god's letter can be delivered, and the scene still cannot buy forgiveness
+        run: ./tools/delivery_check.sh
+
+      - name: Ground somebody tends keeps its definition; the fringe does not
+        run: ./tools/attrition_check.sh
+
+      - name: The first spell works, and costs the overworld what it does not cost a god's world
+        run: ./tools/casting_check.sh
+
+      - name: A second school's spell makes a patch of world obey another god's law
+        run: ./tools/lighten_check.sh
+
+      - name: A grown span is continuous, stops where it should, and belongs to whoever grew it
+        run: ./tools/bridgeroot_check.sh
+
+      - name: A creeper that cannot hiss cannot detonate
+        run: ./tools/hush_check.sh
+
+      - name: The ageing table runs backwards, mends what its owner built, and invents no pasts
+        run: ./tools/rewind_check.sh
+
+      - name: A stillness holds what is falling, and its own school-mate does not
+        run: ./tools/still_check.sh
+
+      - name: A dropped weight crushes what it lands on, and only where somebody asked it to
+        run: ./tools/dropforge_check.sh
+
+      - name: A surge advances what grows where it lands, and spares what somebody planted
+        run: ./tools/wildgrowth_check.sh
+
+      - name: A quelled blaze cannot ignite, wherever it goes; the one beside it still can
+        run: ./tools/quell_check.sh
+
+      - name: A small building is picked up, survives a restart in hand, and is set down whole
+        run: ./tools/loft_check.sh
+
+      - name: The dead god moves one door beside its killer and never the one across the field
+        run: ./tools/manifest_check.sh
+
+      - name: The word casts the spell, and talking about the spell does not
+        run: ./tools/speech_check.sh
+
+      - name: The dead god's returned post changes hands, once, and survives being refused
+        run: ./tools/handover_check.sh
+
+      - name: The ferry goes where the letter says, and nothing but the post moves it
+        run: ./tools/carry_check.sh
+
+      - name: The villages decide who may hold the class, and the reply that was waiting has a Theoclast
+        run: ./tools/rite_check.sh
+
+      - name: The Anchorite's shaft opens where its school is cast, takes what lets go, and gives it back
+        run: ./tools/descent_check.sh
+
+      - name: The Verdant's door is planted, ripened by its school, crossed by standing still, and closed by felling it
+        run: ./tools/grove_check.sh
+
+      - name: The Hearth-Turner's door is open at one hour only, and the school is the clock
+        run: ./tools/hour_check.sh
+
+      - name: The Quiet One's door opens on a silence that has held, and a single noise resets it
+        run: ./tools/silence_check.sh
+
+      - name: Reading raw god-script marks the reader, once per piece, and never in the dark
+        run: ./tools/script_check.sh
+
+      - name: The codex desk takes time, and a copy in the Post makes that letter safe for everybody
+        run: ./tools/desk_check.sh
+
+      - name: A held breath takes the voice that would end it, and gives it back on its own
+        run: ./tools/breath_check.sh
+
+      - name: A moored thing is not moved by water, and not by the Anchorite's own law
+        run: ./tools/moor_check.sh
+
+      - name: Ripen carries a crop and a calf forward, and stops at grown
+        run: ./tools/ripen_check.sh
+
+      - name: Rot finishes the ageing chain, Rewind cannot follow, and a cow on a rotting block is still a cow
+        run: ./tools/rot_check.sh
+
+      - name: A hedge comes back thicker where it is cut, and only where somebody grew one
+        run: ./tools/hedge_check.sh
+
+      - name: A graft keeps a plant somewhere it could not live, for exactly as long as its stock stands
+        run: ./tools/graft_check.sh

@@ -124,10 +124,22 @@ its payoff is that **a player who reads no text still knows which rock will betr
 This palette does not have its law yet, because the mod does not have its fiction yet. The
 `means` column above is a placeholder for one.
 
-> **OPEN — BLOCKING FOR ANY SERIOUS ART PASS.** Write the semantic law once the mod's
-> subject exists. A palette whose families mean "brown things" and "grey things" is a
-> colour picker. A palette whose families mean something is a game mechanic the player
-> reads without being told.
+### The semantic law — INTERREGNUM
+
+> **Cool means held. Warm means spent.**
+>
+> A world is either held together by law or being spent as fuel. Everything cool and
+> blue-grey is still under a god's attention — Warden metal, maintained shrine stone, the
+> living gods' domains. Everything warm is coherence being *spent*: residue, unraveling
+> ground, the corpse-light of overworld magic. `ember` is reserved for the loudest tell —
+> active residue burn and Warden citations. `void` is the between-worlds and the dead
+> god's script. A player who reads no text still knows which ground is about to fray.
+>
+> Descended honestly from DOWNTIME's law ("warm means it is leaving; cool means it is
+> holding") — same owner, same aesthetic spine, new fiction. Family renames to match
+> (e.g. `metal` → warden-iron) happen at the first real art pass, not before.
+
+See [`WORLD.md`](WORLD.md) for the setting this law serves.
 
 ---
 

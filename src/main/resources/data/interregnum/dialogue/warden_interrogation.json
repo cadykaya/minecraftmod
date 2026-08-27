@@ -1,0 +1,134 @@
+{
+  "_comment": [
+    "A Warden taking statements after the death. WORLD.md names this scene directly:",
+    "'Warden interrogations after the death (where were you when--)'.",
+    "",
+    "The rule that shapes every line of it is also from WORLD.md, and it is LOCKED:",
+    "enforcement targets SITES, never a single player -- no player is the system's",
+    "butt. So this is not an accusation and never becomes one. It is a canvass. The",
+    "unit is taking the same statement from every living thing in the world, in the",
+    "same order, and says so unprompted because it is required to.",
+    "",
+    "Which means the player who did it is being asked routinely, and cleared",
+    "routinely, by somebody methodically working through a list that cannot be",
+    "finished. That is the whole scene. It is dramatic irony like",
+    "shrine_keeper_intact, but where the keeper was content, this one is grieving --",
+    "and per the dread covenant the grief is never the punchline and the unit never",
+    "quips. It expresses everything it has as procedure, because procedure is what it",
+    "has instead of mourning.",
+    "",
+    "Reached by right-clicking a Warden once the god is dead; before that the same",
+    "mob opens warden_intake, which is the census of the living. The pair is the",
+    "point: the same unit, the same manner, one question changed."
+  ],
+  "id": "warden_interrogation",
+  "start": "canvass",
+  "nodes": [
+    {
+      "id": "canvass",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_interrogation.canvass",
+      "rule": "INITIATOR",
+      "text_variants": [
+        {
+          "text_key": "interregnum.dlg.warden_interrogation.canvass.again",
+          "standing_at_most": { "WARDENATE": "RESENTED" }
+        },
+        {
+          "text_key": "interregnum.dlg.warden_interrogation.canvass.consistent",
+          "standing_at_least": { "WARDENATE": "TRUSTED" }
+        }
+      ],
+      "options": [
+        {
+          "id": "at_shrine",
+          "text_key": "interregnum.dlg.warden_interrogation.canvass.at_shrine",
+          "target": "shrine_noted"
+        },
+        {
+          "id": "elsewhere",
+          "text_key": "interregnum.dlg.warden_interrogation.canvass.elsewhere",
+          "target": "noted"
+        },
+        {
+          "id": "what_happened",
+          "text_key": "interregnum.dlg.warden_interrogation.canvass.what_happened",
+          "target": "explains"
+        },
+        {
+          "_comment": "Only a party the Wardenate trusts would think to offer, and the refusal is the saddest line in the mod. Gated so it reads as something you earned rather than something everyone gets to hear.",
+          "id": "offer_help",
+          "text_key": "interregnum.dlg.warden_interrogation.canvass.offer_help",
+          "target": "offer_declined",
+          "standing_at_least": { "WARDENATE": "TRUSTED" }
+        }
+      ]
+    },
+    {
+      "id": "explains",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_interrogation.explains",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "then_shrine",
+          "text_key": "interregnum.dlg.warden_interrogation.explains.then_shrine",
+          "target": "shrine_noted"
+        },
+        {
+          "id": "then_else",
+          "text_key": "interregnum.dlg.warden_interrogation.explains.then_else",
+          "target": "noted"
+        }
+      ]
+    },
+    {
+      "id": "shrine_noted",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_interrogation.shrine_noted",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "name_it",
+          "text_key": "interregnum.dlg.warden_interrogation.shrine_noted.name_it",
+          "target": "filed",
+          "regard": { "WARDENATE": 4 }
+        },
+        {
+          "id": "decline",
+          "text_key": "interregnum.dlg.warden_interrogation.shrine_noted.decline",
+          "target": "filed_unsigned",
+          "regard": { "WARDENATE": -3 }
+        }
+      ]
+    },
+    {
+      "id": "noted",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_interrogation.noted",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "filed",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_interrogation.filed",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "filed_unsigned",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_interrogation.filed_unsigned",
+      "rule": "INITIATOR",
+      "options": []
+    },
+    {
+      "id": "offer_declined",
+      "speaker": "warden",
+      "text_key": "interregnum.dlg.warden_interrogation.offer_declined",
+      "rule": "INITIATOR",
+      "options": []
+    }
+  ]
+}

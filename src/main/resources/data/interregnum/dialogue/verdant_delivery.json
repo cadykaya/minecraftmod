@@ -1,0 +1,237 @@
+{
+  "_comment": [
+    "Delivering the dead god's letter to the Verdant. The first god-questline opener.",
+    "",
+    "WORLD.md, locked: 'The Verdant / Rill -- the one who covered. During an older crisis",
+    "it took over the overworld's duties and never quite handed them back; the estrangement",
+    "is professional rather than personal, which is worse. Delivered its letter it is",
+    "immediately DEFENSIVE: it assumes it is being blamed, before anyone has said anything.'",
+    "",
+    "So the scene opens with the Verdant already mid-argument. Nobody has accused it of",
+    "anything. Nobody has said a word. It has been rehearsing this for a very long time and",
+    "the players walked into the middle of it -- which is the characterization, delivered as",
+    "a structural fact rather than as a line about its feelings.",
+    "",
+    "THE NAME IS NOT IN THIS FILE, and that is load-bearing rather than an oversight.",
+    "The reveal WORLD.md builds on the letters is that the mail uses names the player has",
+    "never heard, and `tools/letters_check.py` asserts categorically that the three names",
+    "appear in their own letters and NOWHERE else in the shipped string table. A delivery",
+    "scene is the single most tempting place to break that -- the god is literally being",
+    "handed a letter addressed to it -- and it would land as recognition instead of as a",
+    "stranger's correspondence. So the Verdant reacts to being addressed that way without",
+    "ever repeating the word, which is the stronger beat anyway: 'nobody has called me that",
+    "since' does more than the name would.",
+    "",
+    "Dread covenant: the permitted comedy is the SYSTEM. What is funny is that a god's",
+    "answer to a bereavement is a coverage dispute -- an arrangement, a handover that never",
+    "happened, an unreturned duty. It is played completely straight and nobody winks. The",
+    "grief in the letter is never the punchline; the Verdant's defensiveness is, and the",
+    "Verdant does not know it is being funny.",
+    "",
+    "Rules: INITIATOR for the Verdant's own beats. VOTE where the group decides how to",
+    "treat it, because that is a judgement about a person. UNANIMOUS on 'tell it the",
+    "letter is not about the arrangement at all' -- that one takes away the defence it has",
+    "been holding for a thousand years, and nobody should be able to do that alone. Same",
+    "reasoning as the shrine-keeper's one cruelty.",
+    "",
+    "Regard: VERDANT throughout, this being its scene. Letting it finish costs nothing and",
+    "earns a little -- it has not been listened to in a long time. Pressing the blame it",
+    "assumed is the expensive one. Note there is NO path that makes it comfortable: the",
+    "estrangement is professional, and professional estrangements do not resolve in one",
+    "conversation."
+  ],
+  "id": "verdant_delivery",
+  "start": "covered",
+  "nodes": [
+    {
+      "id": "covered",
+      "speaker": "verdant",
+      "text_key": "interregnum.dlg.verdant_delivery.covered",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "listen",
+          "text_key": "interregnum.dlg.verdant_delivery.covered.listen",
+          "target": "arrangement",
+          "regard": {
+            "VERDANT": 4
+          }
+        },
+        {
+          "id": "letter",
+          "text_key": "interregnum.dlg.verdant_delivery.covered.letter",
+          "target": "reads"
+        },
+        {
+          "id": "accuse",
+          "text_key": "interregnum.dlg.verdant_delivery.covered.accuse",
+          "target": "arrangement",
+          "regard": {
+            "VERDANT": -8
+          }
+        }
+      ]
+    },
+    {
+      "id": "arrangement",
+      "speaker": "verdant",
+      "text_key": "interregnum.dlg.verdant_delivery.arrangement",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "hand_over",
+          "text_key": "interregnum.dlg.verdant_delivery.arrangement.hand_over",
+          "target": "reads"
+        },
+        {
+          "id": "press",
+          "text_key": "interregnum.dlg.verdant_delivery.arrangement.press",
+          "target": "handover",
+          "regard": {
+            "VERDANT": -6
+          }
+        }
+      ]
+    },
+    {
+      "id": "handover",
+      "speaker": "verdant",
+      "text_key": "interregnum.dlg.verdant_delivery.handover",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "hand_over",
+          "text_key": "interregnum.dlg.verdant_delivery.handover.hand_over",
+          "target": "reads"
+        }
+      ]
+    },
+    {
+      "id": "reads",
+      "speaker": "verdant",
+      "text_key": "interregnum.dlg.verdant_delivery.reads",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "wait",
+          "text_key": "interregnum.dlg.verdant_delivery.reads.wait",
+          "target": "called_me_that",
+          "regard": {
+            "VERDANT": 6
+          }
+        },
+        {
+          "id": "ask",
+          "text_key": "interregnum.dlg.verdant_delivery.reads.ask",
+          "target": "called_me_that"
+        }
+      ]
+    },
+    {
+      "id": "called_me_that",
+      "speaker": "verdant",
+      "text_key": "interregnum.dlg.verdant_delivery.called_me_that",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "condolence",
+          "text_key": "interregnum.dlg.verdant_delivery.called_me_that.condolence",
+          "target": "not_about_it",
+          "regard": {
+            "VERDANT": 8
+          }
+        },
+        {
+          "id": "business",
+          "text_key": "interregnum.dlg.verdant_delivery.called_me_that.business",
+          "target": "terms"
+        },
+        {
+          "id": "blame",
+          "text_key": "interregnum.dlg.verdant_delivery.called_me_that.blame",
+          "target": "closes",
+          "regard": {
+            "VERDANT": -14
+          }
+        }
+      ]
+    },
+    {
+      "id": "not_about_it",
+      "speaker": "verdant",
+      "text_key": "interregnum.dlg.verdant_delivery.not_about_it",
+      "rule": "UNANIMOUS",
+      "options": [
+        {
+          "id": "say_it",
+          "text_key": "interregnum.dlg.verdant_delivery.not_about_it.say_it",
+          "target": "undefended",
+          "regard": {
+            "VERDANT": -4
+          }
+        },
+        {
+          "id": "let_it_stand",
+          "text_key": "interregnum.dlg.verdant_delivery.not_about_it.let_it_stand",
+          "target": "terms",
+          "regard": {
+            "VERDANT": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "undefended",
+      "speaker": "verdant",
+      "text_key": "interregnum.dlg.verdant_delivery.undefended",
+      "rule": "INITIATOR",
+      "options": [
+        {
+          "id": "onward",
+          "text_key": "interregnum.dlg.verdant_delivery.undefended.onward",
+          "target": "terms"
+        }
+      ]
+    },
+    {
+      "id": "terms",
+      "speaker": "verdant",
+      "text_key": "interregnum.dlg.verdant_delivery.terms",
+      "rule": "VOTE",
+      "options": [
+        {
+          "id": "accept",
+          "text_key": "interregnum.dlg.verdant_delivery.terms.accept",
+          "target": "opened",
+          "regard": {
+            "VERDANT": 10
+          }
+        },
+        {
+          "id": "decline",
+          "text_key": "interregnum.dlg.verdant_delivery.terms.decline",
+          "target": "closes",
+          "regard": {
+            "VERDANT": -6
+          }
+        }
+      ]
+    },
+    {
+      "id": "opened",
+      "speaker": "verdant",
+      "text_key": "interregnum.dlg.verdant_delivery.opened",
+      "rule": "INITIATOR",
+      "options": [],
+      "milestone": "LETTER_DELIVERED",
+      "teaches": "VERDANCY"
+    },
+    {
+      "id": "closes",
+      "speaker": "verdant",
+      "text_key": "interregnum.dlg.verdant_delivery.closes",
+      "rule": "INITIATOR",
+      "options": []
+    }
+  ]
+}

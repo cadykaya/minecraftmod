@@ -1,0 +1,79 @@
+{
+  "_comment": [
+    "ROT: what a thing becomes past its end. WORLD.md, locked: 'Age a thing forward past",
+    "its end: compost, spoil, collapse. NEVER AIMED AT A PLAYER OR A MOB.'",
+    "",
+    "THIS IS THE AGEING TABLE CONTINUED. The Turning's chains stop at mossy cobblestone,",
+    "mossy stone bricks and cobbled deepslate -- terminal states, things with no next",
+    "step. Rot gives them one. `stone -> cobblestone -> mossy cobblestone` is what a wall",
+    "does over a long time; the row below is what it does after that, and it is the same",
+    "sentence finished rather than a second idea.",
+    "",
+    "SEPARATE FROM THE AGEING TABLE, AND THAT IS THE DESIGN. Rewind reads the Turning's",
+    "table backwards, so anything in it can be undone -- which is what 'keeping every",
+    "past' means when it is a block. Nothing here is in that table, so nothing here can",
+    "be rewound. Past a thing's end there is no past left to keep, and the god that",
+    "remembers everything remembers everything a thing WAS, not what is left of it.",
+    "",
+    "NOTHING HERE IS A CREATURE, and it is not a creature by construction rather than by",
+    "a rule: this is a block-conversion table and a table of blocks has no way to name a",
+    "cow. WORLD.md rules out the obvious reading of 'age it past its end' -- an",
+    "instant-kill -- because EVERY SPELL IS A WORLD-VERB, and a school that broke the",
+    "doctrine would take the doctrine with it.",
+    "",
+    "THREE RULES END AT GRAVEL, which the table permits and records: asking what a piece",
+    "of gravel used to be has three answers and no way to choose. See StepTable -- a",
+    "converging `to` is refused for reading backwards rather than forbidden, and here it",
+    "is the honest shape. A collapsed wall does not remember which wall it was."
+  ],
+  "conversions": [
+    {
+      "id": "mossy_cobble_collapses",
+      "from": "minecraft:mossy_cobblestone",
+      "to": "minecraft:gravel",
+      "chance": 1.0
+    },
+    {
+      "id": "mossy_bricks_collapse",
+      "from": "minecraft:mossy_stone_bricks",
+      "to": "minecraft:gravel",
+      "chance": 1.0
+    },
+    {
+      "id": "deepslate_collapses",
+      "from": "minecraft:cobbled_deepslate",
+      "to": "minecraft:gravel",
+      "chance": 1.0
+    },
+    {
+      "id": "oak_leaves_spoil",
+      "from": "minecraft:oak_leaves",
+      "to": "minecraft:air",
+      "chance": 1.0
+    },
+    {
+      "id": "birch_leaves_spoil",
+      "from": "minecraft:birch_leaves",
+      "to": "minecraft:air",
+      "chance": 1.0
+    },
+    {
+      "id": "spruce_leaves_spoil",
+      "from": "minecraft:spruce_leaves",
+      "to": "minecraft:air",
+      "chance": 1.0
+    },
+    {
+      "id": "turf_dies",
+      "from": "minecraft:grass_block",
+      "to": "minecraft:dirt",
+      "chance": 1.0
+    },
+    {
+      "id": "soil_goes_over",
+      "from": "minecraft:dirt",
+      "to": "minecraft:coarse_dirt",
+      "chance": 1.0
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "interregnum:ferry_keel"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "interregnum:blocks/ferry_keel"
+}

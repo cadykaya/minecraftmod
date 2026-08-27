@@ -109,8 +109,16 @@ Four things that bite:
 
 ### Render type
 
-`VERIFY:` — the mechanism moved between the JSON model and client-side registration during
-the 1.21 line and may have moved again.
+`VERIFY:` — **still open, and it will stay open until this mod ships a model that is not
+solid.** Every block here is an opaque cube and every item is `item/generated`, so there
+is nothing in the repo that exercises render types and nothing CI could catch. The
+mechanism moved between the JSON model and client-side registration during the 1.21 line
+and may have moved again.
+
+*What would clear it:* the first cutout or translucent model — a glass-like shrine block,
+a plant, anything with real alpha — plus a client to look at it, which this container does
+not have. Note the second half: unlike the datagen and registration shapes, this one
+cannot be settled by reading the jar, because "does it render correctly" is the question.
 
 | Type | For | Cost |
 |---|---|---|
@@ -136,18 +144,51 @@ source is off-palette by construction.
 > and the greyscale source must be built from palette L\* values so the multiplied result
 > lands on the ramp. A tint chosen by eye is the seven-greens failure with an extra step.
 
-`VERIFY:` — and note the tinted texture must be excluded from `palette_check.py`, which
-currently has no notion of tint sources. Extend the skip list deliberately when the first
-one appears; do not quietly widen it.
+`VERIFY:` — **still open, and deliberately so: there is no tinted texture in the mod.**
+This is a note to the person who adds the first one, not debt. `palette_check.py` has no
+notion of tint sources, so a greyscale source would fail it for being off-palette — which
+is the check working, not a bug. Extend the skip list deliberately when the first one
+appears; do not quietly widen it.
 
 ---
 
 ## Item models
 
-`VERIFY: this is the highest-churn area in the whole client stack.` The item model system
-was reworked during the 1.21 line (a separate `items/` definition layer, model *types*,
-and condition/select/range dispatch replacing the old override system) and the details may
-well have moved again by 26.2. **Read a real project before writing these.**
+**VERIFIED against 26.2.0.67**, read out of the vanilla jar. The remembered shape turned
+out to be right, and it is now evidence instead of memory.
+
+There are **two layers**, and conflating them is the mistake:
+
+| file | what it is |
+|---|---|
+| `assets/<ns>/items/<name>.json` | the **definition**. Names a model, and is where dispatch lives. |
+| `assets/<ns>/models/item/<name>.json` | the **model**, for flat items. Parent + `layer0`. |
+
+A flat item needs both:
+
+```json
+// items/clast.json                    // models/item/clast.json
+{ "model": {                           { "parent": "minecraft:item/generated",
+    "type": "minecraft:model",           "textures": {
+    "model": "interregnum:item/clast"      "layer0": "interregnum:item/clast" } }
+} }
+```
+
+A **block item needs only the definition**, pointing straight at the block model, with no
+`models/item/` file at all — which is exactly how vanilla ships `stone`.
+
+The `type` field is the dispatch system that replaced overrides. Counted across all 1538
+vanilla item definitions in 26.2: `minecraft:model` (2131 uses), `special` (91), `select`
+(71), `dye` (50), `composite` (33), `condition` (26), `constant` (12), plus item-specific
+ones like `shulker_box` and `banner`. `range_dispatch` carries `entries` with `threshold`
+and a `fallback` — a drawn bow is the canonical example.
+
+> **This mod shipped six registered items and zero definitions**, and every check was
+> green: a dedicated server never loads `assets/`, so nothing in CI could see it, and
+> `registry_check.py` was asserting translation keys while its summary line claimed items
+> "resolve models". All six would have been the missing-model cube in front of a player.
+> That check now verifies the definition exists and the model it names resolves.
+> [`LESSONS.md`](LESSONS.md) #5, in the one area this container cannot look at directly.
 
 What is stable regardless of format:
 
@@ -174,8 +215,41 @@ black shape at icon size, painting will not save it.
 
 ## Entity models
 
-`VERIFY:` — entity models are **Java**, not JSON, and the class names and builder APIs move
-between versions. Read the sources.
+**VERIFIED by this repo's own compiling code** on 26.2.0.67: entity models are **Java**,
+not JSON — `WardenModel` and `ShrineKeeperModel` are built from `LayerDefinition` /
+`MeshDefinition` and registered against `EntityRenderersEvent.RegisterLayerDefinitions`.
+The builder APIs still move between versions; read the sources rather than a tutorial.
+
+### The bench: `tools/entity_view.py`
+
+Everything below says *look at it*, and until this existed there was no way to. A texture
+sheet shows unwrapped nets, which is exactly the view that tells you nothing about the
+assembled figure, and the game is the only other renderer available.
+
+So the geometry lives in `tools/entity_specs.py` and three things read it: the texture
+painter (to place each box's net), `gen_resources.py` (which writes the `*Geometry.java`
+the game bakes), and the viewer, which ray-casts the boxes orthographically and samples the
+real texture through Minecraft's own unwrap. What it draws is what the model will be,
+because it is built from the numbers the model is built from.
+
+```sh
+python3 tools/entity_view.py warden                 # front / three-quarter / side / rear
+python3 tools/entity_view.py warden --silhouette    # the test that actually decides
+```
+
+**It earned its keep on the first mob.** The Warden's robe was one box, and it looked
+plausible as a net and plausible from the front. Assembled, in profile, it was a bollard —
+the "judge it with the head hidden" failure below, arriving exactly as advertised. Splitting
+the robe into two stepped boxes fixed it, and that decision was only available because the
+figure could be seen.
+
+**Known limit, stated rather than discovered later:** the Warden is weakest in pure profile,
+where the arms sit inside the torso's depth and contribute nothing to the outline. Vanilla
+humanoids have the same property, so this is accepted rather than solved — but it is the
+first thing to fix if a Warden ever needs to read side-on.
+
+Two things the viewer will not tell you: how the model looks **animated**, and how it looks
+**lit**. Both still need a client.
 
 The shape of it is stable even when the API is not: a hierarchy of boxes, defined once as a
 layer definition with a fixed texture size, then posed per-frame. Boxes are placed in model

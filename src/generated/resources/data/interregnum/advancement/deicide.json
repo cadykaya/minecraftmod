@@ -1,0 +1,27 @@
+{
+  "criteria": {
+    "took_the_heart": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "translate": "advancements.interregnum.deicide.description"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "id": "interregnum:god_heart"
+    },
+    "title": {
+      "translate": "advancements.interregnum.deicide.title"
+    }
+  },
+  "requirements": [
+    [
+      "took_the_heart"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

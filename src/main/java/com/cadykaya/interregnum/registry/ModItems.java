@@ -1,0 +1,72 @@
+package com.cadykaya.interregnum.registry;
+
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+import com.cadykaya.interregnum.Interregnum;
+
+public final class ModItems {
+    private ModItems() {}
+
+    public static final DeferredRegister.Items ITEMS =
+            DeferredRegister.createItems(Interregnum.MOD_ID);
+
+    // Block items, so the blocks are obtainable and show in the tab.
+    // registerSimpleBlockItem returns DeferredItem<BlockItem>, not <Item>.
+    public static final DeferredItem<BlockItem> SHRINE_STONE =
+            ITEMS.registerSimpleBlockItem(ModBlocks.SHRINE_STONE);
+    public static final DeferredItem<BlockItem> SHRINE_STONE_CARVED =
+            ITEMS.registerSimpleBlockItem(ModBlocks.SHRINE_STONE_CARVED);
+
+    public static final DeferredItem<BlockItem> WARNING_STELE =
+            ITEMS.registerSimpleBlockItem(ModBlocks.WARNING_STELE);
+
+    public static final DeferredItem<BlockItem> WARDEN_STATUE =
+            ITEMS.registerSimpleBlockItem(ModBlocks.WARDEN_STATUE);
+
+    public static final DeferredItem<BlockItem> FERRY_KEEL =
+            ITEMS.registerSimpleBlockItem(ModBlocks.FERRY_KEEL);
+
+    /**
+     * The heart. Deliberately named "A Warm Gold Thing" in en_us: in Chapter 0 the
+     * player has no reason to know what it is, and the item telling them would give
+     * away the only secret the opening has.
+     */
+    public static final DeferredItem<Item> GOD_HEART =
+            ITEMS.registerSimpleItem("god_heart", p -> p.stacksTo(1).fireResistant());
+
+    /**
+     * A letter you are carrying for somebody who is dead, to somebody you have not met.
+     *
+     * ONE item for all four, and its name says nothing. `Sealed Letter` -- not "Letter
+     * to Rill", not four items with four names. You are the only one left carrying this
+     * mail and you do not know who any of them are; the item telling you would spend
+     * the mid-game's best reveal in a tooltip, before the letter is even opened.
+     *
+     * Which letter it is rides in {@link ModComponents#LETTER} as a god id, never as an
+     * addressee, for the same reason.
+     *
+     * Stacks to one. Four letters that stacked into a pile of four would be four copies
+     * of one object, and these are four different objects that happen to look alike --
+     * which is also true of them as writing.
+     */
+    public static final DeferredItem<Item> SEALED_LETTER =
+            ITEMS.register("sealed_letter",
+                    key -> new com.cadykaya.interregnum.content.item.SealedLetterItem(
+                            new net.minecraft.world.item.Item.Properties()
+                                    .setId(net.minecraft.resources.ResourceKey.create(
+                                            net.minecraft.core.registries.Registries.ITEM, key))
+                                    .stacksTo(1)
+                                    .fireResistant()));
+
+    /** A shard of the shattered god. Finite; attuning one makes a Theoclast. */
+    public static final DeferredItem<Item> CLAST =
+            ITEMS.registerSimpleItem("clast", p -> p.stacksTo(16));
+
+    public static void register(IEventBus modBus) {
+        ITEMS.register(modBus);
+    }
+}

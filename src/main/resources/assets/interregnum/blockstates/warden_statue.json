@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,woken=false": {
+      "model": "interregnum:block/warden_statue"
+    },
+    "facing=north,woken=true": {
+      "model": "interregnum:block/warden_statue_woken"
+    },
+    "facing=east,woken=false": {
+      "model": "interregnum:block/warden_statue",
+      "y": 90
+    },
+    "facing=east,woken=true": {
+      "model": "interregnum:block/warden_statue_woken",
+      "y": 90
+    },
+    "facing=south,woken=false": {
+      "model": "interregnum:block/warden_statue",
+      "y": 180
+    },
+    "facing=south,woken=true": {
+      "model": "interregnum:block/warden_statue_woken",
+      "y": 180
+    },
+    "facing=west,woken=false": {
+      "model": "interregnum:block/warden_statue",
+      "y": 270
+    },
+    "facing=west,woken=true": {
+      "model": "interregnum:block/warden_statue_woken",
+      "y": 270
+    }
+  }
+}

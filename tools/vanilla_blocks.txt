@@ -1,0 +1,59 @@
+# Vanilla block ids this project references, curated by hand.
+#
+# WHY THIS FILE EXISTS: nothing here can be checked against the real game yet
+# (no toolchain -- see docs/PLATFORM.md), so an unchecked id would sit in a data
+# file until it silently failed to load in front of a player. Validating against
+# a small, explicit list at least catches typos among the ids we actually use,
+# and makes the unverified surface visible and finite instead of unbounded.
+#
+# VERIFY: confirm every id against the real registry the first time the game
+# module compiles, then this file can be generated from the registry instead.
+minecraft:air
+minecraft:grass_block
+minecraft:dirt
+minecraft:coarse_dirt
+minecraft:dirt_path
+minecraft:podzol
+minecraft:rooted_dirt
+minecraft:short_grass
+minecraft:tall_grass
+minecraft:fern
+minecraft:dead_bush
+minecraft:dandelion
+minecraft:poppy
+minecraft:cornflower
+minecraft:oxeye_daisy
+minecraft:stone
+minecraft:cobblestone
+minecraft:mossy_cobblestone
+minecraft:gravel
+minecraft:andesite
+minecraft:diorite
+minecraft:granite
+minecraft:sand
+minecraft:sandstone
+minecraft:oak_leaves
+minecraft:birch_leaves
+minecraft:spruce_leaves
+minecraft:oak_log
+minecraft:stripped_oak_log
+minecraft:water
+minecraft:ice
+minecraft:snow
+
+# Added for the crushing table (Drop-forge). Unlike everything above these were
+# NOT taken on trust: the table loaded on a live dedicated server -- "content: 15
+# crushing rule(s) loaded" -- and the loader decodes every id through the block
+# registry, so a typo here would have left the table EMPTY rather than partial.
+minecraft:deepslate
+minecraft:cobbled_deepslate
+minecraft:red_sandstone
+minecraft:red_sand
+minecraft:blackstone
+minecraft:tuff
+minecraft:calcite
+minecraft:snow_block
+minecraft:packed_ice
+minecraft:blue_ice
+minecraft:mud
+minecraft:packed_mud
