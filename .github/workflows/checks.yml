@@ -224,3 +224,6 @@ jobs:
 
       - name: The Anchorite's shaft opens where its school is cast, takes what lets go, and gives it back
         run: ./tools/descent_check.sh
+
+      - name: The Verdant's door is planted, ripened by its school, crossed by standing still, and closed by felling it
+        run: ./tools/grove_check.sh

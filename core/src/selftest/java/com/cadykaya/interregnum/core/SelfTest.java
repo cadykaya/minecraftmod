@@ -1543,5 +1543,64 @@ public final class SelfTest {
               "and it runs the height of the world. A cube five blocks tall is a room; "
               + "something falling out of the bottom of it after a quarter of a second "
               + "would never reach the count, and WORLD.md's word is SHAFT");
+
+        // THE VERDANT'S GROWN DOOR. WORLD.md: "you plant it and wait. It opens when
+        // mature and closes when cut: the only portal in the mod with a lifespan."
+        check(com.cadykaya.interregnum.core.portal.Rooting.KEY
+                      == com.cadykaya.interregnum.core.magic.Spell.WILDGROWTH,
+              "the grown door is opened by Wildgrowth -- the school's verb for hurrying "
+              + "what is already there, which is exactly what a planted sapling is. "
+              + "Bridgeroot creates blocks that were never growing; it is how you reach a "
+              + "place, not how you ripen one");
+
+        // THE THREE STATES, and every one of them is read off blocks rather than a clock.
+        // The timer version is the one that nearly shipped: with a duration, the school
+        // does nothing waiting does not, and WORLD.md's "or patience, which is worse
+        // there" becomes a stopwatch you are allowed to skip.
+        check(com.cadykaya.interregnum.core.portal.Rooting.state(true, false)
+                      == com.cadykaya.interregnum.core.portal.Rooting.State.OPEN,
+              "a planted position holding a trunk is an open door -- the thing grew");
+        check(com.cadykaya.interregnum.core.portal.Rooting.state(false, true)
+                      == com.cadykaya.interregnum.core.portal.Rooting.State.SEEDED,
+              "a planted position still holding a sapling is a door that is not open yet. "
+              + "If a sapling opened it there would be no waiting, and the lifespan that "
+              + "WORLD.md calls this portal's whole distinction would start at its end");
+        check(com.cadykaya.interregnum.core.portal.Rooting.state(false, false)
+                      == com.cadykaya.interregnum.core.portal.Rooting.State.GONE,
+              "and a planted position holding neither is gone. THIS IS 'closes when cut' "
+              + "-- there is no separate closing mechanism, because the door was never "
+              + "anything but the tree");
+        check(com.cadykaya.interregnum.core.portal.Rooting.state(true, true)
+                      == com.cadykaya.interregnum.core.portal.Rooting.State.OPEN,
+              "a trunk wins over a sapling. The tree is what the door is, and something "
+              + "having also put a seedling there does not un-grow it");
+
+        // Stillness, and both resets. Same shape as the shaft's counter and deliberately
+        // a different act: one is a thing you do to yourself in mid-air, the other is a
+        // thing you allow the world to do to you.
+        int still = com.cadykaya.interregnum.core.portal.Rooting.STILL_TICKS;
+        check(!com.cadykaya.interregnum.core.portal.Rooting.opens(still - 1)
+              && com.cadykaya.interregnum.core.portal.Rooting.opens(still),
+              "one tick short of the wait is not the wait, and the full span is");
+        check(still > com.cadykaya.interregnum.core.portal.Descent.SURRENDER_TICKS,
+              "standing still costs more than letting go. Falling is frightening and "
+              + "self-limiting; standing about costs nothing to start, and is only "
+              + "expensive in a world where things grow over you");
+        int stood = 0;
+        for (int i = 0; i < 5; i++) {
+            stood = com.cadykaya.interregnum.core.portal.Rooting.rest(stood, true, false);
+        }
+        check(stood == 5, "five ticks of not going anywhere under a door counts five");
+        check(com.cadykaya.interregnum.core.portal.Rooting.rest(stood, true, true) == 0,
+              "taking a step drops the count. The price of this door is holding still, "
+              + "and a wait you can walk around during is not a wait");
+        check(com.cadykaya.interregnum.core.portal.Rooting.rest(stood, false, false) == 0,
+              "and stepping out of the doorway drops it too -- the reach has an edge, "
+              + "like every region in this mod");
+        check(com.cadykaya.interregnum.core.portal.Rooting.REACH
+              < com.cadykaya.interregnum.core.magic.Lighten.RADIUS,
+              "the doorway is tighter than the shaft. A shaft has to be something you can "
+              + "fall down; this is somewhere you have to stand on purpose, and a wide one "
+              + "would take a passer-by");
     }
 }

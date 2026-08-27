@@ -77,13 +77,13 @@ import com.cadykaya.interregnum.Interregnum;
  * with a single fixed biome: it generates ground you can stand on and nothing more. That
  * is still true of every level here, including the new one.
  *
- * <b>One system now has two of its three layers.</b> The Anchorite's under-layer exists
- * and is joined to its surface by that god's own portal -- see
- * {@link com.cadykaya.interregnum.core.portal.Descent}. The other three gods have their
- * surface only, and no god has a far-layer. `WORLD.md` locks all four portals; three of
- * them are unbuilt, and the mechanisms they need (a plant with a lifespan, an hour you
- * have to make, a silence you can break by coughing) have nothing in common with this one
- * beyond the rule that the school is the key.
+ * <b>Two systems now have two of their three layers.</b> The Anchorite's under-layer and
+ * the Verdant's both exist, each joined to its surface by that god's own portal -- see
+ * {@link com.cadykaya.interregnum.core.portal.Descent} and
+ * {@link com.cadykaya.interregnum.core.portal.Rooting}. The Hearth-Turner and the Quiet
+ * One have their surface only, and no god has a far-layer. The two portals that remain
+ * share the rule that the school is the key and no mechanism at all: an hour you have to
+ * make, and a silence you can break by coughing.
  *
  * Saying so in the file is cheaper than a later reader inferring that a placeholder was a
  * decision.
@@ -161,6 +161,24 @@ public final class ModDimensions {
 
     public static final ResourceKey<net.minecraft.world.level.Level> GREEN_AUTHORITY =
             ResourceKey.create(Registries.DIMENSION, GREEN_AUTHORITY_STEM.identifier());
+
+    /**
+     * Under the Verdant's surface: <b>the root-space.</b>
+     *
+     * The second under-layer, reached by the second portal — a door somebody grew. See
+     * {@link com.cadykaya.interregnum.core.portal.Rooting}. Named for the docket like
+     * every other level here.
+     */
+    public static final ResourceKey<DimensionType> GREEN_AUTHORITY_LOWER_TYPE =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "green_authority_lower"));
+
+    public static final ResourceKey<LevelStem> GREEN_AUTHORITY_LOWER_STEM =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "green_authority_lower"));
+
+    public static final ResourceKey<net.minecraft.world.level.Level> GREEN_AUTHORITY_LOWER =
+            ResourceKey.create(Registries.DIMENSION, GREEN_AUTHORITY_LOWER_STEM.identifier());
 
     /** The Hearth-Turner's surface. */
     public static final ResourceKey<DimensionType> TEMPORAL_AUTHORITY_TYPE =
@@ -270,6 +288,28 @@ public final class ModDimensions {
                 MIN_Y, HEIGHT, HEIGHT,
                 blocks.getOrThrow(BlockTags.INFINIBURN_OVERWORLD),
                 0.0F,
+                new DimensionType.MonsterSettings(ConstantInt.of(0), 0),
+                DimensionType.Skybox.OVERWORLD,
+                CardinalLighting.Type.DEFAULT,
+                covered(),
+                HolderSet.empty(),
+                Optional.empty()));
+
+        // Under it. Same god, one layer down, and the attributes say the same thing the
+        // surface says: it will cover you for a night and will not take responsibility
+        // for you. No sky, and the same faint light of its own the Anchorite's under-layer
+        // has -- for the same reason, which is that pitch dark is an absence of a law
+        // rather than a law.
+        ctx.register(GREEN_AUTHORITY_LOWER_TYPE, new DimensionType(
+                false,
+                false,                              // hasSkyLight -- there is no sky
+                false,                              // hasCeiling -- and the terrain is
+                                                    // vanilla noise, so a declared roof
+                                                    // would be a lie in data
+                false, 1.0,
+                MIN_Y, HEIGHT, HEIGHT,
+                blocks.getOrThrow(BlockTags.INFINIBURN_OVERWORLD),
+                0.1F,
                 new DimensionType.MonsterSettings(ConstantInt.of(0), 0),
                 DimensionType.Skybox.OVERWORLD,
                 CardinalLighting.Type.DEFAULT,
@@ -411,6 +451,16 @@ public final class ModDimensions {
         // Verdant's law is growth, and there is no point accelerating bare stone.
         ctx.register(GREEN_AUTHORITY_STEM, new LevelStem(
                 types.getOrThrow(GREEN_AUTHORITY_TYPE),
+                new NoiseBasedChunkGenerator(
+                        new FixedBiomeSource(biomes.getOrThrow(ModBiomes.LONG_GREEN)),
+                        noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
+
+        // The root-space, on the same placeholder terms and the same biome as its surface,
+        // for the same reason the Anchorite's under-layer shares its own: a colour
+        // decision about a place whose shape is not designed yet is two decisions that
+        // want making together.
+        ctx.register(GREEN_AUTHORITY_LOWER_STEM, new LevelStem(
+                types.getOrThrow(GREEN_AUTHORITY_LOWER_TYPE),
                 new NoiseBasedChunkGenerator(
                         new FixedBiomeSource(biomes.getOrThrow(ModBiomes.LONG_GREEN)),
                         noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));

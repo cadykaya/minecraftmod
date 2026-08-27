@@ -9,10 +9,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.portal.TeleportTransition;
-import net.minecraft.world.phys.Vec3;
 
 /**
  * The Anchorite's shaft, at the point where it actually moves something.
@@ -24,17 +20,6 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class Shaft {
     private Shaft() {}
-
-    /**
-     * How far above the far side's ground you arrive.
-     *
-     * Two blocks, which is a step rather than a drop. The tempting version puts you in at
-     * the top of the world still falling, on the reasoning that you fell in and should
-     * keep falling — and it is wrong twice: it drops you through terrain you have not
-     * loaded yet, and it makes a two-second commitment into a twelve-second one you
-     * cannot see the end of. The shaft is the door; the fall was how you opened it.
-     */
-    private static final int STEP_DOWN = 2;
 
     /** What happened when something let go. */
     public enum Outcome {
@@ -110,69 +95,26 @@ public final class Shaft {
     /**
      * Take one thing through.
      *
-     * @return the entity on the far side, or null if it did not go. Cross-dimension
-     *         travel builds a NEW entity and removes the old one, so the caller must not
-     *         keep using the one it passed in.
+     * @return the thing on the far side, or null if it did not go. See
+     *         {@link Crossing#into}: the reference passed in is dead afterwards.
      */
     public static Entity take(ServerLevel from, Entity entity) {
         Descent.Layer layer = layerOf(from);
         if (layer == null) {
             return null;
         }
-        ServerLevel to = from.getServer().getLevel(levelOf(layer.beyond()));
-        if (to == null) {
-            return null;
-        }
-        BlockPos landing = arrival(to, entity.blockPosition());
         // FORGET BEFORE THE CROSSING, not after: the UUID survives a dimension change, so
-        // an entity that arrived with its count intact would satisfy `opens` on its first
+        // something that arrived with its count intact would satisfy `opens` on its first
         // tick on the far side and bounce straight back. The symptom is a thing flickering
-        // between two worlds forever, and the fix is one line in the right order.
+        // between two worlds for ever, and the fix is one line in the right order.
         Descending.forget(entity.getUUID());
-        Entity landed = entity.teleport(new TeleportTransition(
-                to,
-                Vec3.atBottomCenterOf(landing),
-                // Arriving with the velocity you left with means arriving at terminal
-                // speed after two seconds of falling, and taking the fall damage for it
-                // from a two-block step. The door does not hurt anybody.
-                Vec3.ZERO,
-                entity.getYRot(), entity.getXRot(),
-                TeleportTransition.PLACE_PORTAL_TICKET));
+        Entity landed = Crossing.into(from, entity, levelOf(layer.beyond()));
         if (landed != null) {
-            // Vanilla's own cooldown, so a thing that goes through and immediately lets
-            // go again is not eligible for a moment. Nothing depends on it -- the count
-            // was cleared above -- but it is the mechanism the game already has for
-            // "just came through a portal", and a portal that did not set it would be
-            // lying to everything else that asks.
-            landed.setPortalCooldown();
             Descending.forget(landed.getUUID());
         }
         return landed;
     }
 
-    /**
-     * Where the far side puts you.
-     *
-     * Same column, on that world's own ground. The heightmap is `MOTION_BLOCKING` rather
-     * than `WORLD_SURFACE` because what is wanted is the first thing that would stop a
-     * fall, which is the question actually being asked, and the two differ over water and
-     * leaves in exactly the cases where the difference matters.
-     *
-     * The pocket is cleared unconditionally. A destination computed from a heightmap is
-     * right about the terrain and knows nothing about what a player built there since, and
-     * arriving inside somebody's floor is the one failure a portal must not have.
-     */
-    private static BlockPos arrival(ServerLevel to, BlockPos from) {
-        int ground = to.getHeight(Heightmap.Types.MOTION_BLOCKING, from.getX(), from.getZ());
-        BlockPos landing = new BlockPos(from.getX(), ground + STEP_DOWN, from.getZ());
-        for (int dy = 0; dy <= 1; dy++) {
-            BlockPos at = landing.above(dy);
-            if (!to.getBlockState(at).isAir()) {
-                to.setBlock(at, Blocks.AIR.defaultBlockState(), 3);
-            }
-        }
-        return landing;
-    }
 
     /** The spell that opens it, for anything that wants to say so. */
     public static Spell key() {

@@ -1341,6 +1341,61 @@ public final class InterregnumCommand {
                                     .Rite.Outcome.ATTUNED ? 1 : 0;
                         })));
 
+        // Planting, by hand. `WORLD.md`'s verb is `plant` and the ledger listens for a
+        // PLAYER placing a sapling -- which a headless server has nobody to do, the same
+        // gap `record deicide` and `regard adjust` exist to bridge. It registers a
+        // position that ALREADY HOLDS a sapling; it does not place one, because a seam
+        // that both placed and registered could pass while the listener was broken.
+        root = root.then(Commands.literal("plant")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                        .executes(ctx -> {
+                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                            var level = ctx.getSource().getLevel();
+                            boolean sapling = com.cadykaya.interregnum.system.portal.Grove
+                                    .isPlanting(level, pos);
+                            boolean took = sapling && com.cadykaya.interregnum.system.portal
+                                    .Plantings.get(level).plant(pos);
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                    "plant=" + (took ? "PLANTED"
+                                            : sapling ? "ALREADY" : "NOTHING_TO_PLANT")),
+                                    false);
+                            return took ? 1 : 0;
+                        })));
+
+        // The Verdant's grown door, reported rather than driven -- same posture as the
+        // shaft below, and for the same reason. Nothing here plants, ripens or opens
+        // anything: you plant a sapling, the school or the world ripens it, and you stand
+        // still under what grew. All three are things a player does and a check can drive.
+        root = root.then(Commands.literal("grove")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                        .executes(ctx -> {
+                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                            var level = ctx.getSource().getLevel();
+                            var plantings = com.cadykaya.interregnum.system.portal.Plantings
+                                    .get(level);
+                            // The state OF THIS POSITION if it is one that was planted,
+                            // and whether an open door reaches it either way. The two
+                            // answer different questions -- "is this a door" and "is this
+                            // a doorway" -- and a check needs both to tell a tree that
+                            // never grew apart from one it is standing too far from.
+                            String at = plantings.has(pos)
+                                    ? com.cadykaya.interregnum.system.portal.Grove
+                                            .state(level, pos).toString()
+                                    : "UNPLANTED";
+                            boolean under = com.cadykaya.interregnum.system.portal.Grove
+                                    .openNear(level, pos) != null;
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                    "grove=" + at
+                                            + " doorway=" + (under ? "OPEN" : "SHUT")
+                                            + " planted=" + plantings.count()
+                                            + " waiting=" + com.cadykaya.interregnum
+                                                    .system.portal.Resting.waiting()),
+                                    false);
+                            return under ? 1 : 0;
+                        })));
+
         // The Anchorite's shaft, reported rather than driven.
         //
         // Unlike every other seam in this file there is nothing here that MAKES the portal

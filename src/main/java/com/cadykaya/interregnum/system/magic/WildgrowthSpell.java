@@ -4,6 +4,7 @@ import com.cadykaya.interregnum.core.magic.Casting;
 import com.cadykaya.interregnum.core.magic.Grimoire;
 import com.cadykaya.interregnum.core.magic.Wildgrowth;
 import com.cadykaya.interregnum.system.ChapterSavedData;
+import com.cadykaya.interregnum.system.portal.Grove;
 import com.cadykaya.interregnum.system.unraveling.Unraveling;
 import com.cadykaya.interregnum.system.verdant.Verdant;
 import net.minecraft.core.BlockPos;
@@ -39,6 +40,13 @@ public final class WildgrowthSpell {
         }
         // TRUE: the ledger gates what you did not aim at, and a cube is full of it.
         int grew = Verdant.quicken(level, pos, Wildgrowth.RADIUS, Wildgrowth.PUSHES, true);
+        // ...with exactly one thing inside the cube that the caster DID aim at: a door
+        // somebody planted. A planted sapling is claimed, so the line above steps over it
+        // -- which would make WORLD.md's locked rule, that each god's portal is opened by
+        // the school that god teaches, false in the only case it is about. See
+        // Grove.ripen: it reaches nothing but positions the planting ledger holds, so a
+        // greenhouse in the same cube is spared exactly as before.
+        grew += Grove.ripen(level, pos, Wildgrowth.RADIUS, Wildgrowth.PUSHES);
         if (!Casting.drawsOnTheCorpse(level.dimension() == Level.OVERWORLD)) {
             return new Cast(grew, 0, "");
         }

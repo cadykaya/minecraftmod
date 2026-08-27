@@ -1,0 +1,11 @@
+{
+  "type": "interregnum:green_authority_lower",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "interregnum:long_green"
+    },
+    "settings": "minecraft:overworld"
+  }
+}

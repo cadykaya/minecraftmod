@@ -308,6 +308,21 @@ MUTATIONS = [
      "    public static final Spell KEY = Spell.LIGHTEN;",
      "    public static final Spell KEY = Spell.HUSH;"),
 
+    # THE VERDANT'S GROWN DOOR. Its distinction is the lifespan, so the mutations are the
+    # three ways of losing one: no waiting, no stillness, and no closing.
+    ("portal: a sapling is already a door, so nothing is ever waited for",
+     f"{MAIN}/portal/Rooting.java",
+     "        return sapling ? State.SEEDED : State.GONE;",
+     "        return sapling ? State.OPEN : State.GONE;"),
+    ("portal: walking through the doorway counts as standing still in it",
+     f"{MAIN}/portal/Rooting.java",
+     "        return !under || moved ? 0 : held + 1;",
+     "        return !under ? 0 : held + 1;"),
+    ("portal: the grown door opens the instant you arrive under it",
+     f"{MAIN}/portal/Rooting.java",
+     "    public static final int STILL_TICKS = 60;",
+     "    public static final int STILL_TICKS = 1;"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.

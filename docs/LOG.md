@@ -4226,3 +4226,77 @@ It is now a place you can only reach by having been taught Weight in the world t
 it, and having been willing to fall.
 
 Three portals and every far-layer remain. They share the rule and no mechanism.
+
+---
+
+## The Verdant's grown door — the second portal, and the first one with a life
+
+`WORLD.md`, locked: *"You **plant** it and wait. It opens when mature and closes when cut:
+the only portal in the mod with a lifespan. Opened with *Bridgeroot* / *Wildgrowth* — or
+patience, which is worse there."*
+
+### There was nearly a timer, and it would have deleted a locked clause
+
+The obvious build is *planted at tick T, opens at T + N*. It is wrong, and the way it is
+wrong is instructive: with a duration, the school does nothing that waiting does not, and
+*"or patience, which is worse there"* stops being an alternative and becomes the only
+mechanism, with *Wildgrowth* as a stopwatch you are allowed to skip.
+
+So maturity is not a duration. It is a **fact about the world** — did the thing you planted
+become a tree — which vanilla's own growth answers, *Wildgrowth* makes true now, and
+patience makes true eventually, because that world already grows at eight times the rate
+you know. Nothing is stored but the position. Seeded, open and gone are asked of the blocks
+every time, which is what makes *"closes when cut"* a fact rather than a promise kept by a
+listener: fell the trunk by any means, including ones the game never reports as breaking a
+block, and the next question about that position answers `GONE` and drops it from the
+ledger.
+
+### How you pass through, which `WORLD.md` never said
+
+A mature trunk is a solid block. There is nothing to walk into, so the passage needed
+deciding, and the answer is **you stand still under it.**
+
+That is the exact counterpart of the Anchorite's rule rather than a copy of it. Letting go
+is something you do to yourself in mid-air; standing still is something you allow the world
+to do to you. And it is the one price this world can charge that no other can: `WORLD.md`
+locks growth here as a **hazard** — the path you cut closes behind you — so standing about
+is never free. Three seconds, longer than the shaft's two, because falling is frightening
+and self-limiting and standing still costs nothing to begin.
+
+### One rule had to be paid for somewhere else
+
+*Wildgrowth* sweeps a cube and spares blocks a player placed. That is right, and it is the
+sharpened form of [LESSONS #35](LESSONS.md#35-a-check-written-from-the-implementation-will-defend-the-bug) the
+spell has always carried: **the ledger gates what you did not aim at**, and a cube is full
+of things nobody aimed at.
+
+It collided head-on with this portal the moment both existed. A planted sapling *is* placed,
+so the school's own verb would step over the single thing the caster was aiming at — and
+the locked rule that each god's portal is opened by the school that god teaches would be
+false in the only case it is about.
+
+The resolution is the existing rule read properly rather than an exception to it. A position
+somebody deliberately registered as a door is not somebody's work you happened to sweep. So
+one narrow, named method reaches past the ledger, and it reaches **nothing but positions the
+planting ledger holds** — a greenhouse in the same cube is spared exactly as before.
+
+### The check that passed and failed on alternate runs
+
+The waiter was first put at head height beside the trunk, two blocks out. It crossed. Then,
+on a run testing a different sabotage, it did not — and the sabotage in question could not
+possibly have affected it.
+
+A tree's canopy is not deterministic. One roll of the shape put a leaf where the waiter was
+standing and shouldered it a block sideways, and moving is the one thing that resets this
+door's count. The check was measuring the tree's random geometry as much as the portal.
+
+Two fixes, and the second matters more than the first: the waiter now stands on the ground
+well clear of any crown, **and the check probes the doorway at the waiter's own feet** before
+asserting anything about crossing. Without that probe, "the thing did not cross" is equally
+explained by a thing that was never in the doorway — which is what had been happening.
+
+### Where the portals stand
+
+Two of four, each with an under-layer behind it. The Hearth-Turner's and the Quiet One's
+remain, and they share the rule and no mechanism: an hour you have to make in a world whose
+sky is fixed, and a door you can close by coughing.

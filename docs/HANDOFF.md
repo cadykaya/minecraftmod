@@ -27,12 +27,12 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **46**, every one mutation-verified, all in CI |
+| Live-world checks | **47**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, ten spells**, learned in their gods' worlds and **cast by saying the word** |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
-| World-systems | the Anchorite has **two layers, joined by its own portal**; three gods have a surface only |
+| World-systems | the Anchorite and the Verdant each have **two layers, joined by that god's own portal**; two gods have a surface only |
 
 ### The audit, made permanent
 
@@ -2737,23 +2737,30 @@ Everything else is unblocked. In order:
 1. **The systems, not just the surfaces.** *(Still the largest thing unbuilt — but one
    god now has a system rather than a surface.)*
 
-   **Built this pass: the Anchorite's shaft, both ways.** `interregnum:mass_authority_lower`
-   exists, and the portal that reaches it is a *Lighten* zone's footprint taken through the
-   height of the world: let go inside it for two seconds and you go through. Nothing is
-   placed and nothing is built — the door is the spell, cast in the one world where the
-   spell's law is also the world's. `tools/descent_check.sh` asserts it in a live server
-   against three controls, and the return trip is the half that proves the shaft carries
-   things rather than deleting them downward.
+   **Two of the four portals are built**, each with an under-layer behind it.
 
-   **The return leg was the design, and a check found it.** You arrive standing on the
-   under-layer's floor, so a shaft that only took what had already let go would be a
-   one-way door into a place with no ferry law naming it. Below, it lifts everything inside
-   it — see [`WORLD.md`](WORLD.md).
+   * **The Anchorite's shaft** (`interregnum:mass_authority_lower`) is a *Lighten* zone's
+     footprint taken through the height of the world: let go inside it for two seconds and
+     you go through. Nothing is placed — the door is the spell, cast in the one world where
+     the spell's law is also the world's. The return leg was the design and a check found
+     it: you arrive standing on the floor down there, so below, the shaft lifts everything
+     inside it. `tools/descent_check.sh`.
+   * **The Verdant's grown door** (`interregnum:green_authority_lower`) has a lifespan. You
+     plant a sapling and the world remembers; it is not a door until it is a tree; one cast
+     of *Wildgrowth* ripens it and so does patience; fell the trunk and it is gone in the
+     same instant. You pass through by **standing still under it** — the exact counterpart
+     of letting go. `tools/grove_check.sh`.
 
-   **Still missing: three portals and every far-layer.** The other three share the rule and
-   no mechanism — a plant with a lifespan, an hour you have to make, a silence you can
-   break by coughing. Each is its own build. The Verdant's is probably next: it is the only
-   one whose world already generates something to plant in.
+   **Still missing: two portals and every far-layer.** The Hearth-Turner's (an hour you
+   have to make, in a world whose sky is fixed) and the Quiet One's (opens when nothing near
+   it makes a sound — and `WORLD.md` notes it is the only one a player can close by
+   accident). Neither shares a mechanism with the two that exist.
+
+   The Hearth-Turner's is the better next build: its law is the ageing table, which is
+   already written and already driven by a check, and *Weather* / *Rewind* are the school.
+   The Quiet One's wants care — the silence half of that world is the one thing this
+   container cannot verify, and a portal keyed on sound needs a server-side definition of
+   "quiet" that does not depend on a client hearing anything.
 
    Also missing from all five: **terrain that is designed.** They use vanilla noise with
    one fixed biome, and each file says so in its own javadoc. The under-layer shares its

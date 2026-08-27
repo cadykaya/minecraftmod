@@ -212,9 +212,29 @@ let go could never move you again — there is no cliff to step off and nothing 
 does not hold* said in movement rather than in prose. One rule, one field, and the world
 chooses the sign.
 
-The other three portals are unbuilt. They share the rule and nothing else: a plant with a
-lifespan, an hour you have to make, and a silence you can break by coughing have no
-mechanism in common with this one.
+**Built: the Verdant's, and it has a life.** You plant a sapling in that world and the
+world remembers you planted it. It is **not a door yet** — the waiting is the point. One
+cast of *Wildgrowth*, the school's verb for hurrying what is already there, ripens it; so
+does patience, because that world already grows at eight times the rate you know. Fell the
+trunk and the door is gone in the same instant, because the door was never anything but
+the tree. It is the only portal in the mod a stranger can take away from you.
+
+**[LOCKED — decided here, completing a locked design.]** `WORLD.md` never said how you
+*pass through* a grown door, and a mature trunk is a solid block, so there is nothing to
+walk into. **You stand still under it.** That is the exact counterpart of the Anchorite's
+rule rather than a copy: one is a thing you do to yourself in mid-air, the other is a thing
+you allow the world to do to you — and in a world where growth is the hazard and the path
+you cut closes behind you, standing about is the one thing that is never free.
+
+One consequence had to be paid for elsewhere. *Wildgrowth* spares blocks a player placed,
+which is right for a spell that sweeps a cube — but a planted sapling **is** placed, so the
+school's own verb would have stepped over the only thing the caster was aiming at. The
+resolution is the existing rule read properly, not an exception to it: the ledger gates
+what you did not aim at, and a position somebody deliberately registered as a door is not
+that. Nothing else in the cube loses its protection.
+
+The two remaining portals share the rule and nothing else: an hour you have to make, and a
+silence you can break by coughing have no mechanism in common with either of these.
 
 ### The pantheon — **four, and everyone calls them something different**
 
