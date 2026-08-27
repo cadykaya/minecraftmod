@@ -415,6 +415,23 @@ growth is a **dice roll** — wheat on unhydrated farmland advances on about one
 in twenty-six — so a fixed number of pushes is a spell that works sometimes, which is not a
 verb. The spell keeps asking until the block moves, up to a bound.
 
+**Built: *Rot*, and the Turning is the first complete school.** It is a **second conversion
+table** in the shape the ageing chain and the unraveling already share — the locked reuse
+note's third caller — and it picks up exactly where the ageing table stops. `stone →
+cobblestone → mossy cobblestone` is what a wall does over a long time; collapsing to gravel
+is what it does after that, and the two are one sentence finished rather than two ideas.
+
+**The locked constraint needs no enforcing, which is the strongest form it could take.**
+*Rot* is a block conversion, and a table of blocks has no way to name a cow. The bolded
+clause is not checked anywhere: there is nothing to check. That is the same shape *Ripen*
+reaches from the other side — it asks for something with growing left to do, and a player
+has no such state. **Neither spell contains the word *player*.**
+
+**And it is one-way.** *Rewind* reads the **ageing** table backwards, so anything in that
+table can be undone — which is what *keeping every past* means when it is a block. Nothing
+Rot does is in that table. Past a thing's end there is no past left to keep, and the god
+that remembers everything remembers what a thing *was*, not what is left of it.
+
 *Held-breath* and *Rot* are the two that were decided rather than sketched. The first
 because the casting affordance makes silence cost something real. The second because the
 obvious reading of *"age it past its end"* is an instant-kill, and **every spell is a

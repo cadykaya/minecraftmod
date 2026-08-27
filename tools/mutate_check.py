@@ -416,6 +416,13 @@ MUTATIONS = [
      "    public static final int ATTEMPTS = 256;",
      "    public static final int ATTEMPTS = Integer.MAX_VALUE;"),
 
+    # Rot's locked constraint lives in the type system: the spell has no way to NAME a
+    # creature. A mutation that gives it one is the refactor this guard exists to stop.
+    ("magic: Rot gains a vocabulary for living things, so an instant-kill becomes writable",
+     f"{MAIN}/magic/Rot.java",
+     "    public enum Subject {\n        /** A block with somewhere past its end to go. */\n        THING,",
+     "    public enum Subject {\n        /** A block with somewhere past its end to go. */\n        THING,\n        /** A creature. */\n        CREATURE,"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.

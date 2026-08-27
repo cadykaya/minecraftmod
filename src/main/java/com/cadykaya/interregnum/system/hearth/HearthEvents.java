@@ -22,12 +22,19 @@ public final class HearthEvents {
     private static final Identifier AGEING_LISTENER =
             Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "ageing");
 
+    private static final Identifier ROTTING_LISTENER =
+            Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "rotting");
+
     /** Chunks around a player that count as theirs, for ageing purposes. */
     private static final int REACH = 4;
 
     @SubscribeEvent
     public static void onAddReloadListeners(AddServerReloadListenersEvent event) {
         event.addListener(AGEING_LISTENER, new TurningLoader());
+        // The second table, loaded beside the first because it is the same mechanism --
+        // and kept separate because Rewind reads the ageing table backwards and must not
+        // be able to undo a rot. See RottingLoader.
+        event.addListener(ROTTING_LISTENER, new RottingLoader());
     }
 
     @SubscribeEvent

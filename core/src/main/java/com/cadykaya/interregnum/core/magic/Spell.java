@@ -59,7 +59,9 @@ public enum Spell {
     /** The Anchorite's: one thing fixed where it is, against any push. */
     MOOR(School.WEIGHT),
     /** The Hearth-Turner's: one living thing carried forward to what it was becoming. */
-    RIPEN(School.TURNING);
+    RIPEN(School.TURNING),
+    /** The Hearth-Turner's: one thing carried past its end, and never a creature. */
+    ROT(School.TURNING);
 
     private final School school;
 

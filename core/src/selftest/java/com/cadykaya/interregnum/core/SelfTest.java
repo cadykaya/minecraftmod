@@ -1869,5 +1869,41 @@ public final class SelfTest {
         check(com.cadykaya.interregnum.core.magic.Ripen.ATTEMPTS < 10_000,
               "and it gives up rather than looping. The bound is what stops a cast on "
               + "something that cannot grow from being a cast that never returns");
+
+        // ROT. WORLD.md: "age a thing forward past its end: compost, spoil, collapse.
+        // NEVER AIMED AT A PLAYER OR A MOB."
+        check(com.cadykaya.interregnum.core.magic.Rot.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.TURNING
+              && com.cadykaya.interregnum.core.magic.Spell.ROT.school()
+                      == com.cadykaya.interregnum.core.magic.School.TURNING,
+              "Rot is the Hearth-Turner's, and the twin of Ripen: one takes a thing to "
+              + "what it was going to become, the other takes it past that");
+        check(com.cadykaya.interregnum.core.magic.Rot.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.Ripen.SCHOOL,
+              "and they share a school, which is what makes where each STOPS the whole "
+              + "distinction between them");
+        check(com.cadykaya.interregnum.core.magic.Incantation
+                      .aimed(com.cadykaya.interregnum.core.magic.Spell.ROT),
+              "Rot is aimed at a block, like Weather -- one block, one table, one step");
+
+        // THE LOCKED CONSTRAINT, guarded where it can be: the outcome vocabulary. A spell
+        // that could report a creature would be a spell that could find one, and
+        // WORLD.md rules out the instant-kill reading in bold because every spell is a
+        // world-verb. The enum having no such value is the constraint in the type system.
+        boolean namesACreature = false;
+        for (var subject : com.cadykaya.interregnum.core.magic.Rot.Subject.values()) {
+            String n = subject.name();
+            namesACreature |= n.contains("CREATURE") || n.contains("MOB")
+                    || n.contains("PLAYER") || n.contains("ANIMAL");
+        }
+        check(!namesACreature,
+              "Rot has no vocabulary for a living thing. WORLD.md rules out the obvious "
+              + "reading of 'age it past its end' -- an instant-kill -- because every "
+              + "spell is a world-verb, and a school that broke the doctrine would take "
+              + "the doctrine with it. The constraint is kept by the spell having no way "
+              + "to NAME a creature rather than by a rule it could be refactored past");
+        check(com.cadykaya.interregnum.core.magic.Rot.Subject.values().length == 2,
+              "and it has exactly two answers: a thing, or nothing. A third would be a "
+              + "distinction this spell is not entitled to draw");
     }
 }

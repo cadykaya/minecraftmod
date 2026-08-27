@@ -27,10 +27,10 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **54**, every one mutation-verified, all in CI |
+| Live-world checks | **55**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
-| Magic | four schools, **thirteen spells built** of sixteen named, learned in their gods' worlds and **cast by saying the word** |
+| Magic | four schools, **fourteen spells built** of sixteen named; **the Turning is complete** |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 | World-systems | **all four gods have two layers**, each joined by that god's own portal; no god has a far-layer |
 
@@ -2801,7 +2801,7 @@ Everything else is unblocked. In order:
 4. ~~**The delivery scenes.**~~ **All four built**, recording `LETTER_DELIVERED` and
    teaching their god's school. Chapters 3–5 gate on that count.
 
-5. ~~**Magic.**~~ **Four schools, thirteen spells built**, all learned in their
+5. ~~**Magic.**~~ **Four schools, fourteen spells built**, all learned in their
    gods' worlds and all costing the overworld what they do not cost a living god's.
    *Weather* changes a block and *Rewind* changes it back; *Lighten* encloses a region and
    *Drop-forge* makes one where impacts count; *Bridgeroot* creates blocks and
@@ -2810,7 +2810,8 @@ Everything else is unblocked. In order:
    picks a small building up and carries it; *Held-breath* takes your own sound away and
    your voice with it; and *Moor* fixes one thing where it is against every force that
    would move it, including its own god's; and *Ripen* carries one living thing forward to
-   what it was becoming and stops there. Thirteen different verbs, which is what shows the
+   what it was becoming and stops there; and *Rot* carries one past it, which is where
+   the Turning's own chain finally ends. Fourteen different verbs, which is what shows the
    school system is a system rather than one mechanism with four names.
 
    **Two things it is short of, one of them the owner's:**
@@ -2841,13 +2842,20 @@ Everything else is unblocked. In order:
      a cow; a grown animal is **nothing at all**, because forward from grown is toward the
      end and that is *Rot*'s country. `tools/ripen_check.sh`.
 
-     **Three left: *Hedge*, *Graft* (Verdancy), *Rot* (The Turning).** ***Rot* is the next
-     one**, and the pair to what was just built: `WORLD.md` locks it as **never aimed at a
-     player or a mob**, because the obvious reading of *"age it past its end"* is an
-     instant-kill and every spell being a world-verb rules that out. It wants a second
-     conversion table in the shape the Turning and the unraveling already share — *"one
-     mechanism; a school and an apocalypse"* — which is the locked reuse note and the
-     cheapest way to build it.
+     ***Rot* is built**, and **the Turning is the first complete school.** It is a second
+     conversion table in the shape the ageing chain and the unraveling already share — the
+     locked reuse note, third caller — and it picks up exactly where the ageing table
+     stops: mossy cobblestone, mossy stone bricks and cobbled deepslate are terminal
+     states, and Rot gives them a next step. *Rewind* reads the **ageing** table backwards
+     and so cannot follow, which is *past a thing's end there is no past left to keep*.
+     `tools/rot_check.sh`.
+
+     **Two left, both the Verdant's: *Hedge* and *Graft*.** Neither has machinery waiting
+     for it, which is what makes them the last two rather than the next two. *Hedge* is a
+     living wall that **thickens where it is struck** — the only defence in the mod improved
+     by being attacked — and wants a damage hook and a growth rule tied together. *Graft*
+     joins two growing things so one feeds the other, and needs a notion of a link between
+     two positions that nothing here has yet.
 
 6. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and

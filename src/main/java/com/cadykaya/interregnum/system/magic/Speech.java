@@ -160,6 +160,10 @@ public final class Speech {
                 var cast = RipenSpell.cast(level, at, g);
                 yield cast.subject() + " " + cast.what();
             }
+            case ROT -> {
+                var cast = RotSpell.cast(level, at, g);
+                yield cast.subject() + " " + cast.what();
+            }
         };
     }
 }

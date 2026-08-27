@@ -248,3 +248,6 @@ jobs:
 
       - name: Ripen carries a crop and a calf forward, and stops at grown
         run: ./tools/ripen_check.sh
+
+      - name: Rot finishes the ageing chain, Rewind cannot follow, and a cow on a rotting block is still a cow
+        run: ./tools/rot_check.sh

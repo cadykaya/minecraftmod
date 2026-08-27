@@ -4795,3 +4795,68 @@ the check says why in place.
 
 Thirteen built. Three left: *Hedge* and *Graft* (Verdancy), and *Rot* — the pair to this
 one, and the next to build.
+
+---
+
+## Rot — the ageing table finished, and the first complete school
+
+`WORLD.md`, locked: *"Age a thing forward **past its end**: compost, spoil, collapse.
+**Never aimed at a player or a mob.**"*
+
+### It is one sentence finished, not a second idea
+
+The Turning's chains stop at mossy cobblestone, mossy stone bricks and cobbled deepslate —
+terminal states, things the table has no next step for. Rot gives them one. `stone →
+cobblestone → mossy cobblestone` is what a wall does over a long time; collapsing to gravel
+is what it does after that.
+
+That made the build cheap in the way `WORLD.md`'s locked reuse note predicts — *"the
+block-aging registry powering the Turning **is the same system that runs the unraveling**.
+One mechanism; a school and an apocalypse."* This is that mechanism's third caller: the same
+`StepTable`, the same `ConversionDef`, the same loud failure on a typo, the same
+all-or-nothing load. A data file and a loader.
+
+### The locked constraint needs no enforcing
+
+*Rot* is a block conversion, and **a table of blocks has no way to name a cow.** The clause
+`WORLD.md` put in bold is not checked anywhere in the spell, because there is nothing to
+check.
+
+That is the strongest form the constraint could take, and it is the same shape *Ripen*
+reached from the other side an increment ago: Ripen asks for something with growing left to
+do, and a player has no such state. **Neither spell contains the word *player*.**
+
+What *is* guarded is the vocabulary. `Rot.Subject` has two values — a thing, or nothing —
+and the self-test asserts that none of them names a creature, with a mutation that adds one.
+A spell that could *report* a creature is a spell that could find one, and the instant-kill
+reading `WORLD.md` rules out would become writable again by an ordinary-looking refactor.
+
+### Separate tables, and that is the character
+
+*Rewind* reads the **ageing** table backwards, so anything in it can be undone — which is
+what *keeping every past* means when it is a block. Nothing Rot does is in that table, so
+Rewind finds nothing: its own word for it is `no-single-past`, which `StepTable` is explicit
+means both *no rule ends here* and *more than one does*, because the answer to both is that
+the table cannot tell you.
+
+**Past a thing's end there is no past left to keep.** The god that remembers everything
+remembers what a thing *was*, not what is left of it. A reversible rot would be an ageing
+step with a louder name.
+
+Three rules end at gravel, which the table permits and records: asking what a piece of
+gravel used to be has three answers and no way to choose. A collapsed wall does not remember
+which wall it was.
+
+### The check holds four things apart
+
+All of them look like "rot works" from one probe, and only one is the feature: the ageing
+table having grown extra rows, the two tables having merged, a rot that Rewind can undo, and
+a spell that reaches creatures. So the check rots a terminal state, tries to rewind it,
+confirms plain stone is untouched **and still ages normally**, and puts a cow on a block that
+rots. The sabotage watched was the two tables merged into one, which went red at the join.
+
+### Where the kit stands
+
+Fourteen of sixteen. **The Turning is the first school with all four verbs.** Two left, both
+the Verdant's — *Hedge* and *Graft* — and neither has machinery waiting for it, which is
+what makes them the last two rather than the next two.
