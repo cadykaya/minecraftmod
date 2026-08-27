@@ -7,10 +7,15 @@ Updated at every phase boundary, so that if a session ends — for any reason �
 picks up cold without archaeology.
 
 **Last updated:** autonomous build-out, hourly heartbeat running. The toolchain is
-**unblocked and building** (NeoForge 26.2.0.67, Java 25) — the old network-policy
-blocker is resolved and the probe returns 200. Chapter 0's content, the deicide and
-its consequences, placement tracking, the unraveling, and the first Warden entity all
-exist and are verified against a live server.
+**unblocked and building** (NeoForge 26.2.0.67, Java 25). Chapter 0, the deicide and its
+consequences, the unraveling, the Wardens, the regard system, the ferry, the letters, the
+Theoclast rite, the Haunt, **all four god-portals with their under-layers**, the reading
+hazard with its codex desk, and **all sixteen spells in four complete schools** exist and
+are asserted against a live server.
+
+**If you are a fresh session, read "Where things stand" and then "What to do next".** The
+two items that are genuinely the owner's are at the end of item 1 (the far-layers) and in
+item 6 (terrain); everything else on the list is buildable now.
 
 ---
 
