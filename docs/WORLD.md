@@ -435,11 +435,25 @@ can read all they like with nothing listening. It makes the hazard specific to t
 person who already has the god's attention, which is a better shape than a penalty everyone
 shares.
 
-**[OPEN — the safe path.]** *"The codex desk is the safe path"* names a thing that does not
-exist. Until it does, reading is the only way to read, so every reading is a raw one and
-the locked choice between paths is a choice with one option. That is a build, not a
-decision: a desk at the ferry where a letter is transcribed, after which reading the
-transcription costs nothing.
+**Built: the safe path, and it is a lectern.** *"The codex desk"* never said what one looks
+like, and the mod already argues this case in blocks — `FerryPad`: *"an institution does not
+redesign its dock for each god. It has a standard dock."* The Post used what was to hand. A
+lectern does nothing unusual unless somebody offers it one of four letters.
+
+Leave a letter and the clerk takes **thirty seconds**, during which you cannot carry it,
+deliver it or read it. That is the cost, and it is the whole reason anybody takes the other
+path: the safe one takes the thing you wanted to know out of your hands and gives you back
+exactly as much as you had.
+
+**[LOCKED — decided here.]** A transcription belongs to the **world**, not to whoever paid
+for it. Once a letter has been through a desk, nobody who reads it is reading the god's hand
+any more — which is the only social mechanic in this lane: the first person to be patient
+pays for everyone after them, and the impatient ones read it raw long before that.
+
+It also fixes the shape of the hazard. There are four letters and they can all be made safe;
+**a carved stone cannot be brought to a desk** and never stops being the god's own hand. So
+the correspondence is finite and the inscriptions are not, which is what *"most people don't
+bother"* has always described.
 
 ---
 

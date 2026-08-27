@@ -500,6 +500,41 @@ public final class InterregnumCommand {
 
     /** `haunt manifest <who> <near>`. See {@link com.cadykaya.interregnum.system.dialogue.Manifest}. */
     /**
+     * One trip to the desk: lodge a letter, collect one, or just look.
+     *
+     * All three go through one method so the reported state is produced by the same call
+     * that would have changed it -- see the note on `script`.
+     */
+    private static int desk(
+            com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
+            String letter, boolean collect)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+        var level = ctx.getSource().getLevel();
+        var codex = com.cadykaya.interregnum.system.letters.Codex.get(level.getServer());
+        String said;
+        if (letter != null) {
+            said = com.cadykaya.interregnum.system.letters.Desk
+                    .lodge(level, pos, letter).toString();
+        } else if (collect) {
+            String back = com.cadykaya.interregnum.system.letters.Desk.collect(level, pos);
+            said = back == null
+                    ? com.cadykaya.interregnum.system.letters.Desk.state(level, pos).toString()
+                    : "COLLECTED " + back;
+        } else {
+            said = com.cadykaya.interregnum.system.letters.Desk.state(level, pos).toString();
+        }
+        String answer = said;
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                "desk=" + answer
+                        + " left=" + com.cadykaya.interregnum.system.letters.Desk
+                                .remaining(level, pos)
+                        + " copies=" + codex.copies()
+                        + " working=" + codex.working()), false);
+        return said.startsWith("COLLECTED") || said.equals("LODGED") ? 1 : 0;
+    }
+
+    /**
      * One reading, or one report.
      *
      * Both go through here so the reported count is produced by the same call that would
@@ -508,7 +543,7 @@ public final class InterregnumCommand {
      */
     private static int script(
             com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
-            BlockPos pos) {
+            BlockPos pos, String letter) {
         String who = StringArgumentType.getString(ctx, "who");
         java.util.UUID uuid;
         try {
@@ -519,8 +554,12 @@ public final class InterregnumCommand {
             return 0;
         }
         var level = ctx.getSource().getLevel();
-        var outcome = pos == null ? null
-                : com.cadykaya.interregnum.system.haunt.RawScript.read(level, pos, uuid);
+        var outcome = pos != null
+                ? com.cadykaya.interregnum.system.haunt.RawScript.read(level, pos, uuid)
+                : letter != null
+                        ? com.cadykaya.interregnum.system.haunt.RawScript
+                                .readLetter(level, letter, uuid)
+                        : null;
         int read = com.cadykaya.interregnum.system.haunt.RawScript.by(level, uuid);
         ctx.getSource().sendSuccess(() -> Component.literal(
                 "script=" + (outcome == null ? "LOOKED" : outcome)
@@ -1373,6 +1412,20 @@ public final class InterregnumCommand {
                                     .Rite.Outcome.ATTUNED ? 1 : 0;
                         })));
 
+        // The codex desk. `lodge` names the letter rather than taking it out of a hand,
+        // because a headless server has no hand -- the same gap `plant` and `rite` bridge.
+        root = root.then(Commands.literal("desk")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                        .executes(ctx -> desk(ctx, null, false))
+                        .then(Commands.literal("collect")
+                                .executes(ctx -> desk(ctx, null, true)))
+                        .then(Commands.literal("lodge")
+                                .then(Commands.argument("letter", StringArgumentType.string())
+                                        .executes(ctx -> desk(ctx,
+                                                StringArgumentType.getString(ctx, "letter"),
+                                                false))))));
+
         // Reading raw god-script, and what it has cost so far.
         //
         // `read` takes a POSITION because a headless server has nobody to right-click a
@@ -1383,11 +1436,19 @@ public final class InterregnumCommand {
         root = root.then(Commands.literal("script")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.argument("who", StringArgumentType.string())
-                        .executes(ctx -> script(ctx, null))
+                        .executes(ctx -> script(ctx, null, null))
                         .then(Commands.literal("read")
                                 .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                         .executes(ctx -> script(ctx,
-                                                BlockPosArgument.getLoadedBlockPos(ctx, "pos")))))));
+                                                BlockPosArgument.getLoadedBlockPos(ctx, "pos"), null))))
+                        // The letter half. A letter has no position, and a check needs to
+                        // open one without a player to hold it -- so the seam names the
+                        // letter, which is exactly what SealedLetterItem reads off the
+                        // stack before calling the same method.
+                        .then(Commands.literal("read_letter")
+                                .then(Commands.argument("letter", StringArgumentType.string())
+                                        .executes(ctx -> script(ctx, null,
+                                                StringArgumentType.getString(ctx, "letter")))))));
 
         // The Quiet One's door, reported rather than driven. Nothing here casts, disturbs
         // or crosses: you cast Hush and then you stop doing things, and the second half is

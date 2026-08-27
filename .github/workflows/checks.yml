@@ -236,3 +236,6 @@ jobs:
 
       - name: Reading raw god-script marks the reader, once per piece, and never in the dark
         run: ./tools/script_check.sh
+
+      - name: The codex desk takes time, and a copy in the Post makes that letter safe for everybody
+        run: ./tools/desk_check.sh

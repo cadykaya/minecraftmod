@@ -1733,5 +1733,25 @@ public final class SelfTest {
               "and the reported mean for an unread reader is the Manifestation's own -- "
               + "two ways of saying the same number that disagreed would send whoever "
               + "tunes this next to the wrong one");
+
+        // THE CODEX DESK, the safe path. WORLD.md: "the safe path costs time and a trip to
+        // the desk. The unsafe path costs nothing at all, which is exactly why people will
+        // take it." The clock is what makes the trip a cost rather than a gesture.
+        long takes = com.cadykaya.interregnum.core.letters.Transcription.TAKES_TICKS;
+        check(takes > 0,
+              "a clerk's work takes time. A desk that copied on the click is a free lever, "
+              + "and a hazard with a free lever beside it is a formality nobody notices");
+        check(!com.cadykaya.interregnum.core.letters.Transcription.done(1000, 1000 + takes - 1)
+              && com.cadykaya.interregnum.core.letters.Transcription.done(1000, 1000 + takes),
+              "one tick short of the work is not the work, and the full span is");
+        check(com.cadykaya.interregnum.core.letters.Transcription.remaining(1000, 1000)
+                      == takes,
+              "a letter just put down has the whole of the work ahead of it");
+        check(com.cadykaya.interregnum.core.letters.Transcription.remaining(1000, 1000 + takes)
+                      == 0
+              && com.cadykaya.interregnum.core.letters.Transcription
+                      .remaining(1000, 1000 + takes * 10) == 0,
+              "and a finished desk reports nothing left rather than a negative number -- "
+              + "which is what somebody would otherwise write a second condition around");
     }
 }

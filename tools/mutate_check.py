@@ -370,6 +370,16 @@ MUTATIONS = [
      "        return Math.max(LOUDEST, Manifestation.ODDS - read * STEP);",
      "        return Math.max(LOUDEST, Manifestation.ODDS + read * STEP);"),
 
+    # The safe path has to cost something, or the hazard beside it is a formality.
+    ("letters: the desk transcribes instantly, so the safe path is free",
+     f"{MAIN}/letters/Transcription.java",
+     "    public static final long TAKES_TICKS = 20L * 30;",
+     "    public static final long TAKES_TICKS = 0L;"),
+    ("letters: a finished desk reports a negative amount of work left",
+     f"{MAIN}/letters/Transcription.java",
+     "        return Math.max(0, TAKES_TICKS - (now - lodgedAt));",
+     "        return TAKES_TICKS - (now - lodgedAt);"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.

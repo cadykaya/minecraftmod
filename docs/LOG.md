@@ -4537,3 +4537,63 @@ walls the stone into a cube inside the world, and says why in place.
 reading is the only way to read — every reading is a raw one, and the locked choice between
 paths is a choice with one option. It is a build rather than a decision: a desk at the
 ferry where a letter is transcribed, after which reading the transcription costs nothing.
+
+---
+
+## The codex desk — the safe path, and it is a lectern
+
+The reading hazard shipped an increment ago with the other half of its own locked sentence
+missing: *"the codex desk is the safe path"* named a thing that did not exist, so every
+reading was a raw one and a locked choice between two paths was a choice with one option.
+
+### It is a lectern, and the codebase had already made the argument
+
+`WORLD.md` names *"the ferry's own desk"* and *"the codex desk"* and never says what one
+looks like. A lectern is a reading desk, vanilla has one, and `FerryPad` settled the
+principle in blocks a long time ago: *"an institution does not redesign its dock for each
+god. It has a standard dock."*
+
+The alternative was a registered block with a texture, a model, a palette entry and a
+reachability row — for an object whose entire job is to be a surface you put paper on. A
+lectern does nothing unusual unless somebody offers it one of four letters; books and quills
+are untouched. That is the price of using a vanilla block, and it is worth paying.
+
+### The cost is that the letter leaves your hands
+
+Thirty seconds of clerk's work, during which the letter cannot be carried, delivered or
+read. A desk that copied on the click would be a free lever, and a hazard with a free lever
+beside it is a formality nobody notices. What makes the unsafe path tempting is not that the
+safe one is expensive — it is that the safe one gives you back exactly as much as you had.
+
+### A transcription belongs to the world
+
+Once a letter has been through a desk it is transcribed for **everybody**. That is what a
+clerk is for, and it is the only social mechanic in this lane: on a server the first person
+to be patient pays for everyone who comes after, and the impatient ones have already read it
+raw by then.
+
+It also fixes the shape of the hazard, which had been vague. There are four letters and they
+can all be made safe. **A carved shrine stone cannot be brought to a desk** and never stops
+being the god's own hand. So the correspondence is finite and the inscriptions are not —
+which is what *"most people don't bother"* has been describing since before either half of
+this existed.
+
+### What the check has to hold apart
+
+Four states that all look like "reading is safe now" from one probe, and only one of them is
+the feature:
+
+* the hazard was never on;
+* the transcription switched it off for **everything**;
+* the transcription switched it off for **stones as well as letters**;
+* a copy of *this* letter makes *this* letter safe.
+
+So `desk_check.sh` reads an untranscribed letter first (the hazard works), then the
+transcribed one with a **different reader** (the copy is the world's), then a second letter,
+then a carved stone. Two sabotages were watched failing: a `collect` that ignored the clock,
+and a `readLetter` that ignored the Post.
+
+### The reading lane is closed
+
+Both sources are readable, both mark, one can be made safe and one cannot, and the safe path
+costs what the locked line says it costs.

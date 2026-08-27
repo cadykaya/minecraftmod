@@ -2,6 +2,7 @@ package com.cadykaya.interregnum.system.haunt;
 
 import com.cadykaya.interregnum.core.haunt.Script;
 import com.cadykaya.interregnum.core.stele.Steles;
+import com.cadykaya.interregnum.system.letters.Desk;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -44,7 +45,15 @@ public final class RawScript {
         /** They had already read this one. Knowledge is not made twice. */
         ALREADY,
         /** Not enough light to make out a band of worn carving. */
-        TOO_DARK
+        TOO_DARK,
+        /**
+         * The Post has a copy, so this was not the god's hand.
+         *
+         * Letters only. A carved shrine stone cannot be brought to a desk and never
+         * becomes anything but raw, which is why there are four letters that can be made
+         * safe and any number of stones that cannot.
+         */
+        TRANSCRIBED
     }
 
     /** The mark a carved stone leaves: where it stands. */
@@ -89,8 +98,22 @@ public final class RawScript {
         return mark(level, who, markOf(pos));
     }
 
-    /** Read a letter, raw — which is the only way anything can read one yet. */
+    /**
+     * Read a letter.
+     *
+     * Raw unless the Post has a copy. `WORLD.md`: *"raw god-script … read WITHOUT
+     * TRANSCRIPTION at the ferry's desk marks the reader"* -- so a letter that has been
+     * through a desk is not raw any more, for anybody, and reading it costs nothing.
+     *
+     * The check is on the LETTER and not on the reader: a transcription belongs to the
+     * world rather than to whoever paid for it, which is the only social mechanic in this
+     * lane. The first person to be patient pays for everybody after them, and the
+     * impatient ones read it raw long before that.
+     */
     public static Outcome readLetter(ServerLevel level, String letterId, UUID who) {
+        if (Desk.transcribed(level, letterId)) {
+            return Outcome.TRANSCRIBED;
+        }
         return mark(level, who, markOf(letterId));
     }
 
@@ -121,6 +144,9 @@ public final class RawScript {
                     .withStyle(ChatFormatting.GRAY));
             case ALREADY -> List.of(Component.translatable("interregnum.script.again")
                     .withStyle(ChatFormatting.DARK_GRAY));
+            // Nothing at all. A line saying "you read this safely" would announce the
+            // hazard by announcing its absence, and the whole lane is locked as silent.
+            case TRANSCRIBED -> List.of();
         };
     }
 }
