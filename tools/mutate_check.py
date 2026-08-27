@@ -355,6 +355,21 @@ MUTATIONS = [
      "    public static final int STILL_TICKS = 100;",
      "    public static final int STILL_TICKS = 500;"),
 
+    # READING IS DANGEROUS, and its two failure modes are opposite: a hazard that does
+    # nothing, and one that turns the ghost into weather.
+    ("haunt: reading raw god-script costs nothing at all",
+     f"{MAIN}/haunt/Script.java",
+     "        return Math.max(LOUDEST, Manifestation.ODDS - read * STEP);",
+     "        return Manifestation.ODDS;"),
+    ("haunt: a determined reader earns a haunted house",
+     f"{MAIN}/haunt/Script.java",
+     "    public static final int LOUDEST = 20;",
+     "    public static final int LOUDEST = 1;"),
+    ("haunt: reading makes the ghost QUIETER",
+     f"{MAIN}/haunt/Script.java",
+     "        return Math.max(LOUDEST, Manifestation.ODDS - read * STEP);",
+     "        return Math.max(LOUDEST, Manifestation.ODDS + read * STEP);"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.

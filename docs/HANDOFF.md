@@ -27,7 +27,7 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **49**, every one mutation-verified, all in CI |
+| Live-world checks | **50**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, ten spells**, learned in their gods' worlds and **cast by saying the word** |
@@ -66,12 +66,17 @@ what was missing all three times.
 Watched failing three ways: an item registered and undocumented, a row for something that
 does not exist, and a free-text status.
 
-**One finding recorded rather than fixed.** `shrine_stone_carved`'s javadoc says it carries
-*"a band of the dead god's script"* and nothing can read it — and unlike the steles, making
-it readable would be the wrong move. `WORLD.md` marks the whole reading lane **[PROPOSED]**:
-raw god-script read without transcription *marks* the reader. Shipping plain readable
-inscriptions would settle that in the safe direction, which is the owner's to settle. It is
-in "Waiting on owner" now.
+**One finding recorded rather than fixed — and now fixed.** `shrine_stone_carved`'s javadoc
+said it carried *"a band of the dead god's script"* and nothing could read it. Unlike the
+steles, making it readable would have been the wrong move at the time: `WORLD.md` still had
+the whole reading lane open, and shipping plain readable inscriptions would have settled it
+in the safe direction. That lane is now locked — *raw god-script read without transcription
+marks the reader, and marks means the ghost gets louder* — so the stone says what it always
+said it said, and reading it costs what the lane says it costs. `tools/script_check.sh`.
+
+**What it does not give you is lore.** This is the god's hand untranscribed; a stone that
+handed over a paragraph would make the codex desk pointless and turn a hazard into a toll
+paid for content.
 
 ### The steles say something
 

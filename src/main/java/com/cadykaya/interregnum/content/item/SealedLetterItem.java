@@ -68,6 +68,18 @@ public class SealedLetterItem extends Item {
         for (Component line : page) {
             reader.sendSystemMessage(line);
         }
+        // AND THE GOD NOTICES. `WORLD.md`: raw god-script -- letters and shrine
+        // inscriptions -- read without transcription at the ferry's desk marks the reader.
+        // This is the only way to read a letter that exists, so every letter opened is
+        // opened raw; the desk is the half of that sentence still unbuilt.
+        //
+        // Nothing is said about it. The hazard is locked as "no affliction bar, no debuff",
+        // and a line announcing that your manifestation rate has risen would be an
+        // affliction bar made of text. See RawScript.saidTo.
+        if (level instanceof net.minecraft.server.level.ServerLevel server) {
+            com.cadykaya.interregnum.system.haunt.RawScript.readLetter(
+                    server, id, reader.getUUID());
+        }
         return InteractionResult.SUCCESS;
     }
 }

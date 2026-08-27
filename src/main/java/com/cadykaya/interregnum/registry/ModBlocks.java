@@ -37,13 +37,26 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.STONE));
 
-    /** The same masonry, carrying a band of the dead god's script. */
-    public static final DeferredBlock<Block> SHRINE_STONE_CARVED = BLOCKS.registerSimpleBlock(
+    /**
+     * The same masonry, carrying a band of the dead god's script -- and, since the reading
+     * lane was locked, the first thing in the mod that can be read raw.
+     *
+     * It was a `registerSimpleBlock` for a long time, which meant it had been advertising
+     * script in its own javadoc that nothing could look at. See
+     * {@link com.cadykaya.interregnum.content.block.ShrineScriptBlock} for why the audit
+     * that found that deliberately left it alone until `WORLD.md` had decided what reading
+     * costs.
+     */
+    public static final DeferredBlock<Block> SHRINE_STONE_CARVED = BLOCKS.register(
             "shrine_stone_carved",
-            p -> p.mapColor(MapColor.COLOR_GRAY)
+            key -> new com.cadykaya.interregnum.content.block.ShrineScriptBlock(
+                    BlockBehaviour.Properties.of()
+                    .setId(net.minecraft.resources.ResourceKey.create(
+                            net.minecraft.core.registries.Registries.BLOCK, key))
+                    .mapColor(MapColor.COLOR_GRAY)
                     .strength(2.5F, 8.0F)
                     .requiresCorrectToolForDrops()
-                    .sound(SoundType.STONE));
+                    .sound(SoundType.STONE)));
 
     /**
      * The warning steles. Chapter 0 dressing that players read as ruin flavour for

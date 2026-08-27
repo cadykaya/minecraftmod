@@ -499,6 +499,38 @@ public final class InterregnumCommand {
     }
 
     /** `haunt manifest <who> <near>`. See {@link com.cadykaya.interregnum.system.dialogue.Manifest}. */
+    /**
+     * One reading, or one report.
+     *
+     * Both go through here so the reported count is produced by the same call that would
+     * have changed it -- a report computed a second way could agree with the ledger and
+     * disagree with the thing the ghost actually reads.
+     */
+    private static int script(
+            com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
+            BlockPos pos) {
+        String who = StringArgumentType.getString(ctx, "who");
+        java.util.UUID uuid;
+        try {
+            uuid = java.util.UUID.fromString(who);
+        } catch (IllegalArgumentException e) {
+            ctx.getSource().sendSuccess(() -> Component.literal(
+                    "script=refused reason=not a player id"), false);
+            return 0;
+        }
+        var level = ctx.getSource().getLevel();
+        var outcome = pos == null ? null
+                : com.cadykaya.interregnum.system.haunt.RawScript.read(level, pos, uuid);
+        int read = com.cadykaya.interregnum.system.haunt.RawScript.by(level, uuid);
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                "script=" + (outcome == null ? "LOOKED" : outcome)
+                        + " read=" + read
+                        + " odds=" + com.cadykaya.interregnum.core.haunt.Script.oddsFor(read)
+                        + " mean=" + com.cadykaya.interregnum.core.haunt.Script
+                                .meanTicksBetween(read)), false);
+        return outcome == com.cadykaya.interregnum.system.haunt.RawScript.Outcome.MARKED ? 1 : 0;
+    }
+
     private static int manifest(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         String who = StringArgumentType.getString(ctx, "who");
@@ -1340,6 +1372,22 @@ public final class InterregnumCommand {
                             return outcome == com.cadykaya.interregnum.system.clast
                                     .Rite.Outcome.ATTUNED ? 1 : 0;
                         })));
+
+        // Reading raw god-script, and what it has cost so far.
+        //
+        // `read` takes a POSITION because a headless server has nobody to right-click a
+        // carved stone -- the same gap the rite and the plant seams bridge. `by` is the
+        // report, and it exists because the hazard is deliberately silent: `WORLD.md`
+        // locks it as "no affliction bar, no debuff", so a player is never told their
+        // manifestation rate has moved, and a check has no other way to see that it has.
+        root = root.then(Commands.literal("script")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("who", StringArgumentType.string())
+                        .executes(ctx -> script(ctx, null))
+                        .then(Commands.literal("read")
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                        .executes(ctx -> script(ctx,
+                                                BlockPosArgument.getLoadedBlockPos(ctx, "pos")))))));
 
         // The Quiet One's door, reported rather than driven. Nothing here casts, disturbs
         // or crosses: you cast Hush and then you stop doing things, and the second half is

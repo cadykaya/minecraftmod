@@ -233,3 +233,6 @@ jobs:
 
       - name: The Quiet One's door opens on a silence that has held, and a single noise resets it
         run: ./tools/silence_check.sh
+
+      - name: Reading raw god-script marks the reader, once per piece, and never in the dark
+        run: ./tools/script_check.sh

@@ -418,6 +418,29 @@ of your own world is to defend.
 The safe path costs time and a trip to the desk. The unsafe path costs nothing at all,
 which is exactly why people will take it.
 
+**Built: the hazard. Not built: the desk.** Both sources of raw script are readable now —
+the sealed letter always was, and `shrine_stone_carved` has been advertising *"a band of the
+dead god's script"* since the chapter-0 art pass with nothing able to look at it. Each
+distinct piece read takes ten off the manifestation odds, floored well short of a
+metronome, and it is **the reader's knowledge** that counts rather than the number of
+right-clicks: the same stone twice is the same knowledge.
+
+Nothing is announced. A player is never told their rate has moved — a message saying so
+would be an affliction bar made of text, which the locked line rules out — so it is found
+out the way the fiction says: by noticing, later, that things have been happening near you.
+
+**And it only bites the killer**, because the Haunt reaches the killer and nobody else. That
+is not a gap to close: the god has a line to the person who killed it, and everybody else
+can read all they like with nothing listening. It makes the hazard specific to the one
+person who already has the god's attention, which is a better shape than a penalty everyone
+shares.
+
+**[OPEN — the safe path.]** *"The codex desk is the safe path"* names a thing that does not
+exist. Until it does, reading is the only way to read, so every reading is a raw one and
+the locked choice between paths is a choice with one option. That is a build, not a
+decision: a desk at the ferry where a letter is transcribed, after which reading the
+transcription costs nothing.
+
 ---
 
 ## The deicide inheritance

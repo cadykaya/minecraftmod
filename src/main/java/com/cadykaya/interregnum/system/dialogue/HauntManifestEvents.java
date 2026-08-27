@@ -2,6 +2,8 @@ package com.cadykaya.interregnum.system.dialogue;
 
 import com.cadykaya.interregnum.Interregnum;
 import com.cadykaya.interregnum.core.haunt.Manifestation;
+import com.cadykaya.interregnum.core.haunt.Script;
+import com.cadykaya.interregnum.system.haunt.RawScript;
 import com.cadykaya.interregnum.system.ChapterSavedData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -44,7 +46,13 @@ public final class HauntManifestEvents {
         if (killer == null || !(killer.level() instanceof ServerLevel level)) {
             return;
         }
-        if (level.getRandom().nextInt(Manifestation.ODDS) != 0) {
+        // THE ODDS ARE THE KILLER'S, not the world's. `WORLD.md`: raw god-script read
+        // without transcription marks the reader, and "marks" means exactly this -- the
+        // ghost gets louder, and nothing else changes. A killer who has read nothing gets
+        // `Manifestation.ODDS` unchanged, which is why this reads as a substitution rather
+        // than as a second mechanism.
+        int odds = Script.oddsFor(RawScript.by(level, killer.getUUID()));
+        if (level.getRandom().nextInt(odds) != 0) {
             return;
         }
         Manifest.move(level, killer.blockPosition(), killer.getUUID());

@@ -4463,3 +4463,77 @@ doors.* That was a sentence. It is now four places you can only reach by having 
 
 What is left of the grammar is the far-layers. No god has one, and nothing has been decided
 about what a far-layer **is** beyond being further in.
+
+---
+
+## Reading is dangerous — the hazard that is one number
+
+`WORLD.md`, locked: *"Raw god-script (letters, shrine inscriptions) read without
+transcription at the ferry's desk **marks** the reader"* — and, in as many words: *"'marks'
+means one specific thing: **the ghost gets louder.** … Nothing else changes. No affliction
+bar, no debuff, no visions system to build."*
+
+### The whole feature is a substitution
+
+There is no status effect, no counter a player watches, and nothing to cure. Reading changes
+exactly one thing: the number `Manifestation` rolls against. A killer who has read nothing
+gets the base ninety, unchanged; each distinct piece takes ten off it, floored at twenty.
+
+That is enough because of what it makes the hazard *be*. **The punishment for knowing too
+much is being known.** You read the god's mail without going through the desk, and the god
+notices you have been reading its mail. It lands on the one axis `WORLD.md` already calls *a
+credibility problem rather than a sanity bar* — the more you have read, the harder your
+account of your own world is to defend, and the less anybody can tell whether that is the
+reading or the reader.
+
+### The stone that had been advertising script for months
+
+`shrine_stone_carved` has said *"the same masonry, carrying a band of the dead god's script"*
+in its own javadoc since the chapter-0 art pass, and nothing anywhere could look at it. The
+reachability audit found it and **deliberately left it** — recorded as the one finding not
+fixed — because making it readable would have settled a question that was still open, in the
+safe direction, by accident.
+
+That question is now locked, so the stone can say what it always said it said. What it does
+not give you is lore: this is the god's hand untranscribed, and the desk exists precisely
+because a person cannot read it. A stone that handed over a paragraph would make the desk
+pointless and turn the hazard into a toll paid for content. What a reader gets is the moment
+of looking, and the moment of being looked back at.
+
+### Distinct pieces, not repeated readings
+
+The ledger stores *what* you have read, not *how many times*. Re-reading a stone changes
+nothing, because you already know what it says — knowledge is the hazard, and a second look
+is not more knowledge. It also bounds the total by how much script a world contains, which
+is what stops this being a meter anybody can grind by right-clicking one block.
+
+Two other refusals worth keeping. **The dark does not mark you**: a reading refused for want
+of light costs nothing, or a player would be punished for *failing* to read something, which
+is the exact inverse of the locked hazard. And **the floor is nowhere near a metronome**:
+`Manifestation` argues that a thing which happens on a schedule is a mechanic and a thing
+which happens sometimes is a rumour, so a determined reader gets a ghost four times as loud
+and still deniable.
+
+### It only bites the killer
+
+The Haunt reaches the killer and nobody else, so a reader who did not kill the god is marked
+and nothing looks at them. That is not a gap to close — the god has a line to the person who
+killed it, and extending it would be a different feature. It makes the hazard specific to
+the one person who already has the god's attention, which is a sharper shape than a penalty
+everybody shares. The ledger records everyone anyway, because who has been reading is a fact
+about the world and the killer is not always the person who was reading when it started.
+
+### One probe that failed for a reason that was not the mod's
+
+The "in the dark" stone was first buried at y=-70 — below the flat world's floor at y=-64.
+`fill` did nothing, the reading produced no line at all, and the check read the missing line
+as *a stone that was read in the dark*. An out-of-range coordinate and a broken light rule
+look identical from an empty field, and only one of them is a bug in the mod. The check now
+walls the stone into a cube inside the world, and says why in place.
+
+### What is still open
+
+*"The codex desk is the safe path"* names a thing that does not exist. Until it does,
+reading is the only way to read — every reading is a raw one, and the locked choice between
+paths is a choice with one option. It is a build rather than a decision: a desk at the
+ferry where a letter is transcribed, after which reading the transcription costs nothing.

@@ -1693,5 +1693,45 @@ public final class SelfTest {
         check(hushed > com.cadykaya.interregnum.core.portal.Rooting.STILL_TICKS,
               "and it is the longest wait of the four doors. Standing still costs you a "
               + "wait; being SILENT costs you every verb you have, and the world's too");
+
+        // READING IS DANGEROUS. WORLD.md: raw god-script read without transcription marks
+        // the reader, and "marks" means one specific thing -- the ghost gets louder.
+        check(com.cadykaya.interregnum.core.haunt.Script.oddsFor(0)
+                      == com.cadykaya.interregnum.core.haunt.Manifestation.ODDS,
+              "somebody who has read nothing is exactly as haunted as before. This hazard "
+              + "is a substitution for one existing number, not a second mechanism, and if "
+              + "the unread case drifts then every world is being punished for a thing "
+              + "nobody did");
+        check(com.cadykaya.interregnum.core.haunt.Script.oddsFor(1)
+                      < com.cadykaya.interregnum.core.haunt.Script.oddsFor(0),
+              "and one piece of raw script moves it. A hazard that needs a pile before it "
+              + "does anything is a hazard nobody connects to the act");
+
+        // BOUNDED, and this is the assertion that keeps it a rumour. Manifestation argues
+        // that a thing which happens on a schedule is a mechanic and a thing which happens
+        // sometimes is a rumour; an unbounded reader would earn a haunted house, and a
+        // haunted house has nothing in it for anybody to doubt.
+        check(com.cadykaya.interregnum.core.haunt.Script.oddsFor(10_000)
+                      == com.cadykaya.interregnum.core.haunt.Script.LOUDEST,
+              "however much you read, the ghost stops getting louder. Doors that swing "
+              + "every minute are weather, and weather is not a credibility problem");
+        check(com.cadykaya.interregnum.core.haunt.Script.LOUDEST > 1,
+              "and the floor is nowhere near a metronome -- a reader can still sit "
+              + "through a stretch and see nothing, which is the property that has to "
+              + "survive being made louder");
+
+        // Monotone, in the one direction. Reading more can never make you safer, and a
+        // sign error here would turn the hazard into a reward that nobody would report.
+        int last = Integer.MAX_VALUE;
+        for (int r = 0; r <= 20; r++) {
+            int odds = com.cadykaya.interregnum.core.haunt.Script.oddsFor(r);
+            check(odds <= last, "reading more never makes the ghost quieter (at " + r + ")");
+            last = odds;
+        }
+        check(com.cadykaya.interregnum.core.haunt.Script.meanTicksBetween(0)
+                      == com.cadykaya.interregnum.core.haunt.Manifestation.meanTicksBetween(),
+              "and the reported mean for an unread reader is the Manifestation's own -- "
+              + "two ways of saying the same number that disagreed would send whoever "
+              + "tunes this next to the wrong one");
     }
 }
