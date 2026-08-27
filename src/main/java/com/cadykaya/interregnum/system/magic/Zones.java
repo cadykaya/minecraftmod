@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * The spell zones currently in force, per world.
@@ -60,6 +61,30 @@ public final class Zones {
      * `isEmpty` early-out, and is why the map is keyed by dimension rather than scanned.
      */
     public static boolean covering(ServerLevel level, Spell spell, BlockPos pos) {
+        return inForce(level, spell, z -> z.covers(pos.getX(), pos.getY(), pos.getZ()));
+    }
+
+    /**
+     * Is this position under, over or inside a zone -- anywhere in its column?
+     *
+     * The Anchorite's shaft, and nothing else. See {@link Zone#coversColumn}: the cube is
+     * where the spell's physics apply and the column is where the world has stopped
+     * having a floor, and the two have to agree about the edge, which is why the test
+     * lives on the zone rather than here.
+     */
+    public static boolean columnCovering(ServerLevel level, Spell spell, BlockPos pos) {
+        return inForce(level, spell, z -> z.coversColumn(pos.getX(), pos.getZ()));
+    }
+
+    /**
+     * The sweep, and whatever question is being asked of what survives it.
+     *
+     * Both public queries run through here so that housekeeping cannot drift between
+     * them: a second copy of this loop that forgot to remove expired zones would leave
+     * the two callers disagreeing about which zones exist, and the symptom would be a
+     * shaft that outlived the field that opened it.
+     */
+    private static boolean inForce(ServerLevel level, Spell spell, Predicate<Zone> test) {
         Map<Spell, List<Zone>> bySpell = ACTIVE.get(level.dimension());
         if (bySpell == null) {
             return false;
@@ -77,7 +102,7 @@ public final class Zones {
                 it.remove();
                 continue;
             }
-            if (z.covers(pos.getX(), pos.getY(), pos.getZ())) {
+            if (test.test(z)) {
                 inside = true;
                 // No early return: the sweep is the other half of this method's job and
                 // stopping here would leave expired zones behind whenever a live one

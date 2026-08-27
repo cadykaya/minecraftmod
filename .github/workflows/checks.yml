@@ -221,3 +221,6 @@ jobs:
 
       - name: The villages decide who may hold the class, and the reply that was waiting has a Theoclast
         run: ./tools/rite_check.sh
+
+      - name: The Anchorite's shaft opens where its school is cast, takes what lets go, and gives it back
+        run: ./tools/descent_check.sh

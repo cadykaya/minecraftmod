@@ -199,6 +199,23 @@ god was four ideas; a portal each god's own school opens is one.
 It also puts the schools' second and third spells to work. *Held-breath* stops being a
 stealth trick and becomes how you finish a walk to a door that closes if you cough.
 
+**Built: the Anchorite's, both ways.** The shaft is not a block, a frame or an entity — it
+is a *Lighten* zone's **footprint taken through the height of the world**, cast in the one
+place where the spell's own law is also the world's. Let go inside it for two seconds and
+you go through; touch anything and the count restarts. The under-layer,
+`interregnum:mass_authority_lower`, exists.
+
+The return trip turned out to be the design, and it was a live check that found it. You
+arrive **standing on the floor** down there, and a shaft that only took what had already
+let go could never move you again — there is no cliff to step off and nothing to let go
+*of*. So below, the shaft **lifts everything inside it**, standing or not, which is *down
+does not hold* said in movement rather than in prose. One rule, one field, and the world
+chooses the sign.
+
+The other three portals are unbuilt. They share the rule and nothing else: a plant with a
+lifespan, an hour you have to make, and a silence you can break by coughing have no
+mechanism in common with this one.
+
 ### The pantheon — **four, and everyone calls them something different**
 
 **[LOCKED — owner delegated the roster; decided here.]** The count stays at **four**.

@@ -1457,5 +1457,91 @@ public final class SelfTest {
         check(com.cadykaya.interregnum.core.attrition.Attrition.stale(0, fray * 10),
               "ground untended for a very long time is still stale -- staleness is a "
               + "comparison, not a window that closes behind you");
+
+        // THE ANCHORITE'S SHAFT. The first portal, and the whole of it is one counter, so
+        // both ways of losing it are asserted: a door that opens too easily and a door
+        // that never opens.
+        check(com.cadykaya.interregnum.core.portal.Descent.KEY
+                      == com.cadykaya.interregnum.core.magic.Spell.LIGHTEN,
+              "the shaft is opened by Lighten. WORLD.md locks each god's portal to the "
+              + "school that god teaches, and if the key drifts to another school's spell "
+              + "the door stops being the reason to have crossed");
+
+        int surrender = com.cadykaya.interregnum.core.portal.Descent.SURRENDER_TICKS;
+        check(!com.cadykaya.interregnum.core.portal.Descent.opens(surrender - 1),
+              "one tick short of letting go is not letting go -- the boundary matters "
+              + "more here than anywhere, because the number is chosen to sit above an "
+              + "ordinary jump and an off-by-one is invisible until somebody falls "
+              + "through the floor by hopping");
+        check(com.cadykaya.interregnum.core.portal.Descent.opens(surrender),
+              "letting go for the full span opens the shaft");
+        check(surrender > 24,
+              "the span is longer than an ordinary jump is airborne. A door that opens "
+              + "when you hop is a door nobody can stand next to, in the one world whose "
+              + "entire law is that nothing stays put");
+
+        // The counter, and the two things that reset it. Both resets are load-bearing and
+        // they fail differently: without the footprint reset the shaft has no edge, and
+        // without the landing reset a player can fall into it in four separate hops,
+        // which is not letting go.
+        int held = 0;
+        for (int i = 0; i < 5; i++) {
+            held = com.cadykaya.interregnum.core.portal.Descent.letGo(held, true, false);
+        }
+        check(held == 5, "five ticks of holding on to nothing inside the shaft counts five");
+        check(com.cadykaya.interregnum.core.portal.Descent.letGo(held, false, false) == 0,
+              "stepping out of the shaft's footprint drops the count. The edge is how a "
+              + "player learns the shaft is a rule rather than the world breaking, the "
+              + "same reason every zone in this mod has one");
+        check(com.cadykaya.interregnum.core.portal.Descent.letGo(held, true, true) == 0,
+              "touching anything at all drops the count. The shaft takes the unanchored, "
+              + "and a descent accumulated across four separate hops is not letting go");
+
+        // Both ways, one rule. The far side is upside down, so the same act returns you --
+        // and a player who worked out how to get in already knows how to get out.
+        var surface = com.cadykaya.interregnum.core.portal.Descent.Layer.SURFACE;
+        var lower = com.cadykaya.interregnum.core.portal.Descent.Layer.LOWER;
+        check(surface.beyond() == lower && lower.beyond() == surface,
+              "the shaft joins the two layers in both directions. A one-way portal into "
+              + "an under-layer is a trap, and this one is reachable by an accident of "
+              + "physics rather than by a decision");
+        // The shaft lifts, and only below. Found by a live check rather than reasoned
+        // out: a version that lifted only what had ALREADY let go could never move
+        // anybody off the under-layer's floor, because you arrive standing on it and
+        // there is no cliff down there to step off.
+        check(!com.cadykaya.interregnum.core.portal.Descent.lifts(surface, true),
+              "the surface shaft supplies no movement of its own -- gravity is already "
+              + "the god's argument there, and a shaft that also pushed would be two "
+              + "forces where the design has one");
+        check(com.cadykaya.interregnum.core.portal.Descent.lifts(lower, true),
+              "the shaft below lifts what is inside it, standing or not. Anything less "
+              + "is a one-way door into a place no ferry law names, which is a trap");
+        check(!com.cadykaya.interregnum.core.portal.Descent.lifts(lower, false),
+              "and it lifts nothing outside its footprint -- the under-layer at large is "
+              + "an ordinary world, and a whole dimension that pushed everything upward "
+              + "would be somewhere nobody could stand");
+        check(surface.downward() && !lower.downward(),
+              "you go DOWN from the surface and UP from below. Down does not hold under "
+              + "the Anchorite's world, and a shaft that carried you the same way on both "
+              + "sides would take you further in when you were trying to leave");
+
+        // The shaft is the ZONE'S FOOTPRINT, and the two have to agree about the edge.
+        // A column one block wider than the field that opened it is a door you can fall
+        // through from outside the spell, and neither the cube test nor the column test
+        // would notice on its own.
+        var field = com.cadykaya.interregnum.core.magic.Lighten.zoneAt(0, 100, 0, 0);
+        int edge = com.cadykaya.interregnum.core.magic.Lighten.RADIUS;
+        // BOTH AXES, and the first version checked only one. A footprint widened on z
+        // alone passed every probe on x and would have shipped a shaft that was a
+        // rectangle -- the mutation caught it, which is the whole reason there is one.
+        check(field.coversColumn(edge, edge)
+              && !field.coversColumn(edge + 1, edge)
+              && !field.coversColumn(edge, edge + 1),
+              "the shaft's footprint has exactly the field's edge on both axes -- the "
+              + "corner is in, and one block past it is out whichever way you step");
+        check(!field.covers(0, 200, 0) && field.coversColumn(0, 0),
+              "and it runs the height of the world. A cube five blocks tall is a room; "
+              + "something falling out of the bottom of it after a quarter of a second "
+              + "would never reach the count, and WORLD.md's word is SHAFT");
     }
 }

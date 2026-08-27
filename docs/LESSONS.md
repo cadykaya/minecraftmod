@@ -1928,3 +1928,86 @@ Grepping for the string found the readers. It did not find which of them were re
 Related: [#9](#9-the-gate-itself-printed-all-checks-passed-while-broken) — there the
 gate stopped checking; here the gate was fine and the thing being checked moved out from
 under it.
+
+---
+
+## 43. `execute in <dimension>` does not scope a bare entity selector
+
+The first version of `descent_check.sh` asked the obvious question the obvious way:
+
+```
+execute in interregnum:mass_authority_lower if entity @e[tag=faller] run say FALLER_ARRIVED
+execute in interregnum:mass_authority       if entity @e[tag=faller] run say FALLER_STAYED
+```
+
+Six probes shaped like that, three tagged entities, two worlds. **Every one of them
+fired** — including against a build with the portal deliberately sabotaged so that
+nothing crossed anything. The check reported that each entity was in both worlds at once,
+which is not a thing that can happen, and reported it as a pass.
+
+### Why
+
+`execute in` changes the command's dimension. A selector with **no positional constraint**
+does not consult it. Adding one — `positioned <x> <y> <z>` and a `distance=` — forces the
+positional test that makes the level matter, and the same probe then answers correctly:
+
+```
+execute in interregnum:mass_authority_lower positioned 4 128 4 \
+    if entity @e[tag=faller,distance=..400] run say FALLER_ARRIVED
+```
+
+Verified directly rather than inferred: one item, summoned in the overworld, seen by
+`execute in interregnum:mass_authority if entity @e[tag=probe]` and **not** seen by the
+same command with a position and a distance.
+
+> **The rule: an entity probe that names a dimension must also name a place in it.** A tag
+> is an identity, not a location, and in this game a selector on identity alone is a
+> question about the server rather than about a world.
+
+### Why it survived the sabotage
+
+This is the failure mode that matters. The check was *written* to be watched failing, it
+*was* watched failing, and it failed for the right-looking reason — the sabotaged run
+stopped at a real assertion with a real message. The assertion it stopped at was the
+second one, and the first one had already passed for a reason unrelated to the code under
+test. A check whose early probes are unconditionally true still goes red when something
+downstream breaks, so watching it fail proves less than it looks like it proves.
+
+Related: [#26](#26-a-check-that-splits-on-a-guessed-string-is-a-check-that-never-ran) and
+[#31](#31-the-same-threshold-mistake-three-times-in-one-night-from-three-directions) — same family: the probe was
+answering a different question from the one being asked.
+
+---
+
+## 44. `NoAI:1b` freezes a mob so completely that it never touches the ground
+
+Same check, the next hour. The three probes were pigs with `{NoAI:1b,Silent:1b}` — no
+wandering, no noise, exactly the inert marker a physics test wants. The results:
+
+* the pig dropped from y=200 inside the shaft **went through**, and
+* the pig placed **standing on a block** inside the shaft went through as well.
+
+The second one is impossible if the first one is right, because the whole rule is that the
+shaft takes what has let go.
+
+### Why
+
+`LivingEntity.aiStep` calls `travel()` only `if (this.canSimulateMovement() && this.isEffectiveAi())`,
+and `Mob.isEffectiveAi()` is `super.isEffectiveAi() && !this.isNoAi()`. So a `NoAI` mob
+never travels: no gravity, no collision, no landing — and `onGround` keeps the value it was
+born with, which is `false`, **for ever**.
+
+Neither pig was ever falling. Both were permanently unsupported, which is the same input
+the portal reads, so the door opened for both and one of those two answers looked like the
+feature working.
+
+> **The rule: `NoAI` is not "a mob that stands still". It is a mob the movement system has
+> stopped running,** and every physical property that movement maintains — `onGround`,
+> fall distance, collision — is frozen at its default rather than at the truth.
+
+A dropped item was the fix: it falls, it lands, it reports the ground honestly, and it does
+not wander off the platform it was put on. All four properties, none of the ones this did
+not need.
+
+Related: [#40](#40-a-persistence-check-on-a-brand-new-world-tests-nothing) — a probe that
+cannot distinguish the two states it is there to distinguish.

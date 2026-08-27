@@ -74,10 +74,19 @@ import com.cadykaya.interregnum.Interregnum;
  * <h2>What is deliberately not here</h2>
  *
  * <b>Terrain is a placeholder and is not designed.</b> Vanilla's overworld noise settings
- * with a single fixed biome: it generates ground you can stand on and nothing more. The
- * under-layer and far-layer do not exist, the portal logic that would join them does not
- * exist, and no letter can be delivered here yet. Saying so in the file is cheaper than
- * a later reader inferring that a placeholder was a decision.
+ * with a single fixed biome: it generates ground you can stand on and nothing more. That
+ * is still true of every level here, including the new one.
+ *
+ * <b>One system now has two of its three layers.</b> The Anchorite's under-layer exists
+ * and is joined to its surface by that god's own portal -- see
+ * {@link com.cadykaya.interregnum.core.portal.Descent}. The other three gods have their
+ * surface only, and no god has a far-layer. `WORLD.md` locks all four portals; three of
+ * them are unbuilt, and the mechanisms they need (a plant with a lifespan, an hour you
+ * have to make, a silence you can break by coughing) have nothing in common with this one
+ * beyond the rule that the school is the key.
+ *
+ * Saying so in the file is cheaper than a later reader inferring that a placeholder was a
+ * decision.
  */
 public final class ModDimensions {
     private ModDimensions() {}
@@ -116,6 +125,30 @@ public final class ModDimensions {
 
     public static final ResourceKey<net.minecraft.world.level.Level> MASS_AUTHORITY =
             ResourceKey.create(Registries.DIMENSION, MASS_AUTHORITY_STEM.identifier());
+
+    /**
+     * Under the Anchorite's surface: <b>the place where down does not hold.</b>
+     *
+     * `WORLD.md` locks the grammar — *surface · under-layer · far-layer, joined by that
+     * world's own portal logic* — and this is the first under-layer any god has. It is
+     * reached only by {@link com.cadykaya.interregnum.core.portal.Descent}: there is no
+     * ferry law naming it, because the ferry crosses BETWEEN systems and this is inside
+     * one.
+     *
+     * Named the way the other four are, for the docket rather than for the god. The
+     * Wardenate files a place under the authority that governs it and appends where in
+     * it, which is how a bureau ends up with the only map anybody has.
+     */
+    public static final ResourceKey<DimensionType> MASS_AUTHORITY_LOWER_TYPE =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "mass_authority_lower"));
+
+    public static final ResourceKey<LevelStem> MASS_AUTHORITY_LOWER_STEM =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "mass_authority_lower"));
+
+    public static final ResourceKey<net.minecraft.world.level.Level> MASS_AUTHORITY_LOWER =
+            ResourceKey.create(Registries.DIMENSION, MASS_AUTHORITY_LOWER_STEM.identifier());
 
     /** The Verdant's surface. Docket header again, not the god's name. */
     public static final ResourceKey<DimensionType> GREEN_AUTHORITY_TYPE =
@@ -194,6 +227,35 @@ public final class ModDimensions {
                 MIN_Y, HEIGHT, HEIGHT,
                 blocks.getOrThrow(BlockTags.INFINIBURN_OVERWORLD),
                 0.0F,
+                new DimensionType.MonsterSettings(ConstantInt.of(0), 0),
+                DimensionType.Skybox.OVERWORLD,
+                CardinalLighting.Type.DEFAULT,
+                unmoored(),
+                HolderSet.empty(),
+                Optional.empty()));
+
+        // Under it. The same god, one layer down, and the attributes say the same thing
+        // harder: no sky at all, and a faint light of its own because there is no sun to
+        // borrow. A bed still detonates -- it is the Anchorite's, and a place does not
+        // stop being a god's for being underneath.
+        //
+        // `hasSkyLight` false is the one attribute here doing structural work rather
+        // than atmospheric: it is what makes this READ as an under-layer to everything
+        // in the game that asks, including the light engine, without pretending the
+        // terrain has a ceiling it does not have. See the note on terrain below.
+        ctx.register(MASS_AUTHORITY_LOWER_TYPE, new DimensionType(
+                false,
+                false,                              // hasSkyLight -- there is no sky
+                false,                              // hasCeiling -- and no roof either;
+                                                    // the terrain is vanilla noise and
+                                                    // declaring a ceiling it does not
+                                                    // generate would be a lie in data
+                false, 1.0,
+                MIN_Y, HEIGHT, HEIGHT,
+                blocks.getOrThrow(BlockTags.INFINIBURN_OVERWORLD),
+                0.1F,                               // ambientLight: the only one of the
+                                                    // five with any. Pitch dark is not a
+                                                    // law, it is an absence of one
                 new DimensionType.MonsterSettings(ConstantInt.of(0), 0),
                 DimensionType.Skybox.OVERWORLD,
                 CardinalLighting.Type.DEFAULT,
@@ -331,6 +393,16 @@ public final class ModDimensions {
 
         ctx.register(MASS_AUTHORITY_STEM, new LevelStem(
                 types.getOrThrow(MASS_AUTHORITY_TYPE),
+                new NoiseBasedChunkGenerator(
+                        new FixedBiomeSource(biomes.getOrThrow(ModBiomes.OLD_HEAVY)),
+                        noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
+
+        // The under-layer, on the same placeholder terms as its surface and on the same
+        // biome. A biome of its own would be a colour decision about a place whose SHAPE
+        // is not designed yet, and the two want deciding together -- see the class
+        // javadoc, and HANDOFF's terrain item.
+        ctx.register(MASS_AUTHORITY_LOWER_STEM, new LevelStem(
+                types.getOrThrow(MASS_AUTHORITY_LOWER_TYPE),
                 new NoiseBasedChunkGenerator(
                         new FixedBiomeSource(biomes.getOrThrow(ModBiomes.OLD_HEAVY)),
                         noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));

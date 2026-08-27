@@ -210,6 +210,25 @@ world that is not the one you asked for.
 | `net.minecraft.world.entity.projectile.*` for the concrete projectiles | **split into sub-packages** — `projectile.arrow.AbstractArrow`, `projectile.hurtingprojectile.{Fireball,SmallFireball,LargeFireball,WitherSkull,DragonFireball}`, `projectile.throwableitemprojectile.*`. The base `projectile.Projectile` did **not** move | `QuellEvents`, which only needed the base type and so was never bitten. The row is here for whoever reaches for `SmallFireball` next and imports the 1.21 path from memory |
 | `BiomeSpecialEffects` fog/sky/water-fog/ambient-sound fields | **moved out of the biome** into `EnvironmentAttributes` — `SKY_COLOR`, `FOG_COLOR`, `WATER_FOG_COLOR`, `AMBIENT_SOUNDS`, `BACKGROUND_MUSIC`, set with `Biome.BiomeBuilder#setAttribute` | `ModBiomes`. The record still exists and still compiles, carrying **water and vegetation colours only** — so a biome ported from any pre-26 guide builds cleanly and has no sky |
 
+### Two 26.x facts that are not renames, and cost a check each
+
+Neither is a moved symbol, so nothing static catches either. Both are recorded because the
+symptom in each case was a **passing probe**.
+
+| Fact | Consequence |
+|---|---|
+| **`execute in <dimension>` does not scope a bare entity selector.** `@e[tag=x]` with no positional constraint matches across worlds; `positioned <x> <y> <z>` plus `distance=..N` forces the test that makes the level matter | An entity probe that names a dimension must also name a place in it. Verified directly: one item summoned in the overworld was seen by `execute in interregnum:mass_authority if entity @e[tag=probe]`, and not seen by the same command with a position. See [LESSONS #43](LESSONS.md#43-execute-in-dimension-does-not-scope-a-bare-entity-selector) |
+| **`NoAI:1b` stops the movement system, not just the wandering.** `LivingEntity.aiStep` calls `travel()` only `if (canSimulateMovement() && isEffectiveAi())`, and `Mob.isEffectiveAi()` is `super && !isNoAi()`. So a `NoAI` mob has no gravity, never lands, and **`onGround` stays `false` for ever** | It is the wrong marker for any physics test. A dropped item falls, lands, reports the ground honestly and does not wander. See [LESSONS #44](LESSONS.md#44-noai1b-freezes-a-mob-so-completely-that-it-never-touches-the-ground) |
+
+**Cross-dimension travel**, for whoever needs it next: `Entity#teleport(TeleportTransition)`.
+It **destroys the entity and builds a new one** on the far side (`getType().create` +
+`restoreFrom`), so the returned reference is a different object — but the **UUID is
+preserved**, because `restoreFrom` round-trips through `saveWithoutId`. Anything keyed on
+the entity leaks one entry per crossing; anything keyed on the UUID survives it, which is
+usually what you want and occasionally exactly what you do not. `TeleportTransition` takes
+the destination level, position, delta, rotation and a post-transition hook —
+`PLACE_PORTAL_TICKET` is the one that keeps the arrival chunk loaded.
+
 `tools/renames_check.py` enforces the shell half of this table on every push, because a
 dead gamerule name in a `COMMANDS` string is invisible until a check goes red for the
 wrong reason. It cannot enforce the Java half and does not try: `javac` already does.

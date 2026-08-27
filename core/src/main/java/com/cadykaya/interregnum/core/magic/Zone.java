@@ -40,6 +40,23 @@ public record Zone(int x, int y, int z, int radius, long expiresAtTick) {
     }
 
     /**
+     * Is this column inside, at any height?
+     *
+     * The zone's FOOTPRINT, which is a different question from {@link #covers} and is
+     * asked by exactly one caller: the Anchorite's shaft. `WORLD.md` locks that portal as
+     * *"a shaft you do not build but let go into"*, and a shaft is vertical — the cube is
+     * where the spell's physics apply, and the column beneath and above it is where the
+     * world has stopped having a floor.
+     *
+     * Kept here rather than computed at the call site because the two questions have to
+     * agree about the edge. A shaft one block wider than the field it comes from would be
+     * a door you could fall through from outside the spell that opened it.
+     */
+    public boolean coversColumn(int px, int pz) {
+        return Math.abs(px - x) <= radius && Math.abs(pz - z) <= radius;
+    }
+
+    /**
      * Has it lapsed?
      *
      * Strictly greater, so a zone is still in force on the exact tick it expires. The

@@ -282,6 +282,32 @@ MUTATIONS = [
      "    public static final Standing BAR = Standing.KNOWN;",
      "    public static final Standing BAR = Standing.BELOVED;"),
 
+    # THE FIRST PORTAL. It is one counter and a footprint, so all three ways of losing it
+    # get a mutation: a door that opens on a hop, a door in the wrong shape, and a door
+    # opened by the wrong school.
+    ("portal: the shaft opens on an ordinary jump",
+     f"{MAIN}/portal/Descent.java",
+     "    public static final int SURRENDER_TICKS = 40;",
+     "    public static final int SURRENDER_TICKS = 5;"),
+    ("portal: letting go survives a landing, so four hops are a descent",
+     f"{MAIN}/portal/Descent.java",
+     "        return !inShaft || holding ? 0 : held + 1;",
+     "        return !inShaft ? 0 : held + 1;"),
+    ("portal: the shaft is a room rather than a column",
+     f"{MAIN}/magic/Zone.java",
+     "    public boolean coversColumn(int px, int pz) {\n"
+     "        return Math.abs(px - x) <= radius && Math.abs(pz - z) <= radius;",
+     "    public boolean coversColumn(int px, int pz) {\n"
+     "        return Math.abs(px - x) <= radius && Math.abs(pz - z) <= radius + 1;"),
+    ("portal: the shaft below lifts nothing, so the under-layer is a one-way trap",
+     f"{MAIN}/portal/Descent.java",
+     "        return inShaft && !layer.downward();",
+     "        return false;"),
+    ("portal: the door is keyed to a school its god does not teach",
+     f"{MAIN}/portal/Descent.java",
+     "    public static final Spell KEY = Spell.LIGHTEN;",
+     "    public static final Spell KEY = Spell.HUSH;"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.

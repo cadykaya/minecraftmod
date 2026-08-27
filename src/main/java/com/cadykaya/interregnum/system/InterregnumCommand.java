@@ -1341,6 +1341,36 @@ public final class InterregnumCommand {
                                     .Rite.Outcome.ATTUNED ? 1 : 0;
                         })));
 
+        // The Anchorite's shaft, reported rather than driven.
+        //
+        // Unlike every other seam in this file there is nothing here that MAKES the portal
+        // happen, and that is the point: the door is opened by casting Lighten and walked
+        // through by letting go, both of which are things a player already does and a
+        // check can already drive. A `descend <who>` that teleported somebody would be a
+        // command that proves teleportation works.
+        //
+        // What it reports is the state a live check otherwise cannot see -- whether the
+        // shaft is open at a position, which layer this world is, and how long the things
+        // in it have been letting go.
+        root = root.then(Commands.literal("shaft")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                        .executes(ctx -> {
+                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                            var level = ctx.getSource().getLevel();
+                            var layer = com.cadykaya.interregnum.system.portal.Shaft
+                                    .layerOf(level);
+                            boolean open = com.cadykaya.interregnum.system.portal.Shaft
+                                    .open(level, pos);
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                    "shaft=" + (open ? "OPEN" : "SHUT")
+                                            + " layer=" + (layer == null ? "NONE" : layer)
+                                            + " letting_go=" + com.cadykaya.interregnum
+                                                    .system.portal.Descending.falling()),
+                                    false);
+                            return open ? 1 : 0;
+                        })));
+
         root = root.then(Commands.literal("haunt")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("dream")

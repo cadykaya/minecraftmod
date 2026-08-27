@@ -4142,3 +4142,87 @@ That check has been in the gate since LESSONS #28 and this is the first time it 
 something written after it.
 
 230 self-test checks, 81 mutations, 45 live checks, 20 fast-gate stages.
+
+---
+
+## The Anchorite's shaft — the first portal, and the first god with a system
+
+`WORLD.md` has locked the grammar for a long time: each god holds *surface · under-layer ·
+far-layer, joined by that world's own portal logic*. Four surfaces existed. No god had a
+second layer, and nothing joined anything.
+
+It also locks what a portal **is** — *each god's portal is opened by the school that god
+teaches* — and for this one: *"a shaft you do not build but let go into. It takes anything
+unanchored, which there means everything. Going down, into the place where down does not
+hold."*
+
+### The door is the spell, cast in the one world where the spell is also the law
+
+Nothing here places a block, a frame or an entity. The shaft is a *Lighten* zone's
+**footprint taken through the height of the world** — the cube is where the spell's physics
+apply, and the column is where the world has stopped having a floor. A shaft is vertical;
+a cube five blocks tall is a room, and something falling out of the bottom of one after a
+quarter of a second could never reach a count.
+
+Casting *Lighten* in the Anchorite's own world has, until now, done nothing new: that world
+already lifts unanchored things everywhere. That redundancy turned out to be the hinge. The
+spell has always been the god's law borrowed; in the god's own world there is nothing to
+borrow, so what it does there instead is open the floor.
+
+Two seconds of holding on to nothing, and the number is chosen against an ordinary jump —
+airborne for about twenty-four ticks, so a hop, a stumble or a step off a kerb can never be
+enough. Touch anything at all and the count restarts, which is why a descent accumulated
+across four separate hops is not letting go.
+
+### The way back was the design, and a check found it
+
+The under-layer, `interregnum:mass_authority_lower`, was written as the plain mirror: same
+rule, opposite direction, because down does not hold there. Then the live check went red on
+the return leg and the reason was not a bug in anything — it was that **you arrive standing
+on the floor.** There is no cliff down there to step off and nothing to let go *of*, so a
+shaft that only took what had already let go would be a one-way door into a place with no
+ferry law naming it. A trap, shipped, discovered by whoever got there first.
+
+So below, the shaft lifts everything inside it, standing or not. That is *down does not
+hold* said in movement instead of prose, and it is a better rule than the one it replaced:
+on the surface the shaft is a hole you fall into, and below it is a column that picks you
+up. One field, and the world chooses the sign.
+
+It lifts by setting a velocity every tick and touches no flags. `Anchorite.lift` — the
+god's own method — switches gravity **off**, which is exactly right for the only thing it
+was ever applied to, since a falling block rises until vanilla discards it past the build
+height and nothing has to be switched back on. A pig is not discarded. The flag would
+outlive the spell, the caster and the session, and leave it hanging in the air of a world
+with no sky.
+
+### Two probes that were not measuring anything
+
+The check cost two false passes, both worth the write-up ([LESSONS #43](LESSONS.md#43-execute-in-dimension-does-not-scope-a-bare-entity-selector),
+[#44](LESSONS.md#44-noai1b-freezes-a-mob-so-completely-that-it-never-touches-the-ground)).
+
+First, `execute in <dimension> if entity @e[tag=x]` **does not scope the selector to that
+dimension**. All six probes fired, in both worlds, against a build with the portal
+deliberately sabotaged — the check reported each entity as being in two places at once and
+called it a pass. A position and a `distance=` force the test that makes the level matter.
+
+The lesson inside that one is the sharper half: the sabotaged run *did* go red, at a real
+assertion with a real message. It went red at the **second** probe, and the first had
+already passed for reasons unrelated to the code under test. Watching a check fail proves
+the check can fail. It does not prove the earlier assertions were ever asking anything.
+
+Second, the probes were pigs with `NoAI:1b`, chosen as inert markers. `NoAI` does not stop
+the wandering — it stops `travel()`, so the mob has no gravity, never lands, and `onGround`
+keeps its birth value of `false` for ever. Neither pig was falling. Both were permanently
+unsupported, which is the same input the portal reads, so the door opened for both — and
+one of those two answers looked exactly like the feature working. Dropped items fall, land,
+report the ground honestly, and stay on the platform they were put on.
+
+### What it is worth
+
+`WORLD.md`'s argument for this portal rule was that *you cannot go deeper into a god's
+system until that god has taught you* — the reason to cross is that the verbs are over
+there, and the reason to cross again is that the verbs are the doors. That was a sentence.
+It is now a place you can only reach by having been taught Weight in the world that teaches
+it, and having been willing to fall.
+
+Three portals and every far-layer remain. They share the rule and no mechanism.

@@ -27,11 +27,12 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **45**, every one mutation-verified, all in CI |
+| Live-world checks | **46**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, ten spells**, learned in their gods' worlds and **cast by saying the word** |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
+| World-systems | the Anchorite has **two layers, joined by its own portal**; three gods have a surface only |
 
 ### The audit, made permanent
 
@@ -2733,18 +2734,31 @@ next to each, so the provenance travels with the decision.
 **Three things on this list ARE waiting on the owner** — see "Waiting on owner" below.
 Everything else is unblocked. In order:
 
-1. **The systems, not just the surfaces.** *(The largest thing unbuilt, and no longer
-   blocked.)* All four destination *surfaces* exist and each has a law that earns it. What
-   does not exist is what `WORLD.md` locks: each god holds a **system** of connected
-   dimensions — *surface · under-layer · far-layer, joined by that world's own portal
-   logic*. The four surfaces are still reachable only by command.
+1. **The systems, not just the surfaces.** *(Still the largest thing unbuilt — but one
+   god now has a system rather than a surface.)*
 
-   **The portal logic is decided**: *each god's portal is opened by the school that god
-   teaches* — see [`WORLD.md`](WORLD.md). That makes this a build rather than a question,
-   and it is the biggest one on this list.
+   **Built this pass: the Anchorite's shaft, both ways.** `interregnum:mass_authority_lower`
+   exists, and the portal that reaches it is a *Lighten* zone's footprint taken through the
+   height of the world: let go inside it for two seconds and you go through. Nothing is
+   placed and nothing is built — the door is the spell, cast in the one world where the
+   spell's law is also the world's. `tools/descent_check.sh` asserts it in a live server
+   against three controls, and the return trip is the half that proves the shaft carries
+   things rather than deleting them downward.
 
-   Also missing from all four: **terrain that is designed.** They use vanilla noise with
-   one fixed biome, and each file says so in its own javadoc.
+   **The return leg was the design, and a check found it.** You arrive standing on the
+   under-layer's floor, so a shaft that only took what had already let go would be a
+   one-way door into a place with no ferry law naming it. Below, it lifts everything inside
+   it — see [`WORLD.md`](WORLD.md).
+
+   **Still missing: three portals and every far-layer.** The other three share the rule and
+   no mechanism — a plant with a lifespan, an hour you have to make, a silence you can
+   break by coughing. Each is its own build. The Verdant's is probably next: it is the only
+   one whose world already generates something to plant in.
+
+   Also missing from all five: **terrain that is designed.** They use vanilla noise with
+   one fixed biome, and each file says so in its own javadoc. The under-layer shares its
+   surface's biome deliberately — a colour decision about a place whose shape is not
+   designed yet is two decisions that want making together.
 
 2. ~~**Bands 3 and 4.**~~ **Both built.** The exodus leaks three of the four laws into
    the overworld (the Quiet One's needs client-side audio this container cannot verify,
