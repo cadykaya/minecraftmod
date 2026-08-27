@@ -1,0 +1,11 @@
+{
+  "type": "interregnum:temporal_authority_lower",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "interregnum:the_turning"
+    },
+    "settings": "minecraft:overworld"
+  }
+}

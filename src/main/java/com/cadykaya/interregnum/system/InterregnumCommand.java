@@ -1341,6 +1341,31 @@ public final class InterregnumCommand {
                                     .Rite.Outcome.ATTUNED ? 1 : 0;
                         })));
 
+        // The Hearth-Turner's door, reported rather than driven. Same posture as the
+        // other two: nothing here builds a frame, ages one, or walks anybody through.
+        // Building six blocks and standing between them is a thing a player does with no
+        // help from a command, which is most of why this portal is the one that keeps no
+        // state at all.
+        root = root.then(Commands.literal("doorway")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                        .executes(ctx -> {
+                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                            var level = ctx.getSource().getLevel();
+                            boolean open = com.cadykaya.interregnum.system.portal.Doorway
+                                    .inGap(level, pos);
+                            var beyond = com.cadykaya.interregnum.system.portal.Doorway
+                                    .beyond(level);
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                    "doorway=" + (open ? "OPEN" : "SHUT")
+                                            + " leads=" + (beyond == null ? "NOWHERE"
+                                                    : beyond.identifier().getPath())
+                                            + " standing=" + com.cadykaya.interregnum
+                                                    .system.portal.Passing.standing()),
+                                    false);
+                            return open ? 1 : 0;
+                        })));
+
         // Planting, by hand. `WORLD.md`'s verb is `plant` and the ledger listens for a
         // PLAYER placing a sapling -- which a headless server has nobody to do, the same
         // gap `record deicide` and `regard adjust` exist to bridge. It registers a

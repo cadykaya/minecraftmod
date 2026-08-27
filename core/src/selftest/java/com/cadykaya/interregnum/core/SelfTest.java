@@ -1602,5 +1602,54 @@ public final class SelfTest {
               "the doorway is tighter than the shaft. A shaft has to be something you can "
               + "fall down; this is somewhere you have to stand on purpose, and a wide one "
               + "would take a passer-by");
+
+        // THE HEARTH-TURNER'S DOOR. WORLD.md: "always present, open at one hour only --
+        // and the sky is fixed, so you cannot wait for it. You have to MAKE the hour."
+        check(com.cadykaya.interregnum.core.portal.Hour.FORWARD
+                      == com.cadykaya.interregnum.core.magic.Spell.WEATHER
+              && com.cadykaya.interregnum.core.portal.Hour.BACK
+                      == com.cadykaya.interregnum.core.magic.Spell.REWIND,
+              "the clock has both hands. This is the one portal whose school has no spare "
+              + "verb: the open hour is the middle of a three-link chain, so you weather a "
+              + "new frame forward into it or rewind an old one back, and dropping either "
+              + "verb makes one approach impossible");
+
+        // A DOORWAY IS A HOLE IN A WALL. Framed on two opposite sides and open on the
+        // other two -- those are the way through. Boxing all four is a shaft with a lid.
+        var alongX = com.cadykaya.interregnum.core.portal.Hour.posts(true);
+        var alongZ = com.cadykaya.interregnum.core.portal.Hour.posts(false);
+        check(alongX.stream().allMatch(o -> o.dz() == 0 && o.dx() != 0),
+              "posts on the X axis stand to east and west, and NOTHING stands north or "
+              + "south -- that gap is the way through, and a frame that closed it would "
+              + "be a doorway nobody could walk into");
+        check(alongZ.stream().allMatch(o -> o.dx() == 0 && o.dz() != 0),
+              "and the other orientation is the same shape turned. A wall runs the way it "
+              + "runs, and which axis is not something a player should have to get right");
+        check(alongX.size() == 4 && alongZ.size() == 4,
+              "two posts of two blocks each. A one-block-tall doorway is a window");
+
+        var wholeFrame = com.cadykaya.interregnum.core.portal.Hour.frame(true);
+        check(wholeFrame.size() == 6
+              && wholeFrame.contains(com.cadykaya.interregnum.core.portal.Hour.SILL)
+              && wholeFrame.contains(com.cadykaya.interregnum.core.portal.Hour.LINTEL),
+              "the frame is the posts plus a sill and a lintel. Six blocks all at one "
+              + "stage is a thing somebody did, rather than a thing that happened");
+        check(com.cadykaya.interregnum.core.portal.Hour.GAP.stream()
+                      .noneMatch(wholeFrame::contains),
+              "and no block is both frame and gap. A position required to be stone AND "
+              + "air is a doorway that can never be open, and every probe against it "
+              + "would report a shut door for a reason nobody could find");
+
+        // The threshold, which is the whole of the passage rule.
+        check(com.cadykaya.interregnum.core.portal.Hour.enters(false, true),
+              "walking in crosses the threshold");
+        check(!com.cadykaya.interregnum.core.portal.Hour.enters(true, true),
+              "STANDING in a doorway does not. That is what stops the flicker -- arrive "
+              + "on the far side, come out in the far door, and a rule that fired on mere "
+              + "presence would send you straight back for ever. It is also what lets you "
+              + "stand in your own doorway with it open, which is what a doorway is for");
+        check(!com.cadykaya.interregnum.core.portal.Hour.enters(false, false)
+              && !com.cadykaya.interregnum.core.portal.Hour.enters(true, false),
+              "and being outside one is never crossing it, whichever way you came");
     }
 }

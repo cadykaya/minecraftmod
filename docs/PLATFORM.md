@@ -218,7 +218,12 @@ symptom in each case was a **passing probe**.
 | Fact | Consequence |
 |---|---|
 | **`execute in <dimension>` does not scope a bare entity selector.** `@e[tag=x]` with no positional constraint matches across worlds; `positioned <x> <y> <z>` plus `distance=..N` forces the test that makes the level matter | An entity probe that names a dimension must also name a place in it. Verified directly: one item summoned in the overworld was seen by `execute in interregnum:mass_authority if entity @e[tag=probe]`, and not seen by the same command with a position. See [LESSONS #43](LESSONS.md#43-execute-in-dimension-does-not-scope-a-bare-entity-selector) |
+| **`forceload add` takes BLOCK coordinates, and a loaded chunk is not a ticking chunk.** `-16 -16 47 47` is blocks −16..47. `fill` and `setblock` load a chunk on demand, so blocks outside the forceloaded region read and write correctly while nothing in them ever ticks | An entity-driven live check must keep every probe inside the region. A block assertion passing says nothing about whether that chunk is alive. See [LESSONS #45](LESSONS.md#45-a-loaded-chunk-is-not-a-ticking-chunk-and-forceload-counts-in-blocks) |
 | **`NoAI:1b` stops the movement system, not just the wandering.** `LivingEntity.aiStep` calls `travel()` only `if (canSimulateMovement() && isEffectiveAi())`, and `Mob.isEffectiveAi()` is `super && !isNoAi()`. So a `NoAI` mob has no gravity, never lands, and **`onGround` stays `false` for ever** | It is the wrong marker for any physics test. A dropped item falls, lands, reports the ground honestly and does not wander. See [LESSONS #44](LESSONS.md#44-noai1b-freezes-a-mob-so-completely-that-it-never-touches-the-ground) |
+
+One more that is a lookup rather than a trap: **`BlockTags` has no `SAPLINGS`** in 26.x —
+it is `BlockItemTags.SAPLINGS.block()`. The constant a pre-26 guide would have you write
+does not exist, so `javac` catches this one.
 
 **Cross-dimension travel**, for whoever needs it next: `Entity#teleport(TeleportTransition)`.
 It **destroys the entity and builds a new one** on the far side (`getType().create` +

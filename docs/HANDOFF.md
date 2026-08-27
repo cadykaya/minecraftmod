@@ -27,12 +27,12 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **47**, every one mutation-verified, all in CI |
+| Live-world checks | **48**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, ten spells**, learned in their gods' worlds and **cast by saying the word** |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
-| World-systems | the Anchorite and the Verdant each have **two layers, joined by that god's own portal**; two gods have a surface only |
+| World-systems | three gods have **two layers, joined by that god's own portal**; only the Quiet One has a surface alone |
 
 ### The audit, made permanent
 
@@ -2751,16 +2751,24 @@ Everything else is unblocked. In order:
      same instant. You pass through by **standing still under it** — the exact counterpart
      of letting go. `tools/grove_check.sh`.
 
-   **Still missing: two portals and every far-layer.** The Hearth-Turner's (an hour you
-   have to make, in a world whose sky is fixed) and the Quiet One's (opens when nothing near
-   it makes a sound — and `WORLD.md` notes it is the only one a player can close by
-   accident). Neither shares a mechanism with the two that exist.
+   * **The Hearth-Turner's door** (`interregnum:temporal_authority_lower`) is a hole in a
+     wall, and it is open only while the six blocks framing it are at one age. That world's
+     sky is stopped, so the hour is not a time of day — it is a stage in the Turning's own
+     chain, `stone_bricks → cracked → mossy`, and the open hour is the **middle** link,
+     the only one reachable from both directions. *Weather* ages a fresh frame into it;
+     *Rewind* brings an old one back. You pass through by **walking in**, because all the
+     difficulty here was in making the hour. The far side is stamped with a matching door,
+     since nothing over there builds anything. `tools/hour_check.sh`.
 
-   The Hearth-Turner's is the better next build: its law is the ageing table, which is
-   already written and already driven by a check, and *Weather* / *Rewind* are the school.
-   The Quiet One's wants care — the silence half of that world is the one thing this
-   container cannot verify, and a portal keyed on sound needs a server-side definition of
-   "quiet" that does not depend on a client hearing anything.
+   **Still missing: the Quiet One's portal, and every far-layer.** It opens when nothing
+   near it makes a sound, and `WORLD.md` notes it is the only one a player can close by
+   accident. It wants care: the audio half of that world is the one thing this container
+   cannot verify, so it needs a **server-side** definition of "quiet" that never depends on
+   a client hearing anything — most likely something like "no sound-capable block has been
+   used and nothing living has moved nearby for N ticks", which is checkable here.
+
+   **Then the far-layers.** No god has one. `WORLD.md` locks the grammar as three deep, and
+   nothing has been decided about what a far-layer *is* beyond being further in.
 
    Also missing from all five: **terrain that is designed.** They use vanilla noise with
    one fixed biome, and each file says so in its own javadoc. The under-layer shares its

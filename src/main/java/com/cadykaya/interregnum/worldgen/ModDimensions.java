@@ -77,13 +77,12 @@ import com.cadykaya.interregnum.Interregnum;
  * with a single fixed biome: it generates ground you can stand on and nothing more. That
  * is still true of every level here, including the new one.
  *
- * <b>Two systems now have two of their three layers.</b> The Anchorite's under-layer and
- * the Verdant's both exist, each joined to its surface by that god's own portal -- see
- * {@link com.cadykaya.interregnum.core.portal.Descent} and
- * {@link com.cadykaya.interregnum.core.portal.Rooting}. The Hearth-Turner and the Quiet
- * One have their surface only, and no god has a far-layer. The two portals that remain
- * share the rule that the school is the key and no mechanism at all: an hour you have to
- * make, and a silence you can break by coughing.
+ * <b>Three systems now have two of their three layers.</b> The Anchorite's under-layer,
+ * the Verdant's and the Hearth-Turner's all exist, each joined to its surface by that
+ * god's own portal -- see {@link com.cadykaya.interregnum.core.portal.Descent},
+ * {@link com.cadykaya.interregnum.core.portal.Rooting} and
+ * {@link com.cadykaya.interregnum.core.portal.Hour}. The Quiet One has its surface only,
+ * and no god has a far-layer.
  *
  * Saying so in the file is cheaper than a later reader inferring that a placeholder was a
  * decision.
@@ -191,6 +190,23 @@ public final class ModDimensions {
 
     public static final ResourceKey<net.minecraft.world.level.Level> TEMPORAL_AUTHORITY =
             ResourceKey.create(Registries.DIMENSION, TEMPORAL_AUTHORITY_STEM.identifier());
+
+    /**
+     * Under the Hearth-Turner's surface.
+     *
+     * The third under-layer, reached by a door that is open at one hour only -- see
+     * {@link com.cadykaya.interregnum.core.portal.Hour}.
+     */
+    public static final ResourceKey<DimensionType> TEMPORAL_AUTHORITY_LOWER_TYPE =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "temporal_authority_lower"));
+
+    public static final ResourceKey<LevelStem> TEMPORAL_AUTHORITY_LOWER_STEM =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "temporal_authority_lower"));
+
+    public static final ResourceKey<net.minecraft.world.level.Level> TEMPORAL_AUTHORITY_LOWER =
+            ResourceKey.create(Registries.DIMENSION, TEMPORAL_AUTHORITY_LOWER_STEM.identifier());
 
     /**
      * Deliberately unlike the overworld's -64..320.
@@ -336,6 +352,26 @@ public final class ModDimensions {
                 kept(),
                 HolderSet.empty(),
                 Optional.empty()));
+
+        // Under it, and the ONE thing it does not inherit is the stopped sky.
+        //
+        // `hasFixedTime` is the surface's signature and it is denied here deliberately. A
+        // player who has made an hour, walked through, and come out somewhere the light
+        // moves has been told something about this god that no line of dialogue does: the
+        // stillness above is a thing being HELD, and it is not held all the way down.
+        ctx.register(TEMPORAL_AUTHORITY_LOWER_TYPE, new DimensionType(
+                false,                              // hasFixedTime -- see above
+                false,                              // hasSkyLight
+                false, false, 1.0,
+                MIN_Y, HEIGHT, HEIGHT,
+                blocks.getOrThrow(BlockTags.INFINIBURN_OVERWORLD),
+                0.1F,
+                new DimensionType.MonsterSettings(ConstantInt.of(0), 0),
+                DimensionType.Skybox.OVERWORLD,
+                CardinalLighting.Type.DEFAULT,
+                kept(),
+                HolderSet.empty(),
+                Optional.empty()));
     }
 
     /**
@@ -467,6 +503,14 @@ public final class ModDimensions {
 
         ctx.register(TEMPORAL_AUTHORITY_STEM, new LevelStem(
                 types.getOrThrow(TEMPORAL_AUTHORITY_TYPE),
+                new NoiseBasedChunkGenerator(
+                        new FixedBiomeSource(biomes.getOrThrow(ModBiomes.THE_TURNING)),
+                        noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
+
+        // The last under-layer, on the same placeholder terms and the same biome as its
+        // surface, for the same reason the other two share theirs.
+        ctx.register(TEMPORAL_AUTHORITY_LOWER_STEM, new LevelStem(
+                types.getOrThrow(TEMPORAL_AUTHORITY_LOWER_TYPE),
                 new NoiseBasedChunkGenerator(
                         new FixedBiomeSource(biomes.getOrThrow(ModBiomes.THE_TURNING)),
                         noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));

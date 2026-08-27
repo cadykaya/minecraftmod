@@ -323,6 +323,23 @@ MUTATIONS = [
      "    public static final int STILL_TICKS = 60;",
      "    public static final int STILL_TICKS = 1;"),
 
+    # THE HEARTH-TURNER'S DOOR. Its two failure modes are opposite and both invisible: a
+    # frame nobody can walk into, and a threshold rule that fires on standing.
+    ("portal: the doorway is boxed in on all four sides",
+     f"{MAIN}/portal/Hour.java",
+     "                ? List.of(new Offset(-1, 0, 0), new Offset(-1, 1, 0),\n"
+     "                          new Offset(1, 0, 0), new Offset(1, 1, 0))",
+     "                ? List.of(new Offset(-1, 0, 0), new Offset(0, 0, -1),\n"
+     "                          new Offset(1, 0, 0), new Offset(0, 0, 1))"),
+    ("portal: standing in a doorway counts as walking through it, for ever",
+     f"{MAIN}/portal/Hour.java",
+     "        return nowInside && !wasInside;",
+     "        return nowInside;"),
+    ("portal: the clock loses a hand, so the hour is reachable from one side only",
+     f"{MAIN}/portal/Hour.java",
+     "    public static final Spell BACK = Spell.REWIND;",
+     "    public static final Spell BACK = Spell.WEATHER;"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.

@@ -2011,3 +2011,54 @@ not need.
 
 Related: [#40](#40-a-persistence-check-on-a-brand-new-world-tests-nothing) — a probe that
 cannot distinguish the two states it is there to distinguish.
+
+---
+
+## 45. A loaded chunk is not a ticking chunk, and `forceload` counts in blocks
+
+`hour_check.sh` built four doorways twenty blocks apart — at x=4, 24, 44 and 64 — inside
+what was meant to be the forceloaded region:
+
+```
+execute in interregnum:temporal_authority run forceload add -16 -16 47 47
+```
+
+Three of them behaved. The fourth reported its door **open** and then did nothing at all:
+the item standing in it never crossed, and it was still sitting at its summon coordinates
+when the run ended.
+
+### Why
+
+Two facts stacked, and neither is visible from the symptom.
+
+**`forceload add` takes block coordinates, not chunk coordinates.** `-16 -16 47 47` is
+blocks −16 to 47 — chunks −1 to 2. x=64 was never in it. (Every other live check in this
+repo happens to keep its probes under x=47, so nothing had ever crossed the line before.)
+
+**A chunk that is merely loaded answers block queries and runs no entity ticks.** `fill` and
+`setblock` load a chunk on demand to do their work. So the frame at x=64 existed, the blocks
+read back correctly, and `interregnum doorway 64 101 4` walked the six positions and
+truthfully answered `OPEN` — while the entity standing in it was never ticked, because
+ticking needs a *forceloaded* chunk or a nearby player, and a headless server has no
+players.
+
+The door worked. Nothing was ever going to walk through it.
+
+> **The rule: an entity-driven live check must keep every probe inside the forceloaded
+> region, and the region is measured in blocks.** A block assertion passing is not evidence
+> that the chunk it is in is alive.
+
+### What it looked like from inside the check
+
+The failing assertion was *"the thing that walked into the rewound doorway did not cross"*,
+which points squarely at the portal — and the portal was fine. The diagnostic that settled
+it was one `data get entity ... Pos`: the item was exactly where it had been summoned, to
+the decimal. Nothing had moved it, nothing had tried, and no code under test had run.
+
+The check now carries a `RETURNED_STAYED` probe whose failure message names this cause
+first, because "it is still standing there" and "it crossed and could not be found" are two
+different bugs that the original probe set could not tell apart.
+
+Related: [#30](#30-the-world-stopped-and-the-check-reported-that-the-mod-was-broken) — the
+same shape exactly, one level up: there the whole server had stopped ticking, here one
+chunk had never started.

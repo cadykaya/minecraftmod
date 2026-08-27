@@ -4300,3 +4300,83 @@ explained by a thing that was never in the doorway — which is what had been ha
 Two of four, each with an under-layer behind it. The Hearth-Turner's and the Quiet One's
 remain, and they share the rule and no mechanism: an hour you have to make in a world whose
 sky is fixed, and a door you can close by coughing.
+
+---
+
+## The Hearth-Turner's door — open at one hour only
+
+`WORLD.md`, locked: *"Always present, open **at one hour only** — and the sky is fixed, so
+you cannot wait for it. You have to **make** the hour happen. Opened with *Weather* /
+*Rewind* — the school is the clock."*
+
+### The hour is not a time of day
+
+This god's world is the one dimension in the mod entitled to a stopped sky, and it has one:
+`hasFixedTime`. A world whose law is keeping every past does not get to have an afternoon
+that becomes evening. So there is no hour up there to wait for, and the locked line says so
+in as many words.
+
+What this god's school actually moves is **the age of things**. The Turning's table runs
+`stone_bricks → cracked → mossy`; *Weather* walks it forward and *Rewind* walks it back.
+That chain is the clock, and a doorway keeps one stage of it.
+
+The open hour is the **middle** link, and that choice is the reason both verbs are named.
+It is the only stage reachable from both directions: you weather a fresh frame up into it,
+or you rewind an old one back down. Pick either end and one of the school's two verbs
+becomes a spare.
+
+It is also what makes *"you cannot wait for it"* true without forbidding anything. The hour
+does come round on its own — that world ages what stands in it. It does not stay. Wait long
+enough and every frame you ever built is mossy and shut, and the only road back to the hour
+is the school.
+
+**Copper was the obvious material and is deliberately unused.** The ageing table's own
+comment rules it out: vanilla oxidises copper by random tick everywhere, so this world's
+clock and vanilla's would fight over the same blocks and the visible rate would be one
+neither of them chose.
+
+### Three portals, three verbs
+
+The Anchorite's asks you to let go. The Verdant's asks you to stand still. This one asks
+nothing at all — you walk in, because all the difficulty was in making the hour, and what
+you do with a door is walk through it. The rule is a rising edge: crossing the threshold
+takes you, standing in the gap does not, which is both what stops the arrival flicker and
+what lets you stand in your own doorway with it open.
+
+It also keeps **no state whatsoever** — not a counter, not a ledger, not even a position.
+A doorway is a shape the world is currently in, and the only question ever asked is whether
+six blocks around a gap are all at the hour right now. That is the closest of the three to
+`WORLD.md`'s *"always present"*: no portal object to make or destroy, only a wall that is
+sometimes a door.
+
+The far side gets a frame stamped where you arrive. The other two portals do not need this
+— a shaft is a spell you can cast again, a grown door leaves a tree standing — but this one
+is six blocks somebody built, and nothing on the far side has ever built anything.
+
+### The check reported a working door that nothing could walk through
+
+Four doorways, twenty blocks apart, at x=4, 24, 44 and 64. Three behaved. The fourth
+reported `doorway=OPEN` and the item standing in it never moved.
+
+Two facts stacked, and the symptom showed neither ([LESSONS #45](LESSONS.md#45-a-loaded-chunk-is-not-a-ticking-chunk-and-forceload-counts-in-blocks)).
+`forceload add` takes **block** coordinates, so `-16 -16 47 47` is blocks −16..47 and x=64
+was never in it. And a chunk that is merely *loaded* — as `fill` and `setblock` load one on
+demand — answers every block query while running no entity ticks at all.
+
+So the frame was real, the six positions read back correctly, the command truthfully said
+the door was open, and the thing in the doorway was never ticked. The door worked. Nothing
+was ever going to walk through it.
+
+One `data get entity ... Pos` settled it: the item was at its summon coordinates to the
+decimal. The check now carries a probe whose failure message names this cause first,
+because *"it is still standing there"* and *"it crossed and could not be found"* are two
+different bugs the original probe set could not tell apart.
+
+### Where the portals stand
+
+Three of four. Only the Quiet One's remains, and it is the one that wants care: it opens
+when nothing near it makes a sound, `WORLD.md` notes it is the only one a player can close
+by accident, and the audio half of that world is the single thing this container cannot
+verify. It needs a definition of *quiet* that is entirely server-side.
+
+No god has a far-layer, and nothing has been decided about what one is.
