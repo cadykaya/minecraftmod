@@ -4860,3 +4860,71 @@ rots. The sabotage watched was the two tables merged into one, which went red at
 Fourteen of sixteen. **The Turning is the first school with all four verbs.** Two left, both
 the Verdant's — *Hedge* and *Graft* — and neither has machinery waiting for it, which is
 what makes them the last two rather than the next two.
+
+---
+
+## Hedge — the only defence improved by being attacked
+
+`WORLD.md`, locked: *"A living wall that grows where you draw it and **thickens where it is
+struck**. The only defence in the mod improved by being attacked."*
+
+### Why that clause is worth building carefully
+
+Every other defensive thing here is a refusal that runs out. *Hush* lasts twenty seconds;
+*Still* holds what is already moving; *Moor* lets go after a minute. All three are versions
+of **wait**, and a patient attacker beats all three.
+
+A hedge makes patience the wrong tool. Two blocks grow for every one cut, so a wall somebody
+has been hacking at is *denser* than the one they started on. It is the Verdant's law read
+as a defence rather than as a hazard — `WORLD.md` calls accelerating growth a hazard in that
+god's own world, where the path you cut closes behind you, and this is the same sentence
+pointed at somebody else.
+
+Drawing the wall is `Bridgeroot`'s geometry stood on its end. A span is a span, and the
+school should not have two ways of drawing the same line.
+
+### Two is the number, and it is not arbitrary
+
+At one, cutting is free and the hedge is merely stubborn. At three or more, a few strikes
+bury the attacker in wall and the spell stops being a hedge and becomes a trap that punishes
+touching it. Two is *this costs you more than it costs me* said as arithmetic, and it leaves
+the hole you actually cut **open**: `WORLD.md`'s promise is improved by being attacked, not
+unattackable.
+
+Bounded at a hundred and twenty-eight blocks per world, because *grows when struck* unbounded
+is a way to fill a world with leaves by hitting a bush — a griefing tool wearing a spell's
+clothes.
+
+### The check found a real bug, and then failed to find a real one
+
+**First**, the wall healed its own wound. The thickening walks two rings out from the cut
+position, and `cut.relative(d).relative(d.getOpposite())` is `cut` — so the wound was in its
+own candidate list, and the hedge grew straight back into the hole. That is precisely the
+unattackable wall the locked line rules out, and the check went red on it immediately.
+
+**Second, and more interesting**: a sabotage that removed the ledger gate — the check that
+says *these leaves are a hedge and those are an oak* — **left the check green**. Same shape
+as [LESSONS #46](LESSONS.md#46-a-sabotage-the-check-does-not-notice-is-a-finding-about-the-code),
+different answer.
+
+The probe for it was a lone oak in a field, and an isolated oak grows nothing either way,
+because the thickening only fills air that already touches hedge. The case where gated and
+ungated differ is **a block that is not hedge standing next to hedge**: break a stone against
+your neighbour's wall and, ungated, the wall thanks you for it.
+
+So this time the finding was about the check rather than the code, and the fix was a real
+assertion for a real behaviour rather than a note. The check now lays a stone against the
+wall and breaks it, and removing the gate goes red there and nowhere else in the file.
+
+### Why there is a ledger at all
+
+A hedge is ordinary leaves, because a registered block for it would cost a texture, a model,
+a palette entry and a reachability row for something whose whole job is to be leaves. So the
+mod needs some way to tell the wall somebody grew from the forest it was grown next to — or
+hitting an oak would make it thicker, which is a different spell and a much worse one.
+
+### One left
+
+*Graft*, and it is the only spell that needs something this mod has never had: **a link
+between two positions**. Everything else acts on a place, a volume, a thing or a person.
+That one acts on a relationship.

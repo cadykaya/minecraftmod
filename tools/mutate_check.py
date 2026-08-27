@@ -423,6 +423,20 @@ MUTATIONS = [
      "    public enum Subject {\n        /** A block with somewhere past its end to go. */\n        THING,",
      "    public enum Subject {\n        /** A block with somewhere past its end to go. */\n        THING,\n        /** A creature. */\n        CREATURE,"),
 
+    # Hedge. The locked line is "improved by being attacked", and both ways of losing it
+    # are one number: at one, cutting is free; unbounded, it fills a world with leaves.
+    ("magic: a hedge replaces exactly what was cut, so attacking it is free",
+     f"{MAIN}/magic/Hedge.java",
+     "    public static final int THICKENS_BY = 2;",
+     "    public static final int THICKENS_BY = 1;"),
+    ("magic: a hedge grows without limit, so hitting a bush fills a world",
+     f"{MAIN}/magic/Hedge.java",
+     "        return already >= MAX_BLOCKS ? 0 : THICKENS_BY;",
+     "        return THICKENS_BY;"),
+    ("magic: a hedge is grown into the caster's own column",
+     f"{MAIN}/magic/Hedge.java",
+     "        for (int i = 1; i <= reach; i++) {", "        for (int i = 0; i <= reach; i++) {"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.

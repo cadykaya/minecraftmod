@@ -432,6 +432,22 @@ table can be undone — which is what *keeping every past* means when it is a bl
 Rot does is in that table. Past a thing's end there is no past left to keep, and the god
 that remembers everything remembers what a thing *was*, not what is left of it.
 
+**Built: *Hedge*.** Drawing the wall is `Bridgeroot`'s geometry stood on its end — a span
+is a span, and the school should not have two ways of drawing the same line. The spell is
+what happens **after**: two blocks grow for every one cut, filling inward toward whatever
+already has the most hedge around it, so a wall somebody has been hacking at is denser than
+the one they started on.
+
+**It is not invulnerable, and that is the design.** The block they struck really is gone;
+`WORLD.md`'s promise is *improved by being attacked*, not *unattackable*. A methodical person
+gets through — and arrives at a thicket they built themselves.
+
+Every other defence in the mod is a refusal that runs out — *Hush* lasts twenty seconds,
+*Still* holds what is already moving, *Moor* lets go after a minute. All three are versions
+of **wait**, and a patient attacker beats them. This one makes patience the wrong tool,
+which is the Verdant's law read as a defence rather than as a hazard: the same sentence,
+pointed at somebody else.
+
 *Held-breath* and *Rot* are the two that were decided rather than sketched. The first
 because the casting affordance makes silence cost something real. The second because the
 obvious reading of *"age it past its end"* is an instant-kill, and **every spell is a

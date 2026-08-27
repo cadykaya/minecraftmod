@@ -61,7 +61,9 @@ public enum Spell {
     /** The Hearth-Turner's: one living thing carried forward to what it was becoming. */
     RIPEN(School.TURNING),
     /** The Hearth-Turner's: one thing carried past its end, and never a creature. */
-    ROT(School.TURNING);
+    ROT(School.TURNING),
+    /** The Verdant's: a living wall that comes back thicker where it is cut. */
+    HEDGE(School.VERDANCY);
 
     private final School school;
 

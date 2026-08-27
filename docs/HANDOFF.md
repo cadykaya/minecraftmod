@@ -27,10 +27,10 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **55**, every one mutation-verified, all in CI |
+| Live-world checks | **56**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
-| Magic | four schools, **fourteen spells built** of sixteen named; **the Turning is complete** |
+| Magic | four schools, **fifteen spells built** of sixteen named; the Turning is complete |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 | World-systems | **all four gods have two layers**, each joined by that god's own portal; no god has a far-layer |
 
@@ -2801,7 +2801,7 @@ Everything else is unblocked. In order:
 4. ~~**The delivery scenes.**~~ **All four built**, recording `LETTER_DELIVERED` and
    teaching their god's school. Chapters 3–5 gate on that count.
 
-5. ~~**Magic.**~~ **Four schools, fourteen spells built**, all learned in their
+5. ~~**Magic.**~~ **Four schools, fifteen spells built**, all learned in their
    gods' worlds and all costing the overworld what they do not cost a living god's.
    *Weather* changes a block and *Rewind* changes it back; *Lighten* encloses a region and
    *Drop-forge* makes one where impacts count; *Bridgeroot* creates blocks and
@@ -2811,8 +2811,9 @@ Everything else is unblocked. In order:
    your voice with it; and *Moor* fixes one thing where it is against every force that
    would move it, including its own god's; and *Ripen* carries one living thing forward to
    what it was becoming and stops there; and *Rot* carries one past it, which is where
-   the Turning's own chain finally ends. Fourteen different verbs, which is what shows the
-   school system is a system rather than one mechanism with four names.
+   the Turning's own chain finally ends; and *Hedge* draws a living wall that comes back
+   thicker where it is cut. Fifteen different verbs, which is what shows the school system
+   is a system rather than one mechanism with four names.
 
    **Two things it is short of, one of them the owner's:**
 
@@ -2850,12 +2851,17 @@ Everything else is unblocked. In order:
      and so cannot follow, which is *past a thing's end there is no past left to keep*.
      `tools/rot_check.sh`.
 
-     **Two left, both the Verdant's: *Hedge* and *Graft*.** Neither has machinery waiting
-     for it, which is what makes them the last two rather than the next two. *Hedge* is a
-     living wall that **thickens where it is struck** — the only defence in the mod improved
-     by being attacked — and wants a damage hook and a growth rule tied together. *Graft*
-     joins two growing things so one feeds the other, and needs a notion of a link between
-     two positions that nothing here has yet.
+     ***Hedge* is built** — the only defence in the mod improved by being attacked. Two
+     blocks grow for every one cut, so a wall somebody has been hacking at is denser than
+     the one they started on; the block they struck really is gone, because the promise is
+     *improved by being attacked*, not *unattackable*. `tools/hedge_check.sh`.
+
+     **One left: *Graft* (Verdancy).** *"Join two growing things, or a growing thing to a
+     block, so one feeds the other — and a plant lives somewhere it could not."* It is the
+     last spell and the only one that needs something the mod has never had: **a link
+     between two positions.** Every other spell acts on a place, a volume, a thing or a
+     person; this one acts on a *relationship*, and it will want a ledger of pairs and a
+     rule for what a fed plant can survive that it otherwise could not.
 
 6. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and

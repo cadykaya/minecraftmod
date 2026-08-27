@@ -1905,5 +1905,63 @@ public final class SelfTest {
         check(com.cadykaya.interregnum.core.magic.Rot.Subject.values().length == 2,
               "and it has exactly two answers: a thing, or nothing. A third would be a "
               + "distinction this spell is not entitled to draw");
+
+        // HEDGE. WORLD.md: "a living wall that grows where you draw it and THICKENS WHERE
+        // IT IS STRUCK. The only defence in the mod improved by being attacked."
+        check(com.cadykaya.interregnum.core.magic.Hedge.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.VERDANCY
+              && com.cadykaya.interregnum.core.magic.Spell.HEDGE.school()
+                      == com.cadykaya.interregnum.core.magic.School.VERDANCY,
+              "Hedge is the Verdant's -- the god's law read as a defence rather than as a "
+              + "hazard, which is the same sentence pointed at somebody else");
+
+        // THE NUMBER THAT IS THE SPELL. At one, cutting is free and the hedge is merely
+        // stubborn. At three or more, a few strikes bury the attacker and it stops being
+        // a hedge and becomes a trap that punishes touching it.
+        check(com.cadykaya.interregnum.core.magic.Hedge.THICKENS_BY > 1,
+              "more grows than was cut, or the wall is not improved by being attacked and "
+              + "the locked line describes nothing");
+        check(com.cadykaya.interregnum.core.magic.Hedge.THICKENS_BY <= 2,
+              "and only just. Two is 'this costs you more than it costs me' said as "
+              + "arithmetic; three buries somebody for touching a bush");
+
+        // BOUNDED, because "grows when struck" is otherwise a way to fill a world with
+        // leaves by hitting one.
+        check(com.cadykaya.interregnum.core.magic.Hedge.thickening(0)
+                      == com.cadykaya.interregnum.core.magic.Hedge.THICKENS_BY,
+              "a young hedge thickens");
+        check(com.cadykaya.interregnum.core.magic.Hedge.thickening(
+                      com.cadykaya.interregnum.core.magic.Hedge.MAX_BLOCKS) == 0,
+              "and one at its budget stops. Past that a strike takes a block and grows "
+              + "nothing -- an unbounded hedge is a griefing tool wearing a spell's "
+              + "clothes");
+        check(com.cadykaya.interregnum.core.magic.Hedge.MAX_BLOCKS
+                      > com.cadykaya.interregnum.core.magic.Hedge.MAX_LENGTH
+                              * com.cadykaya.interregnum.core.magic.Hedge.HEIGHT,
+              "the budget is bigger than one cast's wall, or a hedge would arrive already "
+              + "spent and the thickening would never once happen");
+
+        // THE WALL IS A BRIDGE STOOD ON ITS END, and the geometry says so.
+        var drawn = com.cadykaya.interregnum.core.magic.Hedge.wall(4, 0);
+        check(drawn.size() == 4 * com.cadykaya.interregnum.core.magic.Hedge.HEIGHT,
+              "a wall four long is four columns of its own height");
+        check(drawn.stream().noneMatch(o -> o[0] == 0 && o[2] == 0),
+              "and the caster's own column is not in it. A wall grown into the space you "
+              + "occupy is a wall that suffocates you the first time you use it correctly");
+        check(drawn.stream().allMatch(o -> o[1] >= 0
+                      && o[1] < com.cadykaya.interregnum.core.magic.Hedge.HEIGHT),
+              "every block of it stands between the ground and the top of the wall");
+        check(com.cadykaya.interregnum.core.magic.Hedge.wall(0, 0).isEmpty(),
+              "and a wall drawn at your own feet is nothing rather than a column on your "
+              + "head");
+        check(com.cadykaya.interregnum.core.magic.Hedge.wall(400, 0).size()
+                      == com.cadykaya.interregnum.core.magic.Hedge.MAX_LENGTH
+                              * com.cadykaya.interregnum.core.magic.Hedge.HEIGHT,
+              "a wall drawn at the horizon is exactly as long as one cast reaches -- and "
+              + "shorter than a bridge, because a bridge is measured against a ravine and "
+              + "a hedge against a doorway");
+        check(com.cadykaya.interregnum.core.magic.Hedge.MAX_LENGTH
+                      < com.cadykaya.interregnum.core.magic.Bridgeroot.MAX_SPAN,
+              "which is that comparison made rather than asserted");
     }
 }

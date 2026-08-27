@@ -251,3 +251,6 @@ jobs:
 
       - name: Rot finishes the ageing chain, Rewind cannot follow, and a cow on a rotting block is still a cow
         run: ./tools/rot_check.sh
+
+      - name: A hedge comes back thicker where it is cut, and only where somebody grew one
+        run: ./tools/hedge_check.sh

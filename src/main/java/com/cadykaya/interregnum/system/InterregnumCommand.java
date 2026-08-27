@@ -955,6 +955,57 @@ public final class InterregnumCommand {
                                             return cast.worked() ? 1 : 0;
                                         })))));
 
+        // Hedge. Takes BOTH positions, like `cast bridgeroot`, because a wall is drawn
+        // between where you are and what you are looking at. `hedge strike` is the other
+        // half -- a headless server has nobody to swing at a wall, and the thickening is
+        // the spell rather than the drawing.
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("hedge")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("from", BlockPosArgument.blockPos())
+                                        .then(Commands.argument("toward", BlockPosArgument.blockPos())
+                                                .executes(ctx -> {
+                                                    BlockPos from = BlockPosArgument.getLoadedBlockPos(ctx, "from");
+                                                    BlockPos toward = BlockPosArgument.getLoadedBlockPos(ctx, "toward");
+                                                    var level = ctx.getSource().getLevel();
+                                                    var cast = com.cadykaya.interregnum.system.magic
+                                                            .HedgeSpell.cast(level, from, toward,
+                                                                    grimoireOf(ctx, "who"));
+                                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                                            "cast=hedge grew=" + cast.grew()
+                                                                    + " frayed=" + cast.frayed()
+                                                                    + " refused=" + cast.refused()
+                                                                    + " hedge=" + com.cadykaya.interregnum
+                                                                            .system.magic.Hedges.get(level).count()), false);
+                                                    return cast.grew() > 0 ? 1 : 0;
+                                                }))))));
+
+        root = root.then(Commands.literal("hedge")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("strike")
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .executes(ctx -> {
+                                    BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                    var level = ctx.getSource().getLevel();
+                                    boolean was = com.cadykaya.interregnum.system.magic
+                                            .Hedges.get(level).is(pos);
+                                    // The block goes first, exactly as a break would take
+                                    // it -- the handler runs on a block that is on its way
+                                    // out, and a seam that grew the hedge without removing
+                                    // anything would be testing a different sequence.
+                                    level.setBlockAndUpdate(pos,
+                                            net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                                    int grew = com.cadykaya.interregnum.system.magic
+                                            .HedgeSpell.struck(level, pos);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "hedge=" + (was ? "CUT" : "NOT_A_HEDGE")
+                                                    + " grew=" + grew
+                                                    + " standing=" + com.cadykaya.interregnum
+                                                            .system.magic.Hedges.get(level).count()), false);
+                                    return grew;
+                                }))));
+
         // Rot, shaped like `cast weather` because it is the same act on a different table.
         root = root.then(Commands.literal("cast")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))

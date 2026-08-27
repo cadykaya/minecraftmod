@@ -164,6 +164,9 @@ public final class Speech {
                 var cast = RotSpell.cast(level, at, g);
                 yield cast.subject() + " " + cast.what();
             }
+            // Like Bridgeroot, and for the same reason: a wall is drawn BETWEEN where you
+            // are and what you are looking at, so it needs both.
+            case HEDGE -> String.valueOf(HedgeSpell.cast(level, from, at, g).grew());
         };
     }
 }
