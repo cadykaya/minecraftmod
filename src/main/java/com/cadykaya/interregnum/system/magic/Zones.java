@@ -77,6 +77,40 @@ public final class Zones {
     }
 
     /**
+     * Every zone of one spell that covers a position.
+     *
+     * The Quiet One's door, and nothing else. That portal IS a {@link Hush} zone, so it
+     * needs the zones themselves rather than a yes or no -- it has to know which door a
+     * noise disturbed, and a boolean cannot say.
+     *
+     * Sweeps like the other reads, and returns a fresh list rather than a view: the caller
+     * marks zones noisy while iterating, and handing out the live list would be handing
+     * out the sweep's own iteration target.
+     */
+    public static List<Zone> zonesCovering(ServerLevel level, Spell spell, BlockPos pos) {
+        Map<Spell, List<Zone>> bySpell = ACTIVE.get(level.dimension());
+        if (bySpell == null) {
+            return List.of();
+        }
+        List<Zone> zones = bySpell.get(spell);
+        if (zones == null || zones.isEmpty()) {
+            return List.of();
+        }
+        long now = level.getGameTime();
+        List<Zone> found = new ArrayList<>(1);
+        var it = zones.iterator();
+        while (it.hasNext()) {
+            Zone z = it.next();
+            if (z.expired(now)) {
+                it.remove();
+            } else if (z.covers(pos.getX(), pos.getY(), pos.getZ())) {
+                found.add(z);
+            }
+        }
+        return found;
+    }
+
+    /**
      * The sweep, and whatever question is being asked of what survives it.
      *
      * Both public queries run through here so that housekeeping cannot drift between

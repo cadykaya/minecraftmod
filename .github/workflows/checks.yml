@@ -230,3 +230,6 @@ jobs:
 
       - name: The Hearth-Turner's door is open at one hour only, and the school is the clock
         run: ./tools/hour_check.sh
+
+      - name: The Quiet One's door opens on a silence that has held, and a single noise resets it
+        run: ./tools/silence_check.sh

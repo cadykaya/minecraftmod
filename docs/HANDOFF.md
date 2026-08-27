@@ -27,12 +27,12 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **48**, every one mutation-verified, all in CI |
+| Live-world checks | **49**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
 | Magic | **four schools, ten spells**, learned in their gods' worlds and **cast by saying the word** |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
-| World-systems | three gods have **two layers, joined by that god's own portal**; only the Quiet One has a surface alone |
+| World-systems | **all four gods have two layers**, each joined by that god's own portal; no god has a far-layer |
 
 ### The audit, made permanent
 
@@ -2760,15 +2760,22 @@ Everything else is unblocked. In order:
      difficulty here was in making the hour. The far side is stamped with a matching door,
      since nothing over there builds anything. `tools/hour_check.sh`.
 
-   **Still missing: the Quiet One's portal, and every far-layer.** It opens when nothing
-   near it makes a sound, and `WORLD.md` notes it is the only one a player can close by
-   accident. It wants care: the audio half of that world is the one thing this container
-   cannot verify, so it needs a **server-side** definition of "quiet" that never depends on
-   a client hearing anything — most likely something like "no sound-capable block has been
-   used and nothing living has moved nearby for N ticks", which is checkable here.
+   * **The Quiet One's silence** (`interregnum:unresponsive_lower`) is a cast *Hush* zone
+     that nothing has disturbed for five seconds. It listens the way sculk listens —
+     `VanillaGameEvent`, the game's own server-side vibration model — because the audible
+     half of that god's law lives on a client and this mod has never claimed it. Every game
+     event counts, with no allow-list, and a noise **resets** rather than delays. It is the
+     only door with no second condition and the only **shared** one: a stranger's footstep
+     closes yours. `tools/silence_check.sh`.
 
-   **Then the far-layers.** No god has one. `WORLD.md` locks the grammar as three deep, and
-   nothing has been decided about what a far-layer *is* beyond being further in.
+   **All four portals are built.** Four doors, four verbs — *let go, stand still, walk in,
+   make no sound.*
+
+   **What is left of the grammar: the far-layers.** No god has one. `WORLD.md` locks
+   *surface · under-layer · far-layer* and nothing has been decided about what a far-layer
+   **is** beyond being further in — which is a design question, not a build. The four
+   under-layers are also still on placeholder terrain, sharing their surface's biome; that
+   decision and the terrain one want making together (see the terrain item).
 
    Also missing from all five: **terrain that is designed.** They use vanilla noise with
    one fixed biome, and each file says so in its own javadoc. The under-layer shares its

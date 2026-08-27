@@ -1651,5 +1651,47 @@ public final class SelfTest {
         check(!com.cadykaya.interregnum.core.portal.Hour.enters(false, false)
               && !com.cadykaya.interregnum.core.portal.Hour.enters(true, false),
               "and being outside one is never crossing it, whichever way you came");
+
+        // THE QUIET ONE'S DOOR. WORLD.md: "opens when nothing near it makes a sound. The
+        // only one of the four a player can close by accident."
+        check(com.cadykaya.interregnum.core.portal.Stillness.KEY
+                      == com.cadykaya.interregnum.core.magic.Spell.HUSH,
+              "the silence is opened by Hush -- and it is the only portal key that is also "
+              + "the BOUNDARY. 'Nothing near IT' needs an it, and a cast cube of declared "
+              + "silence is exactly that");
+
+        // The zone opens when it is cast and lapses on its own clock, so the door's start
+        // has to be derived from the end rather than stored beside it.
+        var quietZone = com.cadykaya.interregnum.core.magic.Hush.zoneAt(0, 70, 0, 1000);
+        check(com.cadykaya.interregnum.core.portal.Stillness.openedAt(quietZone) == 1000,
+              "a silence counts from when it was cast. A second stored number would be a "
+              + "second thing to keep in step with the spell's duration, and a drifted one "
+              + "makes the door available at a moment unrelated to the silence");
+
+        // A NOISE RESETS, and does not merely delay. This is the whole of "the only one a
+        // player can close by accident": without the maximum, an early noise inside a long
+        // zone is forgiven by the passage of time and the accident costs nothing.
+        long opened = 1000;
+        check(com.cadykaya.interregnum.core.portal.Stillness.since(opened, Long.MIN_VALUE)
+                      == opened,
+              "a silence nobody has broken counts from the cast -- an absent noise is not "
+              + "a silence stretching back for ever");
+        check(com.cadykaya.interregnum.core.portal.Stillness.since(opened, 1200) == 1200,
+              "and one broken since counts from the BREAK. Taking the later of the two is "
+              + "what makes a disturbance reset the clock rather than delay it");
+        check(com.cadykaya.interregnum.core.portal.Stillness.since(opened, 900) == opened,
+              "a noise from before the zone existed is not this zone's noise");
+
+        int hushed = com.cadykaya.interregnum.core.portal.Stillness.STILL_TICKS;
+        check(!com.cadykaya.interregnum.core.portal.Stillness.quiet(1000, 1000 + hushed - 1)
+              && com.cadykaya.interregnum.core.portal.Stillness.quiet(1000, 1000 + hushed),
+              "one tick short of the silence is not the silence, and the full span is");
+        check(hushed < com.cadykaya.interregnum.core.magic.Hush.DURATION_TICKS,
+              "the silence needed is shorter than the spell that holds it -- and by enough "
+              + "to be tried more than once, so a door closed by an accident is a setback "
+              + "rather than a wasted cast");
+        check(hushed > com.cadykaya.interregnum.core.portal.Rooting.STILL_TICKS,
+              "and it is the longest wait of the four doors. Standing still costs you a "
+              + "wait; being SILENT costs you every verb you have, and the world's too");
     }
 }

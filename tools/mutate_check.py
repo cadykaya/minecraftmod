@@ -340,6 +340,21 @@ MUTATIONS = [
      "    public static final Spell BACK = Spell.REWIND;",
      "    public static final Spell BACK = Spell.WEATHER;"),
 
+    # THE QUIET ONE'S DOOR. Its distinction is that an accident closes it, so the mutation
+    # that matters is the one where a noise merely delays instead of resetting.
+    ("portal: a noise delays the silence instead of resetting it",
+     f"{MAIN}/portal/Stillness.java",
+     "        return Math.max(opened, lastNoise);",
+     "        return opened;"),
+    ("portal: the silence opens the instant it is cast",
+     f"{MAIN}/portal/Stillness.java",
+     "    public static final int STILL_TICKS = 100;",
+     "    public static final int STILL_TICKS = 0;"),
+    ("portal: the silence needed outlasts the spell that holds it",
+     f"{MAIN}/portal/Stillness.java",
+     "    public static final int STILL_TICKS = 100;",
+     "    public static final int STILL_TICKS = 500;"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.

@@ -1341,6 +1341,37 @@ public final class InterregnumCommand {
                                     .Rite.Outcome.ATTUNED ? 1 : 0;
                         })));
 
+        // The Quiet One's door, reported rather than driven. Nothing here casts, disturbs
+        // or crosses: you cast Hush and then you stop doing things, and the second half is
+        // the one thing no command can help with.
+        //
+        // `held` is what a live check actually needs. "Open" and "shut" cannot tell a
+        // silence that has held for four seconds from one that was broken this tick, and
+        // those are the two states a check has to distinguish to prove a noise RESET the
+        // clock rather than merely delaying it.
+        root = root.then(Commands.literal("silence")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                        .executes(ctx -> {
+                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                            var level = ctx.getSource().getLevel();
+                            boolean open = com.cadykaya.interregnum.system.portal.Silence
+                                    .open(level, pos);
+                            long held = com.cadykaya.interregnum.system.portal.Silence
+                                    .held(level, pos);
+                            var beyond = com.cadykaya.interregnum.system.portal.Silence
+                                    .beyond(level);
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                    "silence=" + (open ? "OPEN" : "SHUT")
+                                            + " held=" + held
+                                            + " leads=" + (beyond == null ? "NOWHERE"
+                                                    : beyond.identifier().getPath())
+                                            + " broken=" + com.cadykaya.interregnum.system
+                                                    .portal.Hushed.disturbed(level)),
+                                    false);
+                            return open ? 1 : 0;
+                        })));
+
         // The Hearth-Turner's door, reported rather than driven. Same posture as the
         // other two: nothing here builds a frame, ages one, or walks anybody through.
         // Building six blocks and standing between them is a thing a player does with no

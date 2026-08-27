@@ -77,12 +77,13 @@ import com.cadykaya.interregnum.Interregnum;
  * with a single fixed biome: it generates ground you can stand on and nothing more. That
  * is still true of every level here, including the new one.
  *
- * <b>Three systems now have two of their three layers.</b> The Anchorite's under-layer,
- * the Verdant's and the Hearth-Turner's all exist, each joined to its surface by that
- * god's own portal -- see {@link com.cadykaya.interregnum.core.portal.Descent},
- * {@link com.cadykaya.interregnum.core.portal.Rooting} and
- * {@link com.cadykaya.interregnum.core.portal.Hour}. The Quiet One has its surface only,
- * and no god has a far-layer.
+ * <b>All four systems have two of their three layers.</b> Every god has an under-layer,
+ * joined to its surface by that god's own portal -- see
+ * {@link com.cadykaya.interregnum.core.portal.Descent},
+ * {@link com.cadykaya.interregnum.core.portal.Rooting},
+ * {@link com.cadykaya.interregnum.core.portal.Hour} and
+ * {@link com.cadykaya.interregnum.core.portal.Stillness}. <b>No god has a far-layer</b>,
+ * and nothing has been decided about what one is beyond being further in.
  *
  * Saying so in the file is cheaper than a later reader inferring that a placeholder was a
  * decision.
@@ -124,6 +125,23 @@ public final class ModDimensions {
 
     public static final ResourceKey<net.minecraft.world.level.Level> MASS_AUTHORITY =
             ResourceKey.create(Registries.DIMENSION, MASS_AUTHORITY_STEM.identifier());
+
+    /**
+     * Under the Quiet One's surface.
+     *
+     * The last under-layer, reached by a door that opens when nothing near it makes a
+     * sound -- see {@link com.cadykaya.interregnum.core.portal.Stillness}.
+     */
+    public static final ResourceKey<DimensionType> UNRESPONSIVE_LOWER_TYPE =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "unresponsive_lower"));
+
+    public static final ResourceKey<LevelStem> UNRESPONSIVE_LOWER_STEM =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    Identifier.fromNamespaceAndPath(Interregnum.MOD_ID, "unresponsive_lower"));
+
+    public static final ResourceKey<net.minecraft.world.level.Level> UNRESPONSIVE_LOWER =
+            ResourceKey.create(Registries.DIMENSION, UNRESPONSIVE_LOWER_STEM.identifier());
 
     /**
      * Under the Anchorite's surface: <b>the place where down does not hold.</b>
@@ -247,6 +265,23 @@ public final class ModDimensions {
                 unresponsive(),
                 HolderSet.empty(),                  // timelines: no weather, ever
                 Optional.empty()));                 // defaultClock
+
+        // Under it. The surface declines to answer; this declines harder, and the one
+        // attribute that changes says so: `AMBIENT_SOUNDS` and `BACKGROUND_MUSIC` were
+        // already EMPTY up there, and down here there is no sky to be quiet under either.
+        ctx.register(UNRESPONSIVE_LOWER_TYPE, new DimensionType(
+                false,
+                false,                              // hasSkyLight
+                false, false, 1.0,
+                MIN_Y, HEIGHT, HEIGHT,
+                blocks.getOrThrow(BlockTags.INFINIBURN_OVERWORLD),
+                0.1F,
+                new DimensionType.MonsterSettings(ConstantInt.of(0), 0),
+                DimensionType.Skybox.OVERWORLD,
+                CardinalLighting.Type.DEFAULT,
+                unresponsive(),
+                HolderSet.empty(),
+                Optional.empty()));
 
         // The Anchorite's world. Its law is CODE, not attributes -- see
         // com.cadykaya.interregnum.system.anchorite.Anchorite for why, and for what
@@ -463,6 +498,12 @@ public final class ModDimensions {
         // one meadow with vanilla's whole spawn list in it.
         ctx.register(UNRESPONSIVE_STEM, new LevelStem(
                 types.getOrThrow(UNRESPONSIVE_TYPE),
+                new NoiseBasedChunkGenerator(
+                        new FixedBiomeSource(biomes.getOrThrow(ModBiomes.UNANSWERED)),
+                        noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));
+
+        ctx.register(UNRESPONSIVE_LOWER_STEM, new LevelStem(
+                types.getOrThrow(UNRESPONSIVE_LOWER_TYPE),
                 new NoiseBasedChunkGenerator(
                         new FixedBiomeSource(biomes.getOrThrow(ModBiomes.UNANSWERED)),
                         noise.getOrThrow(NoiseGeneratorSettings.OVERWORLD))));

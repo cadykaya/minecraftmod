@@ -233,8 +233,37 @@ resolution is the existing rule read properly, not an exception to it: the ledge
 what you did not aim at, and a position somebody deliberately registered as a door is not
 that. Nothing else in the cube loses its protection.
 
-The two remaining portals share the rule and nothing else: an hour you have to make, and a
-silence you can break by coughing have no mechanism in common with either of these.
+**Built: the Hearth-Turner's, and the hour is a stage rather than a time.** That world has
+the mod's one stopped sky, so there is no hour up there to wait for. What the school moves
+is the age of things — the Turning's own chain, `stone_bricks → cracked → mossy` — and a
+doorway is six blocks framing a gap, open only while all six are at one stage. The open
+hour is the **middle** link, the only stage reachable from both directions: *Weather* ages
+a fresh frame into it, *Rewind* brings an old one back. **[LOCKED — decided here.]** You
+pass through by **walking in**; all the difficulty was in making the hour, and what you do
+with a door is walk through it. The far side is stamped with a matching frame, because
+nothing over there has ever built anything.
+
+**Built: the Quiet One's, and it listens the way sculk listens.** `Hush`'s own note has
+always said the audible half of this god's law lives on a client and is not claimed. The
+way through is that the game already has a **server-side** model of a noise that is not the
+sound system: the vibration a sculk sensor feels, posted with a position every time
+something happens. So the door is a cast *Hush* zone — the school's verb makes the boundary
+that *"nothing near **it**"* needs — and it opens once no game event has landed inside it
+for five seconds. **Every** event counts, with no allow-list: an accident is precisely the
+thing you did not know counted.
+
+**[LOCKED — decided here.]** It is the only door with no second condition, and the only one
+that is **shared**. The Verdant's asks you to hold still and answers about you; this asks
+the world to be quiet and answers about the place — so a stranger's footstep closes your
+door and yours closes theirs. Of the four gods, this is the one whose law was never about
+the person standing in front of it. A noise **resets** rather than delays, which is what
+makes it *"the only one of the four a player can close by accident"*; and the silence needed
+is a quarter of the spell that holds it, so an accident is a setback rather than a wasted
+cast. *Held-breath* — unbuilt — is still the answer to the last few steps, because walking
+posts an event every time.
+
+**All four portals exist.** Four doors, four verbs: **let go, stand still, walk in, make no
+sound.** No god has a far-layer, and nothing has been decided about what one is.
 
 ### The pantheon — **four, and everyone calls them something different**
 

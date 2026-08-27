@@ -4380,3 +4380,86 @@ by accident, and the audio half of that world is the single thing this container
 verify. It needs a definition of *quiet* that is entirely server-side.
 
 No god has a far-layer, and nothing has been decided about what one is.
+
+---
+
+## The Quiet One's silence — the last portal, and all four verbs
+
+`WORLD.md`, locked: *"Opens when **nothing near it makes a sound**. The only one of the four
+a player can close by accident. Opened with *Hush* — and *Held-breath*, for the last few
+steps."*
+
+### How a headless server knows what a sound is
+
+It does not, and `Hush` has said so since the spell was written: *"the Quiet One's law is
+the one law whose most characteristic form lives on a client"*, and the spell deliberately
+refuses to claim its own audible half. A door keyed on audible sound would be a door nothing
+in this project could ever verify.
+
+The way through is that **the game already has a server-side model of a noise, and it is not
+the sound system.** A game event — the vibration a sculk sensor listens for — is posted with
+an exact position every time something happens that a listening thing could notice: a
+footstep, a block broken, a door swung, an item picked up. NeoForge surfaces all of them as
+`VanillaGameEvent`, on the server, with the level and the causing entity.
+
+So this door listens the way sculk listens. Nothing about it depends on anybody hearing
+anything, which is the only reason it can be a door at all. The event is observed and
+**never cancelled**: cancelling would stop vanilla posting to nearby listeners, so real
+sculk sensors near a portal would go deaf and a player would discover that standing beside a
+door is a stealth ability.
+
+### Every event counts, and that is the design
+
+No allow-list. `Verdant` refuses to keep a list of growable blocks and this refuses for the
+same reason — a hand-picked set of "real" noises is out of date the first time the game
+ships one — but there is a second reason that matters more here. `WORLD.md` calls this *"the
+only one of the four a player can close by accident"*, and **an accident is precisely the
+thing you did not know counted.** A curated list would let a player learn which noises are
+free, and the door would stop being closeable by accident at all.
+
+A noise **resets** rather than delays. That is one `Math.max` and it is the whole locked
+line: with a delay, an early disturbance inside a long zone is forgiven by the passage of
+time and the accident costs nothing.
+
+### The door is the spell's own zone
+
+The other three portals are a thing you cast somewhere, a thing you plant, and a thing you
+build. This one is a thing you **stop doing** — and *"nothing near **it**"* still needs an
+"it". `Hush` already supplies exactly that: a cast cube of declared silence, made by the
+school this god teaches, that you can walk out of. It is the only portal key in the mod that
+is also the boundary.
+
+The silence needed is five seconds against a zone that lasts twenty, so one cast affords four
+attempts — an accident is a setback rather than a wasted spell, and a fourth accident is a
+message about how much noise you are making.
+
+### It is shared, and that is the god
+
+The Verdant's door asks *you* to hold still and answers about you. This asks the *world* to
+be quiet and answers about the place, so a stranger's footstep closes your door and yours
+closes theirs. Of the four gods, this is the one whose law was never about the person
+standing in front of it.
+
+### The check made a silent noise
+
+The first version broke the silence with `setblock <pos> minecraft:stone replace` and
+reported that the door survived being built next to. It had: `replace` writes the block and
+**posts no game event at all**. `setblock <pos> minecraft:air destroy` calls
+`Level.destroyBlock`, which posts `block_destroy` at the position — a real vibration, the
+same one a sculk sensor would feel.
+
+Nothing about the check reaches into the mod to say *pretend something was loud*. It does a
+thing to the world and the world reports it, which is the only way this particular door can
+be tested honestly.
+
+### Four doors, four verbs
+
+**Let go. Stand still. Walk in. Make no sound.**
+
+Every god now holds two of its three layers, joined by a portal its own school opens — which
+was the argument `WORLD.md` made for the rule in the first place: *the reason to cross is
+that the verbs are over there, and the reason to cross again is that the verbs are the
+doors.* That was a sentence. It is now four places you can only reach by having been taught.
+
+What is left of the grammar is the far-layers. No god has one, and nothing has been decided
+about what a far-layer **is** beyond being further in.
