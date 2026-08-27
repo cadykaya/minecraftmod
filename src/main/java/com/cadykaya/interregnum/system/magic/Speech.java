@@ -156,6 +156,10 @@ public final class Speech {
             case HELD_BREATH -> String.valueOf(
                     HeldBreathSpell.cast(level, from, who, g).held());
             case MOOR -> MoorSpell.cast(level, at, g).subject();
+            case RIPEN -> {
+                var cast = RipenSpell.cast(level, at, g);
+                yield cast.subject() + " " + cast.what();
+            }
         };
     }
 }

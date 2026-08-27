@@ -245,3 +245,6 @@ jobs:
 
       - name: A moored thing is not moved by water, and not by the Anchorite's own law
         run: ./tools/moor_check.sh
+
+      - name: Ripen carries a crop and a calf forward, and stops at grown
+        run: ./tools/ripen_check.sh

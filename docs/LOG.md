@@ -4730,3 +4730,68 @@ up, well outside the spell's reach of five. The cast truthfully reported nothing
 Twelve spells built. Four left: *Hedge* and *Graft* (Verdancy), *Ripen* and *Rot* (The
 Turning). The last pair is cheaper — both are the ageing table aimed at living things, and
 that table is built, loaded and driven by two checks already.
+
+---
+
+## Ripen — the first thing in the mod that ages something alive
+
+`WORLD.md`, locked: *"Age a living thing forward: crop, sapling, animal. **The kind half of
+the school.**"*
+
+### The school had only ever aged stone
+
+*Weather* ages masonry and *Rewind* un-ages it, both on the Turning's table — wearing,
+cracking, greening. That is the whole of what this god's magic could touch, and it is a
+strange gap for a god whose law is **keeping every past**: living things have more past than
+walls do.
+
+A crop goes forward one growth step. A calf becomes a cow, which nothing else in this mod
+does.
+
+### Where it stops is the line between this spell and its own twin
+
+**An adult animal is nothing at all.** Forward from grown is toward the end, and that is
+*Rot*'s country — locked as *never aimed at a player or a mob*. So the two spells share a
+school and a direction and are separated by exactly this: one takes a thing to what it was
+going to become, and the other takes it past that.
+
+And the refusal is a shape rather than a rule. The spell does not check a list of things it
+will not touch; it asks for something with growing left to do, and an adult is not that. A
+player is never a subject for the same reason, which is the stronger version of "it does not
+work on players": there is no state in this game where a person has growing left to do.
+
+### One cast is worth one step, and that took a rewrite
+
+The first implementation delivered a fixed count of random ticks, copying `Wildgrowth`'s
+argument that a spell should do the same thing twice so a player can learn what it is worth.
+The argument is right and the implementation did not achieve it, because **vanilla growth is
+a dice roll**: wheat on unhydrated farmland advances on about one random tick in twenty-six.
+Eight pushes gave roughly a one-in-four chance of doing anything at all. A spell that works
+sometimes is not a verb.
+
+So the number now bounds how long the spell keeps **asking** rather than how much it
+delivers, and the loop stops the instant the block changes. One cast, one step, every time —
+which is what the borrowed argument wanted in the first place.
+
+`Wildgrowth` is unaffected and stays as it was: it sweeps a cube, so *something* in there
+grows, and the dice roll is what makes it a surge rather than a schedule.
+
+### The creature wins over the ground it stands on
+
+A calf on a wheat field is both a young animal and a position holding a crop. `WORLD.md`
+names *"crop, sapling, animal"* and the animal is the one a person is pointing at — nobody
+aims a spell at the earth under a cow and means the wheat. Both orderings were watched: with
+the block first, the check goes red naming exactly that.
+
+### A reach is a box
+
+The first version of the check put its subjects eight blocks apart, and the cast on the
+wheat found the calf — correctly, because an aimed spell's reach is an inflated `AABB` and a
+subject at (8.5, 8.5) is inside the reach of a cast at (4, 4) even though it is six and a
+half blocks away by any measure a person would use. The subjects are twenty apart now, and
+the check says why in place.
+
+### Where the kit stands
+
+Thirteen built. Three left: *Hedge* and *Graft* (Verdancy), and *Rot* — the pair to this
+one, and the next to build.

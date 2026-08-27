@@ -27,10 +27,10 @@ asserted against a running world rather than against its own source.
 | Palette system | **working and verified** |
 | Texture pipeline | **working and verified** (paint kit + review bench) |
 | Doc set | **complete** — 16 documents, see [`INDEX.md`](INDEX.md) |
-| Live-world checks | **53**, every one mutation-verified, all in CI |
+| Live-world checks | **54**, every one mutation-verified, all in CI |
 | Regard | recorded, persisted, **audible**, and **read** — bands, never numbers |
 | Entities | Warden, Shrine-Keeper — both spec-driven, both judged in rotation |
-| Magic | four schools, **twelve spells built** of sixteen named, learned in their gods' worlds and **cast by saying the word** |
+| Magic | four schools, **thirteen spells built** of sixteen named, learned in their gods' worlds and **cast by saying the word** |
 | Bands | 1–4 built; the overworld unravels, leaks, and forgets |
 | World-systems | **all four gods have two layers**, each joined by that god's own portal; no god has a far-layer |
 
@@ -2801,7 +2801,7 @@ Everything else is unblocked. In order:
 4. ~~**The delivery scenes.**~~ **All four built**, recording `LETTER_DELIVERED` and
    teaching their god's school. Chapters 3–5 gate on that count.
 
-5. ~~**Magic.**~~ **Four schools, twelve spells built**, all learned in their
+5. ~~**Magic.**~~ **Four schools, thirteen spells built**, all learned in their
    gods' worlds and all costing the overworld what they do not cost a living god's.
    *Weather* changes a block and *Rewind* changes it back; *Lighten* encloses a region and
    *Drop-forge* makes one where impacts count; *Bridgeroot* creates blocks and
@@ -2809,7 +2809,8 @@ Everything else is unblocked. In order:
    takes one creature's throwing arm and lets it keep it wherever it goes, and *Loft*
    picks a small building up and carries it; *Held-breath* takes your own sound away and
    your voice with it; and *Moor* fixes one thing where it is against every force that
-   would move it, including its own god's. Twelve different verbs, which is what shows the
+   would move it, including its own god's; and *Ripen* carries one living thing forward to
+   what it was becoming and stops there. Thirteen different verbs, which is what shows the
    school system is a system rather than one mechanism with four names.
 
    **Two things it is short of, one of them the owner's:**
@@ -2835,12 +2836,18 @@ Everything else is unblocked. In order:
      forces it resists and they turned out to be one rule, because water, a piston and the
      Anchorite's lift all push **entities**. `tools/moor_check.sh`.
 
-     **Four left: *Hedge*, *Graft* (Verdancy), *Ripen*, *Rot* (The Turning).** *Ripen* and
-     *Rot* are the cheaper pair — both are the ageing table aimed at living things, and
-     that table is built, loaded and driven by two checks already. *Rot* carries the one
-     constraint that matters: `WORLD.md` locks it as **never aimed at a player or a mob**,
-     because the obvious reading of *"age it past its end"* is an instant-kill and every
-     spell being a world-verb rules that out.
+     ***Ripen* is built** — the kind half of the Turning, and the first thing in the mod
+     that ages something alive. A crop is carried forward one growth step and a calf becomes
+     a cow; a grown animal is **nothing at all**, because forward from grown is toward the
+     end and that is *Rot*'s country. `tools/ripen_check.sh`.
+
+     **Three left: *Hedge*, *Graft* (Verdancy), *Rot* (The Turning).** ***Rot* is the next
+     one**, and the pair to what was just built: `WORLD.md` locks it as **never aimed at a
+     player or a mob**, because the obvious reading of *"age it past its end"* is an
+     instant-kill and every spell being a world-verb rules that out. It wants a second
+     conversion table in the shape the Turning and the unraveling already share — *"one
+     mechanism; a school and an apocalypse"* — which is the locked reuse note and the
+     cheapest way to build it.
 
 6. **The dialogue screen.** A real GUI over `Conversations.Table`, replacing the chat
    rendering. Deliberately last: it is the one part this container cannot verify, and

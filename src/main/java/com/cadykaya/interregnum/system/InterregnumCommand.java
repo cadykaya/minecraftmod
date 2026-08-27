@@ -955,6 +955,28 @@ public final class InterregnumCommand {
                                             return cast.worked() ? 1 : 0;
                                         })))));
 
+        // Ripen. Reports the SUBJECT as well as the outcome, because "it found a calf"
+        // and "it found wheat" are the two halves of the locked description and a check
+        // has to be able to tell them apart -- and to tell both from finding nothing,
+        // which is what a grown animal and a player both are to this spell.
+        root = root.then(Commands.literal("cast")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("ripen")
+                        .then(Commands.argument("who", StringArgumentType.string())
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                        .executes(ctx -> {
+                                            BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                                            var cast = com.cadykaya.interregnum.system.magic
+                                                    .RipenSpell.cast(ctx.getSource().getLevel(), pos,
+                                                            grimoireOf(ctx, "who"));
+                                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                                    "cast=ripen subject=" + cast.subject()
+                                                            + " what=" + cast.what()
+                                                            + " frayed=" + cast.frayed()
+                                                            + " refused=" + cast.refused()), false);
+                                            return cast.worked() ? 1 : 0;
+                                        })))));
+
         // Moor, shaped exactly like `cast quell` because the two spells are.
         root = root.then(Commands.literal("cast")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))

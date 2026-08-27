@@ -406,6 +406,16 @@ MUTATIONS = [
      "    public static final long DURATION_TICKS = 20L * 60;",
      "    public static final long DURATION_TICKS = 20L * 10;"),
 
+    # Ripen. Its two failure modes: a cast nobody can see, and one that out-grows the
+    # spell whose whole character is that it goes too far.
+    ("magic: Ripen gives up before a one-in-twenty-six event is likely, so it works sometimes",
+     f"{MAIN}/magic/Ripen.java",
+     "    public static final int ATTEMPTS = 256;", "    public static final int ATTEMPTS = 8;"),
+    ("magic: Ripen asks for ever, so a cast on stone never returns",
+     f"{MAIN}/magic/Ripen.java",
+     "    public static final int ATTEMPTS = 256;",
+     "    public static final int ATTEMPTS = Integer.MAX_VALUE;"),
+
     # The rule that nearly shipped. Routing on the addressee strands the Quiet One's
     # world, because the unaddressed letter is that god's -- silently, permanently, behind
     # the only affordance there is for reaching any god at all.

@@ -403,6 +403,18 @@ aimed at one thing, which is what makes it the opposite of *Lighten* rather than
 one, and it holds for a minute — the longest duration in the mod, on the least dramatic
 spell in it, because an anchor that lapses while you are relying on it is a delay.
 
+**Built: *Ripen*.** The first thing in the mod that ages something alive — the school had
+only ever touched stone, which was a strange gap for a god whose law is keeping every past.
+A crop goes forward one growth step and a calf becomes a cow. **An adult is nothing at
+all**, and that is the line between this spell and its own twin: forward from grown is
+toward the end, which is *Rot*'s country. It does not refuse an adult by naming one; it asks
+for something with growing left to do, and a player has no such state either.
+
+One cast is worth exactly one step, and the implementation had to work for that. Vanilla
+growth is a **dice roll** — wheat on unhydrated farmland advances on about one random tick
+in twenty-six — so a fixed number of pushes is a spell that works sometimes, which is not a
+verb. The spell keeps asking until the block moves, up to a bound.
+
 *Held-breath* and *Rot* are the two that were decided rather than sketched. The first
 because the casting affordance makes silence cost something real. The second because the
 obvious reading of *"age it past its end"* is an instant-kill, and **every spell is a

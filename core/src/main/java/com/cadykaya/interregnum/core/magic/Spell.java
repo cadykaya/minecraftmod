@@ -57,7 +57,9 @@ public enum Spell {
     /** The Quiet One's: your own sound, taken away -- and your voice with it. */
     HELD_BREATH(School.SILENCE),
     /** The Anchorite's: one thing fixed where it is, against any push. */
-    MOOR(School.WEIGHT);
+    MOOR(School.WEIGHT),
+    /** The Hearth-Turner's: one living thing carried forward to what it was becoming. */
+    RIPEN(School.TURNING);
 
     private final School school;
 

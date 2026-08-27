@@ -1834,5 +1834,40 @@ public final class SelfTest {
               && com.cadykaya.interregnum.core.magic.Moor.holds(1000, 1000)
               && !com.cadykaya.interregnum.core.magic.Moor.holds(1000, 1001),
               "and it holds on the exact tick it lets go, like every other duration here");
+
+        // RIPEN. WORLD.md: "age a living thing forward: crop, sapling, animal. The kind
+        // half of the school."
+        check(com.cadykaya.interregnum.core.magic.Ripen.SCHOOL
+                      == com.cadykaya.interregnum.core.magic.School.TURNING
+              && com.cadykaya.interregnum.core.magic.Spell.RIPEN.school()
+                      == com.cadykaya.interregnum.core.magic.School.TURNING,
+              "Ripen is the Hearth-Turner's. The school had only ever aged stone, which is "
+              + "a strange gap for a god whose law is keeping every past -- living things "
+              + "have more past than walls do");
+        check(com.cadykaya.interregnum.core.magic.Incantation
+                      .aimed(com.cadykaya.interregnum.core.magic.Spell.RIPEN),
+              "and it is aimed, unlike Wildgrowth which sweeps a volume. WORLD.md puts the "
+              + "two on opposite sides of one idea: accelerating growth is a HAZARD when "
+              + "it is indiscriminate and kind when it is chosen, and the aim is the whole "
+              + "difference");
+        check(com.cadykaya.interregnum.core.magic.Ripen.REACH
+                      == com.cadykaya.interregnum.core.magic.Quell.REACH
+              && com.cadykaya.interregnum.core.magic.Ripen.REACH
+                      == com.cadykaya.interregnum.core.magic.Moor.REACH,
+              "every aimed spell in the kit reaches the same distance, and the number means "
+              + "the same thing in each -- about as far as a person could point and be "
+              + "understood");
+
+        // A CAST HAS TO WORK EVERY TIME. Vanilla growth is a dice roll -- wheat on
+        // unhydrated farmland advances on about one random tick in twenty-six -- so the
+        // count here bounds how long the spell keeps ASKING rather than how much it
+        // delivers. A fixed dose is a spell that works sometimes, which is not a verb.
+        check(com.cadykaya.interregnum.core.magic.Ripen.ATTEMPTS >= 100,
+              "one cast asks often enough that a one-in-twenty-six event is a certainty. "
+              + "Eight attempts was tried and gave about a one in four chance of doing "
+              + "anything at all");
+        check(com.cadykaya.interregnum.core.magic.Ripen.ATTEMPTS < 10_000,
+              "and it gives up rather than looping. The bound is what stops a cast on "
+              + "something that cannot grow from being a cast that never returns");
     }
 }
